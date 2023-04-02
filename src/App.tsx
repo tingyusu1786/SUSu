@@ -1,56 +1,25 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { useAppSelector } from './app/hooks';
 
 function App() {
+  const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
+  const userName = useAppSelector((state) => state.auth.userName);
+  const photoURL = useAppSelector((state) => state.auth.photoURL);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
+    <div className='App'>
+      <img src={photoURL} alt='' className='rounded-full' />
+      {isSignedIn ? <div> {`Hi ${userName}`}</div> : <div>please sign in</div>}
+      <Link to='/profile' className='bg-lime-200'>
+        profile
+      </Link>
+      <br />
+      <Link id='map' to='/map'>
+        map
+      </Link>
+      <br />
+      <Link to='/counter'>counter</Link>
     </div>
   );
 }

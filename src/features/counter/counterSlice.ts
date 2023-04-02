@@ -2,11 +2,12 @@ import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState, AppThunk } from '../../app/store';
 import { fetchCount } from './counterAPI';
 
+// Define a type for the slice state
 export interface CounterState {
   value: number;
   status: 'idle' | 'loading' | 'failed';
 }
-
+// Define the initial state using that type
 const initialState: CounterState = {
   value: 0,
   status: 'idle',
