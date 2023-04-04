@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { auth, db } from '../../utils/firebase';
 import {
   createUserWithEmailAndPassword,
@@ -18,9 +17,6 @@ import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { signInStart, signInSuccess, signInFail, signOutStart, signOutSuccess, signOutFail } from './authSlice'
 
 export function Authentication() {
-  // const [name, setName] = useState('');
-  // const [email, setEmail] = useState('');
-  // const [userId, setUserId] = useState('');
   const dispatch = useAppDispatch();
 
   const [input, setInput] = useState({ name: '', email: '', password: '' });
@@ -46,6 +42,7 @@ export function Authentication() {
       });
       alert(`Signed up user: ${user.displayName} (${user.email})`);
       dispatch(signInSuccess({ id: user.uid, name: user.displayName}));
+      localStorage.setItem('userData', JSON.stringify({ id: user.uid, name: user.displayName }));
     } catch (error: any) {
       const errorCode = error.code;
       const errorMessage = error.message;
@@ -61,6 +58,7 @@ export function Authentication() {
       const user = userCredential.user;
       alert(`Logged in user: ${user.displayName} (${user.email})`);
       dispatch(signInSuccess({ id: user.uid, name: user.displayName, photoURL: user.photoURL }));
+      localStorage.setItem('userData', JSON.stringify({ id: user.uid, name: user.displayName }));
     } catch (error: any) {
       const errorCode = error.code;
       const errorMessage = error.message;
@@ -94,6 +92,7 @@ export function Authentication() {
         }
         dispatch(signInSuccess({ id: user.uid, name: user.displayName, photoURL: user.photoURL }));
         // console.log(getAdditionalUserInfo(result)?.profile);
+        localStorage.setItem('userData', JSON.stringify({ id: user.uid, name: user.displayName, photoURL: user.photoURL }));
       }
     } catch (error: any) {
       const errorCode = error.code;
@@ -117,6 +116,7 @@ export function Authentication() {
       dispatch(signOutStart());
       alert('sign out successful!');
       dispatch(signOutSuccess());
+      localStorage.removeItem('userData');
     } catch (error: any) {
       alert(`Error logging out. (${error})`);
       dispatch(signOutFail(error));
@@ -169,19 +169,19 @@ export function Authentication() {
       </div>
 
       <div className='flex gap-3'>
-        <button onClick={() => { nativeSignUp(input.email, input.password, input.name); handleReset()}} className='bg-teal-200'>
+        <button onClick={() => { nativeSignUp(input.email, input.password, input.name); handleReset() }} className='border-solid border border-gray-600 rounded px-2'>
           create user by email
         </button>
-        <button onClick={() => { nativeSignIn(input.email, input.password); handleReset()}} className='bg-lime-200'>
+        <button onClick={() => { nativeSignIn(input.email, input.password); handleReset() }} className='border-solid border border-gray-600 rounded px-2'>
           sign in by email
         </button>
-        <button onClick={googleSignIn} className='bg-yellow-200'>
+        <button onClick={googleSignIn} className='border-solid border border-gray-600 rounded px-12'>
           sign in by google
         </button>
-        <button onClick={handleSignOut} className='bg-pink-200'>
+        <button onClick={handleSignOut} className='border-solid border border-gray-600 rounded scroll-px-28'>
           sign out
         </button>
-        <button className='bg-indigo-200' onClick={handleReset}>
+        <button className='border-solid border border-gray-600 rounded px-2' onClick={handleReset}>
           reset
         </button>
       </div>

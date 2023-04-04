@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import { API_KEY } from '../utils/googleMap';
 
 let cachedScripts: any = [];
@@ -126,7 +125,6 @@ function Map(): JSX.Element {
       <div>
         <div>
           {/*<button onClick={() => calcRoute()}>點我去試穿</button>*/}
-          <Link to='/'>回首頁</Link>
         </div>
         <div>
           <div id='map' style={{ height: '550px', width: '1280px', border: `3px solid #BDB0A4` }} />

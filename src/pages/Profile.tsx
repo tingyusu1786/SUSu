@@ -1,8 +1,19 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Authentication } from '../features/auth/Authentication';
-import { auth, db } from '../utils/firebase';
-import { doc, getDoc } from 'firebase/firestore';
+// import { auth, db } from '../utils/firebase';
+// import { doc, getDoc } from 'firebase/firestore';
+// import { onAuthStateChanged } from 'firebase/auth';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
+import {
+  signInSuccess,
+  // signInStart,
+  // signInFail,
+  // signOutStart,
+  // signOutSuccess,
+  // signOutFail,
+} from '../features/auth/authSlice';
+// import Setting from '../pages/Setting';
 
 function Profile() {
   const [isAuthDialogOpened, setIsAuthDialogOpened] = useState(true);
@@ -12,6 +23,14 @@ function Profile() {
   const userId = useAppSelector((state) => state.auth.userId);
   const userName = useAppSelector((state) => state.auth.userName);
   const photoURL = useAppSelector((state) => state.auth.photoURL);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    const userData = localStorage.getItem('userData');
+    if (userData) {
+      dispatch(signInSuccess(JSON.parse(localStorage.getItem('userData') as string)));
+    }
+  }, []);
 
   // if (userId !== null) {
   //   const docRef = doc(db, 'users', userId);
@@ -37,6 +56,9 @@ function Profile() {
 
   return (
     <div className='m-10 flex flex-col items-center'>
+      <Link to='/profile/setting' className='bg-lime-600 text-white'>
+        setting
+      </Link>
       <button onClick={() => setIsAuthDialogOpened(true)}>[ start auth procedure ]</button>
       <button onClick={() => setIsAuthDialogOpened(false)}>[ close ]</button>
       {isAuthDialogOpened && <Authentication />}
