@@ -21,9 +21,14 @@ root.render(
     <Provider store={store}>
       <Routes>
         <Route path='/' element={<App />}>
-          <Route path='/profile' element={<Profile />}>
-            <Route path='/profile/setting' element={<Setting />} />
-          </Route>
+          {/*<Route index element={<Home />}/>*/}
+          <Route
+            path='/profile/:profileUserId'
+            element={<Profile />}
+            // loader={}
+            // action={}
+          />
+          <Route path='/setting' element={<Setting />} />
           <Route path='/posts' element={<Posts />} />
           <Route path='/map' element={<Map />} />
           <Route path='/catalogue' element={<Catalogue />} />

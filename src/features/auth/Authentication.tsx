@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { auth, db } from '../../utils/firebase';
+import { auth, db, storage } from '../../utils/firebase';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -10,11 +10,14 @@ import {
   updateProfile,
   UserCredential,
   getAdditionalUserInfo,
+
 } from 'firebase/auth';
-import { doc, setDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, getDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { signInStart, signInSuccess, signInFail, signOutStart, signOutSuccess, signOutFail } from './authSlice'
+import initPhoto from '../../images/initPhoto.png';
 
 export function Authentication() {
   const dispatch = useAppDispatch();
@@ -27,9 +30,13 @@ export function Authentication() {
       // sign up new user
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 
-      // update user profile with name
+      const imgUrl = await getDownloadURL(ref(storage, 'initPhoto.png')
+        );
+
+      // update user profile with name and init photo
       await updateProfile(userCredential.user, {
         displayName: name,
+        photoURL: imgUrl,
       });
 
       const user = userCredential.user;
@@ -38,11 +45,12 @@ export function Authentication() {
       await setDoc(doc(db, 'users', user.uid), {
         name: user.displayName,
         email: user.email,
+        photoURL: user.photoURL,
         timeCreated: serverTimestamp(),
       });
       alert(`Signed up user: ${user.displayName} (${user.email})`);
-      dispatch(signInSuccess({ id: user.uid, name: user.displayName}));
-      localStorage.setItem('userData', JSON.stringify({ id: user.uid, name: user.displayName }));
+      dispatch(signInSuccess({ id: user.uid, name: user.displayName, photoURL: user.photoURL }));
+      localStorage.setItem('userData', JSON.stringify({ id: user.uid, name: user.displayName, photoURL: user.photoURL }));
     } catch (error: any) {
       const errorCode = error.code;
       const errorMessage = error.message;
@@ -56,9 +64,15 @@ export function Authentication() {
       dispatch(signInStart());
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
-      alert(`Logged in user: ${user.displayName} (${user.email})`);
-      dispatch(signInSuccess({ id: user.uid, name: user.displayName, photoURL: user.photoURL }));
-      localStorage.setItem('userData', JSON.stringify({ id: user.uid, name: user.displayName }));
+
+      const userDocRef = doc(db, 'users', user.uid);
+      const userDoc = await getDoc(userDocRef);
+
+      userDoc.data() && dispatch(signInSuccess({ id: userDoc.id, name: userDoc.data()?.name, photoURL: userDoc.data()?.photoURL }));
+
+      localStorage.setItem('userData', JSON.stringify({ id: user.uid, name: userDoc.data()?.name, photoURL: userDoc.data()?.photoURL }));
+
+      alert(`Logged in user: ${userDoc.data()?.name} (${user.email})`);
     } catch (error: any) {
       const errorCode = error.code;
       const errorMessage = error.message;
@@ -128,7 +142,7 @@ export function Authentication() {
   }
 
   return (
-    <div className='my-8 flex flex-col items-center gap-10 bg-gray-100 w-1/2 h-1/2'>
+    <div className='flex flex-col items-center gap-10 bg-lime-100 rounded-xl absolute top-1/4 left-1/3 z-50 p-10'>
       <div className="flex flex-col">
         <label htmlFor='name'>name:</label>
         <input

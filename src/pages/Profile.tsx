@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { Authentication } from '../features/auth/Authentication';
-// import { auth, db } from '../utils/firebase';
-// import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from '../utils/firebase';
+import { doc, getDoc, collection, query, where, getDocs, orderBy, QuerySnapshot } from 'firebase/firestore';
 // import { onAuthStateChanged } from 'firebase/auth';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
 import {
@@ -13,66 +13,126 @@ import {
   // signOutSuccess,
   // signOutFail,
 } from '../features/auth/authSlice';
-// import Setting from '../pages/Setting';
 
 function Profile() {
-  const [isAuthDialogOpened, setIsAuthDialogOpened] = useState(true);
-  const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
-  const loading = useAppSelector((state) => state.auth.loading);
-  const error = useAppSelector((state) => state.auth.error);
-  const userId = useAppSelector((state) => state.auth.userId);
+  const currentUserId = useAppSelector((state) => state.auth.userId);
   const userName = useAppSelector((state) => state.auth.userName);
   const photoURL = useAppSelector((state) => state.auth.photoURL);
   const dispatch = useAppDispatch();
+  const [profileUser, setProfileUser] = useState<any>({});
+  const [profileUserPosts, setProfileUserPosts] = useState<any[]>([]);
+  const { profileUserId } = useParams<{ profileUserId: string }>();
 
   useEffect(() => {
-    const userData = localStorage.getItem('userData');
-    if (userData) {
-      dispatch(signInSuccess(JSON.parse(localStorage.getItem('userData') as string)));
-    }
+    const fetchProfileUser = async () => {
+      if (profileUserId) {
+        const profileUserInfo = await getProfileUserInfo(profileUserId);
+        const posts = await getProfileUserPosts(profileUserId);
+        setProfileUser(profileUserInfo);
+        setProfileUserPosts(posts);
+      }
+    };
+    fetchProfileUser();
   }, []);
 
-  // if (userId !== null) {
-  //   const docRef = doc(db, 'users', userId);
-  //   const docSnap = getDoc(docRef);
-  //   getDoc(docRef).then(docSnap => { console.log("Document data:", docSnap.data()?.email); })
-  // }
+  const getProfileUserInfo = async (id: string) => {
+    const profileUserDocRef = doc(db, 'users', id);
+    const profileUserDoc = await getDoc(profileUserDocRef);
+    if (!profileUserDoc.exists()) {
+      alert('No such document!');
+      return '';
+    }
+    const profileUserData = profileUserDoc.data();
+    return profileUserData;
+  };
 
-  // onAuthStateChanged(auth, (user) => {
-  //   if (user) {
-  //     setName(user.displayName || '');
-  //     setEmail(user.email || '');
-  //     setUserId(user.uid || '');
-  //     // ...
-  //   } else {
-  //     // User is signed out
-  //     // ...
-  //     setUserId('');
-  //     setName('');
-  //     setEmail('');
-  //     setUserId('');
-  //   }
-  // });
+  const getProfileUserPosts = async (profileUserId: string) => {
+    const postsRef = collection(db, 'posts');
+    const q = query(postsRef, where('authorId', '==', profileUserId), orderBy('timeCreated', 'asc'));
+    const querySnapshot: QuerySnapshot = await getDocs(q);
+    const posts = querySnapshot.docs.map(async (change) => {
+      const postData = change.data();
+      const brandName: string = await getName(postData.brandId || '', 'brand');
+      const itemName: string = await getName(postData.itemId || '', 'item');
+      return { ...postData, postId: change.id, brandName, itemName };
+    });
+
+    const postsWithQueriedInfos = await Promise.all(posts);
+    return postsWithQueriedInfos;
+    // setProfileUserPosts(postsWithQueriedInfos);
+  };
+
+  const getName = async (id: string, type: string) => {
+    if (id !== '') {
+      let docRef;
+      switch (type) {
+        case 'brand': {
+          docRef = doc(db, 'brands', id);
+          break;
+        }
+        case 'item':
+          {
+            const idArray = id.split('-');
+            docRef = doc(db, 'brands', idArray[0], 'categories', idArray[0] + '-' + idArray[1], 'items', id);
+            break;
+          }
+          deafult: return;
+      }
+      if (docRef !== undefined) {
+        const theDoc = await getDoc(docRef);
+        if (!theDoc.exists()) {
+          alert('No such document!');
+          return '';
+        }
+        const theData = theDoc.data();
+        return theData.name;
+      }
+    }
+  };
+  
+  if (profileUserId === 'null') {
+    return <div className='text-center'>sign in to see your profile 🤗</div>
+  }
 
   return (
     <div className='m-10 flex flex-col items-center'>
-      <Link to='/profile/setting' className='bg-lime-600 text-white'>
+      <Link to='/setting' className='bg-gray-600 text-white rounded'>
         setting
       </Link>
-      <button onClick={() => setIsAuthDialogOpened(true)}>[ start auth procedure ]</button>
-      <button onClick={() => setIsAuthDialogOpened(false)}>[ close ]</button>
-      {isAuthDialogOpened && <Authentication />}
+
       <div className='flex flex-col items-center'>
-        <h3 className='text-2xl'>auth status</h3>
-        <div className=''>{`is signed in: ${isSignedIn}`}</div>
-        <div className=''>{`loading: ${loading}`}</div>
-        <div className=''>{`error: ${error}`}</div>
-        <div className=''>{`signed-in user id: ${userId}`}</div>
-        <h3 className='text-2xl'>user info</h3>
-        <img className='rounded-full' src={photoURL} alt={photoURL || ''} />
-        <div>{`name: ${userName}`}</div>
+        <img className='h-32 w-32 rounded-full object-cover' src={profileUser.photoURL} alt={photoURL || ''} />
+        <h3 className='text-2xl'>This is {profileUser.name}'s Page</h3>
+        <div className='text-sm text-gray-400'>{profileUser.email}</div>
+        <div>建立時間：{profileUser.timeCreated?.toDate().toLocaleString()}</div>
       </div>
-    </div>
+      {profileUserPosts.map((post, index) => {
+        return (
+          <div className='w-4/5 rounded bg-gray-100 p-3 my-1' key={index}>
+            <div>
+              <span className='text-xl after:content-["の"]'>{post.brandName}</span>
+              <span className='text-xl  font-bold'>{post.itemName}</span>
+            </div>
+            <div>{post.size && `size: ${post.size}`}</div>
+            <div>{post.sugar && `sugar: ${post.sugar}`}</div>
+            <div>{post.ice && `ice: ${post.ice}`}</div>
+            <div>{post.orderNum && `orderNum: ${post.orderNum}`}</div>
+            <div>{post.rating && `rating: ${post.rating}`}</div>
+            <div>{post.selfComment && `💬 ${post.selfComment}`}</div>
+            <div className='flex flex-wrap gap-1'>
+              {post.hashtags?.map((hashtag: string) => (
+                <span className='rounded bg-gray-300 px-2 before:content-["#"]' key={hashtag}>
+                  {hashtag}
+                </span>
+              ))}
+            </div>
+            <div>{post.timeCreated?.toDate().toLocaleString()}</div>
+
+            <span>likes: {post.likes?.length || 0}</span>
+          </div>
+        );
+      })}
+      </div>
   );
 }
 

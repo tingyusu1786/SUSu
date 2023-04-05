@@ -14,6 +14,18 @@ import {
 import { useAppSelector } from '../../app/hooks';
 
 function Posts() {
+  const initialInput = {
+    audience: 'public',
+    brandId: '',
+    itemId: '',
+    sugar: '',
+    ice: '',
+    size: '',
+    price: '',
+    orderNum: '',
+    rating: '',
+    selfComment: '',
+  }
   const userId = useAppSelector((state) => state.auth.userId);
   const [customTagsInput, setCustomTagsInput] = useState('');
   const [customTags, setCustomTags] = useState<string[]>([]);
@@ -21,17 +33,8 @@ function Posts() {
   const [brands, setBrands] = useState<string[][]>([]);
   const [categories, setCategories] = useState<string[][]>([]);
   const [itemsOfBrand, setItemsOfBrand] = useState<string[][][]>([]);
-  const [inputs, setInputs] = useState({
-    audience: 'public',
-    brandId: '',
-    itemId: '',
-    sugar: '',
-    ice: '',
-    price: '',
-    orderNum: '',
-    rating: '',
-    selfComment: '',
-  });
+  const [sizesOfItem, setSizesOfItem] = useState<string[][]>([]);
+  const [inputs, setInputs] = useState(initialInput);
 
   const sugarOptions = ['0（無糖）', '1', '2', '3（微糖）', '4', '5（半糖）', '6', '7（少糖）', '8', '9', '10（全糖）'];
   const iceOptions = ['0（去冰）', '1', '2', '3（微冰）', '4', '5', '6', '7（少冰）', '8', '9', '10（正常）', '溫/熱'];
@@ -54,6 +57,7 @@ function Posts() {
     if (inputs.brandId !== '') {
       fetchCategories();
       setItemsOfBrand([]);
+      setSizesOfItem([]);
     }
   }, [inputs.brandId]);
 
@@ -71,9 +75,18 @@ function Posts() {
     }
   }, [categories]);
 
-  // 選item之後自動產生tag
+  // 選item之後自動產生tag + 把size列出來
   useEffect(() => {
     handleAutoTag(inputs.itemId);
+
+    const fetchSizes = async (itemId: string) => {
+      const priceInfos = await getItemPrice(itemId);
+      setSizesOfItem(Object.entries(priceInfos));
+    };
+
+    if (inputs.itemId !== '') {
+      fetchSizes(inputs.itemId);
+    }
   }, [inputs.itemId]);
 
   const handleTagInputKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
@@ -89,7 +102,7 @@ function Posts() {
   const handleAutoTag = (itemId: string) => {
     if (itemId !== '') {
       const idArray = itemId.split('-');
-      const brandName = brands.find((brand)=> brand[0] === idArray[0])?.[1] || '';
+      const brandName = brands.find((brand) => brand[0] === idArray[0])?.[1] || '';
       const itemName = itemsOfBrand.flat().find(([idValue]) => idValue === itemId)?.[1] || '';
       setAutoTags([brandName, itemName]);
     } else {
@@ -98,23 +111,76 @@ function Posts() {
   };
 
   const handlePostSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+    if ([inputs.brandId, inputs.itemId].some((input) => input === '')) {
+      alert('please specify your drink');
+      return;
+    }
     const postInputs = Object.assign({}, inputs, {
       authorId: userId,
       hashtags: customTags.concat(autoTags),
-      timeCreated: serverTimestamp(),
+      timeCreated: new Date(),
+      // serverTimeStamp: serverTimestamp(),
     });
-    setInputs(postInputs);
+    
     const docRef = await addDoc(collection(db, 'posts'), postInputs);
-    await updateDoc(doc(db, 'users', userId as string), {
-      posts: arrayUnion(docRef.id),
-      dates: arrayUnion(new Date()),
-      brands: arrayUnion(inputs.brandId),
-    });
+    // save post id to user field
+    // await updateDoc(doc(db, 'users', userId as string), {
+    //   posts: arrayUnion(docRef.id),
+    //   dates: arrayUnion(new Date()),
+    //   brands: arrayUnion(inputs.brandId),
+    // });
+
+    // save post id to brand field
+    // await updateDoc(doc(db, 'brands', inputs.brandId),{
+    //   posts: arrayUnion(docRef.id),
+    // })
+
+    // save post id to item field
+    // const idArray = inputs.itemId.split('-');
+    // await updateDoc(doc(db, 'brands', inputs.brandId, 'categories', idArray[0] + '-' + idArray[1], 'items',inputs.itemId), {
+    //   posts: arrayUnion(docRef.id),
+    // })
+
     alert(`Document written with ID: ${docRef.id}`);
+    setInputs(initialInput);
+    setCustomTags([]);
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const key = e.target.name;
+    switch (key) {
+      case 'brandId': {
+        setInputs((prev) => {
+          const newInput = { ...prev, [key]: e.target.value, itemId: '', size: '', price: '' };
+          return newInput;
+        });
+        break;
+      }
+      case 'itemId': {
+        setInputs((prev) => {
+          const newInput = { ...prev, [key]: e.target.value, size: '', price: '' };
+          return newInput;
+        });
+        break;
+      }
+      case 'size': {
+        setInputs((prev) => {
+          const newInput = {
+            ...prev,
+            [key]: e.target.value,
+            price: sizesOfItem[sizesOfItem.findIndex((i) => i[0] === e.target.value)]?.[1],
+          };
+          return newInput;
+        });
+        break;
+      }
+      default: {
+        setInputs((prev) => {
+          const newInput = { ...prev, [key]: e.target.value };
+          return newInput;
+        });
+      }
+    }
     key === 'brandId'
       ? setInputs((prev) => {
           const newInput = { ...prev, [key]: e.target.value, itemId: '' };
@@ -172,6 +238,20 @@ function Posts() {
     return documents;
   };
 
+  const getItemPrice = async (itemId: string) => {
+    if (itemId !== '') {
+      const idArray = itemId.split('-');
+      const itemDocRef = doc(db, 'brands', idArray[0], 'categories', idArray[0] + '-' + idArray[1], 'items', itemId);
+      const itemDoc = await getDoc(itemDocRef);
+      if (!itemDoc.exists()) {
+        console.log('No such document!');
+        return '';
+      }
+      const itemData = itemDoc.data();
+      return itemData.price;
+    }
+  };
+
   const removeTag = (index: number) => {
     setCustomTags(customTags.filter((el, i) => i !== index));
   };
@@ -186,8 +266,14 @@ function Posts() {
     <div className='flex flex-col items-center justify-center'>
       <h1 className='text-3xl'>create post</h1>
       {userId ? (
-        <div className='flex flex-col items-start gap-1'>
-          <select name='audience' id='' className='w-50' value={inputs.audience} onChange={handleInputChange}>
+        <div className='flex flex-col items-start gap-3'>
+          <select
+            name='audience'
+            id=''
+            className='w-50 rounded bg-gray-200'
+            value={inputs.audience}
+            onChange={handleInputChange}
+          >
             <option value='public'>public</option>
             <option value='private'>private</option>
           </select>
@@ -205,15 +291,17 @@ function Posts() {
               <option value='' disabled>
                 select a brand
               </option>
-              {brands.length !== 0 && brands.map((brand) => (
-                <option value={brand[0]} key={brand[0]}>
-                  {brand[1]}
-                </option>
-              ))}
+              {brands.length !== 0 &&
+                brands.map((brand) => (
+                  <option value={brand[0]} key={brand[0]}>
+                    {brand[1]}
+                  </option>
+                ))}
             </select>
             <span>的</span>
             <select
               required
+              disabled={itemsOfBrand.length === 0}
               name='itemId'
               className='border-2 border-solid border-gray-400 bg-gray-100'
               value={inputs.itemId}
@@ -228,61 +316,88 @@ function Posts() {
                 categories.length !== 0 &&
                 itemsOfBrand.map((itemsOfCategory, index) => (
                   <optgroup label={categories[index]?.[1]} key={index}>
-                    {itemsOfCategory.length !== 0 && itemsOfCategory.map((item) => (
-                      <option value={item[0]} key={item[0]}>
-                        {item[1]}
-                      </option>
-                    ))}
+                    {itemsOfCategory.length !== 0 &&
+                      itemsOfCategory.map((item) => (
+                        <option value={item[0]} key={item[0]}>
+                          {item[1]}
+                        </option>
+                      ))}
                   </optgroup>
                 ))}
             </select>
+            ！
           </div>
-          <label htmlFor='sugar'>糖</label>
-          <select
-            required
-            name='sugar'
-            id='sugar'
-            className='border-2 border-solid border-gray-400 bg-gray-100'
-            value={inputs.sugar}
-            onChange={handleInputChange}
-          >
-            <option value='' disabled>
-              choose sugar
-            </option>
-            {sugarOptions.map((option) => (
-              <option value={option} key={option}>
-                {option}
+          <div>
+            <label htmlFor='size' className=''>
+              size
+            </label>
+            <select
+              disabled={sizesOfItem.length === 0}
+              required
+              name='size'
+              id='size'
+              className='border-2 border-solid border-gray-400 bg-gray-100'
+              value={inputs.size}
+              onChange={handleInputChange}
+            >
+              <option value='' disabled>
+                choose size
               </option>
-            ))}
-          </select>
-          <label htmlFor='ice'>冰</label>
-          <select
-            required
-            name='ice'
-            id='ice'
-            className='border-2 border-solid border-gray-400 bg-gray-100'
-            value={inputs.ice}
-            onChange={handleInputChange}
-          >
-            <option value='' disabled>
-              choose ice
-            </option>
-            {iceOptions.map((option) => (
-              <option value={option} key={option}>
-                {option}
+              {sizesOfItem.map((option) => (
+                <option value={option[0]} key={option[0]}>
+                  {option[0]}
+                </option>
+              ))}
+            </select>
+            <label htmlFor='price'>價錢</label>
+            <input
+              required
+              name='price'
+              id='price'
+              type='number'
+              className='border-2 border-solid border-gray-400 bg-gray-100'
+              value={inputs.price}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div>
+            <label htmlFor='sugar'>糖</label>
+            <select
+              required
+              name='sugar'
+              id='sugar'
+              className='border-2 border-solid border-gray-400 bg-gray-100'
+              value={inputs.sugar}
+              onChange={handleInputChange}
+            >
+              <option value='' disabled>
+                choose sugar
               </option>
-            ))}
-          </select>
-          <label htmlFor='price'>價錢</label>
-          <input
-            required
-            name='price'
-            id='price'
-            type='number'
-            className='border-2 border-solid border-gray-400 bg-gray-100'
-            value={inputs.price}
-            onChange={handleInputChange}
-          />
+              {sugarOptions.map((option) => (
+                <option value={option} key={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+            <label htmlFor='ice'>冰</label>
+            <select
+              required
+              name='ice'
+              id='ice'
+              className='border-2 border-solid border-gray-400 bg-gray-100'
+              value={inputs.ice}
+              onChange={handleInputChange}
+            >
+              <option value='' disabled>
+                choose ice
+              </option>
+              {iceOptions.map((option) => (
+                <option value={option} key={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
           <label htmlFor='orderNum'>單號</label>
           <input
             name='orderNum'
@@ -324,13 +439,12 @@ function Posts() {
               placeholder='custom hashtags'
               className='border-2 border-solid border-gray-400 bg-gray-100'
             />
-            <div className='w-50 flex gap-3 bg-gray-100'>
+            <div className='w-50 flex gap-3'>
               {autoTags.map(
                 (tag, index) =>
                   tag !== '' && (
                     <div key={index} className='rounded bg-gray-200'>
                       <span className='mx-3 before:content-["#"]'>{tag}</span>
-                      
                     </div>
                   )
               )}
@@ -339,7 +453,10 @@ function Posts() {
                   tag !== '' && (
                     <div key={index} className='rounded bg-gray-200'>
                       <span className='mx-3 before:content-["#"]'>{tag}</span>
-                      <span onClick={() => removeTag(index)} className='cursor-pointer text-gray-600 hover:text-red-500'>
+                      <span
+                        onClick={() => removeTag(index)}
+                        className='cursor-pointer text-gray-600 hover:text-red-500'
+                      >
                         &times;
                       </span>
                     </div>

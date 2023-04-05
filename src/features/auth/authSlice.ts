@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState, AppThunk } from '../../app/store';
-import fakePhoto from '../../images/fakePhoto.png';
+import nullPhoto from '../../images/nullPhoto.png';
 
 export interface AuthState {
   isSignedIn: boolean;
@@ -17,7 +17,7 @@ const initialState: AuthState = {
   error: null,
   userId: null,
   userName: null,
-  photoURL: fakePhoto,
+  photoURL: nullPhoto,
 };
 
 export const authSlice = createSlice({
@@ -33,9 +33,7 @@ export const authSlice = createSlice({
       state.isSignedIn = true;
       state.userId = action.payload.id;
       state.userName = action.payload.name;
-      if (action.payload.photoURL) {
-        state.photoURL = action.payload.photoURL;
-      }
+      state.photoURL = action.payload.photoURL;
     },
     signInFail: (state, action) => {
       state.loading = false;
@@ -51,7 +49,7 @@ export const authSlice = createSlice({
       state.isSignedIn = false;
       state.userId = null;
       state.userName = null;
-      state.photoURL = fakePhoto;
+      state.photoURL = nullPhoto;
     },
     signOutFail: (state, action) => {
       state.loading = false;
