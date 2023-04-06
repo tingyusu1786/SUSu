@@ -7,6 +7,7 @@ import {
   addDoc,
   setDoc,
   serverTimestamp,
+  Timestamp,
   getDocs,
   updateDoc,
   arrayUnion,
@@ -123,25 +124,9 @@ function Posts() {
     });
     
     const docRef = await addDoc(collection(db, 'posts'), postInputs);
-    // save post id to user field
-    // await updateDoc(doc(db, 'users', userId as string), {
-    //   posts: arrayUnion(docRef.id),
-    //   dates: arrayUnion(new Date()),
-    //   brands: arrayUnion(inputs.brandId),
-    // });
 
-    // save post id to brand field
-    // await updateDoc(doc(db, 'brands', inputs.brandId),{
-    //   posts: arrayUnion(docRef.id),
-    // })
 
-    // save post id to item field
-    // const idArray = inputs.itemId.split('-');
-    // await updateDoc(doc(db, 'brands', inputs.brandId, 'categories', idArray[0] + '-' + idArray[1], 'items',inputs.itemId), {
-    //   posts: arrayUnion(docRef.id),
-    // })
-
-    alert(`Document written with ID: ${docRef.id}`);
+    // alert(`Document written with ID: ${docRef.id}`);
     setInputs(initialInput);
     setCustomTags([]);
   };
@@ -260,7 +245,7 @@ function Posts() {
 
   return (
     <div className='flex flex-col items-center justify-center'>
-      <h1 className='text-3xl'>create post</h1>
+      <h1 className='text-3xl font-heal'>create post</h1>
       {userId ? (
         <div className='flex flex-col items-start gap-3'>
           <select

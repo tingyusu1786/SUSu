@@ -5,9 +5,9 @@ import {
   collection,
   doc,
   getDoc,
-  serverTimestamp,
   getDocs,
   query,
+  Query,
   orderBy,
   limit,
   onSnapshot,
@@ -16,6 +16,9 @@ import {
   updateDoc,
   where,
   DocumentReference,
+  DocumentData,
+  deleteDoc,
+  startAfter,
 } from 'firebase/firestore';
 import { useAppSelector } from '../../app/hooks';
 
@@ -53,52 +56,69 @@ function RenderPosts() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [hashtagFilter, setHashtagFilter] = useState<string | undefined>();
   const [authorData, setAuthorData] = useState<Record<string, any>>({});
+  const [lastKey, setLastKey] = useState<Timestamp>();
+
+  // add listener for newly added post
+  useEffect(() => {
+    const postsCollection = collection(db, 'posts');
+    const q = query(postsCollection, orderBy('timeCreated', 'desc'), limit(5));
+
+    const unsubscribe = onSnapshot(q, async (querySnapshot: QuerySnapshot) => {
+      const newPosts = querySnapshot
+        .docChanges()
+        .filter((change) => change.type === 'added')
+        .map(async (change) => {
+          const postData = change.doc.data();
+          return {
+            ...(await getPostInfo(postData)),
+            postId: change.doc.id,
+            commentsShown: false,
+            commentInput: '',
+          };
+        });
+
+        const postsWithQueriedInfos = await Promise.all(newPosts);
+        console.log('postsWithQueriedInfos', postsWithQueriedInfos);
+        let lastTimestamp;
+        setPosts((posts) => {
+          const newPosts = [...postsWithQueriedInfos, ...posts];
+          lastTimestamp = newPosts[newPosts.length - 1].timeCreated;
+          return newPosts;
+        });
+        setLastKey(lastTimestamp);
+    });
+    return unsubscribe;
+  }, []);
 
   useEffect(() => {
-    if (hashtagFilter === undefined) {
-      const postsCollection = collection(db, 'posts');
-      const postQuery = query(postsCollection, orderBy('timeCreated', 'asc'));
-
-      onSnapshot(postQuery, async (querySnapshot: QuerySnapshot) => {
-        const newPosts = querySnapshot
-          .docChanges()
-          .filter((change) => change.type === 'added')
-          .map(async (change) => {
-            const postData = change.doc.data();
-            return {
-              ...(await getPostInfo(postData)),
-              postId: change.doc.id,
-              commentsShown: false,
-              commentInput: '',
-            };
-          });
-        const postsWithQueriedInfos = await Promise.all(newPosts);
-        setPosts((posts) => [...posts, ...postsWithQueriedInfos]);
-      });
-    }
+    if (!lastKey) return;
+    fetchPosts(lastKey, hashtagFilter);
   }, [hashtagFilter]);
 
-  const getPostInfo = async (postData: any) => {
-    const brandName: string = await getInfo(postData?.brandId, 'brand', 'name');
-    const itemName: string = await getInfo(postData?.itemId, 'item', 'name');
-    const authorName: string = await getInfo(postData?.authorId, 'user', 'name');
-    const authorPhoto: string = await getInfo(postData?.authorId, 'user', 'photoURL');
-
-    return {
-      ...postData,
-      brandName,
-      itemName,
-      authorName,
-      authorPhoto,
-    };
-  };
-
-  const handleHashtagFilter = async (hashtag: string) => {
-    setHashtagFilter(hashtag);
+  const fetchPosts = async (lastKey: Timestamp | undefined, hashtag?: string) => {
     const postsRef = collection(db, 'posts');
-    const q = query(postsRef, where('hashtags', 'array-contains', hashtag), orderBy('timeCreated', 'asc'));
-    const querySnapshot: QuerySnapshot = await getDocs(q);
-    const filteredPosts = querySnapshot.docs.map(async (change) => {
+    let q: Query<DocumentData> = lastKey
+      ? query(postsRef, orderBy('timeCreated', 'desc'), startAfter(lastKey), limit(5))
+      : query(postsRef, orderBy('timeCreated', 'desc'), limit(5));
+
+    if (hashtag) {
+      q = lastKey
+        ? query(
+            postsRef,
+            where('hashtags', 'array-contains', hashtag),
+            orderBy('timeCreated', 'desc'),
+            startAfter(lastKey),
+            limit(5)
+          )
+        : query(postsRef, where('hashtags', 'array-contains', hashtag), orderBy('timeCreated', 'desc'), limit(5));
+    }
+
+    const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);
+    if (querySnapshot.docs.length === 0) {
+      alert('no more posts');
+      return;
+    }
+    const postsArray = querySnapshot.docs.map(async (change) => {
       const postData = change.data();
       return {
         ...(await getPostInfo(postData)),
@@ -107,9 +127,44 @@ function RenderPosts() {
         commentInput: '',
       };
     });
+    const postsWithQueriedInfos = await Promise.all(postsArray);
+    setPosts((posts) => [...posts, ...postsWithQueriedInfos]);
+    const lastTimestamp = postsWithQueriedInfos[postsWithQueriedInfos.length - 1].timeCreated;
+    setLastKey(lastTimestamp);
+  };
 
-    const postsWithQueriedInfos = await Promise.all(filteredPosts);
-    setPosts(postsWithQueriedInfos);
+  const getPostInfo = async (postData: any) => {
+    const brandName: string = await getInfo(postData?.brandId, 'brand', 'name');
+    const itemName: string = await getInfo(postData?.itemId, 'item', 'name');
+    const authorName: string = await getInfo(postData?.authorId, 'user', 'name');
+    const authorPhoto: string = await getInfo(postData?.authorId, 'user', 'photoURL');
+
+    if (postData.comments) {
+      const comments: any = await Promise.all(
+        postData.comments.map(async (comment: any) => {
+          const commentAuthorName: string = await getInfo(comment.authorId, 'user', 'name');
+          const commentAuthorPhoto: string = await getInfo(comment.authorId, 'user', 'photoURL');
+          return { ...comment, authorName: commentAuthorName, authorPhoto: commentAuthorPhoto };
+        })
+      );
+
+      return {
+        ...postData,
+        brandName,
+        itemName,
+        authorName,
+        authorPhoto,
+        comments,
+      };
+    }
+
+    return {
+      ...postData,
+      brandName,
+      itemName,
+      authorName,
+      authorPhoto,
+    };
   };
 
   const getDocField = async (docRef: DocumentReference, field: string) => {
@@ -174,7 +229,15 @@ function RenderPosts() {
   ) => {
     if (post.commentInput !== '') {
       const postRef = doc(db, 'posts', post.postId);
-      const newComment = { authorId: userId, content: post.commentInput, timeCreated: new Date() };
+      const curretTime = new Date();
+      const timestamp = Timestamp.fromDate(curretTime);
+      const newComment = {
+        authorId: userId,
+        content: post.commentInput,
+        timeCreated: timestamp,
+        authorName: userName,
+        authorPhoto: userPhotoURL,
+      };
       const updatedComments = post.comments ? [...post.comments, newComment] : [newComment];
       await updateDoc(postRef, {
         comments: updatedComments,
@@ -208,42 +271,67 @@ function RenderPosts() {
     });
   };
 
+  const handleDeletePost = async (post: Post, index: number) => {
+    const confirmed = window.confirm('Are you sure you want to delete this post?');
+    if (confirmed) {
+      const postRef = doc(db, 'posts', post.postId);
+      await deleteDoc(postRef);
+      alert(`post deleted: was ${post.postId}`);
+      
+      setPosts((prev) => {
+        const newPosts = prev.filter((keptPost) => keptPost.postId !== post.postId);
+        return newPosts;
+      });
+
+    } else {
+      return;
+    }
+  };
+
   return (
     <div className='flex flex-col items-center justify-center'>
-      <h1 className='text-3xl'>see posts</h1>
+      <h1 className='font-heal text-3xl'>see posts ({posts.length})</h1>
       {hashtagFilter && (
         <div>
           <span className='before:content-["#"]'>{hashtagFilter}</span>
           <button onClick={() => setHashtagFilter(undefined)}>&nbsp;&times;</button>
         </div>
       )}
-      <div className='flex flex-col-reverse items-center justify-center gap-3'>
+      <div className='flex flex-col items-center justify-center gap-3'>
         {posts.map((post, index) => {
           return (
-            <div className='w-4/5 rounded bg-gray-100 p-3' key={index}>
+            <div className='relative w-4/5 rounded bg-gray-100 p-3' key={index}>
               {/*<div>{`post id: ${post.postId}`}</div>*/}
+              <button className='absolute right-1 top-1' onClick={() => handleDeletePost(post, index)}>
+                delete post
+              </button>
               <Link to={`/profile/${post.authorId}`}>
-                <img src={post.authorPhoto} alt='' className='h-10 w-10 rounded-full object-cover' />
+                <img src={post.authorPhoto} alt='' className='inline-block h-10 w-10 rounded-full object-cover' />
                 <span>{post.authorName}</span>
               </Link>
+              <br />
               <span> 喝了</span>
               <div>
-                <span className='text-xl after:content-["の"]'>{post.brandName}</span>
-                <span className='text-xl  font-bold'>{post.itemName}</span>
+                <Link to={`/catalogue/${post.brandId}`}>
+                  <span className='text-xl after:content-["の"]'>{post.brandName}</span>
+                </Link>
+                <Link to={`/catalogue/${post.brandId}/${post.itemId}`}>
+                  <span className='text-xl  font-bold'>{post.itemName}</span>
+                </Link>
               </div>
-
-              <div>{post.size && `size: ${post.size}`}</div>
-              <div>{post.sugar && `sugar: ${post.sugar}`}</div>
-              <div>{post.ice && `ice: ${post.ice}`}</div>
-              <div>{post.orderNum && `orderNum: ${post.orderNum}`}</div>
-              <div>{post.rating && `rating: ${post.rating}`}</div>
+              <span>{post.size && `size: ${post.size} / `}</span>
+              <span>{post.sugar && `sugar: ${post.sugar} / `}</span>
+              <span>{post.ice && `ice: ${post.ice} / `}</span>
+              <span>{post.orderNum && `orderNum: ${post.orderNum} / `}</span>
+              <span>{post.rating && `rating: ${post.rating} / `}</span>
               <div>{post.selfComment && `💬 ${post.selfComment}`}</div>
               <div className='flex flex-wrap gap-1'>
                 {post.hashtags?.map((hashtag) => (
                   <button
                     className='rounded bg-gray-300 px-2 before:content-["#"]'
                     key={hashtag}
-                    onClick={() => handleHashtagFilter(hashtag)}
+                    // onClick={() => handleHashtagFilter(hashtag)}
+                    onClick={() => setHashtagFilter(hashtag)}
                   >
                     {hashtag}
                   </button>
@@ -266,34 +354,55 @@ function RenderPosts() {
                   className='rounded border-2 border-solid border-gray-400'
                   onClick={() => handleCommentsShown(index)}
                 >
-                  view comments
+                  comments
                 </button>
                 <span>{post.comments?.length || 0}</span>
               </div>
               {post.commentsShown && (
-                <div className='mt-2 rounded-lg bg-gray-300 p-1'>
-                  {post.comments?.map((comment, index) => (
-                    <div className='mt-2 rounded-lg bg-gray-300 p-1' key={index}>
-                      <Link to={`/profile/${comment.authorId}`}>
-                        <img src='' alt='123' className='mr-1 inline-block h-6 w-6 rounded-full object-cover' />
-                      </Link>
-                      <div className='inline-block'>
+                <div className='mt-2 flex flex-col gap-1 rounded-lg bg-gray-300 p-1'>
+                  {post.comments?.map((comment, index) => {
+                    return (
+                      <div className='rounded-lg bg-white p-1' key={index}>
                         <Link to={`/profile/${comment.authorId}`}>
-                          <div>name to be inserted</div>
+                          <img
+                            src={comment.authorPhoto}
+                            alt='123'
+                            className='mr-1 inline-block h-6 w-6 rounded-full object-cover'
+                          />
                         </Link>
-                        <div>{comment.content}</div>
+                        <div className='inline-block'>
+                          <Link to={`/profile/${comment.authorId}`}>
+                            <div>{comment.authorName}</div>
+                          </Link>
+                          {<div>{comment.timeCreated.toDate().toLocaleString()}</div>}
+                          <div>{comment.content}</div>
+                        </div>
                       </div>
-                    </div>
-                  ))}
-                  <div className='mt-2 rounded-lg bg-gray-300 p-1'>
+                    );
+                  })}
+                  <div className='rounded-lg p-1'>
                     {isSignedIn && (
-                      <img src={userPhotoURL} alt='' className='mr-1 inline-block h-6 w-6 rounded-full object-cover' />
+                      <Link to={`/profile/${userId}`}>
+                        <img
+                          src={userPhotoURL}
+                          alt=''
+                          className='mr-1 inline-block h-6 w-6 rounded-full object-cover'
+                        />
+                      </Link>
                     )}
                     <div className='inline-block'>
-                      <div>{userName}</div>
+                      <Link to={`/profile/${userId}`}>
+                        <div>{userName}</div>
+                      </Link>
                       <input
                         type='text'
-                        placeholder={isSignedIn ? 'write a comment' : 'sign in to comment'}
+                        placeholder={
+                          isSignedIn
+                            ? post.comments
+                              ? 'write a comment'
+                              : 'be the first to comment!'
+                            : 'sign in to comment'
+                        }
                         className='bg-transparent'
                         disabled={!isSignedIn}
                         value={post.commentInput}
@@ -307,6 +416,13 @@ function RenderPosts() {
             </div>
           );
         })}
+        <button
+          onClick={() => {
+            fetchPosts(lastKey, hashtagFilter);
+          }}
+        >
+          fetch 5 more
+        </button>
       </div>
     </div>
   );
