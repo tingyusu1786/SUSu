@@ -1,18 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { Authentication } from '../features/auth/Authentication';
-import { auth, db } from '../utils/firebase';
+// import { Authentication } from '../features/auth/Authentication';
+import { db } from '../utils/firebase';
 import { doc, getDoc, collection, query, where, getDocs, orderBy, QuerySnapshot } from 'firebase/firestore';
 // import { onAuthStateChanged } from 'firebase/auth';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
-import {
-  signInSuccess,
-  // signInStart,
-  // signInFail,
-  // signOutStart,
-  // signOutSuccess,
-  // signOutFail,
-} from '../features/auth/authSlice';
 
 function Profile() {
   const currentUserId = useAppSelector((state) => state.auth.userId);
@@ -39,7 +31,7 @@ function Profile() {
     const profileUserDocRef = doc(db, 'users', id);
     const profileUserDoc = await getDoc(profileUserDocRef);
     if (!profileUserDoc.exists()) {
-      alert('No such document!');
+      // alert('No such document!');
       return '';
     }
     const profileUserData = profileUserDoc.data();
@@ -81,7 +73,7 @@ function Profile() {
       if (docRef !== undefined) {
         const theDoc = await getDoc(docRef);
         if (!theDoc.exists()) {
-          alert('No such document!');
+          // alert('No such document!');
           return '';
         }
         const theData = theDoc.data();
@@ -89,7 +81,7 @@ function Profile() {
       }
     }
   };
-  
+
   if (profileUserId === 'null') {
     return <div className='text-center'>sign in to see your profile 🤗</div>
   }
