@@ -9,6 +9,7 @@ export interface AuthState {
   userId: string | null;
   userName: string | null;
   photoURL: string;
+  isAuthWindow: boolean;
 }
 
 const initialState: AuthState = {
@@ -18,6 +19,7 @@ const initialState: AuthState = {
   userId: null,
   userName: null,
   photoURL: nullPhoto,
+  isAuthWindow: false,
 };
 
 export const authSlice = createSlice({
@@ -31,6 +33,7 @@ export const authSlice = createSlice({
     signInSuccess: (state, action) => {
       state.loading = false;
       state.isSignedIn = true;
+      state.isAuthWindow = false;
       state.userId = action.payload.id;
       state.userName = action.payload.name;
       state.photoURL = action.payload.photoURL;
@@ -47,6 +50,7 @@ export const authSlice = createSlice({
     signOutSuccess: (state) => {
       state.loading = false;
       state.isSignedIn = false;
+      state.isAuthWindow = false;
       state.userId = null;
       state.userName = null;
       state.photoURL = nullPhoto;
@@ -56,8 +60,14 @@ export const authSlice = createSlice({
       state.isSignedIn = true;
       state.error = action.payload;
     },
+    openAuthWindow: (state) => {
+      state.isAuthWindow = true;
+    },
+    closeAuthWindow: (state) => {
+      state.isAuthWindow = false;
+    }
   },
 });
 
-export const { signInStart, signInSuccess, signInFail, signOutStart, signOutSuccess, signOutFail } = authSlice.actions;
+export const { signInStart, signInSuccess, signInFail, signOutStart, signOutSuccess, signOutFail, openAuthWindow, closeAuthWindow } = authSlice.actions;
 export default authSlice.reducer;

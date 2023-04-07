@@ -5,7 +5,7 @@ import { getAnalytics } from 'firebase/analytics';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyAyK3jgOTFT1B6-Vt85wxc_2aaGLUlU738',
+  apiKey: process.env.REACT_APP_FIREBASE_APIKEY,
   authDomain: 'su-drink.firebaseapp.com',
   projectId: 'su-drink',
   storageBucket: 'su-drink.appspot.com',

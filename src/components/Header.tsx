@@ -8,18 +8,23 @@ import {
   signOutStart,
   signOutSuccess,
   signOutFail,
+  openAuthWindow,
+  closeAuthWindow,
 } from '../features/auth/authSlice';
+import { showNotice, closeNotice } from '../features/notice/noticeSlice';
 import { Authentication } from '../features/auth/Authentication';
+import { Notification } from '../features/notice/Notification';
 
 function Header() {
-  const [isAuthDialogOpened, setIsAuthDialogOpened] = useState(false);
+  const dispatch = useAppDispatch();
   const userId = useAppSelector((state) => state.auth.userId);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
   const loading = useAppSelector((state) => state.auth.loading);
   const error = useAppSelector((state) => state.auth.error);
   const userName = useAppSelector((state) => state.auth.userName);
   const photoURL = useAppSelector((state) => state.auth.photoURL);
-  const dispatch = useAppDispatch();
+  const isAuthWindow = useAppSelector((state) => state.auth.isAuthWindow);
+  const isNotice = useAppSelector((state) => state.notice.isShown);
 
   useEffect(() => {
     const userData = localStorage.getItem('userData');
@@ -28,12 +33,17 @@ function Header() {
     }
   }, []);
 
+  const fireNotice = ()=> {
+    dispatch(showNotice({ type: 'success', content: 'hihi' }));
+    setTimeout(() => dispatch(closeNotice()), 10000);
+  }
+
   return (
     <div className='mb-8 flex flex-row items-center justify-center gap-5 bg-gray-100'>
       <div>
         <img src={photoURL} alt='' className='h-32 w-32 rounded-full object-cover' />
 
-        <div className='text-center'>{isSignedIn ? `Hi ${userName}` : "not signed-in"}</div>
+        <div className='text-center'>{isSignedIn ? `Hi ${userName}` : 'not signed-in'}</div>
       </div>
       <Link to='/' className='bg-lime-200'>
         home
@@ -44,22 +54,23 @@ function Header() {
       <Link to='/posts' className='bg-lime-200'>
         喝po
       </Link>
-      {/*<Link to='/map' className='bg-lime-200'>
-        map
-      </Link>*/}
       <Link to='/catalogue' className='bg-lime-200'>
         大全
       </Link>
       <Link to='/inspiration' className='bg-lime-200'>
         今天喝什麼
       </Link>
-      {/*        <Link to='/counter' className='bg-lime-200'>
-          (counter)
-        </Link>*/}
       <div>
-        <button onClick={() => setIsAuthDialogOpened(true)}>[ open auth window ]</button>
-        <button onClick={() => setIsAuthDialogOpened(false)}>[ close ]</button>
-        {isAuthDialogOpened && <Authentication />}
+        <button onClick={() => dispatch(openAuthWindow())}>[ open auth window ]</button>
+        <button onClick={() => dispatch(closeAuthWindow())}>[ close ]</button>
+        <button
+          onClick={fireNotice}
+        >
+          [ show notice ]
+        </button>
+
+        {isAuthWindow && <Authentication />}
+        {isNotice && <Notification />}
       </div>
       <div>
         <h3 className='text-2xl'>auth status</h3>

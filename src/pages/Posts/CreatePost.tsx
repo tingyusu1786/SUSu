@@ -120,6 +120,8 @@ function Posts() {
       authorId: userId,
       hashtags: customTags.concat(autoTags),
       timeCreated: new Date(),
+      likes: [],
+      comments: [],
       // serverTimeStamp: serverTimestamp(),
     });
     

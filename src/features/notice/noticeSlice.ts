@@ -1,28 +1,28 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState, AppThunk } from '../../app/store';
 
-export interface AlertState {
+export interface NoticeState {
   isShown: boolean;
   content: string | null;
   type: 'success' | 'fail' | 'other' | null;
 }
 
-const initialState: AlertState = {
+const initialState: NoticeState = {
   isShown: false,
   content: null,
   type: null,
 };
 
-export const alertSlice = createSlice({
-  name: 'alert',
+export const noticeSlice = createSlice({
+  name: 'notice',
   initialState,
   reducers: {
-    showAlert: (state, action) => {
+    showNotice: (state, action) => {
       state.isShown = true;
       state.content = action.payload.content;
       state.type = action.payload.type;
     },
-    closeAlert: (state) => {
+    closeNotice: (state) => {
       state.isShown = false;
       state.content = null;
       state.type = null;
@@ -30,5 +30,5 @@ export const alertSlice = createSlice({
   },
 });
 
-export const { showAlert, closeAlert } = alertSlice.actions;
-export default alertSlice.reducer;
+export const { showNotice, closeNotice } = noticeSlice.actions;
+export default noticeSlice.reducer;

@@ -1,4 +1,4 @@
-import { useState, useEffect, ChangeEvent } from 'react';
+import { useState, useEffect, ChangeEvent, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { db } from '../../utils/firebase';
 import {
@@ -19,8 +19,10 @@ import {
   DocumentData,
   deleteDoc,
   startAfter,
+  arrayUnion,
 } from 'firebase/firestore';
-import { useAppSelector } from '../../app/hooks';
+import { useAppSelector, useAppDispatch } from '../../app/hooks';
+import { showNotice, closeNotice } from '../../features/notice/noticeSlice';
 
 interface Post {
   postId: string;
@@ -37,7 +39,7 @@ interface Post {
   ice?: string;
   itemId?: string;
   itemName?: string;
-  likes?: string[];
+  likes?: any[]; //todo: object??
   orderNum?: string;
   price?: string;
   rating?: string;
@@ -48,6 +50,8 @@ interface Post {
 }
 
 function RenderPosts() {
+  const dispatch = useAppDispatch();
+
   const userId = useAppSelector((state) => state.auth.userId);
   const userName = useAppSelector((state) => state.auth.userName);
   const userPhotoURL = useAppSelector((state) => state.auth.photoURL);
@@ -55,67 +59,134 @@ function RenderPosts() {
 
   const [posts, setPosts] = useState<Post[]>([]);
   const [hashtagFilter, setHashtagFilter] = useState<string | undefined>();
+
   const [authorData, setAuthorData] = useState<Record<string, any>>({});
   const [lastKey, setLastKey] = useState<Timestamp>();
+  const [bottomMessage, setBottomMessage] = useState('');
+  const initSnap = useRef(true);
+
+  useEffect(() => {
+    fetchPosts(lastKey, hashtagFilter);
+  }, [hashtagFilter]);
 
   // add listener for newly added post
   useEffect(() => {
     const postsCollection = collection(db, 'posts');
-    const q = query(postsCollection, orderBy('timeCreated', 'desc'), limit(5));
+    const q = query(postsCollection, orderBy('timeCreated', 'desc'));
 
     const unsubscribe = onSnapshot(q, async (querySnapshot: QuerySnapshot) => {
-      const newPosts = querySnapshot
-        .docChanges()
-        .filter((change) => change.type === 'added')
-        .map(async (change) => {
+      const newPosts: Post[] = [];
+      querySnapshot.docChanges().forEach(async (change) => {
+        if (change.type === 'added') {
           const postData = change.doc.data();
-          return {
-            ...(await getPostInfo(postData)),
+          const postInfo = await getPostInfo(postData);
+          const newPost = {
+            ...postInfo,
             postId: change.doc.id,
             commentsShown: false,
             commentInput: '',
           };
-        });
+          newPosts.push(newPost);
+        }
+        // if (change.type === 'modified') {
+        //   const modifiedDocLikes = change.doc.data().likes;
+        //   console.log('modifiedDocLikes', modifiedDocLikes);
+        //   console.log('change.doc.id', change.doc.id);
+        //   const previousDocLikes = posts.find(post => post.postId === change.doc.id)?.likes || [];
+        //   console.log('previousDocLikes', previousDocLikes);
 
-        const postsWithQueriedInfos = await Promise.all(newPosts);
-        console.log('postsWithQueriedInfos', postsWithQueriedInfos);
-        let lastTimestamp;
+        //   if (modifiedDocLikes.length > previousDocLikes.length) {
+        //     console.log(`new likes:`, modifiedDocLikes[modifiedDocLikes.length - 1]);
+        //   }
+        //   // if (modifiedDoc.data().likes !== previousDoc.likes) {
+        //   //   console.log(`likes:`,modifiedDoc.data().likes);
+        //   // }
+
+        //   // if (modifiedDoc.data().comments !== previousDoc.comments) {
+        //   //   modifiedDoc.data().comments.forEach((comment:any) => console.log(`comment:`, comment))
+        //   //   ;
+        //   // }
+
+        // }
+      });
+
+      // const newPosts = querySnapshot
+      //   .docChanges()
+      //   .filter((change) => change.type === 'added')
+      //   .map(async (change) => {
+      //     const postData = change.doc.data();
+      //     return {
+      //       ...(await getPostInfo(postData)),
+      //       postId: change.doc.id,
+      //       commentsShown: false,
+      //       commentInput: '',
+      //     };
+      //   });
+
+      const postsWithQueriedInfos = await Promise.all(newPosts);
+      // console.log('postsWithQueriedInfos', postsWithQueriedInfos);
+
+      !initSnap.current &&
         setPosts((posts) => {
+          console.log('set from snapshot');
           const newPosts = [...postsWithQueriedInfos, ...posts];
-          lastTimestamp = newPosts[newPosts.length - 1].timeCreated;
           return newPosts;
         });
-        setLastKey(lastTimestamp);
+      initSnap.current = false;
     });
+
     return unsubscribe;
   }, []);
 
   useEffect(() => {
-    if (!lastKey) return;
-    fetchPosts(lastKey, hashtagFilter);
-  }, [hashtagFilter]);
+    if (posts.length == 0) return;
+    let lastTimestamp = posts[posts.length - 1].timeCreated;
+    setLastKey(lastTimestamp);
+  }, [posts]);
 
-  const fetchPosts = async (lastKey: Timestamp | undefined, hashtag?: string) => {
+  useEffect(() => {
+    const handleScroll = () => {
+      const isBottom = window.innerHeight + window.pageYOffset >= document.body.offsetHeight;
+      if (isBottom) {
+        fetchPosts(lastKey, hashtagFilter);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [lastKey, hashtagFilter]);
+
+  const fetchPosts = async (lastKey: Timestamp | undefined, hashtag: string | undefined) => {
     const postsRef = collection(db, 'posts');
-    let q: Query<DocumentData> = lastKey
-      ? query(postsRef, orderBy('timeCreated', 'desc'), startAfter(lastKey), limit(5))
-      : query(postsRef, orderBy('timeCreated', 'desc'), limit(5));
 
-    if (hashtag) {
-      q = lastKey
-        ? query(
-            postsRef,
-            where('hashtags', 'array-contains', hashtag),
-            orderBy('timeCreated', 'desc'),
-            startAfter(lastKey),
-            limit(5)
-          )
-        : query(postsRef, where('hashtags', 'array-contains', hashtag), orderBy('timeCreated', 'desc'), limit(5));
+    let q: Query<DocumentData>;
+
+    if (lastKey) {
+      if (hashtag) {
+        q = query(
+          postsRef,
+          where('hashtags', 'array-contains', hashtag),
+          orderBy('timeCreated', 'desc'),
+          startAfter(lastKey),
+          limit(5)
+        );
+      } else {
+        q = query(postsRef, orderBy('timeCreated', 'desc'), startAfter(lastKey), limit(5));
+      }
+    } else {
+      if (hashtag) {
+        q = query(postsRef, where('hashtags', 'array-contains', hashtag), orderBy('timeCreated', 'desc'), limit(5));
+      } else {
+        q = query(postsRef, orderBy('timeCreated', 'desc'), limit(5));
+      }
     }
 
     const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);
     if (querySnapshot.docs.length === 0) {
-      alert('no more posts');
+      setBottomMessage('no more posts');
+      console.log('no more posts');
       return;
     }
     const postsArray = querySnapshot.docs.map(async (change) => {
@@ -128,9 +199,15 @@ function RenderPosts() {
       };
     });
     const postsWithQueriedInfos = await Promise.all(postsArray);
-    setPosts((posts) => [...posts, ...postsWithQueriedInfos]);
-    const lastTimestamp = postsWithQueriedInfos[postsWithQueriedInfos.length - 1].timeCreated;
-    setLastKey(lastTimestamp);
+    setPosts((posts) => {
+      console.log('set from fetchPosts');
+      // console.log('lastKey', lastKey);
+      // console.log('hashtag', hashtag);
+      const newPosts = lastKey ? [...posts, ...postsWithQueriedInfos] : postsWithQueriedInfos;
+      const lastTimestamp = newPosts[newPosts.length - 1].timeCreated;
+      setLastKey(lastTimestamp);
+      return newPosts;
+    });
   };
 
   const getPostInfo = async (postData: any) => {
@@ -221,6 +298,111 @@ function RenderPosts() {
     });
   };
 
+  // const handleCommentSubmit = async (
+  //   event: React.KeyboardEvent<HTMLInputElement>,
+  //   post: Post,
+  //   userId: string,
+  //   index: number
+  // ) => {
+  //   if (post.commentInput !== '') {
+  //     const postRef = doc(db, 'posts', post.postId);
+  //     const curretTime = new Date();
+  //     const timestamp = Timestamp.fromDate(curretTime);
+  //     const newComment = {
+  //       authorId: userId,
+  //       content: post.commentInput,
+  //       timeCreated: timestamp,
+  //       authorName: userName,
+  //       authorPhoto: userPhotoURL, //todo: 這邊會是舊的照片&名字
+  //     };
+  //     const updatedComments = post.comments ? [...post.comments, newComment] : [newComment];
+  //     await updateDoc(postRef, {
+  //       comments: updatedComments,
+  //     });
+  //     setPosts((prev) => {
+  //       const newPosts = [...prev];
+  //       newPosts[index].comments = updatedComments;
+  //       newPosts[index].commentInput = '';
+  //       return newPosts;
+  //     });
+  //   }
+  //   return;
+  // };
+
+  // const handleLike = async (post: Post, userId: string, index: number) => {
+  //   const postRef = doc(db, 'posts', post.postId);
+  //   const curretTime = new Date();
+  //   const timestamp = Timestamp.fromDate(curretTime);
+  //   const newLike = {
+  //     authorId: userId,
+  //     timeCreated: timestamp,
+  //     authorName: userName,
+  //     authorPhoto: userPhotoURL, //todo: 這邊會是舊的照片&名字
+  //   };
+  //   const updatedLikes = post.likes
+  //     ? post.likes.some((like) => like.authorId === userId)
+  //       ? post.likes.filter((like) => like.authorId !== userId)
+  //       : [...post.likes, newLike]
+  //     : [newLike];
+  //   await updateDoc(postRef, {
+  //     likes: updatedLikes,
+  //   });
+  //   setPosts((prev) => {
+  //     const newPosts = [...prev];
+  //     newPosts[index].likes = updatedLikes;
+  //     return newPosts;
+  //   });
+  // };
+  const handleUpdatePost = async (post: Post, userId: string, index: number, type: 'like' | 'comment') => {
+    const postRef = doc(db, 'posts', post.postId);
+    const curretTime = new Date();
+    const timestamp = Timestamp.fromDate(curretTime);
+    const isComment = type === 'comment';
+    const newContent = isComment
+      ? {
+          content: post.commentInput,
+          authorName: userName,
+          authorPhoto: userPhotoURL,
+        }
+      : {
+          authorName: userName,
+          authorPhoto: userPhotoURL,
+        };
+    const newEntry = {
+      authorId: userId,
+      timeCreated: timestamp,
+      ...newContent,
+    };
+    const targetArray = isComment ? post.comments : post.likes;
+    const hasLiked = isComment ? undefined : targetArray?.some((like) => like.authorId === userId);
+    const updatedArray = targetArray
+      ? hasLiked
+        ? targetArray.filter((entry) => entry.authorId !== userId)
+        : [...targetArray, newEntry]
+      : [newEntry];
+    await updateDoc(postRef, {
+      [type + 's']: updatedArray,
+    });
+    setPosts((prev) => {
+      const newPosts = [...prev];
+      type === 'comment' ? (newPosts[index].comments = updatedArray) : (newPosts[index].likes = updatedArray);
+      // newPosts[index][type + 's'] = updatedArray;
+      newPosts[index].commentInput = '';
+      return newPosts;
+    });
+
+    !hasLiked && notifyOtherUser(post.authorId as string, newEntry, type);
+  };
+
+  const notifyOtherUser = async (postAuthorId: string, content: any, type: 'like'|'comment') => {
+    const userRef = doc(db, 'users', postAuthorId);
+    const contentWithType = {...content, type}
+
+    await updateDoc(userRef, {
+      notification: arrayUnion(contentWithType),
+    });
+  };
+
   const handleCommentSubmit = async (
     event: React.KeyboardEvent<HTMLInputElement>,
     post: Post,
@@ -228,47 +410,13 @@ function RenderPosts() {
     index: number
   ) => {
     if (post.commentInput !== '') {
-      const postRef = doc(db, 'posts', post.postId);
-      const curretTime = new Date();
-      const timestamp = Timestamp.fromDate(curretTime);
-      const newComment = {
-        authorId: userId,
-        content: post.commentInput,
-        timeCreated: timestamp,
-        authorName: userName,
-        authorPhoto: userPhotoURL,
-      };
-      const updatedComments = post.comments ? [...post.comments, newComment] : [newComment];
-      await updateDoc(postRef, {
-        comments: updatedComments,
-      });
-      // alert(`commented! post: ${post.postId}`);
-      setPosts((prev) => {
-        const newPosts = [...prev];
-        newPosts[index].comments = updatedComments;
-        newPosts[index].commentInput = '';
-        return newPosts;
-      });
+      await handleUpdatePost(post, userId, index, 'comment');
     }
     return;
   };
 
   const handleLike = async (post: Post, userId: string, index: number) => {
-    const postRef = doc(db, 'posts', post.postId);
-    const updatedLikes = post.likes
-      ? post.likes.includes(userId)
-        ? post.likes.filter((like) => like !== userId)
-        : [...post.likes, userId]
-      : [userId];
-    await updateDoc(postRef, {
-      likes: updatedLikes,
-    });
-    // alert(`liked/unliked! post: ${post.postId}`);
-    setPosts((prev) => {
-      const newPosts = [...prev];
-      newPosts[index].likes = updatedLikes;
-      return newPosts;
-    });
+    await handleUpdatePost(post, userId, index, 'like');
   };
 
   const handleDeletePost = async (post: Post, index: number) => {
@@ -277,34 +425,59 @@ function RenderPosts() {
       const postRef = doc(db, 'posts', post.postId);
       await deleteDoc(postRef);
       alert(`post deleted: was ${post.postId}`);
-      
+
       setPosts((prev) => {
         const newPosts = prev.filter((keptPost) => keptPost.postId !== post.postId);
         return newPosts;
       });
-
     } else {
       return;
     }
   };
 
+  const fireNotice = () => {
+    dispatch(showNotice({ type: 'success', content: 'hihi' }));
+    setTimeout(() => dispatch(closeNotice()), 10000);
+  };
+
   return (
     <div className='flex flex-col items-center justify-center'>
+      <button onClick={fireNotice}>notice</button>
       <h1 className='font-heal text-3xl'>see posts ({posts.length})</h1>
+      <select
+        name='audience'
+        id=''
+        className='w-50 my-1 rounded bg-gray-200'
+        // value={inputs.audience}
+        // onChange={handleInputChange}
+      >
+        <option value='all'>（all）</option>
+        <option value='friends'>（friends）</option>
+      </select>
       {hashtagFilter && (
         <div>
           <span className='before:content-["#"]'>{hashtagFilter}</span>
-          <button onClick={() => setHashtagFilter(undefined)}>&nbsp;&times;</button>
+          <button
+            onClick={() => {
+              setHashtagFilter(undefined);
+              setLastKey(undefined);
+              // setRestart(true);
+            }}
+          >
+            &nbsp;&times;
+          </button>
         </div>
       )}
       <div className='flex flex-col items-center justify-center gap-3'>
         {posts.map((post, index) => {
           return (
-            <div className='relative w-4/5 rounded bg-gray-100 p-3' key={index}>
+            <div className='relative w-96 rounded bg-gray-100 p-3' key={index}>
               {/*<div>{`post id: ${post.postId}`}</div>*/}
-              <button className='absolute right-1 top-1' onClick={() => handleDeletePost(post, index)}>
-                delete post
-              </button>
+              {post.authorId === userId && (
+                <button className='absolute right-1 top-1' onClick={() => handleDeletePost(post, index)}>
+                  delete post
+                </button>
+              )}
               <Link to={`/profile/${post.authorId}`}>
                 <img src={post.authorPhoto} alt='' className='inline-block h-10 w-10 rounded-full object-cover' />
                 <span>{post.authorName}</span>
@@ -330,8 +503,10 @@ function RenderPosts() {
                   <button
                     className='rounded bg-gray-300 px-2 before:content-["#"]'
                     key={hashtag}
-                    // onClick={() => handleHashtagFilter(hashtag)}
-                    onClick={() => setHashtagFilter(hashtag)}
+                    onClick={() => {
+                      setHashtagFilter(hashtag);
+                      setLastKey(undefined);
+                    }}
                   >
                     {hashtag}
                   </button>
@@ -344,11 +519,12 @@ function RenderPosts() {
                     userId && handleLike(post, userId, index);
                   }}
                   className={`rounded border-2 border-solid border-gray-400 ${
-                    userId && post.likes?.includes(userId) && 'bg-gray-800 text-white'
+                    userId && post.likes?.some((like) => like.authorId === userId) && 'bg-gray-800 text-white'
                   }`}
                 >
                   likes
                 </button>
+
                 <span>{post.likes?.length || 0}</span>
                 <button
                   className='rounded border-2 border-solid border-gray-400'
@@ -416,6 +592,8 @@ function RenderPosts() {
             </div>
           );
         })}
+
+        <h1 className='font-heal text-3xl'>({posts.length})</h1>
         <button
           onClick={() => {
             fetchPosts(lastKey, hashtagFilter);
@@ -423,6 +601,7 @@ function RenderPosts() {
         >
           fetch 5 more
         </button>
+        <span>{bottomMessage}</span>
       </div>
     </div>
   );
