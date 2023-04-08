@@ -243,8 +243,6 @@ function Posts() {
     setCustomTags(customTags.filter((el, i) => i !== index));
   };
 
-  // todo: fix input focus problem
-
   return (
     <div className='flex flex-col items-center justify-center'>
       <h1 className='text-3xl font-heal'>create post</h1>

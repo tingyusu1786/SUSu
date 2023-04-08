@@ -75,9 +75,11 @@ function RenderPosts() {
     const q = query(postsCollection, orderBy('timeCreated', 'desc'));
 
     const unsubscribe = onSnapshot(q, async (querySnapshot: QuerySnapshot) => {
-      const newPosts: Post[] = [];
-      querySnapshot.docChanges().forEach(async (change) => {
-        if (change.type === 'added') {
+
+      const addedChanges = querySnapshot.docChanges().filter((change) => change.type === 'added');
+
+      const newPosts: Post[] = await Promise.all(
+        addedChanges.map(async (change) => {
           const postData = change.doc.data();
           const postInfo = await getPostInfo(postData);
           const newPost = {
@@ -86,45 +88,12 @@ function RenderPosts() {
             commentsShown: false,
             commentInput: '',
           };
-          newPosts.push(newPost);
-        }
-        // if (change.type === 'modified') {
-        //   const modifiedDocLikes = change.doc.data().likes;
-        //   console.log('modifiedDocLikes', modifiedDocLikes);
-        //   console.log('change.doc.id', change.doc.id);
-        //   const previousDocLikes = posts.find(post => post.postId === change.doc.id)?.likes || [];
-        //   console.log('previousDocLikes', previousDocLikes);
-
-        //   if (modifiedDocLikes.length > previousDocLikes.length) {
-        //     console.log(`new likes:`, modifiedDocLikes[modifiedDocLikes.length - 1]);
-        //   }
-        //   // if (modifiedDoc.data().likes !== previousDoc.likes) {
-        //   //   console.log(`likes:`,modifiedDoc.data().likes);
-        //   // }
-
-        //   // if (modifiedDoc.data().comments !== previousDoc.comments) {
-        //   //   modifiedDoc.data().comments.forEach((comment:any) => console.log(`comment:`, comment))
-        //   //   ;
-        //   // }
-
-        // }
-      });
-
-      // const newPosts = querySnapshot
-      //   .docChanges()
-      //   .filter((change) => change.type === 'added')
-      //   .map(async (change) => {
-      //     const postData = change.doc.data();
-      //     return {
-      //       ...(await getPostInfo(postData)),
-      //       postId: change.doc.id,
-      //       commentsShown: false,
-      //       commentInput: '',
-      //     };
-      //   });
+          return newPost;
+        })
+      );
 
       const postsWithQueriedInfos = await Promise.all(newPosts);
-      // console.log('postsWithQueriedInfos', postsWithQueriedInfos);
+      console.log('postsWithQueriedInfos', postsWithQueriedInfos);
 
       !initSnap.current &&
         setPosts((posts) => {
@@ -316,8 +285,7 @@ function RenderPosts() {
     } else {
       return 'just now';
     }
-  }
-
+  };
 
   const handleCommentsShown = (index: number) => {
     setPosts((prev) => {
@@ -335,8 +303,6 @@ function RenderPosts() {
     });
   };
 
-  // const handleCommentSubmit = async (
-  
   const handleUpdatePost = async (post: Post, userId: string, index: number, type: 'like' | 'comment') => {
     const postRef = doc(db, 'posts', post.postId);
     const curretTime = new Date();
@@ -369,8 +335,12 @@ function RenderPosts() {
     });
     setPosts((prev) => {
       const newPosts = [...prev];
-      type === 'comment' ? (newPosts[index].comments = updatedArray) : (newPosts[index].likes = updatedArray);
-      // newPosts[index][type + 's'] = updatedArray;
+      if (type === 'comment') {
+        newPosts[index].comments = updatedArray;
+      }
+      if (type === 'like') {
+        newPosts[index].likes = updatedArray;
+      }
       newPosts[index].commentInput = '';
       return newPosts;
     });
@@ -378,9 +348,9 @@ function RenderPosts() {
     !hasLiked && notifyOtherUser(post.authorId as string, newEntry, type);
   };
 
-  const notifyOtherUser = async (postAuthorId: string, content: any, type: 'like'|'comment') => {
+  const notifyOtherUser = async (postAuthorId: string, content: any, type: 'like' | 'comment') => {
     const userRef = doc(db, 'users', postAuthorId);
-    const contentWithType = {...content, type}
+    const contentWithType = { ...content, type };
 
     await updateDoc(userRef, {
       notification: arrayUnion(contentWithType),
@@ -580,13 +550,13 @@ function RenderPosts() {
         })}
 
         <h1 className='font-heal text-3xl'>({posts.length})</h1>
-        <button
+        {/*<button
           onClick={() => {
             fetchPosts(lastKey, hashtagFilter);
           }}
         >
           fetch 5 more
-        </button>
+        </button>*/}
         <span>{bottomMessage}</span>
       </div>
     </div>
