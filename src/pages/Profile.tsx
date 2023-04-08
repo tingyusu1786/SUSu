@@ -38,7 +38,7 @@ function Profile() {
 
   const getProfileUserPosts = async (profileUserId: string) => {
     const postsRef = collection(db, 'posts');
-    const q = query(postsRef, where('authorId', '==', profileUserId), orderBy('timeCreated', 'asc'));
+    const q = query(postsRef, where('authorId', '==', profileUserId), orderBy('timeCreated', 'desc'));
     const querySnapshot: QuerySnapshot = await getDocs(q);
     const posts = querySnapshot.docs.map(async (change) => {
       const postData = change.data();

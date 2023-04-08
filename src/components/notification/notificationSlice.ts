@@ -4,7 +4,7 @@ import { RootState, AppThunk } from '../../app/store';
 export interface NoticeState {
   isShown: boolean;
   content: string | null;
-  type: 'success' | 'fail' | 'other' | null;
+  type: 'success' | 'fail' | 'normal' | null;
 }
 
 const initialState: NoticeState = {

@@ -20,9 +20,10 @@ import {
   deleteDoc,
   startAfter,
   arrayUnion,
+  arrayRemove
 } from 'firebase/firestore';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { showNotice, closeNotice } from '../../features/notice/noticeSlice';
+import { showNotice, closeNotice } from '../../components/notification/notificationSlice';
 
 interface Post {
   postId: string;
@@ -345,15 +346,30 @@ function RenderPosts() {
       return newPosts;
     });
 
-    !hasLiked && notifyOtherUser(post.authorId as string, newEntry, type);
+    !hasLiked && notifyOtherUser(post.postId,post.authorId as string, newEntry, type);
+    hasLiked && unnotifyOtherUser(post.postId,post.authorId as string, newEntry, type);
   };
 
-  const notifyOtherUser = async (postAuthorId: string, content: any, type: 'like' | 'comment') => {
+  const unnotifyOtherUser = async (postId:string, postAuthorId: string, content: any, type: 'like' | 'comment') => {
     const userRef = doc(db, 'users', postAuthorId);
-    const contentWithType = { ...content, type };
+    if (!userRef) return;
+    const userData = await getDoc(userRef);
+    const originNotifications = userData.data()?.notifications;
+    if (!originNotifications) return;
+    const notificationToRemove = originNotifications.find((notification:any) => ((notification.postId === postId) && (notification.authorId === userId)&&(notification.type === 'like')));
 
     await updateDoc(userRef, {
-      notification: arrayUnion(contentWithType),
+      notifications: arrayRemove(notificationToRemove),
+    });
+  };
+
+  const notifyOtherUser = async (postId: string,postAuthorId: string, content: any, type: 'like' | 'comment') => {
+    const userRef = doc(db, 'users', postAuthorId);
+    if (!userRef) return;
+    const contentWithType = { ...content, type, postId };
+
+    await updateDoc(userRef, {
+      notifications: arrayUnion(contentWithType),
     });
   };
 

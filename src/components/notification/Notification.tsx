@@ -1,5 +1,5 @@
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { showNotice, closeNotice } from './noticeSlice';
+import { showNotice, closeNotice } from './notificationSlice';
 
 export function Notification() {
   const dispatch = useAppDispatch();

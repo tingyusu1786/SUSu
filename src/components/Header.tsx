@@ -10,10 +10,10 @@ import {
   signOutFail,
   openAuthWindow,
   closeAuthWindow,
-} from '../features/auth/authSlice';
-import { showNotice, closeNotice } from '../features/notice/noticeSlice';
-import { Authentication } from '../features/auth/Authentication';
-import { Notification } from '../features/notice/Notification';
+} from '../components/auth/authSlice';
+import { showNotice, closeNotice } from '../components/notification/notificationSlice';
+import { Authentication } from '../components/auth/Authentication';
+import { Notification } from '../components/notification/Notification';
 
 function Header() {
   const dispatch = useAppDispatch();

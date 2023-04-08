@@ -13,7 +13,22 @@
           "order": "DESCENDING"
         }
       ]
+    },
+    {
+  "collectionGroup": "posts",
+  "queryScope": "COLLECTION",
+  "fields": [
+    {
+      "fieldPath": "authorId",
+      "order": "ASCENDING"
+    },
+    {
+      "fieldPath": "timeCreated",
+      "order": "DESCENDING"
     }
+  ]
+}
+
   ],
   "fieldOverrides": []
 }
