@@ -1,5 +1,5 @@
 import { useState, useEffect, ChangeEvent } from 'react';
-import { db } from '../../utils/firebase';
+import { db } from '../../services/firebase';
 import {
   collection,
   doc,

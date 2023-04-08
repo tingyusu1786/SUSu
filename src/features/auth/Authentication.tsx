@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { auth, db, storage } from '../../utils/firebase';
 import {
-  createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
-  signOut,
-  signInWithPopup,
-  GoogleAuthProvider,
-  onAuthStateChanged,
-  updateProfile,
-  UserCredential,
-  getAdditionalUserInfo,
-} from 'firebase/auth';
+  db,
+} from '../../services/firebase'; //todo
+import storageApi from '../../utils/storageApi';
+import authApi from '../../utils/authApi';
 import { doc, setDoc, getDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { signInStart, signInSuccess, signInFail, signOutStart, signOutSuccess, signOutFail, openAuthWindow, closeAuthWindow } from './authSlice';
-import initPhoto from '../../images/initPhoto.png';
+import {
+  signInStart,
+  signInSuccess,
+  signInFail,
+  signOutStart,
+  signOutSuccess,
+  signOutFail,
+  openAuthWindow,
+  closeAuthWindow,
+} from './authSlice';
 
 export function Authentication() {
   const dispatch = useAppDispatch();
@@ -24,21 +24,26 @@ export function Authentication() {
 
   const [input, setInput] = useState({ name: '', email: '', password: '' });
 
-  const nativeSignUp = async (email: string, password: string, name: string) => {
+  const handleNativeSignUp = async (name: string, email: string, password: string) => {
+    if ([name, email, password].some((input) => input === '')) {
+      alert(`please fill in all input field`);
+      return;
+    }
     try {
       dispatch(signInStart());
       // sign up new user
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const userCredential = await authApi.getUserCredential('signUp', email, password);
 
-      const imgUrl = await getDownloadURL(ref(storage, 'initPhoto.png'));
-
-      // update user profile with name and init photo
-      await updateProfile(userCredential.user, {
-        displayName: name,
-        photoURL: imgUrl,
-      });
+      if (userCredential === undefined) {
+        throw new Error();
+      }
 
       const user = userCredential.user;
+
+      const imgUrl = await storageApi.getInitPhotoURL('initPhoto.png');
+
+      // update user profile with name and init photo
+      await authApi.updateAuthProfile(user, name, imgUrl);
 
       // add user to firestore
       await setDoc(doc(db, 'users', user.uid), {
@@ -64,7 +69,12 @@ export function Authentication() {
   const nativeSignIn = async (email: string, password: string) => {
     try {
       dispatch(signInStart());
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await authApi.getUserCredential('signIn', email, password);
+
+      if (userCredential === undefined) {
+        throw new Error();
+      }
+
       const user = userCredential.user;
 
       const userDocRef = doc(db, 'users', user.uid);
@@ -88,17 +98,25 @@ export function Authentication() {
   };
 
   const googleSignIn = async () => {
-    const provider = new GoogleAuthProvider();
     try {
       dispatch(signInStart());
-      const result = await signInWithPopup(auth, provider);
-      const credential = GoogleAuthProvider.credentialFromResult(result);
+      const OAuthUserCredential = await authApi.getOAuthUserCredential('google');
+      if (OAuthUserCredential === undefined) {
+        throw new Error();
+      }
+      const OAuthCredential = await authApi.getOAuthCredential('google', OAuthUserCredential);
+      if (OAuthCredential === undefined) {
+        throw new Error();
+      }
 
-      if (credential !== null) {
-        const token = credential.accessToken;
+      if (OAuthCredential !== null) {
+        const token = OAuthCredential.accessToken;
         // The signed-in user info.
-        const user = result.user;
-        const isNewUser = getAdditionalUserInfo(result)?.isNewUser;
+        const user = OAuthUserCredential.user;
+        const isNewUser = await authApi.checkIfNewUser(OAuthUserCredential);
+        if (isNewUser === undefined) {
+          throw new Error();
+        }
         if (isNewUser) {
           await setDoc(doc(db, 'users', user.uid), {
             name: user.displayName,
@@ -123,19 +141,20 @@ export function Authentication() {
       alert(`error: ${errorMessage}, code: ${errorCode}`);
       dispatch(signInFail(errorMessage));
 
-      // The email of the user's account used.
+      // The email of the user's account used
       const errEmail = error.customData.email;
       alert(`error: email used: ${errEmail}`);
 
-      // The AuthCredential type that was used.
-      const credential = GoogleAuthProvider.credentialFromError(error);
-      alert(`credential error: ${credential}`);
+      // The AuthCredential type that was used
+      // const credential = GoogleAuthProvider.credentialFromError(error);
+      const errorOAuthCredential = await authApi.getErrorOAuthCredential(error);
+      alert(`credential error: ${errorOAuthCredential}`);
     }
   };
 
   const handleSignOut = async () => {
     try {
-      await signOut(auth);
+      await authApi.signOut();
       dispatch(signOutStart());
       alert('sign out successful!');
       dispatch(signOutSuccess());
@@ -194,7 +213,7 @@ export function Authentication() {
   const buttonNativeSignUp = (
     <button
       onClick={() => {
-        nativeSignUp(input.email, input.password, input.name);
+        handleNativeSignUp(input.name, input.email, input.password);
         handleReset();
       }}
       className='rounded border border-solid border-gray-600 px-2'
@@ -235,7 +254,7 @@ export function Authentication() {
 
   return (
     <div className='absolute left-1/3 top-1/4 z-50 flex flex-col items-center gap-10 rounded-xl bg-lime-100 p-10'>
-      <button onClick={()=>dispatch(closeAuthWindow())}>X</button>
+      <button onClick={() => dispatch(closeAuthWindow())}>X</button>
       {inputField}
       <div className='flex gap-3'>
         <>{buttonNativeSignUp}</>

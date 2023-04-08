@@ -1,6 +1,6 @@
 import { useState, useEffect, ChangeEvent, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { db } from '../../utils/firebase';
+import { db } from '../../services/firebase';
 import {
   collection,
   doc,
@@ -282,6 +282,43 @@ function RenderPosts() {
     }
   };
 
+  const getTimeDiff = (timestamp: Timestamp): string => {
+    const now = new Date();
+    const target = timestamp.toDate();
+    const diff = now.getTime() - target.getTime();
+
+    const minInMs = 60 * 1000;
+    const hourInMs = 60 * minInMs;
+    const dayInMs = 24 * hourInMs;
+    const weekInMs = 7 * dayInMs;
+    const monthInMs = 30 * dayInMs;
+    const yearInMs = 365 * dayInMs;
+
+    const years = Math.floor(diff / yearInMs);
+    const months = Math.floor(diff / monthInMs);
+    const weeks = Math.floor(diff / weekInMs);
+    const days = Math.floor(diff / dayInMs);
+    const hours = Math.floor(diff / hourInMs);
+    const mins = Math.floor(diff / minInMs);
+
+    if (years > 0) {
+      return `${years} year${years > 1 ? 's' : ''}`;
+    } else if (months > 0) {
+      return `${months} month${months > 1 ? 's' : ''}`;
+    } else if (weeks > 0) {
+      return `${weeks} week${weeks > 1 ? 's' : ''}`;
+    } else if (days > 0) {
+      return `${days} day${days > 1 ? 's' : ''}`;
+    } else if (hours > 0) {
+      return `${hours} hour${hours > 1 ? 's' : ''}`;
+    } else if (mins > 0) {
+      return `${mins} minute${mins > 1 ? 's' : ''}`;
+    } else {
+      return 'just now';
+    }
+  }
+
+
   const handleCommentsShown = (index: number) => {
     setPosts((prev) => {
       const newPosts = [...prev];
@@ -299,60 +336,7 @@ function RenderPosts() {
   };
 
   // const handleCommentSubmit = async (
-  //   event: React.KeyboardEvent<HTMLInputElement>,
-  //   post: Post,
-  //   userId: string,
-  //   index: number
-  // ) => {
-  //   if (post.commentInput !== '') {
-  //     const postRef = doc(db, 'posts', post.postId);
-  //     const curretTime = new Date();
-  //     const timestamp = Timestamp.fromDate(curretTime);
-  //     const newComment = {
-  //       authorId: userId,
-  //       content: post.commentInput,
-  //       timeCreated: timestamp,
-  //       authorName: userName,
-  //       authorPhoto: userPhotoURL, //todo: 這邊會是舊的照片&名字
-  //     };
-  //     const updatedComments = post.comments ? [...post.comments, newComment] : [newComment];
-  //     await updateDoc(postRef, {
-  //       comments: updatedComments,
-  //     });
-  //     setPosts((prev) => {
-  //       const newPosts = [...prev];
-  //       newPosts[index].comments = updatedComments;
-  //       newPosts[index].commentInput = '';
-  //       return newPosts;
-  //     });
-  //   }
-  //   return;
-  // };
-
-  // const handleLike = async (post: Post, userId: string, index: number) => {
-  //   const postRef = doc(db, 'posts', post.postId);
-  //   const curretTime = new Date();
-  //   const timestamp = Timestamp.fromDate(curretTime);
-  //   const newLike = {
-  //     authorId: userId,
-  //     timeCreated: timestamp,
-  //     authorName: userName,
-  //     authorPhoto: userPhotoURL, //todo: 這邊會是舊的照片&名字
-  //   };
-  //   const updatedLikes = post.likes
-  //     ? post.likes.some((like) => like.authorId === userId)
-  //       ? post.likes.filter((like) => like.authorId !== userId)
-  //       : [...post.likes, newLike]
-  //     : [newLike];
-  //   await updateDoc(postRef, {
-  //     likes: updatedLikes,
-  //   });
-  //   setPosts((prev) => {
-  //     const newPosts = [...prev];
-  //     newPosts[index].likes = updatedLikes;
-  //     return newPosts;
-  //   });
-  // };
+  
   const handleUpdatePost = async (post: Post, userId: string, index: number, type: 'like' | 'comment') => {
     const postRef = doc(db, 'posts', post.postId);
     const curretTime = new Date();
@@ -537,6 +521,7 @@ function RenderPosts() {
               {post.commentsShown && (
                 <div className='mt-2 flex flex-col gap-1 rounded-lg bg-gray-300 p-1'>
                   {post.comments?.map((comment, index) => {
+                    const timeDiff = getTimeDiff(comment.timeCreated);
                     return (
                       <div className='rounded-lg bg-white p-1' key={index}>
                         <Link to={`/profile/${comment.authorId}`}>
@@ -550,6 +535,7 @@ function RenderPosts() {
                           <Link to={`/profile/${comment.authorId}`}>
                             <div>{comment.authorName}</div>
                           </Link>
+                          <div>{timeDiff}</div>
                           {<div>{comment.timeCreated.toDate().toLocaleString()}</div>}
                           <div>{comment.content}</div>
                         </div>

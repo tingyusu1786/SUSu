@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-// import { Authentication } from '../features/auth/Authentication';
-import { db } from '../utils/firebase';
+import { db } from '../services/firebase';
 import { doc, getDoc, collection, query, where, getDocs, orderBy, QuerySnapshot } from 'firebase/firestore';
-// import { onAuthStateChanged } from 'firebase/auth';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
 
 function Profile() {
