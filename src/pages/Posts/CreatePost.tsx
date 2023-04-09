@@ -26,7 +26,7 @@ function Posts() {
     orderNum: '',
     rating: '',
     selfComment: '',
-  }
+  };
   const userId = useAppSelector((state) => state.auth.userId);
   const [customTagsInput, setCustomTagsInput] = useState('');
   const [customTags, setCustomTags] = useState<string[]>([]);
@@ -119,18 +119,73 @@ function Posts() {
     const postInputs = Object.assign({}, inputs, {
       authorId: userId,
       hashtags: customTags.concat(autoTags),
-      timeCreated: new Date(),
+      timeCreated: new Date(), //serverTimestamp()會lag
       likes: [],
       comments: [],
-      // serverTimeStamp: serverTimestamp(),
     });
-    
+
     const docRef = await addDoc(collection(db, 'posts'), postInputs);
 
-
-    // alert(`Document written with ID: ${docRef.id}`);
     setInputs(initialInput);
     setCustomTags([]);
+    inputs.rating !== '' && updateRatings(inputs.brandId, inputs.itemId);
+  };
+
+  const updateRatings = async (brandId: string, itemId: string) => {
+    // brand
+    const brandRef = doc(db, 'brands', brandId);
+    const brandDoc = await getDoc(brandRef);
+    const prevBrandAverageRating: number | undefined = brandDoc.data()?.averageRating;
+    const prevBrandNumRatings: number | undefined = brandDoc.data()?.numRatings;
+    let updatedBrandAverageRating;
+    let updatedBrandNumRatings;
+    if (prevBrandAverageRating && prevBrandNumRatings) {
+      updatedBrandNumRatings = prevBrandNumRatings + 1;
+      updatedBrandAverageRating = 
+        Math.round(
+          ((prevBrandAverageRating * prevBrandNumRatings + Number(inputs.rating)) / updatedBrandNumRatings) * 10
+        ) / 10;
+    } else {
+      updatedBrandNumRatings = 1;
+      updatedBrandAverageRating = Number(inputs.rating);
+    }
+
+    await updateDoc(brandRef, {
+      numRatings: updatedBrandNumRatings,
+      averageRating: updatedBrandAverageRating,
+    });
+
+    //item
+    const itemIdArray = itemId.split('-');
+    const itemRef = doc(
+      db,
+      'brands',
+      itemIdArray[0],
+      'categories',
+      itemIdArray[0] + '-' + itemIdArray[1],
+      'items',
+      itemId
+    );
+    const itemDoc = await getDoc(itemRef);
+    const prevItemAverageRating: number | undefined = itemDoc.data()?.averageRating;
+    const prevItemNumRatings: number | undefined = itemDoc.data()?.numRatings;
+    let updatedItemAverageRating;
+    let updatedItemNumRatings;
+    if (prevItemAverageRating && prevItemNumRatings) {
+      updatedItemNumRatings = prevItemNumRatings + 1;
+      updatedItemAverageRating = 
+        Math.round(
+          ((prevItemAverageRating * prevItemNumRatings + Number(inputs.rating)) / updatedItemNumRatings) * 10
+        ) / 10;
+    } else {
+      updatedItemNumRatings = 1;
+      updatedItemAverageRating = Number(inputs.rating);
+    }
+
+    await updateDoc(itemRef, {
+      numRatings: updatedItemNumRatings,
+      averageRating: updatedItemAverageRating,
+    });
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -245,7 +300,7 @@ function Posts() {
 
   return (
     <div className='flex flex-col items-center justify-center'>
-      <h1 className='text-3xl font-heal'>create post</h1>
+      <h1 className='font-heal text-3xl'>create post</h1>
       {userId ? (
         <div className='flex flex-col items-start gap-3'>
           <select

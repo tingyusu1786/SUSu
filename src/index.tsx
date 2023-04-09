@@ -8,9 +8,11 @@ import App from './App';
 import Profile from './pages/Profile';
 import Setting from './pages/Setting';
 import Posts from './pages/Posts/Posts';
+import Notifications from './pages/Notifications';
 import Map from './pages/Map';
 import Catalogue from './pages/Catalogue';
 import Inspiration from './pages/Inspiration';
+import Search from './pages/Search';
 import Counter from './pages/RenderCounter';
 
 const container = document.getElementById('root')!;
@@ -23,16 +25,18 @@ root.render(
         <Route path='/' element={<App />}>
           {/*<Route index element={<Home />}/>*/}
           <Route
-            path='/profile/:profileUserId'
+            path='/profile/:profileUserId?'
             element={<Profile />}
             // loader={}
             // action={}
           />
           <Route path='/setting' element={<Setting />} />
-          <Route path='/posts' element={<Posts />} />
+          <Route path='/posts/:postId?' element={<Posts />} />
+          <Route path='/notifications' element={<Notifications />} />
           <Route path='/map' element={<Map />} />
           <Route path='/catalogue/:catelogueBrandId?/:catelogueItemId?' element={<Catalogue />} />
           <Route path='/inspiration' element={<Inspiration />} />
+          <Route path='/search' element={<Search />} />
           <Route path='/counter' element={<Counter />} />
         </Route>
       </Routes>

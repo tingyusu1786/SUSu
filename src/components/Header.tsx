@@ -11,9 +11,9 @@ import {
   openAuthWindow,
   closeAuthWindow,
 } from '../components/auth/authSlice';
-import { showNotice, closeNotice } from '../components/notification/notificationSlice';
+import { showNotification, closeNotification } from '../components/notification/notificationSlice';
 import { Authentication } from '../components/auth/Authentication';
-import { Notification } from '../components/notification/Notification';
+import { NotificationPopUp } from '../components/notification/NotificationPopUp';
 
 function Header() {
   const dispatch = useAppDispatch();
@@ -24,7 +24,7 @@ function Header() {
   const userName = useAppSelector((state) => state.auth.userName);
   const photoURL = useAppSelector((state) => state.auth.photoURL);
   const isAuthWindow = useAppSelector((state) => state.auth.isAuthWindow);
-  const isNotice = useAppSelector((state) => state.notice.isShown);
+  const isNotification = useAppSelector((state) => state.notification.isShown);
 
   useEffect(() => {
     const userData = localStorage.getItem('userData');
@@ -34,8 +34,8 @@ function Header() {
   }, []);
 
   const fireNotice = ()=> {
-    dispatch(showNotice({ type: 'success', content: 'hihi' }));
-    setTimeout(() => dispatch(closeNotice()), 10000);
+    dispatch(showNotification({ type: 'success', content: 'hihi' }));
+    setTimeout(() => dispatch(closeNotification()), 10000);
   }
 
   return (
@@ -54,13 +54,16 @@ function Header() {
       <Link to='/posts' className='bg-lime-200'>
         喝po
       </Link>
+      <Link to='/notifications' className='bg-lime-200'>
+        通知中心
+      </Link>
       <Link to='/catalogue' className='bg-lime-200'>
         大全
       </Link>
       <Link to='/inspiration' className='bg-lime-200'>
         今天喝什麼
       </Link>
-      <div>
+      <div className='flex flex-col'>
         <button onClick={() => dispatch(openAuthWindow())}>[ open auth window ]</button>
         <button onClick={() => dispatch(closeAuthWindow())}>[ close ]</button>
         <button
@@ -70,7 +73,7 @@ function Header() {
         </button>
 
         {isAuthWindow && <Authentication />}
-        {isNotice && <Notification />}
+        {isNotification && <NotificationPopUp />}
       </div>
       <div>
         <h3 className='text-2xl'>auth status</h3>

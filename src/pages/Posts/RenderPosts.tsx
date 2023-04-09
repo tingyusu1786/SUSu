@@ -20,10 +20,10 @@ import {
   deleteDoc,
   startAfter,
   arrayUnion,
-  arrayRemove
+  arrayRemove,
 } from 'firebase/firestore';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { showNotice, closeNotice } from '../../components/notification/notificationSlice';
+import { showNotification, closeNotification } from '../../components/notification/notificationSlice';
 
 interface Post {
   postId: string;
@@ -76,7 +76,6 @@ function RenderPosts() {
     const q = query(postsCollection, orderBy('timeCreated', 'desc'));
 
     const unsubscribe = onSnapshot(q, async (querySnapshot: QuerySnapshot) => {
-
       const addedChanges = querySnapshot.docChanges().filter((change) => change.type === 'added');
 
       const newPosts: Post[] = await Promise.all(
@@ -346,27 +345,30 @@ function RenderPosts() {
       return newPosts;
     });
 
-    !hasLiked && notifyOtherUser(post.postId,post.authorId as string, newEntry, type);
-    hasLiked && unnotifyOtherUser(post.postId,post.authorId as string, newEntry, type);
+    !hasLiked && notifyOtherUser(post.postId, post.authorId as string, newEntry, type);
+    hasLiked && unnotifyOtherUser(post.postId, post.authorId as string, newEntry, type);
   };
 
-  const unnotifyOtherUser = async (postId:string, postAuthorId: string, content: any, type: 'like' | 'comment') => {
+  const unnotifyOtherUser = async (postId: string, postAuthorId: string, content: any, type: 'like' | 'comment') => {
     const userRef = doc(db, 'users', postAuthorId);
     if (!userRef) return;
     const userData = await getDoc(userRef);
     const originNotifications = userData.data()?.notifications;
     if (!originNotifications) return;
-    const notificationToRemove = originNotifications.find((notification:any) => ((notification.postId === postId) && (notification.authorId === userId)&&(notification.type === 'like')));
+    const notificationToRemove = originNotifications.find(
+      (notification: any) =>
+        notification.postId === postId && notification.authorId === userId && notification.type === 'like'
+    );
 
     await updateDoc(userRef, {
       notifications: arrayRemove(notificationToRemove),
     });
   };
 
-  const notifyOtherUser = async (postId: string,postAuthorId: string, content: any, type: 'like' | 'comment') => {
+  const notifyOtherUser = async (postId: string, postAuthorId: string, content: any, type: 'like' | 'comment') => {
     const userRef = doc(db, 'users', postAuthorId);
     if (!userRef) return;
-    const contentWithType = { ...content, type, postId };
+    const contentWithType = { ...content, type, postId, unread: true };
 
     await updateDoc(userRef, {
       notifications: arrayUnion(contentWithType),
@@ -405,14 +407,14 @@ function RenderPosts() {
     }
   };
 
-  const fireNotice = () => {
-    dispatch(showNotice({ type: 'success', content: 'hihi' }));
-    setTimeout(() => dispatch(closeNotice()), 10000);
+  const fireNotification = () => {
+    dispatch(showNotification({ type: 'success', content: 'hihi' }));
+    setTimeout(() => dispatch(closeNotification()), 10000);
   };
 
   return (
     <div className='flex flex-col items-center justify-center'>
-      <button onClick={fireNotice}>notice</button>
+      <button onClick={fireNotification}>notification</button>
       <h1 className='font-heal text-3xl'>see posts ({posts.length})</h1>
       <select
         name='audience'
