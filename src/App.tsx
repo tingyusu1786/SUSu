@@ -20,7 +20,6 @@ function App() {
       {/*<GlobalStyle />*/}
       <InstantSearch searchClient={searchClient} indexName='brands'>
         <Header />
-
         <Outlet />
       </InstantSearch>
     </>
