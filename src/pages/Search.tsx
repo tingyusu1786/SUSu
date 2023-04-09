@@ -1,4 +1,4 @@
-import { useState, useEffect, ChangeEvent, useRef } from 'react';
+import React, { useState, useEffect, ChangeEvent, useRef } from 'react';
 import { db } from '../services/firebase';
 import {
 //   collection,
@@ -28,20 +28,20 @@ import { useAppSelector, useAppDispatch } from '../app/hooks';
 import { showNotification } from '../components/notification/notificationSlice';
 
 import algoliasearch from 'algoliasearch/lite';
-import {
-  InstantSearch,
-  SearchBox,
-  RefinementList,
-  InfiniteHits,
-} from 'react-instantsearch-hooks-web';
+import { InstantSearch, SearchBox, Hits, Highlight, RefinementList } from 'react-instantsearch-hooks-web';
 
-const searchClient = algoliasearch(
-  process.env.REACT_APP_ALGOLIA_APP_ID!,
-  process.env.REACT_APP_ALGOLIA_SEARCH_KEY!
-);
-
-interface Search {
-
+function Hit({ hit }: any) {
+  return (
+    <article className="bg-white z-10">
+      <img src={hit.photoURL} alt={hit.photoURL} />
+      {/*<h1>{hit.name}</h1>*/}
+      <h1>
+        <Highlight attribute="name" hit={hit} className='rounded'/>
+      </h1>
+      <Highlight attribute="story" hit={hit} className='text-sm rounded' />
+      {hit.headquarter && <div className='text-sm'><span>總部：</span>< Highlight attribute="headquarter" hit={hit} className='text-sm rounded' /></div>}
+    </article>
+  );
 }
 
 function Search() {
@@ -51,16 +51,10 @@ function Search() {
   const currentUserPhotoURL = useAppSelector((state) => state.auth.photoURL);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
 
- 
   return (
     <div className='text-xl'>
-      <div className='container'>
-        <InstantSearch
-          searchClient={searchClient}
-          indexName='brands'
-        ></InstantSearch>
-      </div>
       <div>search results:</div>
+      <Hits hitComponent={Hit} />
     </div>
   );
 }
