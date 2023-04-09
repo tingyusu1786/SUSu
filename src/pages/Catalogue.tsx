@@ -42,7 +42,7 @@ function Catalogue() {
       }
       const categoryInfos = await getCategoriesIdAndName(catalogueBrandId);
       setCategories(categoryInfos);
-      console.log("setCategories(categoryInfos);", categoryInfos)
+      console.log('setCategories(categoryInfos);', categoryInfos);
     };
     catalogueBrandName && fetchCategories();
     setItemsOfBrand([]);
@@ -187,24 +187,29 @@ function Catalogue() {
     <div>
       <div>{breadcrumbNav}</div>
       <div className='flex flex-col items-center'>
-        <div className='flex flex-col flex-wrap gap-1'>
+        <div className='grid grid-cols-3 grid-rows-3 gap-4'>
           {!catalogueBrandId &&
             !catalogueItemId &&
             brands.map((brand, index) => (
               <Link key={brand[0]} to={`/catalogue/${brand[0]}`}>
-                {brand[1]}
+                <div className='h-32 w-32 rounded-2xl bg-lime-100 flex items-center justify-center'>{brand[1]}</div>
               </Link>
             ))}
         </div>
-        {catalogueBrandId && <div> brand:{catalogueBrandName}</div>}
+        {catalogueBrandId && <div className='text-3xl'>{catalogueBrandName}</div>}
         {catalogueBrandId && catalogueBrandObj?.averageRating && (
           <div>
-            <span>brand rating: <span className='font-bold font-heal text-2xl'>{catalogueBrandObj?.averageRating}</span></span>
-            <span> by <span className='font-bold font-heal'>{catalogueBrandObj?.numRatings}</span> people</span>
+            <span>
+              brand rating: <span className='font-heal text-2xl font-bold'>{catalogueBrandObj?.averageRating}</span>
+            </span>
+            <span>
+              {' '}
+              by <span className='font-heal font-bold'>{catalogueBrandObj?.numRatings}</span> people
+            </span>
           </div>
         )}
-        
-        <div className='flex gap-1'>
+
+        <div className='flex gap-1 mt-8'>
           {catalogueBrandId &&
             !catalogueItemId &&
             itemsOfBrand.length !== 0 &&
@@ -224,8 +229,13 @@ function Catalogue() {
         {catalogueItemId && <div> item:{catalogueItemName}</div>}
         {catalogueItemId && catalogueItemObj?.averageRating && (
           <div>
-            <span>item rating: <span className='font-bold font-heal text-2xl'>{catalogueItemObj?.averageRating}</span></span>
-            <span> by <span className='font-bold font-heal'>{catalogueItemObj?.numRatings}</span> people</span>
+            <span>
+              item rating: <span className='font-heal text-2xl font-bold'>{catalogueItemObj?.averageRating}</span>
+            </span>
+            <span>
+              {' '}
+              by <span className='font-heal font-bold'>{catalogueItemObj?.numRatings}</span> people
+            </span>
           </div>
         )}
       </div>
