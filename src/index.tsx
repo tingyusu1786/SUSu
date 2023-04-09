@@ -34,7 +34,7 @@ root.render(
           <Route path='/posts/:postId?' element={<Posts />} />
           <Route path='/notifications' element={<Notifications />} />
           <Route path='/map' element={<Map />} />
-          <Route path='/catalogue/:catelogueBrandId?/:catelogueItemId?' element={<Catalogue />} />
+          <Route path='/catalogue/:catalogueBrandId?/:catalogueItemId?' element={<Catalogue />} />
           <Route path='/inspiration' element={<Inspiration />} />
           <Route path='/search' element={<Search />} />
           <Route path='/counter' element={<Counter />} />

@@ -5,12 +5,12 @@ import dbApi from '../utils/dbApi';
 import { doc, getDoc, collection, query, where, getDocs, orderBy, QuerySnapshot } from 'firebase/firestore';
 
 function Catalogue() {
-  const { catelogueBrandId } = useParams<{ catelogueBrandId: string }>();
-  const { catelogueItemId } = useParams<{ catelogueItemId: string }>();
-  const [catelogueBrandObj, setCatelogueBrandObj] = useState<any>();
-  const [catelogueItemObj, setCatelogueItemObj] = useState<any>();
-  const [catelogueBrandName, setCatelogueBrandName] = useState<string>();
-  const [catelogueItemName, setCatelogueItemName] = useState<string>();
+  const { catalogueBrandId } = useParams<{ catalogueBrandId: string }>();
+  const { catalogueItemId } = useParams<{ catalogueItemId: string }>();
+  const [catalogueBrandObj, setCatalogueBrandObj] = useState<any>();
+  const [catalogueItemObj, setCatalogueItemObj] = useState<any>();
+  const [catalogueBrandName, setCatalogueBrandName] = useState<string>();
+  const [catalogueItemName, setCatalogueItemName] = useState<string>();
   const [brands, setBrands] = useState<string[][]>([]);
   const [categories, setCategories] = useState<string[][]>([]);
   const [itemsOfBrand, setItemsOfBrand] = useState<string[][][]>([]);
@@ -26,35 +26,35 @@ function Catalogue() {
   }, []);
 
   useEffect(() => {
-    // console.log("[brands, catelogueBrandId]");
-    const currentBrand = brands?.find((brand) => brand[0] === catelogueBrandId);
+    // console.log("[brands, catalogueBrandId]");
+    const currentBrand = brands?.find((brand) => brand[0] === catalogueBrandId);
     const currentBrandName = currentBrand && currentBrand[1];
     // console.log(currentBrandName);
-    setCatelogueBrandName(currentBrandName);
-    catelogueBrandId && getCatelogueBrandObj(catelogueBrandId);
-  }, [brands, catelogueBrandId]);
+    setCatalogueBrandName(currentBrandName);
+    catalogueBrandId && getCatalogueBrandObj(catalogueBrandId);
+  }, [brands, catalogueBrandId]);
 
   useEffect(() => {
-    // console.log("[catelogueBrandName]");
+    // console.log("[catalogueBrandName]");
     const fetchCategories = async () => {
-      if (!catelogueBrandId) {
+      if (!catalogueBrandId) {
         return;
       }
-      const categoryInfos = await getCategoriesIdAndName(catelogueBrandId);
+      const categoryInfos = await getCategoriesIdAndName(catalogueBrandId);
       setCategories(categoryInfos);
       console.log("setCategories(categoryInfos);", categoryInfos)
     };
-    catelogueBrandName && fetchCategories();
+    catalogueBrandName && fetchCategories();
     setItemsOfBrand([]);
-  }, [catelogueBrandName]);
+  }, [catalogueBrandName]);
 
   useEffect(() => {
     // console.log('[categories]');
     const fetchItems = async (categoryId: string) => {
-      if (!catelogueBrandId) {
+      if (!catalogueBrandId) {
         return;
       }
-      const itemInfos = await getItemsIdAndName(catelogueBrandId, categoryId);
+      const itemInfos = await getItemsIdAndName(catalogueBrandId, categoryId);
       setItemsOfBrand((itemsOfBrand) => itemsOfBrand.concat([itemInfos]));
     };
 
@@ -66,25 +66,25 @@ function Catalogue() {
   }, [categories]);
 
   useEffect(() => {
-    // console.log('[catelogueItemId]');
+    // console.log('[catalogueItemId]');
     const fetchCatalogueItemName = async () => {
-      const itemName = await getCatalogueItemName(catelogueItemId);
-      setCatelogueItemName(itemName);
+      const itemName = await getCatalogueItemName(catalogueItemId);
+      setCatalogueItemName(itemName);
     };
-    if (catelogueItemId) {
+    if (catalogueItemId) {
       fetchCatalogueItemName();
-      getCatelogueItemObj(catelogueItemId);
+      getCatalogueItemObj(catalogueItemId);
     }
-  }, [catelogueItemId]);
+  }, [catalogueItemId]);
 
-  const getCatelogueBrandObj = async (brandId: string) => {
+  const getCatalogueBrandObj = async (brandId: string) => {
     const brandDocRef = doc(db, 'brands', brandId);
     const brandDoc = await dbApi.getDoc(brandDocRef);
     const brandocdata = brandDoc.data();
-    brandocdata && setCatelogueBrandObj(brandocdata);
+    brandocdata && setCatalogueBrandObj(brandocdata);
   };
 
-  const getCatelogueItemObj = async (itemId: string) => {
+  const getCatalogueItemObj = async (itemId: string) => {
     const itemIdArray = itemId.split('-');
     const itemRef = doc(
       db,
@@ -97,7 +97,7 @@ function Catalogue() {
     );
     const itemDoc = await getDoc(itemRef);
     const itemDocData = itemDoc.data();
-    itemDocData && setCatelogueItemObj(itemDocData);
+    itemDocData && setCatalogueItemObj(itemDocData);
   };
 
   const getBrandsIdAndName = async (): Promise<string[][]> => {
@@ -165,18 +165,18 @@ function Catalogue() {
             All Brands
           </Link>
         </li>
-        {catelogueBrandId && (
+        {catalogueBrandId && (
           <li className='breadcrumb-item'>
             <span className='text-gray-500'>&nbsp;»&nbsp;</span>
-            <Link to={`/catalogue/${catelogueBrandId}`} className='text-gray-500 hover:text-gray-700'>
-              {catelogueBrandName}
+            <Link to={`/catalogue/${catalogueBrandId}`} className='text-gray-500 hover:text-gray-700'>
+              {catalogueBrandName}
             </Link>
           </li>
         )}
-        {catelogueItemId && (
+        {catalogueItemId && (
           <li className='breadcrumb-item'>
             <span className='text-gray-500'>&nbsp;»&nbsp;</span>
-            <span className='text-gray-500'>{catelogueItemName}</span>
+            <span className='text-gray-500'>{catalogueItemName}</span>
           </li>
         )}
       </ol>
@@ -188,25 +188,25 @@ function Catalogue() {
       <div>{breadcrumbNav}</div>
       <div className='flex flex-col items-center'>
         <div className='flex flex-col flex-wrap gap-1'>
-          {!catelogueBrandId &&
-            !catelogueItemId &&
+          {!catalogueBrandId &&
+            !catalogueItemId &&
             brands.map((brand, index) => (
               <Link key={brand[0]} to={`/catalogue/${brand[0]}`}>
                 {brand[1]}
               </Link>
             ))}
         </div>
-        {catelogueBrandId && <div> brand:{catelogueBrandName}</div>}
-        {catelogueBrandId && catelogueBrandObj?.averageRating && (
+        {catalogueBrandId && <div> brand:{catalogueBrandName}</div>}
+        {catalogueBrandId && catalogueBrandObj?.averageRating && (
           <div>
-            <span>brand rating: <span className='font-bold font-heal text-2xl'>{catelogueBrandObj?.averageRating}</span></span>
-            <span> by <span className='font-bold font-heal'>{catelogueBrandObj?.numRatings}</span> people</span>
+            <span>brand rating: <span className='font-bold font-heal text-2xl'>{catalogueBrandObj?.averageRating}</span></span>
+            <span> by <span className='font-bold font-heal'>{catalogueBrandObj?.numRatings}</span> people</span>
           </div>
         )}
         
         <div className='flex gap-1'>
-          {catelogueBrandId &&
-            !catelogueItemId &&
+          {catalogueBrandId &&
+            !catalogueItemId &&
             itemsOfBrand.length !== 0 &&
             categories.length !== 0 &&
             itemsOfBrand.map((itemsOfCategory, index) => (
@@ -215,17 +215,17 @@ function Catalogue() {
                 {itemsOfCategory.length !== 0 &&
                   itemsOfCategory.map((item) => (
                     <div key={item[0]}>
-                      <Link to={`/catalogue/${catelogueBrandId}/${item[0]}`}>{item[1]}</Link>
+                      <Link to={`/catalogue/${catalogueBrandId}/${item[0]}`}>{item[1]}</Link>
                     </div>
                   ))}
               </div>
             ))}
         </div>
-        {catelogueItemId && <div> item:{catelogueItemName}</div>}
-        {catelogueItemId && catelogueItemObj?.averageRating && (
+        {catalogueItemId && <div> item:{catalogueItemName}</div>}
+        {catalogueItemId && catalogueItemObj?.averageRating && (
           <div>
-            <span>item rating: <span className='font-bold font-heal text-2xl'>{catelogueItemObj?.averageRating}</span></span>
-            <span> by <span className='font-bold font-heal'>{catelogueItemObj?.numRatings}</span> people</span>
+            <span>item rating: <span className='font-bold font-heal text-2xl'>{catalogueItemObj?.averageRating}</span></span>
+            <span> by <span className='font-bold font-heal'>{catalogueItemObj?.numRatings}</span> people</span>
           </div>
         )}
       </div>
