@@ -57,7 +57,7 @@ function Search() {
       <div className='container'>
         <InstantSearch
           searchClient={searchClient}
-          indexName='movies'
+          indexName='brands'
         ></InstantSearch>
       </div>
       <div>search results:</div>
