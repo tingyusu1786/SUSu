@@ -27,6 +27,19 @@ import { openAuthWindow } from '../components/auth/authSlice';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
 import { showNotification } from '../components/notification/notificationSlice';
 
+import algoliasearch from 'algoliasearch/lite';
+import {
+  InstantSearch,
+  SearchBox,
+  RefinementList,
+  InfiniteHits,
+} from 'react-instantsearch-hooks-web';
+
+const searchClient = algoliasearch(
+  process.env.REACT_APP_ALGOLIA_APP_ID!,
+  process.env.REACT_APP_ALGOLIA_SEARCH_KEY!
+);
+
 interface Search {
 
 }
@@ -37,19 +50,16 @@ function Search() {
   const currentUserName = useAppSelector((state) => state.auth.userName);
   const currentUserPhotoURL = useAppSelector((state) => state.auth.photoURL);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const initSnap = useRef(true);
 
-  let currentUserRef: DocumentReference<DocumentData> | undefined;
-
-  if (currentUserId) {
-    currentUserRef = doc(db, 'users', currentUserId);
-  }
-
-  
-
+ 
   return (
     <div className='text-xl'>
+      <div className='container'>
+        <InstantSearch
+          searchClient={searchClient}
+          indexName='movies'
+        ></InstantSearch>
+      </div>
       <div>search results:</div>
     </div>
   );
