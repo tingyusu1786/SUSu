@@ -1,4 +1,4 @@
-import { useState, useEffect, ChangeEvent, useRef } from 'react';
+import { useState, useEffect, ChangeEvent, KeyboardEvent, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { db } from '../../services/firebase';
 import {
@@ -25,8 +25,8 @@ import {
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { showNotification, closeNotification } from '../../components/notification/notificationSlice';
 import { Post, Like, Comment } from '../../interfaces/interfaces';
-
-
+import { getTimeDiff } from '../../utils/common';
+import CommentInputSection from './CommentInputSection'
 
 function RenderPosts() {
   const dispatch = useAppDispatch();
@@ -229,42 +229,6 @@ function RenderPosts() {
     }
   };
 
-  const getTimeDiff = (timestamp: Timestamp): string => {
-    const now = new Date();
-    const target = timestamp.toDate();
-    const diff = now.getTime() - target.getTime();
-
-    const minInMs = 60 * 1000;
-    const hourInMs = 60 * minInMs;
-    const dayInMs = 24 * hourInMs;
-    const weekInMs = 7 * dayInMs;
-    const monthInMs = 30 * dayInMs;
-    const yearInMs = 365 * dayInMs;
-
-    const years = Math.floor(diff / yearInMs);
-    const months = Math.floor(diff / monthInMs);
-    const weeks = Math.floor(diff / weekInMs);
-    const days = Math.floor(diff / dayInMs);
-    const hours = Math.floor(diff / hourInMs);
-    const mins = Math.floor(diff / minInMs);
-
-    if (years > 0) {
-      return `${years} year${years > 1 ? 's' : ''}`;
-    } else if (months > 0) {
-      return `${months} month${months > 1 ? 's' : ''}`;
-    } else if (weeks > 0) {
-      return `${weeks} week${weeks > 1 ? 's' : ''}`;
-    } else if (days > 0) {
-      return `${days} day${days > 1 ? 's' : ''}`;
-    } else if (hours > 0) {
-      return `${hours} hour${hours > 1 ? 's' : ''}`;
-    } else if (mins > 0) {
-      return `${mins} minute${mins > 1 ? 's' : ''}`;
-    } else {
-      return 'just now';
-    }
-  };
-
   const handleCommentsShown = (index: number) => {
     setPosts((prev) => {
       const newPosts = [...prev];
@@ -354,7 +318,7 @@ function RenderPosts() {
   };
 
   const handleCommentSubmit = async (
-    event: React.KeyboardEvent<HTMLInputElement>,
+    event: KeyboardEvent<HTMLInputElement>,
     post: Post,
     userId: string,
     index: number
@@ -509,7 +473,7 @@ function RenderPosts() {
                       </div>
                     );
                   })}
-                  <div className='rounded-lg p-1'>
+                  {/*<div className='rounded-lg p-1'>
                     {isSignedIn && (
                       <Link to={`/profile/${userId}`}>
                         <img
@@ -539,7 +503,13 @@ function RenderPosts() {
                         onKeyPress={(e) => e.key === 'Enter' && userId && handleCommentSubmit(e, post, userId, index)}
                       />
                     </div>
-                  </div>
+                  </div>*/}
+                  <CommentInputSection
+                    post={post}
+                    handleCommentInput={handleCommentInput}
+                    handleCommentSubmit={handleCommentSubmit}
+                    index={index}
+                  />
                 </div>
               )}
             </div>
@@ -547,13 +517,6 @@ function RenderPosts() {
         })}
 
         <h1 className='font-heal text-3xl'>({posts.length})</h1>
-        {/*<button
-          onClick={() => {
-            fetchPosts(lastKey, hashtagFilter);
-          }}
-        >
-          fetch 5 more
-        </button>*/}
         <span>{bottomMessage}</span>
       </div>
     </div>
