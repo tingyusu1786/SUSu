@@ -39,3 +39,14 @@ export interface Post {
   size?: string;
   timeCreated?: Timestamp;
 }
+
+export interface Notification {
+  authorId: string;
+  authorName: string;
+  authorPhoto: string;
+  content?: string;
+  timeCreated: Timestamp;
+  type: 'like' | 'comment;';
+  postId: string;
+  unread: boolean;
+}
