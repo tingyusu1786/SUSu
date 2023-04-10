@@ -25,6 +25,17 @@ import {
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { showNotification, closeNotification } from '../../components/notification/notificationSlice';
 
+interface Like {
+  authorId: string;
+  authorName: string;
+  authorPhoto: string;
+  timeCreated: Timestamp;
+}
+
+interface Comment extends Like { 
+  content: string;
+}
+
 interface Post {
   postId: string;
   audience?: string;
@@ -34,13 +45,13 @@ interface Post {
   brandId?: string;
   brandName?: string;
   commentInput?: string;
-  comments?: any[]; //todo: object??
+  comments?: any[]; //todo
   commentsShown: boolean;
   hashtags?: string[];
   ice?: string;
   itemId?: string;
   itemName?: string;
-  likes?: any[]; //todo: object??
+  likes?: any[]; //todo
   orderNum?: string;
   price?: string;
   rating?: string;
@@ -425,6 +436,7 @@ function RenderPosts() {
       >
         <option value='all'>（all）</option>
         <option value='friends'>（friends）</option>
+        <option value='self'>（self）</option>
       </select>
       {hashtagFilter && (
         <div>

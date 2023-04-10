@@ -60,19 +60,57 @@ function UserHit({ hit }: any) {
   );
 }
 
+// 直接render出post?
+function PostHit({ hit }: any) {
+  return (
+    <article className='my-5 text-center'>
+      {/*<button className='hover:font-bold hover:text-lime-700'>
+        <Link to={`/profile/${hit.objectID}`}>
+          <Highlight attribute='name' hit={hit} className='my-0 rounded' />
+        </Link>
+      </button>*/}
+      {hit.brandId && (
+        <div className='text-sm text-gray-400'>
+          <Highlight attribute='brandId' hit={hit} className='rounded text-sm' />
+        </div>
+      )}
+      {hit.itemId && (
+        <div className='text-sm text-gray-400'>
+          <Highlight attribute='itemId' hit={hit} className='rounded text-sm' />
+        </div>
+      )}
+      {hit.hashtags && (
+        <div className='text-sm text-gray-400'>
+          <Highlight attribute='hashtags' hit={hit} className='rounded text-sm' />
+        </div>
+      )}
+      
+    </article>
+  );
+}
+
 function Search() {
   const dispatch = useAppDispatch();
   const currentUserId = useAppSelector((state) => state.auth.userId);
   const currentUserName = useAppSelector((state) => state.auth.userName);
   const currentUserPhotoURL = useAppSelector((state) => state.auth.photoURL);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
-  const [tab, setTab] = useState<'brands'|'users'|'posts'|'items'>('brands');
+  const [tab, setTab] = useState<'all'|'brands'|'users'|'posts'|'items'>('brands');
 
   return (
     <div className='text-xl'>
       <div className='text-center font-heal text-3xl'>search results:</div>
       {/*<RefinementList attribute={"name"} />*/}
       <div className='text-center'>
+        <button
+          onClick={() => {
+            setTab('all');
+          }}
+          className={tab === 'all' ? 'font-bold text-blue-600' : ''}
+        >
+          all
+        </button>
+        <span>&nbsp;&nbsp;&nbsp;</span>
         <button
           onClick={() => {
             setTab('brands');
@@ -109,9 +147,15 @@ function Search() {
           users
         </button>
       </div>
+      {/*把全部的hits放在一起變成all*/}
       {tab === 'brands' && (
         <Index indexName='brands'>
           <Hits hitComponent={BrandHit} className='flex flex-col items-center' />
+        </Index>
+      )}
+      {tab === 'posts' && (
+        <Index indexName='posts'>
+          <Hits hitComponent={PostHit} className='flex flex-col items-center' />
         </Index>
       )}
       {tab === 'users' && (
