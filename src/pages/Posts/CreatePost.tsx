@@ -25,7 +25,7 @@ function CreatePost() {
     size: '',
     price: '',
     orderNum: '',
-    rating: '',
+    rating: undefined,
     selfComment: '',
   };
   const userId = useAppSelector((state) => state.auth.userId);
@@ -38,8 +38,21 @@ function CreatePost() {
   const [sizesOfItem, setSizesOfItem] = useState<string[][]>([]);
   const [inputs, setInputs] = useState(initialInput);
 
-  const sugarOptions = ['0（無糖）', '1', '2', '3（微糖）', '4', '5（半糖）', '6', '7（少糖）', '8', '9', '10（全糖）'];
-  const iceOptions = ['0（去冰）', '1', '2', '3（微冰）', '4', '5', '6', '7（少冰）', '8', '9', '10（正常）', '溫/熱'];
+  const sugarOptions = [
+    '0（無糖）',
+    '1（一分糖）',
+    '2（二分糖）',
+    '3（三分/微糖）',
+    '4（四分糖）',
+    '5（五分/半糖）',
+    '6（六分糖）',
+    '7（七分/少糖）',
+    '8（八分糖）',
+    '9（九分糖）',
+    '10（全糖）',
+    'extra（多加糖）',
+  ];
+  const iceOptions = ['溫/熱', '0（去冰）', '1', '2', '3（微冰）', '4', '5', '6', '7（少冰）', '8', '9', '10（正常）'];
 
   // 把所有brand列出來
   useEffect(() => {
@@ -91,6 +104,16 @@ function CreatePost() {
     }
   }, [inputs.itemId]);
 
+  // sizesOfItem抓到之後如果只有一種就直接代入
+  useEffect(() => {
+    if (sizesOfItem.length === 1) {
+      setInputs((prev) => {
+        const newInput = { ...prev, size: sizesOfItem[0][0], price: sizesOfItem[0][1] };
+        return newInput;
+      });
+    }
+  }, [sizesOfItem]);
+
   const handleTagInputKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter' && customTagsInput !== '') {
       const newTags = [...customTags, customTagsInput];
@@ -129,7 +152,7 @@ function CreatePost() {
 
     setInputs(initialInput);
     setCustomTags([]);
-    inputs.rating !== '' && updateRatings(inputs.brandId, inputs.itemId);
+    inputs.rating !== undefined && updateRatings(inputs.brandId, inputs.itemId);
   };
 
   const updateRatings = async (brandId: string, itemId: string) => {
@@ -142,7 +165,7 @@ function CreatePost() {
     let updatedBrandNumRatings;
     if (prevBrandAverageRating && prevBrandNumRatings) {
       updatedBrandNumRatings = prevBrandNumRatings + 1;
-      updatedBrandAverageRating = 
+      updatedBrandAverageRating =
         Math.round(
           ((prevBrandAverageRating * prevBrandNumRatings + Number(inputs.rating)) / updatedBrandNumRatings) * 10
         ) / 10;
@@ -174,7 +197,7 @@ function CreatePost() {
     let updatedItemNumRatings;
     if (prevItemAverageRating && prevItemNumRatings) {
       updatedItemNumRatings = prevItemNumRatings + 1;
-      updatedItemAverageRating = 
+      updatedItemAverageRating =
         Math.round(
           ((prevItemAverageRating * prevItemNumRatings + Number(inputs.rating)) / updatedItemNumRatings) * 10
         ) / 10;
@@ -281,25 +304,12 @@ function CreatePost() {
     return documents;
   };
 
-  // const getItemPrice = async (itemId: string) => {
-  //   if (itemId !== '') {
-  //     const idArray = itemId.split('-');
-  //     const itemDocRef = doc(db, 'brands', idArray[0], 'categories', idArray[0] + '-' + idArray[1], 'items', itemId);
-  //     const itemDoc = await getDoc(itemDocRef);
-  //     if (!itemDoc.exists()) {
-  //       console.log('No such document!');
-  //       return '';
-  //     }
-  //     const itemData = itemDoc.data();
-  //     return itemData.price;
-  //   }
-  // };
   const getItemPrice = async (itemId: string) => {
     const idArray = itemId.split('-');
     const itemDocRef = doc(db, 'brands', idArray[0], 'categories', idArray[0] + '-' + idArray[1], 'items', itemId);
-    const itemPrice = await dbApi.getDocField(itemDocRef,'price');
+    const itemPrice = await dbApi.getDocField(itemDocRef, 'price');
     return itemPrice;
-  }
+  };
 
   const removeTag = (index: number) => {
     setCustomTags(customTags.filter((el, i) => i !== index));

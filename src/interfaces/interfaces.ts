@@ -30,10 +30,10 @@ export interface Post {
   ice?: string;
   itemId?: string;
   itemName?: string;
-  likes?: any[]; //todo
+  likes?: Like[];
   orderNum?: string;
   price?: string;
-  rating?: string;
+  rating?: number | undefined;
   selfComment?: string;
   sugar?: string;
   size?: string;
