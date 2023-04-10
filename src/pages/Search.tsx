@@ -66,7 +66,7 @@ function Search() {
   const currentUserName = useAppSelector((state) => state.auth.userName);
   const currentUserPhotoURL = useAppSelector((state) => state.auth.photoURL);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
-  const [tab, setTab] = useState('brands');
+  const [tab, setTab] = useState<'brands'|'users'|'posts'|'items'>('brands');
 
   return (
     <div className='text-xl'>
@@ -80,6 +80,24 @@ function Search() {
           className={tab === 'brands' ? 'font-bold text-blue-600' : ''}
         >
           brands
+        </button>
+        <span>&nbsp;&nbsp;&nbsp;</span>
+        <button
+          onClick={() => {
+            setTab('items');
+          }}
+          className={tab === 'items' ? 'font-bold text-blue-600' : ''}
+        >
+          items
+        </button>
+        <span>&nbsp;&nbsp;&nbsp;</span>
+        <button
+          onClick={() => {
+            setTab('posts');
+          }}
+          className={tab === 'posts' ? 'font-bold text-blue-600' : ''}
+        >
+          posts
         </button>
         <span>&nbsp;&nbsp;&nbsp;</span>
         <button

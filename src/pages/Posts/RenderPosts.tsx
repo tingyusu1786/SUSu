@@ -409,7 +409,7 @@ function RenderPosts() {
 
   const fireNotification = () => {
     dispatch(showNotification({ type: 'success', content: 'hihi' }));
-    setTimeout(() => dispatch(closeNotification()), 10000);
+    setTimeout(() => dispatch(closeNotification()), 5000);
   };
 
   return (

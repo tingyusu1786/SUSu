@@ -1,26 +1,26 @@
 import { useState, useEffect, ChangeEvent, useRef } from 'react';
 import { db } from '../services/firebase';
 import {
-//   collection,
+  //   collection,
   doc,
   DocumentSnapshot,
   DocumentReference,
   DocumentData,
-//   getDoc,
-//   getDocs,
-//   query,
-//   Query,
-//   orderBy,
-//   limit,
+  //   getDoc,
+  //   getDocs,
+  //   query,
+  //   Query,
+  //   orderBy,
+  //   limit,
   onSnapshot,
-//   QuerySnapshot,
+  //   QuerySnapshot,
   Timestamp,
-//   updateDoc,
-//   where,
-//   deleteDoc,
-//   startAfter,
-//   arrayUnion,
-//   arrayRemove,
+  //   updateDoc,
+  //   where,
+  //   deleteDoc,
+  //   startAfter,
+  //   arrayUnion,
+  //   arrayRemove,
 } from 'firebase/firestore';
 import dbApi from '../utils/dbApi';
 import { openAuthWindow } from '../components/auth/authSlice';
@@ -110,6 +110,42 @@ function Notifications() {
     }, 3000);
   };
 
+  const getTimeDiff = (timestamp: Timestamp): string => {
+    const now = new Date();
+    const target = timestamp.toDate();
+    const diff = now.getTime() - target.getTime();
+
+    const minInMs = 60 * 1000;
+    const hourInMs = 60 * minInMs;
+    const dayInMs = 24 * hourInMs;
+    const weekInMs = 7 * dayInMs;
+    const monthInMs = 30 * dayInMs;
+    const yearInMs = 365 * dayInMs;
+
+    const years = Math.floor(diff / yearInMs);
+    const months = Math.floor(diff / monthInMs);
+    const weeks = Math.floor(diff / weekInMs);
+    const days = Math.floor(diff / dayInMs);
+    const hours = Math.floor(diff / hourInMs);
+    const mins = Math.floor(diff / minInMs);
+
+    if (years > 0) {
+      return `${years} year${years > 1 ? 's' : ''}`;
+    } else if (months > 0) {
+      return `${months} month${months > 1 ? 's' : ''}`;
+    } else if (weeks > 0) {
+      return `${weeks} week${weeks > 1 ? 's' : ''}`;
+    } else if (days > 0) {
+      return `${days} day${days > 1 ? 's' : ''}`;
+    } else if (hours > 0) {
+      return `${hours} hour${hours > 1 ? 's' : ''}`;
+    } else if (mins > 0) {
+      return `${mins} minute${mins > 1 ? 's' : ''}`;
+    } else {
+      return 'just now';
+    }
+  };
+
   const fetchNotifications = async (currentUserRef: DocumentReference<DocumentData> | undefined) => {
     if (!currentUserRef) {
       return;
@@ -120,7 +156,8 @@ function Notifications() {
       return;
     }
     const currentUserData = currentUserDoc.data();
-    const currentUserNotifications = currentUserData?.notifications.reverse().filter((notif: any) => notif.authorId !== currentUserId) || [];
+    const currentUserNotifications =
+      currentUserData?.notifications.reverse().filter((notif: any) => notif.authorId !== currentUserId) || [];
     // if (!currentUserNotifications) {
     //   alert('no 通知 yet');
     //   return;
@@ -142,13 +179,20 @@ function Notifications() {
     <div className='text-xl'>
       {/*{notifications.length===0 && <div>no notification yet</div>}*/}
       {notifications.length > 0 && <div>({notifications.length})</div>}
-      {notifications.map((notification, index) => (
-        <div className={`my-1 ${notification.unread ? 'bg-yellow-100' : 'bg-gray-100'} rounded`} key={index}>{`${
-          notification.authorName
-        } ${notification.type}${notification.type === 'like' ? 'd' : 'ed'} on your post! (post id: ${
-          notification.postId
-        })`}</div>
-      ))}
+      {notifications.map((notification, index) => {
+        const timeDiff = getTimeDiff(notification.timeCreated);
+        return (
+          <div className={`my-1 ${notification.unread ? 'bg-lime-100' : 'bg-gray-100'} rounded`} key={index}>
+            <span>{`${notification.authorName} ${notification.type}${
+              notification.type === 'like' ? 'd' : 'ed'
+            } on your post! (post id: ${notification.postId})`}</span>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <span className='text-gray-500'>
+              {timeDiff} <span className='text-gray-500 text-xs'>({notification.timeCreated.toDate().toLocaleString()})</span>
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
 }

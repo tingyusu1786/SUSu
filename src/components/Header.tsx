@@ -56,7 +56,7 @@ function Header() {
 
   const fireNotice = () => {
     dispatch(showNotification({ type: 'success', content: 'hihi' }));
-    setTimeout(() => dispatch(closeNotification()), 10000);
+    setTimeout(() => dispatch(closeNotification()), 5000);
   };
 
   return (
