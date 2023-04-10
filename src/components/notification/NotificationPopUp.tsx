@@ -6,12 +6,9 @@ export function NotificationPopUp() {
   // todo: get what i need from useAppSelector
   const content = useAppSelector((state) => state.notification.content);
   return (
-    <div className='fixed top-10 z-10 h-48 w-96 bg-yellow-600'>
+    <div className='fixed top-30 right-0 mr-5 z-10 w-64 bg-yellow-600'>
       <span>123123</span>
       <span>{content}</span>
-      <br/>
-      <br/>
-      <br/>
       <br/>
       <br/>
       <button onClick={() => dispatch(closeNotification())}>X</button>

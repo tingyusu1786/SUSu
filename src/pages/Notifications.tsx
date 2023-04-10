@@ -134,7 +134,7 @@ function Notifications() {
         <button className='underline' onClick={() => dispatch(openAuthWindow())}>
           sign in
         </button>
-        <span>to see your notification</span>
+        <span> to see your notification</span>
       </div>
     );
   }

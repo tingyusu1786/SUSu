@@ -3,6 +3,8 @@ import { Link, useParams } from 'react-router-dom';
 import { db } from '../services/firebase';
 import { doc, getDoc, collection, query, where, getDocs, orderBy, QuerySnapshot } from 'firebase/firestore';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
+import { openAuthWindow } from '../components/auth/authSlice';
+import { showNotification } from '../components/notification/notificationSlice';
 
 function Profile() {
   const currentUserId = useAppSelector((state) => state.auth.userId);
@@ -81,7 +83,7 @@ function Profile() {
   };
 
   if (profileUserId === 'null') {
-    return <div className='text-center'>sign in to see your profile 🤗</div>
+    return <div className='text-center font-heal text-3xl'><button className='underline' onClick={() => dispatch(openAuthWindow())}>sign in</button> to see your profile 🤗</div>
   }
 
   return (

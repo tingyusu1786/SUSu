@@ -91,6 +91,7 @@ function Header() {
           placeholder="Search anything"
           searchAsYouType={false}
           onSubmit={handleRedirect}
+          className='mt-5'
         />
         {/*<Hits hitComponent={Hit} className='absolute top-24'/>*/}
       </div>
