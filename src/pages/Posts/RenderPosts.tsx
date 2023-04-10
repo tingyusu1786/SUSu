@@ -339,7 +339,7 @@ function RenderPosts() {
     if (confirmed) {
       const postRef = doc(db, 'posts', post.postId);
       await deleteDoc(postRef);
-      alert(`post deleted: was ${post.postId}`);
+      // alert(`post deleted: was ${post.postId}`);
 
       setPosts((prev) => {
         const newPosts = prev.filter((keptPost) => keptPost.postId !== post.postId);

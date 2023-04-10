@@ -13,8 +13,9 @@ import {
   arrayUnion,
 } from 'firebase/firestore';
 import { useAppSelector } from '../../app/hooks';
+import dbApi from '../../utils/dbApi';
 
-function Posts() {
+function CreatePost() {
   const initialInput = {
     audience: 'public',
     brandId: '',
@@ -280,19 +281,25 @@ function Posts() {
     return documents;
   };
 
+  // const getItemPrice = async (itemId: string) => {
+  //   if (itemId !== '') {
+  //     const idArray = itemId.split('-');
+  //     const itemDocRef = doc(db, 'brands', idArray[0], 'categories', idArray[0] + '-' + idArray[1], 'items', itemId);
+  //     const itemDoc = await getDoc(itemDocRef);
+  //     if (!itemDoc.exists()) {
+  //       console.log('No such document!');
+  //       return '';
+  //     }
+  //     const itemData = itemDoc.data();
+  //     return itemData.price;
+  //   }
+  // };
   const getItemPrice = async (itemId: string) => {
-    if (itemId !== '') {
-      const idArray = itemId.split('-');
-      const itemDocRef = doc(db, 'brands', idArray[0], 'categories', idArray[0] + '-' + idArray[1], 'items', itemId);
-      const itemDoc = await getDoc(itemDocRef);
-      if (!itemDoc.exists()) {
-        console.log('No such document!');
-        return '';
-      }
-      const itemData = itemDoc.data();
-      return itemData.price;
-    }
-  };
+    const idArray = itemId.split('-');
+    const itemDocRef = doc(db, 'brands', idArray[0], 'categories', idArray[0] + '-' + idArray[1], 'items', itemId);
+    const itemPrice = await dbApi.getDocField(itemDocRef,'price');
+    return itemPrice;
+  }
 
   const removeTag = (index: number) => {
     setCustomTags(customTags.filter((el, i) => i !== index));
@@ -511,4 +518,4 @@ function Posts() {
   );
 }
 
-export default Posts;
+export default CreatePost;

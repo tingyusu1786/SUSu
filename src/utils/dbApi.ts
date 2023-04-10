@@ -30,6 +30,16 @@ const dbApi = {
     const doc = await getDoc(docRef);
     return doc;
   },
+  async getDocField(docRef: DocumentReference, field: string) {
+    const doc = await getDoc(docRef);
+    if (!doc.exists()) {
+      console.log(`No such document!(${docRef})`);
+      return null;
+    }
+    const docData = doc.data();
+    const docField = docData[field];
+    return docField;
+  },
 };
 
 export default dbApi;

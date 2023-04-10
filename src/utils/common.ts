@@ -1,4 +1,6 @@
 import { Timestamp } from 'firebase/firestore';
+import { showNotification, closeNotification } from '../components/notification/notificationSlice';
+import { useAppSelector, useAppDispatch } from '../app/hooks';
 
 export const getTimeDiff = (timestamp: Timestamp): string => {
   const now = new Date();
@@ -35,3 +37,8 @@ export const getTimeDiff = (timestamp: Timestamp): string => {
     return 'just now';
   }
 };
+
+// export const fireNotification = () => {
+//   dispatch(showNotification({ type: 'success', content: 'hihi' }));
+//   setTimeout(() => dispatch(closeNotification()), 5000);
+// };
