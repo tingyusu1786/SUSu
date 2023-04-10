@@ -24,42 +24,9 @@ import {
 } from 'firebase/firestore';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { showNotification, closeNotification } from '../../components/notification/notificationSlice';
+import { Post, Like, Comment } from '../../interfaces/interfaces';
 
-interface Like {
-  authorId: string;
-  authorName: string;
-  authorPhoto: string;
-  timeCreated: Timestamp;
-}
 
-interface Comment extends Like { 
-  content: string;
-}
-
-interface Post {
-  postId: string;
-  audience?: string;
-  authorId?: string;
-  authorName?: string;
-  authorPhoto?: string;
-  brandId?: string;
-  brandName?: string;
-  commentInput?: string;
-  comments?: any[]; //todo
-  commentsShown: boolean;
-  hashtags?: string[];
-  ice?: string;
-  itemId?: string;
-  itemName?: string;
-  likes?: any[]; //todo
-  orderNum?: string;
-  price?: string;
-  rating?: string;
-  selfComment?: string;
-  sugar?: string;
-  size?: string;
-  timeCreated?: Timestamp;
-}
 
 function RenderPosts() {
   const dispatch = useAppDispatch();
