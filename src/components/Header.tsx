@@ -19,18 +19,6 @@ import { InstantSearch, SearchBox, Hits, Highlight, RefinementList } from 'react
 
 import { useNavigate } from "react-router-dom";
 
-// function Hit({ hit }:any) {
-//   return (
-//     <article className="bg-white z-10">
-//       <img src={hit.photoURL} alt={hit.photoURL} />
-//       {/*<h1>{hit.name}</h1>*/}
-//       <h1>
-//         <Highlight attribute="name" hit={hit} />
-//       </h1>
-//     </article>
-//   );
-// }
-
 function Header() {
   const dispatch = useAppDispatch();
   const userId = useAppSelector((state) => state.auth.userId);
@@ -54,8 +42,8 @@ function Header() {
     }
   }, []);
 
-  const fireNotice = () => {
-    dispatch(showNotification({ type: 'success', content: 'hihi' }));
+  const fireNotice = (content: string) => {
+    dispatch(showNotification({ type: 'success', content }));
     setTimeout(() => dispatch(closeNotification()), 5000);
   };
 
@@ -98,7 +86,7 @@ function Header() {
       <div className='flex flex-col'>
         <button onClick={() => dispatch(openAuthWindow())}>[ open auth window ]</button>
         <button onClick={() => dispatch(closeAuthWindow())}>[ close ]</button>
-        <button onClick={fireNotice}>[ show notice ]</button>
+        <button onClick={()=>fireNotice('yaya')}>[ show notice ]</button>
 
         {isAuthWindow && <Authentication />}
         {isNotification && <NotificationPopUp />}
