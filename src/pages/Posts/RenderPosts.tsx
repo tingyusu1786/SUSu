@@ -27,6 +27,7 @@ import { showNotification, closeNotification } from '../../components/notificati
 import { Post, Like, Comment } from '../../interfaces/interfaces';
 import { getTimeDiff } from '../../utils/common';
 import CommentInputSection from './CommentInputSection'
+import CommentDiv from './CommentDiv'
 
 function RenderPosts() {
   const dispatch = useAppDispatch();
@@ -451,59 +452,10 @@ function RenderPosts() {
               </div>
               {post.commentsShown && (
                 <div className='mt-2 flex flex-col gap-1 rounded-lg bg-gray-300 p-1'>
-                  {post.comments?.map((comment, index) => {
-                    const timeDiff = getTimeDiff(comment.timeCreated);
-                    return (
-                      <div className='rounded-lg bg-white p-1' key={index}>
-                        <Link to={`/profile/${comment.authorId}`}>
-                          <img
-                            src={comment.authorPhoto}
-                            alt='123'
-                            className='mr-1 inline-block h-6 w-6 rounded-full object-cover'
-                          />
-                        </Link>
-                        <div className='inline-block'>
-                          <Link to={`/profile/${comment.authorId}`}>
-                            <div>{comment.authorName}</div>
-                          </Link>
-                          <div>{timeDiff}</div>
-                          {<div>{comment.timeCreated.toDate().toLocaleString()}</div>}
-                          <div>{comment.content}</div>
-                        </div>
-                      </div>
-                    );
-                  })}
-                  {/*<div className='rounded-lg p-1'>
-                    {isSignedIn && (
-                      <Link to={`/profile/${userId}`}>
-                        <img
-                          src={userPhotoURL}
-                          alt=''
-                          className='mr-1 inline-block h-6 w-6 rounded-full object-cover'
-                        />
-                      </Link>
-                    )}
-                    <div className='inline-block'>
-                      <Link to={`/profile/${userId}`}>
-                        <div>{userName}</div>
-                      </Link>
-                      <input
-                        type='text'
-                        placeholder={
-                          isSignedIn
-                            ? post.comments
-                              ? 'write a comment'
-                              : 'be the first to comment!'
-                            : 'sign in to comment'
-                        }
-                        className='bg-transparent'
-                        disabled={!isSignedIn}
-                        value={post.commentInput}
-                        onChange={(e) => handleCommentInput(e, index)}
-                        onKeyPress={(e) => e.key === 'Enter' && userId && handleCommentSubmit(e, post, userId, index)}
-                      />
-                    </div>
-                  </div>*/}
+                  {post.comments?.map((comment, index) => (
+                    <CommentDiv comment={comment} index={index} />
+                  ))}
+                  
                   <CommentInputSection
                     post={post}
                     handleCommentInput={handleCommentInput}
