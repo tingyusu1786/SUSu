@@ -23,9 +23,9 @@ function CreatePost() {
     sugar: '',
     ice: '',
     size: '',
-    price: '',
+    price: '', //帶入的是number, 手調會變string
     orderNum: '',
-    rating: undefined,
+    rating: '',
     selfComment: '',
   };
   const userId = useAppSelector((state) => state.auth.userId);
@@ -115,8 +115,9 @@ function CreatePost() {
   }, [sizesOfItem]);
 
   const handleTagInputKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === 'Enter' && customTagsInput !== '') {
-      const newTags = [...customTags, customTagsInput];
+    const noSpacecustomTagsInput = customTagsInput.replace(/\s/g, '');
+    if (event.key === 'Enter' && noSpacecustomTagsInput !== '') {
+      const newTags = [...customTags, noSpacecustomTagsInput];
       const uniqueNewTags = Array.from(new Set(newTags));
       setCustomTags(uniqueNewTags);
       setCustomTagsInput('');
@@ -148,11 +149,11 @@ function CreatePost() {
       comments: [],
     });
 
-    const docRef = await addDoc(collection(db, 'posts'), postInputs);
+    await addDoc(collection(db, 'posts'), postInputs);
 
     setInputs(initialInput);
     setCustomTags([]);
-    inputs.rating !== undefined && updateRatings(inputs.brandId, inputs.itemId);
+    inputs.rating !== '' && updateRatings(inputs.brandId, inputs.itemId);
   };
 
   const updateRatings = async (brandId: string, itemId: string) => {
@@ -461,23 +462,26 @@ function CreatePost() {
             onChange={handleInputChange}
           />
           <label htmlFor='rating'>rating</label>
+          {/*todo: 變成星星*/}
+          {/*todo: 「不評分了」按鈕*/}
+          <div>
           <input
             name='rating'
             id='rating'
             type='number'
             max='5'
-            min='0'
+            min='1'
             className='border-2 border-solid border-gray-400 bg-gray-100'
             value={inputs.rating}
             onChange={handleInputChange}
           />
+          <small>{inputs.rating === '' && '（未評分）'}</small>
+          </div>
           <label htmlFor='selfComment'>說些話吧</label>
           <input
             name='selfComment'
             id='selfComment'
             type='text'
-            max='5'
-            min='0'
             className='border-2 border-solid border-gray-400 bg-gray-100'
             value={inputs.selfComment}
             onChange={handleInputChange}

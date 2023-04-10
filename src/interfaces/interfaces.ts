@@ -32,8 +32,8 @@ export interface Post {
   itemName?: string;
   likes?: Like[];
   orderNum?: string;
-  price?: string;
-  rating?: number | undefined;
+  price?: number | string; //手調之後就會變string
+  rating?: 0 | string; //手調之後就會變string
   selfComment?: string;
   sugar?: string;
   size?: string;
