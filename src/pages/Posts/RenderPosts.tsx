@@ -21,13 +21,15 @@ import {
   startAfter,
   arrayUnion,
   arrayRemove,
+  or,
+  and,
 } from 'firebase/firestore';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { showNotification, closeNotification } from '../../components/notification/notificationSlice';
 import { Post, Like, Comment } from '../../interfaces/interfaces';
 import { getTimeDiff } from '../../utils/common';
-import CommentInputSection from './CommentInputSection'
-import CommentDiv from './CommentDiv'
+import CommentInputSection from './CommentInputSection';
+import CommentDiv from './CommentDiv';
 
 function RenderPosts() {
   const dispatch = useAppDispatch();
@@ -47,6 +49,7 @@ function RenderPosts() {
 
   useEffect(() => {
     fetchPosts(lastKey, hashtagFilter);
+    console.log('[hashtagFilter, userId]', [hashtagFilter, userId]);
   }, [hashtagFilter]);
 
   // add listener for newly added post
@@ -111,25 +114,87 @@ function RenderPosts() {
 
     let q: Query<DocumentData>;
 
-    if (lastKey) {
-      if (hashtag) {
-        q = query(
-          postsRef,
+    if (lastKey && hashtag) {
+      q = query(
+        postsRef,
+        and(
           where('hashtags', 'array-contains', hashtag),
-          orderBy('timeCreated', 'desc'),
-          startAfter(lastKey),
-          limit(5)
-        );
-      } else {
-        q = query(postsRef, orderBy('timeCreated', 'desc'), startAfter(lastKey), limit(5));
-      }
+          or(where('audience', '==', 'public'), where('authorId', '==', userId))
+        ),
+        orderBy('timeCreated', 'desc'),
+        startAfter(lastKey),
+        limit(5)
+      );
+    } else if (lastKey) {
+      q = query(
+        postsRef,
+        and(or(where('audience', '==', 'public'), where('authorId', '==', userId))),
+        orderBy('timeCreated', 'desc'),
+        startAfter(lastKey),
+        limit(5)
+      );
+    } else if (hashtag) {
+      q = query(
+        postsRef,
+        and(
+          where('hashtags', 'array-contains', hashtag),
+          or(where('audience', '==', 'public'), where('authorId', '==', userId))
+        ),
+        orderBy('timeCreated', 'desc'),
+        limit(5)
+      );
     } else {
-      if (hashtag) {
-        q = query(postsRef, where('hashtags', 'array-contains', hashtag), orderBy('timeCreated', 'desc'), limit(5));
-      } else {
-        q = query(postsRef, orderBy('timeCreated', 'desc'), limit(5));
-      }
+      q = query(
+        postsRef,
+        and(or(where('audience', '==', 'public'), where('authorId', '==', userId))),
+        orderBy('timeCreated', 'desc'),
+        limit(5)
+      );
+      console.log('userId', userId);
     }
+
+
+    // if (lastKey) {
+    //   if (hashtag) {
+    //     q = query(
+    //       postsRef,
+    //       and(
+    //         where('hashtags', 'array-contains', hashtag),
+    //         or(where('audience', '==', 'public'), where('authorId', '==', userId))
+    //       ),
+    //       orderBy('timeCreated', 'desc'),
+    //       startAfter(lastKey),
+    //       limit(5)
+    //     );
+    //   } else {
+    //     q = query(
+    //       postsRef,
+    //       or(where('audience', '==', 'public'), where('authorId', '==', userId)),
+    //       orderBy('timeCreated', 'desc'),
+    //       startAfter(lastKey),
+    //       limit(5)
+    //     );
+    //   }
+    // } else {
+    //   if (hashtag) {
+    //     q = query(
+    //       postsRef,
+    //       and(
+    //         where('hashtags', 'array-contains', hashtag),
+    //         or(where('audience', '==', 'public'), where('authorId', '==', userId))
+    //       ),
+    //       orderBy('timeCreated', 'desc'),
+    //       limit(5)
+    //     );
+    //   } else {
+    //     q = query(
+    //       postsRef,
+    //       or(where('audience', '==', 'public'), where('authorId', '==', userId)),
+    //       orderBy('timeCreated', 'desc'),
+    //       limit(5)
+    //     );
+    //   }
+    // }
 
     const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);
     if (querySnapshot.docs.length === 0) {
@@ -148,10 +213,8 @@ function RenderPosts() {
     });
     const postsWithQueriedInfos = await Promise.all(postsArray);
     setPosts((posts) => {
-      console.log('set from fetchPosts');
-      // console.log('lastKey', lastKey);
-      // console.log('hashtag', hashtag);
       const newPosts = lastKey ? [...posts, ...postsWithQueriedInfos] : postsWithQueriedInfos;
+      console.log('set from fetchPosts', newPosts);
       const lastTimestamp = newPosts[newPosts.length - 1].timeCreated;
       setLastKey(lastTimestamp);
       return newPosts;
@@ -388,7 +451,7 @@ function RenderPosts() {
         {posts.map((post, index) => {
           return (
             <div className='relative w-96 rounded bg-gray-100 p-3' key={index}>
-              {/*<div>{`post id: ${post.postId}`}</div>*/}
+              {<div>{`audience: ${post.audience}`}</div>}
               {post.authorId === userId && (
                 <button className='absolute right-1 top-1' onClick={() => handleDeletePost(post, index)}>
                   delete post
@@ -455,7 +518,7 @@ function RenderPosts() {
                   {post.comments?.map((comment, index) => (
                     <CommentDiv comment={comment} index={index} />
                   ))}
-                  
+
                   <CommentInputSection
                     post={post}
                     handleCommentInput={handleCommentInput}

@@ -101,6 +101,7 @@ function Profile() {
       {profileUserPosts.map((post, index) => {
         return (
           <div className='w-4/5 rounded bg-gray-100 p-3 my-1' key={index}>
+            <div>{`audience: ${post.audience}`}</div>
             <div>
               <span className='text-xl after:content-["の"]'>{post.brandName}</span>
               <span className='text-xl  font-bold'>{post.itemName}</span>
