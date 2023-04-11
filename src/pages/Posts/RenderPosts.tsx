@@ -273,20 +273,14 @@ function RenderPosts() {
     const curretTime = new Date();
     const timestamp = Timestamp.fromDate(curretTime);
     const isComment = type === 'comment';
-    const newContent = isComment
-      ? {
-          content: post.commentInput,
-          authorName: currentUserName,
-          authorPhoto: currentUserPhotoURL,
-        }
-      : {
-          authorName: currentUserName,
-          authorPhoto: currentUserPhotoURL,
-        };
     const newEntry = {
       authorId: userId,
       timeCreated: timestamp,
-      ...newContent,
+      ...(isComment
+        ? { content: post.commentInput }
+        : {}),
+      authorName: currentUserName,
+      authorPhoto: currentUserPhotoURL,
     };
     const targetArray = isComment ? post.comments : post.likes;
     const hasLiked = isComment ? undefined : targetArray?.some((like) => like.authorId === userId);
@@ -394,7 +388,6 @@ function RenderPosts() {
       >
         <option value='all'>（all）</option>
         <option value='friends'>（friends）</option>
-        <option value='self'>（self）</option>
       </select>
       {hashtagFilter && (
         <div>

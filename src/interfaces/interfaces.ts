@@ -15,11 +15,11 @@ export interface User {
 export interface Notification {
   authorId: string;
   authorName: string;
-  authorPhoto: string;
+  authorPhoto?: string;
   timeCreated: Timestamp;
   content?: string;
-  type: 'like' | 'comment';
-  postId: string;
+  type: 'like' | 'comment' | 'follow';
+  postId?: string;
   unread: boolean;
 }
 

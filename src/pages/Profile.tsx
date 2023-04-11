@@ -1,11 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { db } from '../services/firebase';
-import { doc, getDoc, collection, query, where, getDocs, orderBy, QuerySnapshot, or, and } from 'firebase/firestore';
+import {
+  doc,
+  getDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+  orderBy,
+  QuerySnapshot,
+  or,
+  and,
+  updateDoc,
+  arrayUnion,
+  arrayRemove
+} from 'firebase/firestore';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
 import { openAuthWindow } from '../components/auth/authSlice';
 import { showNotification } from '../components/notification/notificationSlice';
 import { User } from '../interfaces/interfaces';
+import { Notification } from '../interfaces/interfaces';
 
 function Profile() {
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
@@ -13,6 +28,7 @@ function Profile() {
   const isLoading = useAppSelector((state) => state.auth.isLoading);
   const dispatch = useAppDispatch();
   const [profileUser, setProfileUser] = useState<User>();
+  const [isFollowing, setIsFollowing] = useState(false);
   const [profileUserPosts, setProfileUserPosts] = useState<any[]>([]);
   const { profileUserId } = useParams<{ profileUserId: string }>();
 
@@ -21,12 +37,17 @@ function Profile() {
     const fetchProfileUser = async (profileUserId: string) => {
       const profileUserInfo = await getProfileUser(profileUserId);
       profileUserInfo && setProfileUser(profileUserInfo);
-      
+
       const posts = await getProfileUserPosts(profileUserId);
       setProfileUserPosts(posts);
     };
     profileUserId && fetchProfileUser(profileUserId);
   }, [profileUserId, currentUserId]);
+
+  useEffect(() => {
+    const isFollowing = checkIsFollowing();
+    setIsFollowing(isFollowing);
+  }, []);
 
   const getProfileUser = async (id: string) => {
     const profileUserDocRef = doc(db, 'users', id);
@@ -95,17 +116,63 @@ function Profile() {
     }
   };
 
+  const handleFollow = async () => {
+    if (!profileUserId || !currentUserId) {
+      return;
+    }
+    setIsFollowing((prev) => !prev);
+    const profileUserRef = doc(db, 'users', profileUserId);
+    const currentUserRef = doc(db, 'users', currentUserId);
+    const newEntry = {
+      authorId: currentUserId,
+      authorName: currentUserName,
+      timeCreated: new Date(),
+      type: 'follow',
+      unread: true,
+    };
+    if (!isFollowing) {
+      await updateDoc(profileUserRef, { followers: arrayUnion(currentUserId) });
+      await updateDoc(currentUserRef, { following: arrayUnion(profileUserId) });
+      await updateDoc(profileUserRef, { notifications: arrayUnion(newEntry) });
+    } else {
+      await updateDoc(profileUserRef, { followers: arrayRemove(currentUserId) });
+      await updateDoc(currentUserRef, { following: arrayRemove(profileUserId) });
+      const profileUserData = await getDoc(profileUserRef);
+      const originNotifications = profileUserData.data()?.notifications;
+      if (!originNotifications) return;
+      const notificationToRemove = originNotifications.find(
+        (notification: Notification) =>
+          notification.authorId === currentUserId && notification.type === 'follow'
+      );
+      await updateDoc(profileUserRef, { notifications: arrayRemove(notificationToRemove) });
+    }
+    // if isFollowing
+    // update自己
+    // update別人
+    // 通知
+  };
+
+  const checkIsFollowing = () => {
+    if (profileUserId === currentUserId) {
+      return false;
+    }
+    if (currentUserId && profileUser?.followers?.includes(currentUserId)) {
+      return true;
+    }
+    return false;
+  };
 
   if (isLoading) {
-    return <div>loading</div>
+    return <div>loading</div>;
   }
 
+  // todo: redirect if null
   if (profileUserId === 'null') {
     return (
       <div className='text-center font-heal text-3xl'>
         <button className='underline' onClick={() => dispatch(openAuthWindow())}>
           sign in
-        </button>{' '}
+        </button>
         to see your profile 🤗
       </div>
     );
@@ -126,6 +193,16 @@ function Profile() {
         <h3 className='text-2xl'>This is {profileUser.name}'s Page</h3>
         <div className='text-sm text-gray-400'>{profileUser.email}</div>
         <div>建立時間：{profileUser.timeCreated?.toDate().toLocaleString()}</div>
+        {profileUserId !== currentUserId && currentUserId !== undefined && (
+          <button
+            className={`box-border rounded-lg border-2 border-solid px-2 ${
+              isFollowing ? 'border-lime-800' : 'border-white bg-lime-800 text-white'
+            }`}
+            onClick={handleFollow}
+          >
+            follow
+          </button>
+        )}
       </div>
       {profileUserPosts.map((post, index) => {
         return (
