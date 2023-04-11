@@ -40,6 +40,16 @@ const dbApi = {
     const docField = docData[field];
     return docField;
   },
+  async getUserField(userId:string,field: string) {
+    const userDoc = await getDoc(doc(db,'users',userId));
+    if (!userDoc.exists()) {
+      console.log(`No such user!(${userId})`);
+      return null;
+    }
+    const docData = userDoc.data();
+    const docField = docData[field];
+    return docField;
+  },
 };
 
 export default dbApi;
