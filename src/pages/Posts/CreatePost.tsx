@@ -28,7 +28,7 @@ function CreatePost() {
     rating: '',
     selfComment: '',
   };
-  const userId = useAppSelector((state) => state.auth.userId);
+  const currentUserId = useAppSelector((state) => state.auth.currentUserId);
   const [customTagsInput, setCustomTagsInput] = useState('');
   const [customTags, setCustomTags] = useState<string[]>([]);
   const [autoTags, setAutoTags] = useState<string[]>([]);
@@ -142,7 +142,7 @@ function CreatePost() {
       return;
     }
     const postInputs = Object.assign({}, inputs, {
-      authorId: userId,
+      authorId: currentUserId,
       hashtags: customTags.concat(autoTags),
       timeCreated: new Date(), //serverTimestamp()會lag
       likes: [],
@@ -319,7 +319,7 @@ function CreatePost() {
   return (
     <div className='flex flex-col items-center justify-center'>
       <h1 className='font-heal text-3xl'>create post</h1>
-      {userId ? (
+      {currentUserId ? (
         <div className='flex flex-col items-start gap-3'>
           <select
             name='audience'

@@ -32,9 +32,9 @@ import { Notification } from '../interfaces/interfaces';
 
 function Notifications() {
   const dispatch = useAppDispatch();
-  const currentUserId = useAppSelector((state) => state.auth.userId);
-  const currentUserName = useAppSelector((state) => state.auth.userName);
-  const currentUserPhotoURL = useAppSelector((state) => state.auth.photoURL);
+  const currentUserId = useAppSelector((state) => state.auth.currentUserId);
+  const currentUserName = useAppSelector((state) => state.auth.currentUserName);
+  const currentUserPhotoURL = useAppSelector((state) => state.auth.currentUserPhotoURL);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const initSnap = useRef(true);

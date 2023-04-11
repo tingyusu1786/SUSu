@@ -1,46 +1,59 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { db } from '../services/firebase';
-import { doc, getDoc, collection, query, where, getDocs, orderBy, QuerySnapshot } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, getDocs, orderBy, QuerySnapshot, or, and } from 'firebase/firestore';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
 import { openAuthWindow } from '../components/auth/authSlice';
 import { showNotification } from '../components/notification/notificationSlice';
+import { User } from '../interfaces/interfaces';
 
 function Profile() {
-  const currentUserId = useAppSelector((state) => state.auth.userId);
-  const userName = useAppSelector((state) => state.auth.userName);
-  const photoURL = useAppSelector((state) => state.auth.photoURL);
+  const currentUserId = useAppSelector((state) => state.auth.currentUserId);
+  const currentUserName = useAppSelector((state) => state.auth.currentUserName);
+  const isLoading = useAppSelector((state) => state.auth.isLoading);
   const dispatch = useAppDispatch();
-  const [profileUser, setProfileUser] = useState<any>({});
+  const [profileUser, setProfileUser] = useState<User>();
   const [profileUserPosts, setProfileUserPosts] = useState<any[]>([]);
   const { profileUserId } = useParams<{ profileUserId: string }>();
 
   useEffect(() => {
-    const fetchProfileUser = async () => {
-      if (profileUserId) {
-        const profileUserInfo = await getProfileUserInfo(profileUserId);
-        const posts = await getProfileUserPosts(profileUserId);
-        setProfileUser(profileUserInfo);
-        setProfileUserPosts(posts);
-      }
+    if (isLoading) return;
+    const fetchProfileUser = async (profileUserId: string) => {
+      const profileUserInfo = await getProfileUser(profileUserId);
+      profileUserInfo && setProfileUser(profileUserInfo);
+      
+      const posts = await getProfileUserPosts(profileUserId);
+      setProfileUserPosts(posts);
     };
-    fetchProfileUser();
-  }, []);
+    profileUserId && fetchProfileUser(profileUserId);
+  }, [profileUserId, currentUserId]);
 
-  const getProfileUserInfo = async (id: string) => {
+  const getProfileUser = async (id: string) => {
     const profileUserDocRef = doc(db, 'users', id);
     const profileUserDoc = await getDoc(profileUserDocRef);
     if (!profileUserDoc.exists()) {
       // alert('No such document!');
-      return '';
+      return;
     }
-    const profileUserData = profileUserDoc.data();
+    const profileUserData = profileUserDoc.data() as User | undefined;
     return profileUserData;
   };
 
   const getProfileUserPosts = async (profileUserId: string) => {
     const postsRef = collection(db, 'posts');
-    const q = query(postsRef, where('authorId', '==', profileUserId), orderBy('timeCreated', 'desc'));
+    console.log(currentUserId);
+
+    let q;
+    if (profileUserId === currentUserId) {
+      q = query(postsRef, where('authorId', '==', profileUserId), orderBy('timeCreated', 'desc'));
+    } else {
+      q = query(
+        postsRef,
+        and(where('audience', '==', 'public'), where('authorId', '==', profileUserId)),
+        orderBy('timeCreated', 'desc')
+      );
+    }
+
     const querySnapshot: QuerySnapshot = await getDocs(q);
     const posts = querySnapshot.docs.map(async (change) => {
       const postData = change.data();
@@ -50,8 +63,8 @@ function Profile() {
     });
 
     const postsWithQueriedInfos = await Promise.all(posts);
+    console.log(postsWithQueriedInfos);
     return postsWithQueriedInfos;
-    // setProfileUserPosts(postsWithQueriedInfos);
   };
 
   const getName = async (id: string, type: string) => {
@@ -82,25 +95,41 @@ function Profile() {
     }
   };
 
+
+  if (isLoading) {
+    return <div>loading</div>
+  }
+
   if (profileUserId === 'null') {
-    return <div className='text-center font-heal text-3xl'><button className='underline' onClick={() => dispatch(openAuthWindow())}>sign in</button> to see your profile 🤗</div>
+    return (
+      <div className='text-center font-heal text-3xl'>
+        <button className='underline' onClick={() => dispatch(openAuthWindow())}>
+          sign in
+        </button>{' '}
+        to see your profile 🤗
+      </div>
+    );
+  }
+
+  if (profileUser === undefined) {
+    return <div>user not found ~~~ see these users to follow:</div>;
   }
 
   return (
     <div className='m-10 flex flex-col items-center'>
-      <Link to='/setting' className='bg-gray-600 text-white rounded'>
+      <Link to='/setting' className='rounded bg-gray-600 text-white'>
         setting
       </Link>
 
       <div className='flex flex-col items-center'>
-        <img className='h-32 w-32 rounded-full object-cover' src={profileUser.photoURL} alt={photoURL || ''} />
+        <img className='h-32 w-32 rounded-full object-cover' src={profileUser.photoURL} alt={profileUser.name} />
         <h3 className='text-2xl'>This is {profileUser.name}'s Page</h3>
         <div className='text-sm text-gray-400'>{profileUser.email}</div>
         <div>建立時間：{profileUser.timeCreated?.toDate().toLocaleString()}</div>
       </div>
       {profileUserPosts.map((post, index) => {
         return (
-          <div className='w-4/5 rounded bg-gray-100 p-3 my-1' key={index}>
+          <div className='my-1 w-4/5 rounded bg-gray-100 p-3' key={index}>
             <div>{`audience: ${post.audience}`}</div>
             <div>
               <span className='text-xl after:content-["の"]'>{post.brandName}</span>
@@ -125,7 +154,7 @@ function Profile() {
           </div>
         );
       })}
-      </div>
+    </div>
   );
 }
 

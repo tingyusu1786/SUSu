@@ -21,12 +21,12 @@ import { useNavigate } from "react-router-dom";
 
 function Header() {
   const dispatch = useAppDispatch();
-  const userId = useAppSelector((state) => state.auth.userId);
+  const userId = useAppSelector((state) => state.auth.currentUserId);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
-  const loading = useAppSelector((state) => state.auth.loading);
+  const loading = useAppSelector((state) => state.auth.isLoading);
   const error = useAppSelector((state) => state.auth.error);
-  const userName = useAppSelector((state) => state.auth.userName);
-  const photoURL = useAppSelector((state) => state.auth.photoURL);
+  const userName = useAppSelector((state) => state.auth.currentUserName);
+  const photoURL = useAppSelector((state) => state.auth.currentUserPhotoURL);
   const isAuthWindow = useAppSelector((state) => state.auth.isAuthWindow);
   const isNotification = useAppSelector((state) => state.notification.isShown);
   const navigate = useNavigate();

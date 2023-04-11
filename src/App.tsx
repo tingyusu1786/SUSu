@@ -31,12 +31,11 @@ function App() {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
-  const userId = useAppSelector((state) => state.auth.userId);
+  const isLoading = useAppSelector((state) => state.auth.isLoading);
+  const userId = useAppSelector((state) => state.auth.currentUserId);
 
   useEffect(() => {
-    dispatch(signInStart());
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      dispatch(signInStart());
       if (user) {
         const getUser = async () => {
           const userName = await dbApi.getUserField(user.uid, 'name');
@@ -51,12 +50,16 @@ function App() {
     return unsubscribe;
   }, []);
 
-  useEffect(() => {
+  // useEffect(() => {
     // Navigate to the current URL when the authentication state changes
     // userId === null && navigate(window.location.pathname);
     // Refresh the page when the authentication state changes
     // window.location.reload();
-  }, [isSignedIn]);
+  // }, [isSignedIn]);
+
+  if (isLoading) {
+    return (<div>loading...</div>)
+  }
 
   return (
     <>

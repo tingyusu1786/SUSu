@@ -1,10 +1,34 @@
 import { Timestamp } from 'firebase/firestore';
 
+
+export interface User {
+  name: string;
+  email: string;
+  photoURL: string;
+  status?: string;
+  timeCreated: Timestamp;
+  followers?: string[];
+  following?: string[];
+  notifications?: Notification[];
+}
+
+export interface Notification {
+  authorId: string;
+  authorName: string;
+  authorPhoto: string;
+  timeCreated: Timestamp;
+  content?: string;
+  type: 'like' | 'comment';
+  postId: string;
+  unread: boolean;
+}
+
 export interface Like {
   authorId: string;
   authorName: string;
   authorPhoto: string;
   timeCreated: Timestamp;
+  type?: 'like';
 }
 
 export interface Comment {
@@ -12,6 +36,7 @@ export interface Comment {
   authorName: string;
   authorPhoto: string;
   timeCreated: Timestamp;
+  type?: 'comment';
   content: string;
 }
 
@@ -38,15 +63,4 @@ export interface Post {
   sugar?: string;
   size?: string;
   timeCreated?: Timestamp;
-}
-
-export interface Notification {
-  authorId: string;
-  authorName: string;
-  authorPhoto: string;
-  content?: string;
-  timeCreated: Timestamp;
-  type: 'like' | 'comment;';
-  postId: string;
-  unread: boolean;
 }

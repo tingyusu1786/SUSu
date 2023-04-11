@@ -17,9 +17,9 @@ interface PostProps {
 }
 
 const CommentInputSection: React.FC<PostProps> = ({ post, handleCommentInput, handleCommentSubmit, index }) => {
-  const userId = useAppSelector((state) => state.auth.userId);
-  const userName = useAppSelector((state) => state.auth.userName);
-  const userPhotoURL = useAppSelector((state) => state.auth.photoURL);
+  const userId = useAppSelector((state) => state.auth.currentUserId);
+  const userName = useAppSelector((state) => state.auth.currentUserName);
+  const userPhotoURL = useAppSelector((state) => state.auth.currentUserPhotoURL);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
 
   return (

@@ -22,14 +22,15 @@ import {
   arrayRemove,
 } from 'firebase/firestore';
 
-interface dbApi {
-}
+interface dbApi {}
 
 const dbApi = {
+  // todo: 應該要讓page都不用用到doc, db, ...
   async getDoc(docRef: DocumentReference) {
     const doc = await getDoc(docRef);
     return doc;
   },
+  // todo: 應該要讓page都不用用到doc, db, ...
   async getDocField(docRef: DocumentReference, field: string) {
     const doc = await getDoc(docRef);
     if (!doc.exists()) {
@@ -40,8 +41,8 @@ const dbApi = {
     const docField = docData[field];
     return docField;
   },
-  async getUserField(userId:string,field: string) {
-    const userDoc = await getDoc(doc(db,'users',userId));
+  async getUserField(userId: string, field: string) {
+    const userDoc = await getDoc(doc(db, 'users', userId));
     if (!userDoc.exists()) {
       console.log(`No such user!(${userId})`);
       return null;
@@ -50,6 +51,28 @@ const dbApi = {
     const docField = docData[field];
     return docField;
   },
+  async getPostsWhere(userId?: string, brandId?: string, itemId?: string) {
+
+  }
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export default dbApi;

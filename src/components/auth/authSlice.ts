@@ -4,21 +4,21 @@ import nullPhoto from '../../images/nullPhoto.png';
 
 export interface AuthState {
   isSignedIn: boolean;
-  loading: boolean;
+  isLoading: boolean;
   error: string | null;
-  userId: string | null;
-  userName: string | null;
-  photoURL: string;
+  currentUserId: string | null;
+  currentUserName: string | null;
+  currentUserPhotoURL: string;
   isAuthWindow: boolean;
 }
 
 const initialState: AuthState = {
   isSignedIn: false,
-  loading: false,
+  isLoading: true,
   error: null,
-  userId: null,
-  userName: null,
-  photoURL: nullPhoto,
+  currentUserId: null,
+  currentUserName: null,
+  currentUserPhotoURL: nullPhoto,
   isAuthWindow: false,
 };
 
@@ -27,36 +27,36 @@ export const authSlice = createSlice({
   initialState,
   reducers: {
     signInStart: (state) => {
-      state.loading = true;
+      state.isLoading = true;
       state.error = null;
     },
     signInSuccess: (state, action) => {
-      state.loading = false;
+      state.isLoading = false;
       state.isSignedIn = true;
       state.isAuthWindow = false;
-      state.userId = action.payload.id;
-      state.userName = action.payload.name;
-      state.photoURL = action.payload.photoURL;
+      state.currentUserId = action.payload.id;
+      state.currentUserName = action.payload.name;
+      state.currentUserPhotoURL = action.payload.photoURL;
     },
     signInFail: (state, action) => {
-      state.loading = false;
+      state.isLoading = false;
       state.isSignedIn = false;
       state.error = action.payload;
     },
     signOutStart: (state) => {
-      state.loading = true;
+      state.isLoading = true;
       state.error = null;
     },
     signOutSuccess: (state) => {
-      state.loading = false;
+      state.isLoading = false;
       state.isSignedIn = false;
       state.isAuthWindow = false;
-      state.userId = null;
-      state.userName = null;
-      state.photoURL = nullPhoto;
+      state.currentUserId = null;
+      state.currentUserName = null;
+      state.currentUserPhotoURL = nullPhoto;
     },
     signOutFail: (state, action) => {
-      state.loading = false;
+      state.isLoading = false;
       state.isSignedIn = true;
       state.error = action.payload;
     },

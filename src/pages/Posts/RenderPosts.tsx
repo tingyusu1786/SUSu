@@ -33,11 +33,11 @@ import CommentDiv from './CommentDiv';
 
 function RenderPosts() {
   const dispatch = useAppDispatch();
-  const loading = useAppSelector((state) => state.auth.loading);
+  const isLoading = useAppSelector((state) => state.auth.isLoading);
 
-  const userId = useAppSelector((state) => state.auth.userId);
-  const userName = useAppSelector((state) => state.auth.userName);
-  const userPhotoURL = useAppSelector((state) => state.auth.photoURL);
+  const currentUserId = useAppSelector((state) => state.auth.currentUserId);
+  const currentUserName = useAppSelector((state) => state.auth.currentUserName);
+  const currentUserPhotoURL = useAppSelector((state) => state.auth.currentUserPhotoURL);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
 
   const [posts, setPosts] = useState<Post[]>([]);
@@ -49,24 +49,14 @@ function RenderPosts() {
   const initSnap = useRef(true);
 
   useEffect(() => {
-    if (loading) {
-      return;
-    }
     fetchFivePosts(lastKey, hashtagFilter);
     console.log('hashtagFilter', hashtagFilter);
   }, [hashtagFilter]);
 
-  useEffect(() => {
-    if (loading) {
-      return;
-    }
-    fetchFivePosts(lastKey, hashtagFilter);
-    console.log('userId &&', userId);
-  }, [userId]);
-
   // add listener for newly added post
   useEffect(() => {
     const postsCollection = collection(db, 'posts');
+    // todo
     const q = query(postsCollection, orderBy('timeCreated', 'desc'));
 
     const unsubscribe = onSnapshot(q, async (querySnapshot: QuerySnapshot) => {
@@ -101,12 +91,14 @@ function RenderPosts() {
     return unsubscribe;
   }, []);
 
+  // 有新文之後社下一個key
   useEffect(() => {
     if (posts.length == 0) return;
     let lastTimestamp = posts[posts.length - 1].timeCreated;
     setLastKey(lastTimestamp);
   }, [posts]);
 
+  // scroll listener
   useEffect(() => {
     const handleScroll = () => {
       const isBottom = window.innerHeight + window.pageYOffset >= document.body.offsetHeight;
@@ -124,8 +116,6 @@ function RenderPosts() {
 
   const fetchFivePosts = async (lastKey: Timestamp | undefined, hashtag: string | undefined) => {
     const postsRef = collection(db, 'posts');
-    // console.log('[hashtagFilter, userId](fetchFivePosts)', [hashtagFilter, userId]);
-    console.log('fetchFivePosts, userId', userId);
 
     let q: Query<DocumentData>;
 
@@ -134,7 +124,7 @@ function RenderPosts() {
         postsRef,
         and(
           where('hashtags', 'array-contains', hashtag),
-          or(where('audience', '==', 'public'), where('authorId', '==', userId))
+          or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
         ),
         orderBy('timeCreated', 'desc'),
         startAfter(lastKey),
@@ -143,7 +133,7 @@ function RenderPosts() {
     } else if (lastKey) {
       q = query(
         postsRef,
-        or(where('audience', '==', 'public'), where('authorId', '==', userId)),
+        or(where('audience', '==', 'public'), where('authorId', '==', currentUserId)),
         orderBy('timeCreated', 'desc'),
         startAfter(lastKey),
         limit(5)
@@ -153,7 +143,7 @@ function RenderPosts() {
         postsRef,
         and(
           where('hashtags', 'array-contains', hashtag),
-          or(where('audience', '==', 'public'), where('authorId', '==', userId))
+          or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
         ),
         orderBy('timeCreated', 'desc'),
         limit(5)
@@ -161,7 +151,7 @@ function RenderPosts() {
     } else {
       q = query(
         postsRef,
-        or(where('audience', '==', 'public'), where('authorId', '==', userId)),
+        or(where('audience', '==', 'public'), where('authorId', '==', currentUserId)),
         orderBy('timeCreated', 'desc'),
         limit(5)
       );
@@ -185,7 +175,7 @@ function RenderPosts() {
     const postsWithQueriedInfos = await Promise.all(postsArray);
     setPosts((posts) => {
       const newPosts = lastKey ? [...posts, ...postsWithQueriedInfos] : postsWithQueriedInfos;
-      console.log(`set from fetchFivePosts,${userId}`, newPosts);
+      console.log(`set from fetchFivePosts,${currentUserId}`, newPosts);
       return newPosts;
     });
   };
@@ -286,12 +276,12 @@ function RenderPosts() {
     const newContent = isComment
       ? {
           content: post.commentInput,
-          authorName: userName,
-          authorPhoto: userPhotoURL,
+          authorName: currentUserName,
+          authorPhoto: currentUserPhotoURL,
         }
       : {
-          authorName: userName,
-          authorPhoto: userPhotoURL,
+          authorName: currentUserName,
+          authorPhoto: currentUserPhotoURL,
         };
     const newEntry = {
       authorId: userId,
@@ -332,7 +322,7 @@ function RenderPosts() {
     if (!originNotifications) return;
     const notificationToRemove = originNotifications.find(
       (notification: any) =>
-        notification.postId === postId && notification.authorId === userId && notification.type === 'like'
+        notification.postId === postId && notification.authorId === currentUserId && notification.type === 'like'
     );
 
     await updateDoc(userRef, {
@@ -386,8 +376,8 @@ function RenderPosts() {
     dispatch(showNotification({ type: 'success', content: 'hihi' }));
     setTimeout(() => dispatch(closeNotification()), 5000);
   };
-  
-  if (loading) {
+
+  if (isLoading) {
     return <div>loading...</div>;
   }
 
@@ -425,7 +415,7 @@ function RenderPosts() {
           return (
             <div className='relative w-96 rounded bg-gray-100 p-3' key={index}>
               {<div>{`audience: ${post.audience}`}</div>}
-              {post.authorId === userId && (
+              {post.authorId === currentUserId && (
                 <button className='absolute right-1 top-1' onClick={() => handleDeletePost(post, index)}>
                   delete post
                 </button>
@@ -468,10 +458,10 @@ function RenderPosts() {
               <div className='flex gap-3'>
                 <button
                   onClick={() => {
-                    userId && handleLike(post, userId, index);
+                    currentUserId && handleLike(post, currentUserId, index);
                   }}
                   className={`rounded border-2 border-solid border-gray-400 ${
-                    userId && post.likes?.some((like) => like.authorId === userId) && 'bg-gray-800 text-white'
+                    currentUserId && post.likes?.some((like) => like.authorId === currentUserId) && 'bg-gray-800 text-white'
                   }`}
                 >
                   likes

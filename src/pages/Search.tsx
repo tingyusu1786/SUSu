@@ -91,9 +91,6 @@ function PostHit({ hit }: any) {
 
 function Search() {
   const dispatch = useAppDispatch();
-  const currentUserId = useAppSelector((state) => state.auth.userId);
-  const currentUserName = useAppSelector((state) => state.auth.userName);
-  const currentUserPhotoURL = useAppSelector((state) => state.auth.photoURL);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
   const [tab, setTab] = useState<'all'|'brands'|'users'|'posts'|'items'>('brands');
 
