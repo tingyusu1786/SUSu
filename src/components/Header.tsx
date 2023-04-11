@@ -34,13 +34,13 @@ function Header() {
   function handleRedirect() {
     navigate("/search");
   }
-
-  useEffect(() => {
-    const userData = localStorage.getItem('userData');
-    if (userData) {
-      dispatch(signInSuccess(JSON.parse(localStorage.getItem('userData') as string)));
-    }
-  }, []);
+  // todo: delete
+  // useEffect(() => {
+  //   const userData = localStorage.getItem('userData');
+  //   if (userData) {
+  //     dispatch(signInSuccess(JSON.parse(localStorage.getItem('userData') as string)));
+  //   }
+  // }, []);
 
   const fireNotice = (content: string) => {
     dispatch(showNotification({ type: 'success', content }));

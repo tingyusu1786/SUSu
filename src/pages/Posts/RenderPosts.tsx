@@ -33,6 +33,7 @@ import CommentDiv from './CommentDiv';
 
 function RenderPosts() {
   const dispatch = useAppDispatch();
+  const loading = useAppSelector((state) => state.auth.loading);
 
   const userId = useAppSelector((state) => state.auth.userId);
   const userName = useAppSelector((state) => state.auth.userName);
@@ -48,9 +49,20 @@ function RenderPosts() {
   const initSnap = useRef(true);
 
   useEffect(() => {
-    fetchPosts(lastKey, hashtagFilter);
-    console.log('[hashtagFilter, userId]', [hashtagFilter, userId]);
+    if (loading) {
+      return;
+    }
+    fetchFivePosts(lastKey, hashtagFilter);
+    console.log('hashtagFilter', hashtagFilter);
   }, [hashtagFilter]);
+
+  useEffect(() => {
+    if (loading) {
+      return;
+    }
+    fetchFivePosts(lastKey, hashtagFilter);
+    console.log('userId &&', userId);
+  }, [userId]);
 
   // add listener for newly added post
   useEffect(() => {
@@ -75,7 +87,7 @@ function RenderPosts() {
       );
 
       const postsWithQueriedInfos = await Promise.all(newPosts);
-      console.log('postsWithQueriedInfos', postsWithQueriedInfos);
+      // console.log('postsWithQueriedInfos', postsWithQueriedInfos);
 
       !initSnap.current &&
         setPosts((posts) => {
@@ -99,7 +111,8 @@ function RenderPosts() {
     const handleScroll = () => {
       const isBottom = window.innerHeight + window.pageYOffset >= document.body.offsetHeight;
       if (isBottom) {
-        fetchPosts(lastKey, hashtagFilter);
+        fetchFivePosts(lastKey, hashtagFilter);
+        console.log('isBottom');
       }
     };
 
@@ -109,8 +122,10 @@ function RenderPosts() {
     };
   }, [lastKey, hashtagFilter]);
 
-  const fetchPosts = async (lastKey: Timestamp | undefined, hashtag: string | undefined) => {
+  const fetchFivePosts = async (lastKey: Timestamp | undefined, hashtag: string | undefined) => {
     const postsRef = collection(db, 'posts');
+    // console.log('[hashtagFilter, userId](fetchFivePosts)', [hashtagFilter, userId]);
+    console.log('fetchFivePosts, userId', userId);
 
     let q: Query<DocumentData>;
 
@@ -128,7 +143,7 @@ function RenderPosts() {
     } else if (lastKey) {
       q = query(
         postsRef,
-        and(or(where('audience', '==', 'public'), where('authorId', '==', userId))),
+        or(where('audience', '==', 'public'), where('authorId', '==', userId)),
         orderBy('timeCreated', 'desc'),
         startAfter(lastKey),
         limit(5)
@@ -146,55 +161,11 @@ function RenderPosts() {
     } else {
       q = query(
         postsRef,
-        and(or(where('audience', '==', 'public'), where('authorId', '==', userId))),
+        or(where('audience', '==', 'public'), where('authorId', '==', userId)),
         orderBy('timeCreated', 'desc'),
         limit(5)
       );
-      console.log('userId', userId);
     }
-
-
-    // if (lastKey) {
-    //   if (hashtag) {
-    //     q = query(
-    //       postsRef,
-    //       and(
-    //         where('hashtags', 'array-contains', hashtag),
-    //         or(where('audience', '==', 'public'), where('authorId', '==', userId))
-    //       ),
-    //       orderBy('timeCreated', 'desc'),
-    //       startAfter(lastKey),
-    //       limit(5)
-    //     );
-    //   } else {
-    //     q = query(
-    //       postsRef,
-    //       or(where('audience', '==', 'public'), where('authorId', '==', userId)),
-    //       orderBy('timeCreated', 'desc'),
-    //       startAfter(lastKey),
-    //       limit(5)
-    //     );
-    //   }
-    // } else {
-    //   if (hashtag) {
-    //     q = query(
-    //       postsRef,
-    //       and(
-    //         where('hashtags', 'array-contains', hashtag),
-    //         or(where('audience', '==', 'public'), where('authorId', '==', userId))
-    //       ),
-    //       orderBy('timeCreated', 'desc'),
-    //       limit(5)
-    //     );
-    //   } else {
-    //     q = query(
-    //       postsRef,
-    //       or(where('audience', '==', 'public'), where('authorId', '==', userId)),
-    //       orderBy('timeCreated', 'desc'),
-    //       limit(5)
-    //     );
-    //   }
-    // }
 
     const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);
     if (querySnapshot.docs.length === 0) {
@@ -214,9 +185,7 @@ function RenderPosts() {
     const postsWithQueriedInfos = await Promise.all(postsArray);
     setPosts((posts) => {
       const newPosts = lastKey ? [...posts, ...postsWithQueriedInfos] : postsWithQueriedInfos;
-      console.log('set from fetchPosts', newPosts);
-      const lastTimestamp = newPosts[newPosts.length - 1].timeCreated;
-      setLastKey(lastTimestamp);
+      console.log(`set from fetchFivePosts,${userId}`, newPosts);
       return newPosts;
     });
   };
@@ -417,6 +386,10 @@ function RenderPosts() {
     dispatch(showNotification({ type: 'success', content: 'hihi' }));
     setTimeout(() => dispatch(closeNotification()), 5000);
   };
+  
+  if (loading) {
+    return <div>loading...</div>;
+  }
 
   return (
     <div className='flex flex-col items-center justify-center'>

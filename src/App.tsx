@@ -1,7 +1,20 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 import Header from './components/Header';
+import { useAppSelector, useAppDispatch } from './app/hooks';
+import {
+  signInStart,
+  signInSuccess,
+  signInFail,
+  signOutStart,
+  signOutSuccess,
+  signOutFail,
+  openAuthWindow,
+  closeAuthWindow,
+} from './components/auth/authSlice';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from './services/firebase';
 
 import algoliasearch from 'algoliasearch/lite';
 import { InstantSearch, SearchBox } from 'react-instantsearch-hooks-web';
@@ -14,6 +27,31 @@ const searchClient = algoliasearch('CQCQ45KM4I', '343b0909e26f2653041deba6e5b7b4
 // );
 
 function App() {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
+  const userId = useAppSelector((state) => state.auth.userId);
+
+  useEffect(() => {
+    dispatch(signInStart());
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      dispatch(signInStart());
+      // console.log('user change', user);
+      if (user) {
+        dispatch(signInSuccess({ id: user.uid, name: user.displayName }));
+      } else {dispatch(signOutSuccess())}
+    });
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    // Navigate to the current URL when the authentication state changes
+    // userId === null && navigate(window.location.pathname);
+    // Refresh the page when the authentication state changes
+    // window.location.reload();
+  }, [isSignedIn]);
+
+
   return (
     <>
       {/*<Reset />*/}

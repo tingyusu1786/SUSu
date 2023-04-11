@@ -2,9 +2,12 @@ import React, { useState, useEffect } from 'react';
 import {
   db,
 } from '../../services/firebase'; //todo
+import { useNavigate } from 'react-router-dom';
 import storageApi from '../../utils/storageApi';
 import authApi from '../../utils/authApi';
 import { doc, setDoc, getDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../../services/firebase';
 
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import {
@@ -21,8 +24,11 @@ import {
 export function Authentication() {
   const dispatch = useAppDispatch();
   const isAuthWindow = useAppSelector((state) => state.auth.isAuthWindow);
+  const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
 
   const [input, setInput] = useState({ name: '', email: '', password: '' });
+  const navigate = useNavigate();
+
 
   const handleNativeSignUp = async (name: string, email: string, password: string) => {
     if ([name, email, password].some((input) => input === '')) {
@@ -54,10 +60,12 @@ export function Authentication() {
       });
       alert(`Signed up user: ${user.displayName} (${user.email})`);
       dispatch(signInSuccess({ id: user.uid, name: user.displayName, photoURL: user.photoURL }));
-      localStorage.setItem(
-        'userData',
-        JSON.stringify({ id: user.uid, name: user.displayName, photoURL: user.photoURL })
-      );
+
+
+      // localStorage.setItem(
+      //   'userData',
+      //   JSON.stringify({ id: user.uid, name: user.displayName, photoURL: user.photoURL })
+      // );
     } catch (error: any) {
       const errorCode = error.code;
       const errorMessage = error.message;
@@ -83,10 +91,10 @@ export function Authentication() {
       userDoc.data() &&
         dispatch(signInSuccess({ id: userDoc.id, name: userDoc.data()?.name, photoURL: userDoc.data()?.photoURL }));
 
-      localStorage.setItem(
-        'userData',
-        JSON.stringify({ id: user.uid, name: userDoc.data()?.name, photoURL: userDoc.data()?.photoURL })
-      );
+      // localStorage.setItem(
+      //   'userData',
+      //   JSON.stringify({ id: user.uid, name: userDoc.data()?.name, photoURL: userDoc.data()?.photoURL })
+      // );
 
       alert(`Logged in user: ${userDoc.data()?.name} (${user.email})`);
     } catch (error: any) {
@@ -129,11 +137,10 @@ export function Authentication() {
           alert(`google sign in successful, user: ${user.displayName}`);
         }
         dispatch(signInSuccess({ id: user.uid, name: user.displayName, photoURL: user.photoURL }));
-        // console.log(getAdditionalUserInfo(result)?.profile);
-        localStorage.setItem(
-          'userData',
-          JSON.stringify({ id: user.uid, name: user.displayName, photoURL: user.photoURL })
-        );
+        // localStorage.setItem(
+        //   'userData',
+        //   JSON.stringify({ id: user.uid, name: user.displayName, photoURL: user.photoURL })
+        // );
       }
     } catch (error: any) {
       const errorCode = error.code;
@@ -158,7 +165,7 @@ export function Authentication() {
       dispatch(signOutStart());
       alert('sign out successful!');
       dispatch(signOutSuccess());
-      localStorage.removeItem('userData');
+      // localStorage.removeItem('userData');
     } catch (error: any) {
       alert(`Error logging out. (${error})`);
       dispatch(signOutFail(error));
