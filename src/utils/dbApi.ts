@@ -51,28 +51,7 @@ const dbApi = {
     const docField = docData[field];
     return docField;
   },
-  async getPostsWhere(userId?: string, brandId?: string, itemId?: string) {
-
-  }
+  async getPostsWhere(userId?: string, brandId?: string, itemId?: string) {},
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 export default dbApi;

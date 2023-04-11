@@ -275,12 +275,12 @@ function RenderPosts() {
     const isComment = type === 'comment';
     const newEntry = {
       authorId: userId,
+      authorName: currentUserName,
+      authorPhoto: currentUserPhotoURL,
       timeCreated: timestamp,
       ...(isComment
         ? { content: post.commentInput }
         : {}),
-      authorName: currentUserName,
-      authorPhoto: currentUserPhotoURL,
     };
     const targetArray = isComment ? post.comments : post.likes;
     const hasLiked = isComment ? undefined : targetArray?.some((like) => like.authorId === userId);
