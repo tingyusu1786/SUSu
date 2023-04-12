@@ -187,7 +187,7 @@ function RenderPosts() {
     const authorPhoto: string = await getInfo(postData?.authorId, 'user', 'photoURL');
 
     if (postData.comments) {
-      const comments: any = await Promise.all(
+      const comments: Comment[] = await Promise.all(
         postData.comments.map(async (comment: any) => {
           const commentAuthorName: string = await getInfo(comment.authorId, 'user', 'name');
           const commentAuthorPhoto: string = await getInfo(comment.authorId, 'user', 'photoURL');

@@ -232,6 +232,32 @@ function Profile() {
         <h3 className='text-2xl'>This is {profileUser.name}'s Page</h3>
         <div className='text-sm text-gray-400'>{profileUser.email}</div>
         <div>建立時間：{profileUser.timeCreated?.toDate().toLocaleString()}</div>
+        <div className='flex gap-3'>
+          {/*follower/follwing*/}
+          <div>
+            <div>followers<span className='font-bold'>  {profileUser.followers?.length || 0}</span></div>
+           {/* {usersFollower.map((follower) => (
+              <Link to={`/profile/${follower.id}`} key={follower.id}>
+                <div className='flex items-center rounded bg-gray-100'>
+                  <img src={follower.photoURL} alt='' className='h-10 w-10 rounded-full' />
+                  <div>{follower.name}</div>
+                </div>
+              </Link>
+            ))}*/}
+          </div>
+          {/*follwing*/}
+          <div>
+            <div>following<span className='font-bold'>  {profileUser.following?.length || 0}</span></div>
+            {/*{usersFollowing.map((following) => (
+              <Link to={`/profile/${following.id}`} key={following.id}>
+                <div className='flex items-center rounded bg-gray-100'>
+                  <img src={following.photoURL} alt='' className='h-10 w-10 rounded-full' />
+                  <div>{following.name}</div>
+                </div>
+              </Link>
+            ))}*/}
+          </div>
+        </div>
         {profileUserId !== currentUserId && isSignedIn && (
           <button
             className={`box-border rounded-lg border-2 border-solid px-2 ${
@@ -274,30 +300,7 @@ function Profile() {
             );
           })}
         </div>
-        {/*follower/follwing*/}
-        <div>
-          <h3>followers({profileUser.followers?.length || 0})</h3>
-          {usersFollower.map((follower) => (
-            <Link to={`/profile/${follower.id}`} key={follower.id}>
-              <div className='flex items-center rounded bg-gray-100'>
-                <img src={follower.photoURL} alt='' className='h-10 w-10 rounded-full' />
-                <div>{follower.name}</div>
-              </div>
-            </Link>
-          ))}
-        </div>
-        {/*follwing*/}
-        <div>
-          <h3>following({profileUser.following?.length || 0})</h3>
-          {usersFollowing.map((following) => (
-            <Link to={`/profile/${following.id}`} key={following.id}>
-              <div className='flex items-center rounded bg-gray-100'>
-                <img src={following.photoURL} alt='' className='h-10 w-10 rounded-full' />
-                <div>{following.name}</div>
-              </div>
-            </Link>
-          ))}
-        </div>
+
       </div>
     </div>
   );
