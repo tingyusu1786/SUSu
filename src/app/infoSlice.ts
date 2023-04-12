@@ -33,6 +33,9 @@ export const infoSlice = createSlice({
   name: 'notification',
   initialState,
   reducers: {
+    addAllBrands: (state, action) => {
+      state.brands = action.payload.allBrands
+    },
     addBrand: (state, action) => {
       state.brands[action.payload.brandId] = {
         name: action.payload.name,
@@ -62,5 +65,5 @@ export const infoSlice = createSlice({
   },
 });
 
-export const { addBrand, addItem, addUser } = infoSlice.actions;
+export const { addBrand, addItem, addUser, addAllBrands } = infoSlice.actions;
 export default infoSlice.reducer;

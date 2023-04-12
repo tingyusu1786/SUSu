@@ -61,7 +61,6 @@ const dbApi = {
         allBrandsInfo[doc.id] = {name: doc.data().name, photoURL: doc.data().photoURL};
       }
     });
-    console.log(allBrandsInfo);
     return allBrandsInfo;
   },
 };
