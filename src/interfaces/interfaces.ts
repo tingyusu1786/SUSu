@@ -64,3 +64,12 @@ export interface Post {
   size?: string;
   timeCreated?: Timestamp;
 }
+
+export interface BrandsInfo {
+  [brandId: string]: {
+    name: string;
+    photoURL: string;
+  };
+}
+
+

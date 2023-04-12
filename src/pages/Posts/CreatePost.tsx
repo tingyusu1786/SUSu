@@ -17,7 +17,7 @@ import dbApi from '../../utils/dbApi';
 
 function CreatePost() {
   const initialInput = {
-    audience: 'public',
+    audience: 'public', //改成從currentUser資料裡拿
     brandId: '',
     itemId: '',
     sugar: '',

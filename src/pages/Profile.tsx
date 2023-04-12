@@ -229,6 +229,7 @@ function Profile() {
       {/*personal data*/}
       <div className='flex flex-col items-center'>
         <img className='h-32 w-32 rounded-full object-cover' src={profileUser.photoURL} alt={profileUser.name} />
+        {profileUser.status && <div><span>🎙️ </span><span>{profileUser.status}</span></div>}
         <h3 className='text-2xl'>This is {profileUser.name}'s Page</h3>
         <div className='text-sm text-gray-400'>{profileUser.email}</div>
         <div>建立時間：{profileUser.timeCreated?.toDate().toLocaleString()}</div>
