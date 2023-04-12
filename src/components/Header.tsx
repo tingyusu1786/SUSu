@@ -25,8 +25,8 @@ function Header() {
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
   const loading = useAppSelector((state) => state.auth.isLoading);
   const error = useAppSelector((state) => state.auth.error);
-  const userName = useAppSelector((state) => state.auth.currentUserName);
-  const photoURL = useAppSelector((state) => state.auth.currentUserPhotoURL);
+  const currentUserName = useAppSelector((state) => state.auth.currentUserName);
+  const currentUserphotoURL = useAppSelector((state) => state.auth.currentUserPhotoURL);
   const isAuthWindow = useAppSelector((state) => state.auth.isAuthWindow);
   const isNotification = useAppSelector((state) => state.notification.isShown);
   const navigate = useNavigate();
@@ -50,8 +50,8 @@ function Header() {
   return (
     <div className='mb-8 flex flex-row items-center justify-center gap-5 bg-gray-100'>
       <div>
-        <img src={photoURL} alt='' className='h-32 w-32 rounded-full object-cover' />
-        <div className='text-center'>{isSignedIn ? `Hi ${userName}` : 'not signed-in'}</div>
+        <img src={currentUserphotoURL} alt='' className='h-32 w-32 rounded-full object-cover' />
+        <div className='text-center'>{isSignedIn ? `Hi ${currentUserName}` : 'not signed-in'}</div>
       </div>
       <div>
         

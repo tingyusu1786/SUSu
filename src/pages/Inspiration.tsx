@@ -72,8 +72,12 @@ function Inspiration() {
 
     if (selectedBrands.length > 0 && selectedRating) {
       // selected both
+      // todo
+      // 設where, 如果真的沒有就說沒有
     } else if (selectedBrands.length === 0 && selectedRating) {
-      // selected rating}
+      // selected rating
+      // todo
+      // while loop
     } else if (selectedBrands.length > 0 && !selectedRating) {
       // selected brand
       // 從user選的裡面選一個brand

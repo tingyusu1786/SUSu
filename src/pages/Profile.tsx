@@ -223,9 +223,9 @@ function Profile() {
 
   return (
     <div className='m-10 flex flex-col items-center bg-pink-100'>
-      {/*<Link to='/setting' className='rounded bg-gray-600 text-white'>
-        setting
-      </Link>*/}
+      {currentUserId === profileUserId && <Link to={`/setting/${currentUserId}`} className='rounded bg-gray-600 text-white'>
+              setting
+            </Link>}
       {/*personal data*/}
       <div className='flex flex-col items-center'>
         <img className='h-32 w-32 rounded-full object-cover' src={profileUser.photoURL} alt={profileUser.name} />
@@ -236,7 +236,7 @@ function Profile() {
         <div className='flex gap-3'>
           {/*follower/follwing*/}
           <div>
-            <div>followers<span className='font-bold'>  {profileUser.followers?.length || 0}</span></div>
+            <button>followers<span className='font-bold'>  {profileUser.followers?.length || 0}</span></button>
            {/* {usersFollower.map((follower) => (
               <Link to={`/profile/${follower.id}`} key={follower.id}>
                 <div className='flex items-center rounded bg-gray-100'>
@@ -248,7 +248,7 @@ function Profile() {
           </div>
           {/*follwing*/}
           <div>
-            <div>following<span className='font-bold'>  {profileUser.following?.length || 0}</span></div>
+            <button>following<span className='font-bold'>  {profileUser.following?.length || 0}</span></button>
             {/*{usersFollowing.map((following) => (
               <Link to={`/profile/${following.id}`} key={following.id}>
                 <div className='flex items-center rounded bg-gray-100'>
@@ -301,7 +301,6 @@ function Profile() {
             );
           })}
         </div>
-
       </div>
     </div>
   );

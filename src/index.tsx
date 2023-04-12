@@ -30,7 +30,7 @@ root.render(
             // loader={}
             // action={}
           />
-          <Route path='/setting' element={<Setting />} />
+          <Route path='/setting/:settingUserId' element={<Setting />} />
           <Route path='/posts/:postId?' element={<Posts />} />
           <Route path='/notifications' element={<Notifications />} />
           <Route path='/map' element={<Map />} />
