@@ -1,5 +1,6 @@
 import { useState, useEffect, ChangeEvent, useRef } from 'react';
 import { db } from '../services/firebase';
+import { Link } from 'react-router-dom';
 import {
   //   collection,
   doc,
@@ -28,7 +29,6 @@ import { useAppSelector, useAppDispatch } from '../app/hooks';
 import { showNotification } from '../components/notification/notificationSlice';
 import { getTimeDiff } from '../utils/common';
 import { Notification } from '../interfaces/interfaces';
-
 
 function Notifications() {
   const dispatch = useAppDispatch();
@@ -132,20 +132,29 @@ function Notifications() {
       </div>
     );
   }
+
   return (
-    <div className='text-xl'>
-      {/*{notifications.length===0 && <div>no notification yet</div>}*/}
+    <div className='text-xl flex flex-col gap-1 items-center justify-center'>
+      {notifications.length===0 && <div>no notification yet</div>}
       {notifications.length > 0 && <div>({notifications.length})</div>}
       {notifications.map((notification, index) => {
         const timeDiff = getTimeDiff(notification.timeCreated);
         return (
-          <div className={`my-1 ${notification.unread ? 'bg-lime-100' : 'bg-gray-100'} rounded`} key={index}>
-            <span>{`${notification.authorName} ${notification.type}${
-              notification.type === 'like' ? 'd' : 'ed'
-            } on your post! (post id: ${notification.postId})`}</span>
+          <div className={`${notification.unread ? 'bg-lime-100' : 'bg-gray-100'} rounded w-96 p-2`} key={index}>
+            <Link to={`/profile/${notification.authorId}`} className='hover:font-bold'>{notification.authorName}</Link>
+            {notification.type === 'follow' ? (
+              <span> {` started following you!`}</span>
+            ) : (
+              <span>
+                {` ${notification.type}${
+                  notification.type === 'like' ? 'd' : 'ed'
+                } on your post! (post id: ${notification.postId})`}
+              </span>
+            )}
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <span className='text-gray-500'>
-              {timeDiff} <span className='text-gray-500 text-xs'>({notification.timeCreated.toDate().toLocaleString()})</span>
+              {timeDiff}{' '}
+              <span className='text-xs text-gray-500'>({notification.timeCreated.toDate().toLocaleString()})</span>
             </span>
           </div>
         );

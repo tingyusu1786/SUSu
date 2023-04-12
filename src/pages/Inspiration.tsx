@@ -1,4 +1,5 @@
 import dbApi from '../utils/dbApi';
+import { Link } from 'react-router-dom';
 import { useState, useEffect, ChangeEvent } from 'react';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
 import { addAllBrands } from '../app/infoSlice';
@@ -29,7 +30,8 @@ import {
 function Inspiration() {
   type Item = {
     brand: string;
-    id: string;
+    brandId: string;
+    itemId: string;
     name: string;
     price: Record<string, number>;
     numRatings?: number;
@@ -118,10 +120,10 @@ function Inspiration() {
     const randomItemDoc = await getDoc(itemRef);
     let randomItem = await randomItemDoc.data();
     // 加上brand資訊
-    randomItem = { ...randomItem, id: randomItemDoc.id, brand: allBrandsInfo[randomBrandId.toString()].name };
+    randomItem = { ...randomItem, itemId: randomItemDoc.id, brand: allBrandsInfo[randomBrandId.toString()].name, brandId: randomBrandId };
     console.log(randomItem);
     setRandomItem(randomItem as Item);
-      // return randomItem;
+    // return randomItem;
   };
 
   return (
@@ -189,9 +191,9 @@ function Inspiration() {
       {randomItem && (
         <div className='flex flex-col items-center justify-center'>
           <p>推薦你喝</p>
-          <p className='text-xl'>{randomItem.brand}</p>
+          <Link to={`/catalogue/${randomItem.brandId}`}><p className='text-xl'>{randomItem.brand}</p></Link>
           <span>的</span>
-          <h1 className='text-3xl'>\ {randomItem.name} /</h1>
+          <Link to={`/catalogue/${randomItem.brandId}/${randomItem.itemId}`}><h1 className='text-3xl'>\ {randomItem.name} /</h1></Link>
           {randomItem.averageRating && (
             <p>
               {randomItem.averageRating} / {randomItem.numRatings}
