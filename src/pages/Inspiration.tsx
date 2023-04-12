@@ -27,13 +27,21 @@ import {
 } from 'firebase/firestore';
 
 function Inspiration() {
+  type Item = {
+    brand: string;
+    id: string;
+    name: string;
+    price: Record<string, number>;
+    numRatings?: number;
+    averageRating?: number;
+  };
   const dispatch = useAppDispatch();
   const allBrandsInfo = useAppSelector((state) => state.info.brands);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [selectedRating, setSelectedRating] = useState<number>();
   const [showBrands, setShowBrands] = useState(false);
   const [showRatings, setShowRatings] = useState(false);
-  const [randomItem, setRandomItem] = useState<Record<string,string>>();
+  const [randomItem, setRandomItem] = useState<Item>();
 
   useEffect(() => {
     if (Object.keys(allBrandsInfo).length > 0) return;
@@ -57,46 +65,64 @@ function Inspiration() {
     setSelectedRating(+e.target.value);
   };
 
-  const getRandomItem = async (selectedBrands: string[], selectedRating: number|undefined) => {
+  const getRandomItem = async (selectedBrands: string[], selectedRating: number | undefined) => {
+    let randomBrandId;
+
     if (selectedBrands.length > 0 && selectedRating) {
       // selected both
-
+    } else if (selectedBrands.length === 0 && selectedRating) {
+      // selected rating}
     } else if (selectedBrands.length > 0 && !selectedRating) {
       // selected brand
-      const randomIndex = Math.floor(Math.random() * selectedBrands.length);
-
-    } else if (selectedBrands.length === 0 && selectedRating) {
-      // selected rating
-
+      // 從user選的裡面選一個brand
+      const randomIndex = selectedBrands.length === 1 ? 0 : Math.floor(Math.random() * selectedBrands.length);
+      randomBrandId = selectedBrands[randomIndex];
     } else {
       // selected none
       // 隨機選一個brand
-      const randomBrandId = Math.floor(Math.random() * Object.keys(allBrandsInfo).length) + 1;
-
-      // 拿出這個brand的所有categories
-      const categoriesRef = collection(db, 'brands', randomBrandId.toString(), 'categories');
-      const categoriesSnapshot = await getDocs(categoriesRef);
-
-      // 隨機選一個category
-      const randomCategoryId = Math.floor(Math.random() * categoriesSnapshot.size) + 1;
-
-      // 拿出這個category的所有item
-      const itemsRef = collection(db, 'brands', randomBrandId.toString(), 'categories', randomBrandId+'-'+randomCategoryId, 'items');
-      const itemsSnapshot = await getDocs(itemsRef);
-
-      // 隨機選一個item
-      const randomItemId = Math.floor(Math.random() * itemsSnapshot.size) + 1;
-
-      // 拿出這個item
-      const itemRef = doc(db, 'brands', randomBrandId.toString(), 'categories', randomBrandId + '-' + randomCategoryId, 'items', randomBrandId + '-' + randomCategoryId + '-' + randomItemId);
-      const randomItemDoc = await getDoc(itemRef);
-      let randomItem = await randomItemDoc.data();
-      // 加上brand資訊
-      randomItem = { ...randomItem, id: randomItemDoc.id, brand: allBrandsInfo[randomBrandId.toString()].name };
-      console.log(randomItem);
-      return randomItem;
+      randomBrandId = Math.floor(Math.random() * Object.keys(allBrandsInfo).length) + 1;
     }
-  }
+
+    if (!randomBrandId) return;
+    // 拿出這個brand的所有categories
+    const categoriesRef = collection(db, 'brands', randomBrandId.toString(), 'categories');
+    const categoriesSnapshot = await getDocs(categoriesRef);
+
+    // 隨機選一個category
+    const randomCategoryId = Math.floor(Math.random() * categoriesSnapshot.size) + 1;
+
+    // 拿出這個category的所有item
+    const itemsRef = collection(
+      db,
+      'brands',
+      randomBrandId.toString(),
+      'categories',
+      randomBrandId + '-' + randomCategoryId,
+      'items'
+    );
+    const itemsSnapshot = await getDocs(itemsRef);
+
+    // 隨機選一個item
+    const randomItemId = Math.floor(Math.random() * itemsSnapshot.size) + 1;
+
+    // 拿出這個item
+    const itemRef = doc(
+      db,
+      'brands',
+      randomBrandId.toString(),
+      'categories',
+      randomBrandId + '-' + randomCategoryId,
+      'items',
+      randomBrandId + '-' + randomCategoryId + '-' + randomItemId
+    );
+    const randomItemDoc = await getDoc(itemRef);
+    let randomItem = await randomItemDoc.data();
+    // 加上brand資訊
+    randomItem = { ...randomItem, id: randomItemDoc.id, brand: allBrandsInfo[randomBrandId.toString()].name };
+    console.log(randomItem);
+    setRandomItem(randomItem as Item);
+      // return randomItem;
+  };
 
   return (
     <div className='flex flex-col items-center justify-center gap-5'>
@@ -129,7 +155,7 @@ function Inspiration() {
             !selectedRating && setShowRatings((prev) => !prev);
           }}
         >
-          篩選評分
+          (篩選評分)
         </button>
         <div className={`flex gap-3 ${showRatings === false && 'hidden'}`}>
           <button className='text-sm text-gray-400' onClick={() => setSelectedRating(undefined)}>
@@ -154,7 +180,30 @@ function Inspiration() {
           ))}
         </div>
       </div>
-      <button className='rounded bg-lime-300 px-2 font-heal' onClick={() => getRandomItem(selectedBrands, selectedRating)}>GO!</button>
+      <button
+        className='rounded bg-lime-300 px-2 font-heal'
+        onClick={() => getRandomItem(selectedBrands, selectedRating)}
+      >
+        GO!
+      </button>
+      {randomItem && (
+        <div className='flex flex-col items-center justify-center'>
+          <p>推薦你喝</p>
+          <p className='text-xl'>{randomItem.brand}</p>
+          <span>的</span>
+          <h1 className='text-3xl'>\ {randomItem.name} /</h1>
+          {randomItem.averageRating && (
+            <p>
+              {randomItem.averageRating} / {randomItem.numRatings}
+            </p>
+          )}
+          {Object.entries(randomItem.price).map((p) => (
+            <p>
+              {p[0]}: ${p[1]}
+            </p>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
