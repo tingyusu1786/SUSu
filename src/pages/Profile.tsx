@@ -15,7 +15,7 @@ import {
   updateDoc,
   arrayUnion,
   arrayRemove,
-  onSnapshot
+  onSnapshot,
 } from 'firebase/firestore';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
 import { openAuthWindow } from '../components/auth/authSlice';
@@ -36,10 +36,11 @@ function Profile() {
   const [usersFollower, setUsersFollower] = useState<{ id: string; name: string; photoURL: string }[]>([]);
   const [profileUserPosts, setProfileUserPosts] = useState<any[]>([]);
   const { profileUserId } = useParams<{ profileUserId: string }>();
+  const [tab, setTab] = useState<'posts' | 'dashboard' | 'badges' | 'followers'>('posts');
 
   useEffect(() => {
     if (!profileUserId) return;
-    const unsub = onSnapshot(doc(db, "users", profileUserId), (doc) => {
+    const unsub = onSnapshot(doc(db, 'users', profileUserId), (doc) => {
       setProfileUser(doc.data() as User);
     });
     const fetchProfileUser = async (profileUserId: string) => {
@@ -104,11 +105,11 @@ function Profile() {
 
   // todo: fetch name, photo就會錯QAQ
   const getProfileUserFollows = async () => {
-    console.log('getProfileUserFollows')
+    console.log('getProfileUserFollows');
     // if (!profileUser) {
     //   return;
     // }
-    console.log('getProfileUserFollows2')
+    console.log('getProfileUserFollows2');
     const userFollowersInfo = profileUser?.followers?.map(async (followerId) => {
       const name = await dbApi.getUserField(followerId, 'name');
       const photoURL = await dbApi.getUserField(followerId, 'photoURL');
@@ -223,21 +224,30 @@ function Profile() {
 
   return (
     <div className='m-10 flex flex-col items-center bg-pink-100'>
-      {currentUserId === profileUserId && <Link to={`/setting/${currentUserId}`} className='rounded bg-gray-600 text-white'>
-              setting
-            </Link>}
+      {currentUserId === profileUserId && (
+        <Link to={`/setting/${currentUserId}`} className='rounded bg-gray-600 text-white'>
+          setting
+        </Link>
+      )}
       {/*personal data*/}
       <div className='flex flex-col items-center'>
         <img className='h-32 w-32 rounded-full object-cover' src={profileUser.photoURL} alt={profileUser.name} />
-        {profileUser.status && <div><span>🎙️ </span><span>{profileUser.status}</span></div>}
+        {profileUser.status && (
+          <div>
+            <span>🎙️ </span>
+            <span>{profileUser.status}</span>
+          </div>
+        )}
         <h3 className='text-2xl'>This is {profileUser.name}'s Page</h3>
         <div className='text-sm text-gray-400'>{profileUser.email}</div>
         <div>建立時間：{profileUser.timeCreated?.toDate().toLocaleString()}</div>
         <div className='flex gap-3'>
           {/*follower/follwing*/}
           <div>
-            <button>followers<span className='font-bold'>  {profileUser.followers?.length || 0}</span></button>
-           {/* {usersFollower.map((follower) => (
+            <button>
+              followers<span className='font-bold'> {profileUser.followers?.length || 0}</span>
+            </button>
+            {/* {usersFollower.map((follower) => (
               <Link to={`/profile/${follower.id}`} key={follower.id}>
                 <div className='flex items-center rounded bg-gray-100'>
                   <img src={follower.photoURL} alt='' className='h-10 w-10 rounded-full' />
@@ -248,7 +258,9 @@ function Profile() {
           </div>
           {/*follwing*/}
           <div>
-            <button>following<span className='font-bold'>  {profileUser.following?.length || 0}</span></button>
+            <button>
+              following<span className='font-bold'> {profileUser.following?.length || 0}</span>
+            </button>
             {/*{usersFollowing.map((following) => (
               <Link to={`/profile/${following.id}`} key={following.id}>
                 <div className='flex items-center rounded bg-gray-100'>
@@ -269,6 +281,43 @@ function Profile() {
             {isFollowing ? 'unfollow' : 'follow'}
           </button>
         )}
+      </div>
+      <div className='text-center'>
+        <button
+          onClick={() => {
+            setTab('posts');
+          }}
+          className={tab === 'posts' ? 'font-bold text-blue-600' : ''}
+        >
+          posts
+        </button>
+        <span>&nbsp;&nbsp;&nbsp;</span>
+        <button
+          onClick={() => {
+            setTab('dashboard');
+          }}
+          className={tab === 'dashboard' ? 'font-bold text-blue-600' : ''}
+        >
+          dashboard
+        </button>
+        <span>&nbsp;&nbsp;&nbsp;</span>
+        <button
+          onClick={() => {
+            setTab('badges');
+          }}
+          className={tab === 'badges' ? 'font-bold text-blue-600' : ''}
+        >
+          badges
+        </button>
+        <span>&nbsp;&nbsp;&nbsp;</span>
+        <button
+          onClick={() => {
+            setTab('followers');
+          }}
+          className={tab === 'followers' ? 'font-bold text-blue-600' : ''}
+        >
+          followers
+        </button>
       </div>
       <div className='flex gap-5'>
         {/*post*/}

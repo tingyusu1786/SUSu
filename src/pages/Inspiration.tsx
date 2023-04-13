@@ -25,6 +25,7 @@ import {
   startAfter,
   arrayUnion,
   arrayRemove,
+  CollectionReference,
 } from 'firebase/firestore';
 
 function Inspiration() {
@@ -43,7 +44,7 @@ function Inspiration() {
   const [selectedRating, setSelectedRating] = useState<number>();
   const [showBrands, setShowBrands] = useState(false);
   const [showRatings, setShowRatings] = useState(false);
-  const [randomItem, setRandomItem] = useState<RandomItem>();
+  const [randomItem, setRandomItem] = useState<RandomItem | null>();
   const [isFinding, setIsFinding] = useState(false);
 
   useEffect(() => {
@@ -68,6 +69,7 @@ function Inspiration() {
     setSelectedRating(+e.target.value);
   };
 
+  // todo: 有brand有rating時沒有東西怎麼辦
   const getRandomItem = async (selectedBrands: string[], selectedRating: number | undefined) => {
     setRandomItem(undefined);
     setIsFinding(true);
@@ -252,8 +254,6 @@ function Inspiration() {
       setRandomItem(randomItemFromDb as RandomItem);
       setIsFinding(false);
     }
-
-    // return randomItem;
   };
 
   return (
@@ -287,7 +287,7 @@ function Inspiration() {
             !selectedRating && setShowRatings((prev) => !prev);
           }}
         >
-          (篩選評分)
+          篩選評分
         </button>
         <div className={`flex gap-3 ${showRatings === false && 'hidden'}`}>
           <button className='text-sm text-gray-400' onClick={() => setSelectedRating(undefined)}>

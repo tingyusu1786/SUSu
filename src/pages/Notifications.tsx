@@ -1,28 +1,7 @@
 import { useState, useEffect, ChangeEvent, useRef } from 'react';
 import { db } from '../services/firebase';
 import { Link } from 'react-router-dom';
-import {
-  //   collection,
-  doc,
-  DocumentSnapshot,
-  DocumentReference,
-  DocumentData,
-  //   getDoc,
-  //   getDocs,
-  //   query,
-  //   Query,
-  //   orderBy,
-  //   limit,
-  onSnapshot,
-  //   QuerySnapshot,
-  Timestamp,
-  //   updateDoc,
-  //   where,
-  //   deleteDoc,
-  //   startAfter,
-  //   arrayUnion,
-  //   arrayRemove,
-} from 'firebase/firestore';
+import { doc, DocumentSnapshot, DocumentReference, DocumentData, onSnapshot, Timestamp } from 'firebase/firestore';
 import dbApi from '../utils/dbApi';
 import { openAuthWindow } from '../components/auth/authSlice';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
@@ -134,21 +113,23 @@ function Notifications() {
   }
 
   return (
-    <div className='text-xl flex flex-col gap-1 items-center justify-center'>
-      {notifications.length===0 && <div>no notification yet</div>}
+    <div className='flex flex-col items-center justify-center gap-1 text-xl'>
+      {notifications.length === 0 && <div>no notification yet</div>}
       {notifications.length > 0 && <div>({notifications.length})</div>}
       {notifications.map((notification, index) => {
         const timeDiff = getTimeDiff(notification.timeCreated);
         return (
-          <div className={`${notification.unread ? 'bg-lime-100' : 'bg-gray-100'} rounded w-96 p-2`} key={index}>
-            <Link to={`/profile/${notification.authorId}`} className='hover:font-bold'>{notification.authorName}</Link>
+          <div className={`${notification.unread ? 'bg-lime-100' : 'bg-gray-100'} w-96 rounded p-2`} key={index}>
+            <Link to={`/profile/${notification.authorId}`} className='hover:font-bold'>
+              {notification.authorName}
+            </Link>
             {notification.type === 'follow' ? (
               <span> {` started following you!`}</span>
             ) : (
               <span>
-                {` ${notification.type}${
-                  notification.type === 'like' ? 'd' : 'ed'
-                } on your post! (post id: ${notification.postId})`}
+                {` ${notification.type}${notification.type === 'like' ? 'd' : 'ed'} on your post! (post id: ${
+                  notification.postId
+                })`}
               </span>
             )}
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;

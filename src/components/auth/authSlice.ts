@@ -65,9 +65,18 @@ export const authSlice = createSlice({
     },
     closeAuthWindow: (state) => {
       state.isAuthWindow = false;
-    }
+    },
   },
 });
 
-export const { signInStart, signInSuccess, signInFail, signOutStart, signOutSuccess, signOutFail, openAuthWindow, closeAuthWindow } = authSlice.actions;
+export const {
+  signInStart,
+  signInSuccess,
+  signInFail,
+  signOutStart,
+  signOutSuccess,
+  signOutFail,
+  openAuthWindow,
+  closeAuthWindow,
+} = authSlice.actions;
 export default authSlice.reducer;
