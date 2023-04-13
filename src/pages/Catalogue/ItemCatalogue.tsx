@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { db } from '../services/firebase';
-import dbApi from '../utils/dbApi';
+import { db } from '../../services/firebase';
+import dbApi from '../../utils/dbApi';
 import { doc, getDoc, collection, query, where, getDocs, orderBy, QuerySnapshot } from 'firebase/firestore';
 
-function Catalogue() {
+function ItemCatalogue() {
   const { catalogueBrandId } = useParams<{ catalogueBrandId: string }>();
   const { catalogueItemId } = useParams<{ catalogueItemId: string }>();
   const [catalogueBrandObj, setCatalogueBrandObj] = useState<any>();
@@ -14,10 +14,8 @@ function Catalogue() {
   const [brands, setBrands] = useState<string[][]>([]);
   const [categories, setCategories] = useState<string[][]>([]);
   const [itemsOfBrand, setItemsOfBrand] = useState<string[][][]>([]);
-  //todo: refresh fetch twice itemsOfBrand
 
   useEffect(() => {
-    // console.log("[]");
     const fetchBrands = async () => {
       const brandInfos = await getBrandsIdAndName();
       setBrands(brandInfos);
@@ -26,30 +24,25 @@ function Catalogue() {
   }, []);
 
   useEffect(() => {
-    // console.log("[brands, catalogueBrandId]");
     const currentBrand = brands?.find((brand) => brand[0] === catalogueBrandId);
     const currentBrandName = currentBrand && currentBrand[1];
-    // console.log(currentBrandName);
     setCatalogueBrandName(currentBrandName);
     catalogueBrandId && getCatalogueBrandObj(catalogueBrandId);
   }, [brands, catalogueBrandId]);
 
   useEffect(() => {
-    // console.log("[catalogueBrandName]");
     const fetchCategories = async () => {
       if (!catalogueBrandId) {
         return;
       }
       const categoryInfos = await getCategoriesIdAndName(catalogueBrandId);
       setCategories(categoryInfos);
-      console.log('setCategories(categoryInfos);', categoryInfos);
     };
     catalogueBrandName && fetchCategories();
     setItemsOfBrand([]);
   }, [catalogueBrandName]);
 
   useEffect(() => {
-    // console.log('[categories]');
     const fetchItems = async (categoryId: string) => {
       if (!catalogueBrandId) {
         return;
@@ -66,7 +59,6 @@ function Catalogue() {
   }, [categories]);
 
   useEffect(() => {
-    // console.log('[catalogueItemId]');
     const fetchCatalogueItemName = async () => {
       const itemName = await getCatalogueItemName(catalogueItemId);
       setCatalogueItemName(itemName);
@@ -192,7 +184,7 @@ function Catalogue() {
             !catalogueItemId &&
             brands.map((brand, index) => (
               <Link key={brand[0]} to={`/catalogue/${brand[0]}`}>
-                <div className='h-32 w-32 rounded-2xl bg-lime-100 flex items-center justify-center'>{brand[1]}</div>
+                <div className='flex h-32 w-32 items-center justify-center rounded-2xl bg-lime-100'>{brand[1]}</div>
               </Link>
             ))}
         </div>
@@ -209,7 +201,7 @@ function Catalogue() {
           </div>
         )}
 
-        <div className='flex gap-1 mt-8'>
+        <div className='mt-8 flex gap-1'>
           {catalogueBrandId &&
             !catalogueItemId &&
             itemsOfBrand.length !== 0 &&
@@ -233,7 +225,6 @@ function Catalogue() {
               item rating: <span className='font-heal text-2xl font-bold'>{catalogueItemObj?.averageRating}</span>
             </span>
             <span>
-              {' '}
               by <span className='font-heal font-bold'>{catalogueItemObj?.numRatings}</span> people
             </span>
           </div>
@@ -243,4 +234,4 @@ function Catalogue() {
   );
 }
 
-export default Catalogue;
+export default ItemCatalogue;

@@ -10,7 +10,7 @@ import Setting from './pages/Setting';
 import Posts from './pages/Posts/Posts';
 import Notifications from './pages/Notifications';
 import Map from './pages/Map';
-import Catalogue from './pages/Catalogue';
+import Catalogue from './pages/Catalogue/Catalogue';
 import Inspiration from './pages/Inspiration';
 import Search from './pages/Search';
 import Counter from './pages/RenderCounter';

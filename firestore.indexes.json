@@ -15,20 +15,45 @@
       ]
     },
     {
-  "collectionGroup": "posts",
-  "queryScope": "COLLECTION",
-  "fields": [
-    {
-      "fieldPath": "authorId",
-      "order": "ASCENDING"
+      "collectionGroup": "posts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "authorId",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "timeCreated",
+          "order": "DESCENDING"
+        }
+      ]
     },
     {
-      "fieldPath": "timeCreated",
-      "order": "DESCENDING"
+      "collectionGroup": "posts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "hashtags", "arrayConfig": "CONTAINS" },
+        { "fieldPath": "audience", "order": "ASCENDING" },
+        { "fieldPath": "timeCreated", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "posts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "audience", "order": "ASCENDING" },
+        { "fieldPath": "timeCreated", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "posts",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "hashtags", "arrayConfig": "CONTAINS" },
+        { "fieldPath": "authorId", "order": "ASCENDING" },
+        { "fieldPath": "timeCreated", "order": "DESCENDING" }
+      ]
     }
-  ]
-}
-
   ],
   "fieldOverrides": []
 }

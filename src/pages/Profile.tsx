@@ -315,8 +315,10 @@ function Profile() {
                 </div>
               );
             })}
-          {tab === 'following' && profileUser?.following?.map((followingId) => <NameCard userId={followingId} />)}
-          {tab === 'followers' && profileUser?.followers?.map((followerId) => <NameCard userId={followerId} />)}
+          {tab === 'following' &&
+            profileUser?.following?.map((followingId) => <NameCard userId={followingId} key={followingId} />)}
+          {tab === 'followers' &&
+            profileUser?.followers?.map((followerId) => <NameCard userId={followerId} key={followerId} />)}
         </div>
       </div>
     </div>
