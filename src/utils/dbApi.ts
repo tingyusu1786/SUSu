@@ -21,7 +21,7 @@ import {
   arrayUnion,
   arrayRemove,
 } from 'firebase/firestore';
-import { BrandsInfo } from '../interfaces/interfaces'
+import { BrandsInfo } from '../interfaces/interfaces';
 
 interface dbApi {}
 
@@ -53,12 +53,13 @@ const dbApi = {
     return docField;
   },
   async getPostsWhere(userId?: string, brandId?: string, itemId?: string) {},
+
   async getAllBrandsInfo() {
     const querySnapshot = await getDocs(collection(db, 'brands'));
     const allBrandsInfo: BrandsInfo = {};
     querySnapshot.forEach((doc) => {
       if (doc.data() && doc.data().name) {
-        allBrandsInfo[doc.id] = {name: doc.data().name, photoURL: doc.data().photoURL};
+        allBrandsInfo[doc.id] = { name: doc.data().name, photoURL: doc.data().photoURL };
       }
     });
     return allBrandsInfo;

@@ -22,6 +22,7 @@ import { openAuthWindow } from '../components/auth/authSlice';
 import { showNotification } from '../components/notification/notificationSlice';
 import { User } from '../interfaces/interfaces';
 import { Notification } from '../interfaces/interfaces';
+import NameCard from '../components/NameCard';
 import dbApi from '../utils/dbApi';
 
 function Profile() {
@@ -33,10 +34,10 @@ function Profile() {
   const [profileUser, setProfileUser] = useState<User>();
   const [isFollowing, setIsFollowing] = useState(false);
   const [usersFollowing, setUsersFollowing] = useState<{ id: string; name: string; photoURL: string }[]>([]);
-  const [usersFollower, setUsersFollower] = useState<{ id: string; name: string; photoURL: string }[]>([]);
+  const [usersFollowers, setUsersFollowers] = useState<{ id: string; name: string; photoURL: string }[]>([]);
   const [profileUserPosts, setProfileUserPosts] = useState<any[]>([]);
   const { profileUserId } = useParams<{ profileUserId: string }>();
-  const [tab, setTab] = useState<'posts' | 'dashboard' | 'badges' | 'followers'>('posts');
+  const [tab, setTab] = useState<'posts' | 'dashboard' | 'badges' | 'followers' | 'following'>('posts');
 
   useEffect(() => {
     if (!profileUserId) return;
@@ -62,7 +63,7 @@ function Profile() {
 
   useEffect(() => {
     getProfileUserFollows();
-  }, [isFollowing]);
+  }, []);
 
   const getProfileUser = async (id: string) => {
     const profileUserDocRef = doc(db, 'users', id);
@@ -105,11 +106,6 @@ function Profile() {
 
   // todo: fetch name, photo就會錯QAQ
   const getProfileUserFollows = async () => {
-    console.log('getProfileUserFollows');
-    // if (!profileUser) {
-    //   return;
-    // }
-    console.log('getProfileUserFollows2');
     const userFollowersInfo = profileUser?.followers?.map(async (followerId) => {
       const name = await dbApi.getUserField(followerId, 'name');
       const photoURL = await dbApi.getUserField(followerId, 'photoURL');
@@ -117,7 +113,7 @@ function Profile() {
     });
     if (!userFollowersInfo) return;
     const userFollowersInfos = await Promise.all(userFollowersInfo);
-    setUsersFollower(userFollowersInfos);
+    setUsersFollowers(userFollowersInfos);
 
     const userFollowingInfo = profileUser?.following?.map(async (followingId) => {
       const name = await dbApi.getUserField(followingId, 'name');
@@ -189,10 +185,6 @@ function Profile() {
       );
       await updateDoc(profileUserRef, { notifications: arrayRemove(notificationToRemove) });
     }
-    // if isFollowing
-    // update自己
-    // update別人
-    // 通知
   };
 
   const checkIsFollowing = () => {
@@ -223,7 +215,7 @@ function Profile() {
   }
 
   return (
-    <div className='m-10 flex flex-col items-center bg-pink-100'>
+    <div className='m-10 flex flex-col items-center'>
       {currentUserId === profileUserId && (
         <Link to={`/setting/${currentUserId}`} className='rounded bg-gray-600 text-white'>
           setting
@@ -241,36 +233,7 @@ function Profile() {
         <h3 className='text-2xl'>This is {profileUser.name}'s Page</h3>
         <div className='text-sm text-gray-400'>{profileUser.email}</div>
         <div>建立時間：{profileUser.timeCreated?.toDate().toLocaleString()}</div>
-        <div className='flex gap-3'>
-          {/*follower/follwing*/}
-          <div>
-            <button>
-              followers<span className='font-bold'> {profileUser.followers?.length || 0}</span>
-            </button>
-            {/* {usersFollower.map((follower) => (
-              <Link to={`/profile/${follower.id}`} key={follower.id}>
-                <div className='flex items-center rounded bg-gray-100'>
-                  <img src={follower.photoURL} alt='' className='h-10 w-10 rounded-full' />
-                  <div>{follower.name}</div>
-                </div>
-              </Link>
-            ))}*/}
-          </div>
-          {/*follwing*/}
-          <div>
-            <button>
-              following<span className='font-bold'> {profileUser.following?.length || 0}</span>
-            </button>
-            {/*{usersFollowing.map((following) => (
-              <Link to={`/profile/${following.id}`} key={following.id}>
-                <div className='flex items-center rounded bg-gray-100'>
-                  <img src={following.photoURL} alt='' className='h-10 w-10 rounded-full' />
-                  <div>{following.name}</div>
-                </div>
-              </Link>
-            ))}*/}
-          </div>
-        </div>
+
         {profileUserId !== currentUserId && isSignedIn && (
           <button
             className={`box-border rounded-lg border-2 border-solid px-2 ${
@@ -301,13 +264,14 @@ function Profile() {
           dashboard
         </button>
         <span>&nbsp;&nbsp;&nbsp;</span>
+
         <button
           onClick={() => {
-            setTab('badges');
+            setTab('following');
           }}
-          className={tab === 'badges' ? 'font-bold text-blue-600' : ''}
+          className={tab === 'following' ? 'font-bold text-blue-600' : ''}
         >
-          badges
+          following<span className='font-bold'> {profileUser.following?.length || 0}</span>
         </button>
         <span>&nbsp;&nbsp;&nbsp;</span>
         <button
@@ -317,38 +281,42 @@ function Profile() {
           className={tab === 'followers' ? 'font-bold text-blue-600' : ''}
         >
           followers
+          <span className='font-bold'> {profileUser.followers?.length || 0}</span>
         </button>
       </div>
       <div className='flex gap-5'>
         {/*post*/}
         <div>
-          {profileUserPosts.map((post, index) => {
-            return (
-              <div className='my-1 rounded bg-gray-100 p-3' key={index}>
-                <div>{`audience: ${post.audience}`}</div>
-                <div>
-                  <span className='text-xl after:content-["の"]'>{post.brandName}</span>
-                  <span className='text-xl  font-bold'>{post.itemName}</span>
-                </div>
-                <div>{post.size && `size: ${post.size}`}</div>
-                <div>{post.sugar && `sugar: ${post.sugar}`}</div>
-                <div>{post.ice && `ice: ${post.ice}`}</div>
-                <div>{post.orderNum && `orderNum: ${post.orderNum}`}</div>
-                <div>{post.rating && `rating: ${post.rating}`}</div>
-                <div>{post.selfComment && `💬 ${post.selfComment}`}</div>
-                <div className='flex flex-wrap gap-1'>
-                  {post.hashtags?.map((hashtag: string) => (
-                    <span className='rounded bg-gray-300 px-2 before:content-["#"]' key={hashtag}>
-                      {hashtag}
-                    </span>
-                  ))}
-                </div>
-                <div>{post.timeCreated?.toDate().toLocaleString()}</div>
+          {tab === 'posts' &&
+            profileUserPosts.map((post, index) => {
+              return (
+                <div className='my-1 rounded bg-gray-100 p-3' key={index}>
+                  <div>{`audience: ${post.audience}`}</div>
+                  <div>
+                    <span className='text-xl after:content-["の"]'>{post.brandName}</span>
+                    <span className='text-xl  font-bold'>{post.itemName}</span>
+                  </div>
+                  <div>{post.size && `size: ${post.size}`}</div>
+                  <div>{post.sugar && `sugar: ${post.sugar}`}</div>
+                  <div>{post.ice && `ice: ${post.ice}`}</div>
+                  <div>{post.orderNum && `orderNum: ${post.orderNum}`}</div>
+                  <div>{post.rating && `rating: ${post.rating}`}</div>
+                  <div>{post.selfComment && `💬 ${post.selfComment}`}</div>
+                  <div className='flex flex-wrap gap-1'>
+                    {post.hashtags?.map((hashtag: string) => (
+                      <span className='rounded bg-gray-300 px-2 before:content-["#"]' key={hashtag}>
+                        {hashtag}
+                      </span>
+                    ))}
+                  </div>
+                  <div>{post.timeCreated?.toDate().toLocaleString()}</div>
 
-                <span>likes: {post.likes?.length || 0}</span>
-              </div>
-            );
-          })}
+                  <span>likes: {post.likes?.length || 0}</span>
+                </div>
+              );
+            })}
+          {tab === 'following' && profileUser?.following?.map((followingId) => <NameCard userId={followingId} />)}
+          {tab === 'followers' && profileUser?.followers?.map((followerId) => <NameCard userId={followerId} />)}
         </div>
       </div>
     </div>
