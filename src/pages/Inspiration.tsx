@@ -69,6 +69,7 @@ function Inspiration() {
   };
 
   const getRandomItem = async (selectedBrands: string[], selectedRating: number | undefined) => {
+    setRandomItem(undefined);
     setIsFinding(true);
     if (selectedBrands.length > 0 && selectedRating) {
       // selected both
@@ -93,9 +94,18 @@ function Inspiration() {
         const categoriesIds = categoriesSnapshot.docs.map((c) => c.id);
         const randomCategoryId = categoriesIds[Math.floor(Math.random() * categoriesIds.length)];
 
-        // 拿出這個category的所有item
-        const itemsRef = collection(db, 'brands', randomBrandId, 'categories', randomCategoryId, 'items');
+        // 拿出這個category的大於n分的所有item
+        const itemsRef = query(
+          collection(db, 'brands', randomBrandId, 'categories', randomCategoryId, 'items'),
+          where('averageRating', '>', selectedRating)
+        );
         const itemsSnapshot = await getDocs(itemsRef);
+        console.log('itemsSnapshot.size', itemsSnapshot.size);
+        if (itemsSnapshot.size === 0) {
+          // 跳過這個loop去下個loop
+          console.log('continue');
+          continue;
+        }
 
         // 隨機選一個item
         const itemsIds = itemsSnapshot.docs.map((i) => i.id);
@@ -112,12 +122,9 @@ function Inspiration() {
           brand: allBrandsInfo[randomBrandId].name,
           brandId: randomBrandId,
         };
-        // console.log(n);
         console.log(randomItemFromDb);
-        if (randomItemFromDb.averageRating > selectedRating) {
-          setRandomItem(randomItemFromDb as RandomItem);
-          setIsFinding(false);
-        }
+        setRandomItem(randomItemFromDb as RandomItem);
+        setIsFinding(false);
       }
     } else if (selectedBrands.length === 0 && selectedRating) {
       // selected rating
@@ -129,8 +136,6 @@ function Inspiration() {
       ) {
         // 隨機選一個brand
         const randomBrandId = Object.keys(allBrandsInfo)[Math.floor(Math.random() * Object.keys(allBrandsInfo).length)];
-        // if (!randomBrandId) return;
-        // const randomBrandId = '1';
 
         // 拿出這個brand的所有categories
         const categoriesRef = collection(db, 'brands', randomBrandId, 'categories');
@@ -140,9 +145,18 @@ function Inspiration() {
         const categoriesIds = categoriesSnapshot.docs.map((c) => c.id);
         const randomCategoryId = categoriesIds[Math.floor(Math.random() * categoriesIds.length)];
 
-        // 拿出這個category的所有item
-        const itemsRef = collection(db, 'brands', randomBrandId, 'categories', randomCategoryId, 'items');
+        // 拿出這個category的大於n分的所有item
+        const itemsRef = query(
+          collection(db, 'brands', randomBrandId, 'categories', randomCategoryId, 'items'),
+          where('averageRating', '>', selectedRating)
+        );
         const itemsSnapshot = await getDocs(itemsRef);
+        console.log('itemsSnapshot.size', itemsSnapshot.size);
+        if (itemsSnapshot.size === 0) {
+          // 跳過這個loop去下個loop
+          console.log('continue');
+          continue;
+        }
 
         // 隨機選一個item
         const itemsIds = itemsSnapshot.docs.map((i) => i.id);
@@ -159,12 +173,9 @@ function Inspiration() {
           brand: allBrandsInfo[randomBrandId].name,
           brandId: randomBrandId,
         };
-        // console.log(n);
         console.log(randomItemFromDb);
-        if (randomItemFromDb.averageRating > selectedRating) {
-          setRandomItem(randomItemFromDb as RandomItem);
-          setIsFinding(false);
-        }
+        setRandomItem(randomItemFromDb as RandomItem);
+        setIsFinding(false);
       }
     } else if (selectedBrands.length > 0 && !selectedRating) {
       // selected brand
