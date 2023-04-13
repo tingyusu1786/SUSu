@@ -46,6 +46,18 @@ const BreadcrumbNav: React.FC<CatalogueProps> = ({
   );
 };
 
+interface BrandProps {
+  brand: string[];
+}
+
+const BrandCard: React.FC<BrandProps> = ({ brand }) => {
+  return (
+    <Link key={brand[0]} to={`/catalogue/${brand[0]}`}>
+      <div className='flex h-32 w-32 items-center justify-center rounded-2xl bg-lime-100'>{brand[1]}</div>
+    </Link>
+  );
+};
+
 function Catalogue() {
   const { catalogueBrandId } = useParams<{ catalogueBrandId: string }>();
   const { catalogueItemId } = useParams<{ catalogueItemId: string }>();
@@ -201,13 +213,7 @@ function Catalogue() {
       />
       <div className='flex flex-col items-center'>
         <div className='grid grid-cols-3 grid-rows-3 gap-4'>
-          {!catalogueBrandId &&
-            !catalogueItemId &&
-            brands.map((brand, index) => (
-              <Link key={brand[0]} to={`/catalogue/${brand[0]}`}>
-                <div className='flex h-32 w-32 items-center justify-center rounded-2xl bg-lime-100'>{brand[1]}</div>
-              </Link>
-            ))}
+          {!catalogueBrandId && !catalogueItemId && brands.map((brand) => <BrandCard brand={brand} />)}
         </div>
         {catalogueBrandId && <div className='text-3xl'>{catalogueBrandName}</div>}
         {catalogueBrandId && catalogueBrandObj?.averageRating && (
