@@ -1,5 +1,5 @@
 import { storage } from '../services/firebase';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 
 interface StorageApi {
   getInitPhotoURL: (photoName: string) => Promise<string>;

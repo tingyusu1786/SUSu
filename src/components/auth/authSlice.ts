@@ -66,6 +66,12 @@ export const authSlice = createSlice({
     closeAuthWindow: (state) => {
       state.isAuthWindow = false;
     },
+    updateUserName: (state, action) => {
+      state.currentUserName = action.payload.name;
+    },
+    updateUserPhoto: (state, action) => {
+      state.currentUserPhotoURL = action.payload.photoURL;
+    },
   },
 });
 
@@ -78,5 +84,7 @@ export const {
   signOutFail,
   openAuthWindow,
   closeAuthWindow,
+  updateUserName,
+  updateUserPhoto,
 } = authSlice.actions;
 export default authSlice.reducer;

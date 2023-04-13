@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  db,
-} from '../../services/firebase'; //todo
+import { db } from '../../services/firebase'; //todo
 import { useNavigate } from 'react-router-dom';
 import storageApi from '../../utils/storageApi';
 import authApi from '../../utils/authApi';
@@ -29,7 +27,6 @@ export function Authentication() {
   const [input, setInput] = useState({ name: '', email: '', password: '' });
   const navigate = useNavigate();
 
-
   const handleNativeSignUp = async (name: string, email: string, password: string) => {
     if ([name, email, password].some((input) => input === '')) {
       alert(`please fill in all input field`);
@@ -46,7 +43,7 @@ export function Authentication() {
 
       const user = userCredential.user;
 
-      const imgUrl = await storageApi.getInitPhotoURL('initPhoto.png');
+      const imgUrl = await storageApi.getInitPhotoURL('initPhoto.png'); /////
 
       // update user profile with name and init photo
       await authApi.updateAuthProfile(user, name, imgUrl);
@@ -60,7 +57,6 @@ export function Authentication() {
       });
       alert(`Signed up user: ${user.displayName} (${user.email})`);
       dispatch(signInSuccess({ id: user.uid, name: user.displayName, photoURL: user.photoURL }));
-
 
       // localStorage.setItem(
       //   'userData',
