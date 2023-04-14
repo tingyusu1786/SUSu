@@ -20,7 +20,7 @@ const CommentDiv: React.FC<CommentsProps> = ({ comment, index }) => {
           <div>{comment.authorName}</div>
         </Link>
         <div>{timeDiff}</div>
-        {<div>{comment.timeCreated.toDate().toLocaleString()}</div>}
+        <div>{comment.timeCreated.toDate().toLocaleString()}</div>
         <div>{comment.content}</div>
       </div>
     </div>

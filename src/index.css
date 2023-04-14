@@ -3,6 +3,30 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: "heal";
-  src: url("../public/fonts/HealTheWebA-Regular.otf");
+  font-family: 'heal';
+  src: url('../public/fonts/HealTheWebA-Regular.otf');
+}
+
+.color-empty {
+  background-color: #e0e0e0;
+}
+
+.color-github-1 {
+  background-color: #ebedf0;
+}
+
+.color-github-2 {
+  background-color: #c6e48b;
+}
+
+.color-github-3 {
+  background-color: #7bc96f;
+}
+
+.color-github-4 {
+  background-color: #239a3b;
+}
+
+.color-github-5 {
+  background-color: #196127;
 }

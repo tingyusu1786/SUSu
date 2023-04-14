@@ -58,7 +58,6 @@ function Setting() {
   }, [profileUser]);
 
   const updatePhoto = async () => {
-    // updateDoc
     if (currentAuthUser === null || file === null || !currentUserId) return;
 
     // updateAuthProfile
@@ -70,6 +69,7 @@ function Setting() {
     const photoURL = await getDownloadURL(storageRef);
     await updateProfile(currentAuthUser, { photoURL });
 
+    // updateDoc
     // Update the user's photoURL in Firestore
     const userDocRef = doc(db, 'users', currentUserId);
     await updateDoc(userDocRef, { photoURL });

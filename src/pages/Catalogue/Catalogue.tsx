@@ -222,7 +222,6 @@ function Catalogue() {
               brand rating: <span className='font-heal text-2xl font-bold'>{catalogueBrandObj?.averageRating}</span>
             </span>
             <span>
-              {' '}
               by <span className='font-heal font-bold'>{catalogueBrandObj?.numRatings}</span> people
             </span>
           </div>
@@ -256,6 +255,16 @@ function Catalogue() {
             </span>
           </div>
         )}
+        <div>
+          {catalogueItemObj &&
+            Object.entries(catalogueItemObj.price).map((p) => (
+              <div key={p[0]}>
+                <span>{p[0]}</span>
+                <span>: $</span>
+                <span>{p[1] as number}</span>
+              </div>
+            ))}
+        </div>
       </div>
     </div>
   );

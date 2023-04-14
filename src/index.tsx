@@ -5,7 +5,7 @@ import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { store } from './app/store';
 import App from './App';
-import Profile from './pages/Profile';
+import Profile from './pages/Profile/Profile';
 import Setting from './pages/Setting';
 import Posts from './pages/Posts/Posts';
 import Notifications from './pages/Notifications';
@@ -14,6 +14,7 @@ import Catalogue from './pages/Catalogue/Catalogue';
 import Inspiration from './pages/Inspiration';
 import Search from './pages/Search';
 import Counter from './pages/RenderCounter';
+import 'react-tooltip/dist/react-tooltip.css';
 
 const container = document.getElementById('root')!;
 const root = createRoot(container);

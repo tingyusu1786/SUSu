@@ -35,7 +35,7 @@ function Notifications() {
     const unsubscribe = onSnapshot(currentUserRef, async (docSnapshot: DocumentSnapshot) => {
       const newNotifications = docSnapshot
         .data()
-        ?.notifications.reverse()
+        ?.notifications?.reverse()
         .filter((notif: any) => notif.authorId !== currentUserId);
 
       console.log('newNotifications', newNotifications);
@@ -93,7 +93,7 @@ function Notifications() {
     }
     const currentUserData = currentUserDoc.data();
     const currentUserNotifications =
-      currentUserData?.notifications.reverse().filter((notif: any) => notif.authorId !== currentUserId) || [];
+      currentUserData?.notifications?.reverse().filter((notif: any) => notif.authorId !== currentUserId) || [];
     // if (!currentUserNotifications) {
     //   alert('no 通知 yet');
     //   return;
@@ -115,7 +115,7 @@ function Notifications() {
   return (
     <div className='flex flex-col items-center justify-center gap-1 text-xl'>
       {notifications.length === 0 && <div>no notification yet</div>}
-      {notifications.length > 0 && <div>({notifications.length})</div>}
+      {notifications.length > 0 && <div>({notifications?.length})</div>}
       {notifications.map((notification, index) => {
         const timeDiff = getTimeDiff(notification.timeCreated);
         return (
