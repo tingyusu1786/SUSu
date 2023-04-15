@@ -40,7 +40,12 @@ function Profile() {
   const [usersFollowers, setUsersFollowers] = useState<{ id: string; name: string; photoURL: string }[]>([]);
   const [profileUserPosts, setProfileUserPosts] = useState<any[]>([]);
   const { profileUserId } = useParams<{ profileUserId: string }>();
-  const [tab, setTab] = useState<'posts' | 'dashboard' | 'badges' | 'followers' | 'following'>('posts');
+  const [tab, setTab] = useState<'posts' | 'dashboard' | 'followers' | 'following'>('posts');
+
+  // set default tab = dashboard
+  useEffect(() => {
+    setTab('dashboard');
+  }, [profileUserId]);
 
   useEffect(() => {
     if (!profileUserId) return;
