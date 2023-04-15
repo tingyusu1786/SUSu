@@ -22,32 +22,118 @@ interface PriceStatistic {
 const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts }) => {
   const dispatch = useAppDispatch();
   const allBrandsInfo = useAppSelector((state) => state.info.brands);
-  // for heatmap
-  const [values, setValues] = useState<{ date: Date; count: number }[]>();
   const [priceStatistic, setPriceStatistic] = useState({ overall: 0, year: 0, month: 0, week: 0, day: 0 });
   const [drankBrands, setDrankBrands] = useState<Record<string, { brandName: string; times: number }>>();
+  const [streaks, setStreaks] = useState<{ current: number; longest: number }>();
+
+  // for heatmap
+  const [values, setValues] = useState<{ date: Date; count: number }[]>();
+  const endDate = new Date();
+  const startDate = new Date(endDate.getTime());
+  startDate.setMonth(startDate.getMonth() - 6);
 
   useEffect(() => {
     if (Object.keys(allBrandsInfo).length > 0) return;
     fetchAllBrandsInfo();
   }, []);
 
-  const fetchAllBrandsInfo = async () => {
-    const allBrands = await dbApi.getAllBrandsInfo();
-    dispatch(addAllBrands({ allBrands }));
-  };
-
   useEffect(() => {
-    const drankBrandsStatistic: Record<string, { brandName: string; times: number }> = profileUserPosts.reduce(
-      (drankBrands, post) => {
-        drankBrands[post.brandId]
-          ? (drankBrands[post.brandId].times = drankBrands[post.brandId].times + 1)
-          : (drankBrands[post.brandId] = { times: 1, brandName: post.brandName });
-        return drankBrands;
-      },
-      {}
-    );
+    const { drankBrandsStatistic, drankDatesValues, priceStatistic, streaks, prevDate } = profileUserPosts
+      .reverse()
+      .reduce(
+        (accumulator, post) => {
+          // drank brands
+          const { drankBrandsStatistic } = accumulator;
+          drankBrandsStatistic[post.brandId]
+            ? (drankBrandsStatistic[post.brandId].times = drankBrandsStatistic[post.brandId].times + 1)
+            : (drankBrandsStatistic[post.brandId] = { times: 1, brandName: post.brandName });
 
+          // drank dates
+          const { drankDatesValues } = accumulator;
+          const dateString = timestampToDate(post.timeCreated);
+          const newDate = new Date(dateString);
+          const index = drankDatesValues.findIndex((element: any) => element.date.getTime() === newDate.getTime());
+          if (index === -1) {
+            drankDatesValues.push({ date: newDate, count: 1 });
+          } else {
+            drankDatesValues[index].count += 1;
+          }
+
+          // streaks
+          const { streaks } = accumulator;
+          let { prevDate } = accumulator;
+          const currentDate = new Date(dateString);
+
+          if (prevDate.getTime() !== currentDate.getTime()) {
+            console.log(currentDate);
+            const areConsecutive = currentDate.getTime() - prevDate.getTime() === 86400000;
+            if (areConsecutive) {
+              streaks.current += 1;
+            } else {
+              streaks.current = 1;
+            }
+            if (streaks.current > streaks.longest) {
+              streaks.longest = streaks.current;
+            }
+            accumulator.prevDate = currentDate;
+          }
+          console.log('prevDate', prevDate, 'currentDate', currentDate, 'streak', streaks);
+
+          // price statistic
+          const { priceStatistic } = accumulator;
+          if (post.price) {
+            const currentDate = new Date();
+            const intervals = [
+              { label: 'year', value: currentDate.getFullYear() - 1 },
+              { label: 'month', value: currentDate.getMonth() - 1 },
+              { label: 'week', value: currentDate.getDate() - 7 },
+              { label: 'day', value: currentDate.getDate() - 1 },
+            ];
+            intervals.forEach(({ label, value }) => {
+              const startDate = new Date();
+              switch (label) {
+                case 'year':
+                  startDate.setFullYear(value);
+                  break;
+                case 'month':
+                  startDate.setMonth(value);
+                  break;
+                case 'week':
+                  startDate.setDate(value);
+                  break;
+                case 'day':
+                  startDate.setDate(value);
+                  break;
+              }
+              const postDate = new Date(post.timeCreated.seconds * 1000);
+              if (postDate >= startDate && postDate <= currentDate) {
+                priceStatistic[label] += post.price;
+              }
+            });
+            priceStatistic.overall += post.price;
+          }
+
+          return accumulator;
+        },
+        {
+          drankBrandsStatistic: {},
+          drankDatesValues: [],
+          priceStatistic: { overall: 0, year: 0, month: 0, week: 0, day: 0 },
+          streaks: { current: 0, longest: 0 },
+          prevDate: new Date('1900/01/01'),
+        }
+      );
+
+    const oneDayBeforeToday = new Date();
+    oneDayBeforeToday.setDate(oneDayBeforeToday.getDate() - 1);
+    oneDayBeforeToday.setHours(0, 0, 0, 0);
+
+    if (prevDate.getTime() < oneDayBeforeToday.getTime()) {
+      // The given date is earlier than or equal to one day before today 00:00 AM
+      streaks.current = 0;
+    }
+
+    // Add missing brands to drankBrandsStatistic
     for (const key in allBrandsInfo) {
       if (allBrandsInfo.hasOwnProperty(key) && !drankBrandsStatistic.hasOwnProperty(key)) {
         drankBrandsStatistic[key] = { brandName: allBrandsInfo[key].name, times: 0 };
@@ -55,77 +141,102 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts }) => {
     }
 
     setDrankBrands(drankBrandsStatistic);
-
-    const drankDatesValues: { date: Date; count: number }[] = profileUserPosts.reduce((allDates, post) => {
-      const dateString = timestampToDate(post.timeCreated);
-      const newDate = new Date(dateString);
-      if (
-        allDates.findIndex((element: { date: Date; count: number }) => element.date.getTime() === newDate.getTime()) ===
-        -1
-      ) {
-        allDates = [...allDates, { date: new Date(dateString), count: 1 }];
-      } else {
-        allDates[
-          allDates.findIndex((element: { date: Date; count: number }) => element.date.getTime() === newDate.getTime())
-        ].count += 1;
-      }
-      return allDates;
-    }, []);
     setValues(drankDatesValues);
+    setPriceStatistic(priceStatistic);
+    setStreaks(streaks);
 
-    // calculate / set priceStatistic
-    const calculateTotalPrice = (posts: any, startDate: Date, endDate: Date) => {
-      return posts.reduce((accumulator: number, item: any) => {
-        const itemDate = new Date(item.timeCreated.seconds * 1000);
-        if (itemDate >= startDate && itemDate <= endDate && item.price) {
-          return accumulator + item.price;
-        }
-        return accumulator;
-      }, 0);
-    };
+    // // drank brands
+    // const drankBrandsStatistic: Record<string, { brandName: string; times: number }> = profileUserPosts.reduce(
+    //   (drankBrands, post) => {
+    //     drankBrands[post.brandId]
+    //       ? (drankBrands[post.brandId].times = drankBrands[post.brandId].times + 1)
+    //       : (drankBrands[post.brandId] = { times: 1, brandName: post.brandName });
+    //     return drankBrands;
+    //   },
+    //   {}
+    // );
 
-    const currentDate = new Date();
-    const intervals = [
-      { label: 'year', value: currentDate.getFullYear() - 1 },
-      { label: 'month', value: currentDate.getMonth() - 1 },
-      { label: 'week', value: currentDate.getDate() - 7 },
-      { label: 'day', value: currentDate.getDate() - 1 },
-    ];
+    // for (const key in allBrandsInfo) {
+    //   if (allBrandsInfo.hasOwnProperty(key) && !drankBrandsStatistic.hasOwnProperty(key)) {
+    //     drankBrandsStatistic[key] = { brandName: allBrandsInfo[key].name, times: 0 };
+    //   }
+    // }
 
-    const allPriceStatistic: PriceStatistic = {
-      overall: profileUserPosts.reduce((a, c) => (c.price ? a + c.price : a), 0),
-      year: 0,
-      month: 0,
-      week: 0,
-      day: 0,
-    };
+    // setDrankBrands(drankBrandsStatistic);
 
-    intervals.forEach(({ label, value }) => {
-      const startDate = new Date();
-      switch (label) {
-        case 'year':
-          startDate.setFullYear(value);
-          break;
-        case 'month':
-          startDate.setMonth(value);
-          break;
-        case 'week':
-          startDate.setDate(value);
-          break;
-        case 'day':
-          startDate.setDate(value);
-          break;
-      }
-      allPriceStatistic[label] = calculateTotalPrice(profileUserPosts, startDate, currentDate);
-    });
+    // // drank dates
+    // const drankDatesValues: { date: Date; count: number }[] = profileUserPosts.reduce((allDates, post) => {
+    //   const dateString = timestampToDate(post.timeCreated);
+    //   const newDate = new Date(dateString);
+    //   if (
+    //     allDates.findIndex((element: { date: Date; count: number }) => element.date.getTime() === newDate.getTime()) ===
+    //     -1
+    //   ) {
+    //     allDates = [...allDates, { date: new Date(dateString), count: 1 }];
+    //   } else {
+    //     allDates[
+    //       allDates.findIndex((element: { date: Date; count: number }) => element.date.getTime() === newDate.getTime())
+    //     ].count += 1;
+    //   }
+    //   return allDates;
+    // }, []);
+    // setValues(drankDatesValues);
 
-    setPriceStatistic(allPriceStatistic);
+    // // calculate / set priceStatistic
+    // const calculateTotalPrice = (posts: any, startDate: Date, endDate: Date) => {
+    //   return posts.reduce((accumulator: number, item: any) => {
+    //     const itemDate = new Date(item.timeCreated.seconds * 1000);
+    //     if (itemDate >= startDate && itemDate <= endDate && item.price) {
+    //       return accumulator + item.price;
+    //     }
+    //     return accumulator;
+    //   }, 0);
+    // };
 
-    console.log('drankBrands', drankBrands);
-    // console.log('mostDrankBrand', mostDrankBrand);
-    // console.log(drankDates, 'drankDates');
-    console.log('drankDatesValues', drankDatesValues);
+    // const currentDate = new Date();
+    // const intervals = [
+    //   { label: 'year', value: currentDate.getFullYear() - 1 },
+    //   { label: 'month', value: currentDate.getMonth() - 1 },
+    //   { label: 'week', value: currentDate.getDate() - 7 },
+    //   { label: 'day', value: currentDate.getDate() - 1 },
+    // ];
+
+    // const allPriceStatistic: PriceStatistic = {
+    //   overall: profileUserPosts.reduce((a, c) => (c.price ? a + c.price : a), 0),
+    //   year: 0,
+    //   month: 0,
+    //   week: 0,
+    //   day: 0,
+    // };
+
+    // intervals.forEach(({ label, value }) => {
+    //   const startDate = new Date();
+    //   switch (label) {
+    //     case 'year':
+    //       startDate.setFullYear(value);
+    //       break;
+    //     case 'month':
+    //       startDate.setMonth(value);
+    //       break;
+    //     case 'week':
+    //       startDate.setDate(value);
+    //       break;
+    //     case 'day':
+    //       startDate.setDate(value);
+    //       break;
+    //   }
+    //   allPriceStatistic[label] = calculateTotalPrice(profileUserPosts, startDate, currentDate);
+    // });
+
+    // setPriceStatistic(allPriceStatistic);
   }, [profileUserPosts, allBrandsInfo]);
+
+  useEffect(() => {}, [values]);
+
+  const fetchAllBrandsInfo = async () => {
+    const allBrands = await dbApi.getAllBrandsInfo();
+    dispatch(addAllBrands({ allBrands }));
+  };
 
   function timestampToDate(timestamp: Timestamp) {
     const dateObj = timestamp.toDate();
@@ -133,13 +244,6 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts }) => {
     const month = ('0' + (dateObj.getMonth() + 1)).slice(-2);
     const day = ('0' + dateObj.getDate()).slice(-2);
     return `${year}-${month}-${day}`;
-  }
-
-  const endDate = new Date();
-  const startDate = new Date(endDate.getTime());
-  startDate.setMonth(startDate.getMonth() - 6);
-  if (values === undefined) {
-    return <div>loading...</div>;
   }
 
   const getMostDrankBrand = () => {
@@ -153,7 +257,7 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts }) => {
 
   return (
     <div className=''>
-      <CalendarHeatmapComponent startDate={startDate} endDate={endDate} values={values} />
+      {values && <CalendarHeatmapComponent startDate={startDate} endDate={endDate} values={values} />}
       <div>總共花ㄌ${priceStatistic.overall}</div>
       <div>今年花ㄌ${priceStatistic.year}</div>
       <div>這個月花ㄌ${priceStatistic.month}</div>
@@ -182,9 +286,7 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts }) => {
             ))}
         </div>
       </div>
-      <div>
-        <Badges />
-      </div>
+      <div>{drankBrands && <Badges drankBrands={drankBrands} numPosts={profileUserPosts.length} />}</div>
     </div>
   );
 };
