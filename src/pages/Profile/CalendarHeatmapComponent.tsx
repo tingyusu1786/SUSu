@@ -12,7 +12,7 @@ interface CalendarHeatmapProps {
 
 const CalendarHeatmapComponent: React.FC<CalendarHeatmapProps> = ({ startDate, endDate, values }) => {
   return (
-    <div className='mx-auto w-[900px]'>
+    <div className='container mx-auto w-[600px]'>
       <CalendarHeatmap
         startDate={startDate}
         endDate={endDate}
@@ -53,7 +53,7 @@ const CalendarHeatmapComponent: React.FC<CalendarHeatmapProps> = ({ startDate, e
         }}
       />
 
-      <Tooltip />
+      <Tooltip id='data-tip' />
     </div>
   );
 };
