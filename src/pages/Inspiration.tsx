@@ -69,191 +69,80 @@ function Inspiration() {
     setSelectedRating(+e.target.value);
   };
 
-  // todo: 有brand有rating時沒有東西怎麼辦
   const getRandomItem = async (selectedBrands: string[], selectedRating: number | undefined) => {
     setRandomItem(undefined);
     setIsFinding(true);
-    if (selectedBrands.length > 0 && selectedRating) {
-      // selected both
-      // todo
-      // 設where, 如果真的沒有就說沒有
 
-      let randomItemFromDb: DocumentData | RandomItem | undefined = undefined;
-      while (
-        !randomItemFromDb ||
-        !randomItemFromDb?.averageRating ||
-        (randomItemFromDb.averageRating && randomItemFromDb.averageRating < selectedRating)
-      ) {
-        // 從user選的裡面選一個brand
-        const randomIndex = selectedBrands.length === 1 ? 0 : Math.floor(Math.random() * selectedBrands.length);
-        const randomBrandId = selectedBrands[randomIndex];
+    let randomItemFromDb: DocumentData | RandomItem | undefined = undefined;
 
-        // 拿出這個brand的所有categories
-        const categoriesRef = collection(db, 'brands', randomBrandId, 'categories');
-        const categoriesSnapshot = await getDocs(categoriesRef);
-
-        // 隨機選一個category
-        const categoriesIds = categoriesSnapshot.docs.map((c) => c.id);
-        const randomCategoryId = categoriesIds[Math.floor(Math.random() * categoriesIds.length)];
-
-        // 拿出這個category的大於n分的所有item
-        const itemsRef = query(
-          collection(db, 'brands', randomBrandId, 'categories', randomCategoryId, 'items'),
-          where('averageRating', '>', selectedRating)
-        );
-        const itemsSnapshot = await getDocs(itemsRef);
-        console.log('itemsSnapshot.size', itemsSnapshot.size);
-        if (itemsSnapshot.size === 0) {
-          // 跳過這個loop去下個loop
-          console.log('continue');
-          continue;
-        }
-
-        // 隨機選一個item
-        const itemsIds = itemsSnapshot.docs.map((i) => i.id);
-        const randomItemId = itemsIds[Math.floor(Math.random() * itemsIds.length)];
-
-        // 拿出這個item
-        const itemRef = doc(db, 'brands', randomBrandId, 'categories', randomCategoryId, 'items', randomItemId);
-        const randomItemDoc = await getDoc(itemRef);
-        randomItemFromDb = await randomItemDoc.data();
-        // 加上brand資訊
-        randomItemFromDb = {
-          ...randomItemFromDb,
-          itemId: randomItemDoc.id,
-          brand: allBrandsInfo[randomBrandId].name,
-          brandId: randomBrandId,
-        };
-        console.log(randomItemFromDb);
-        setRandomItem(randomItemFromDb as RandomItem);
-        setIsFinding(false);
-      }
-    } else if (selectedBrands.length === 0 && selectedRating) {
-      // selected rating
-      let randomItemFromDb: DocumentData | RandomItem | undefined = undefined;
-      while (
-        !randomItemFromDb ||
-        !randomItemFromDb?.averageRating ||
-        (randomItemFromDb.averageRating && randomItemFromDb.averageRating < selectedRating)
-      ) {
-        // 隨機選一個brand
-        const randomBrandId = Object.keys(allBrandsInfo)[Math.floor(Math.random() * Object.keys(allBrandsInfo).length)];
-
-        // 拿出這個brand的所有categories
-        const categoriesRef = collection(db, 'brands', randomBrandId, 'categories');
-        const categoriesSnapshot = await getDocs(categoriesRef);
-
-        // 隨機選一個category
-        const categoriesIds = categoriesSnapshot.docs.map((c) => c.id);
-        const randomCategoryId = categoriesIds[Math.floor(Math.random() * categoriesIds.length)];
-
-        // 拿出這個category的大於n分的所有item
-        const itemsRef = query(
-          collection(db, 'brands', randomBrandId, 'categories', randomCategoryId, 'items'),
-          where('averageRating', '>', selectedRating)
-        );
-        const itemsSnapshot = await getDocs(itemsRef);
-        console.log('itemsSnapshot.size', itemsSnapshot.size);
-        if (itemsSnapshot.size === 0) {
-          // 跳過這個loop去下個loop
-          console.log('continue');
-          continue;
-        }
-
-        // 隨機選一個item
-        const itemsIds = itemsSnapshot.docs.map((i) => i.id);
-        const randomItemId = itemsIds[Math.floor(Math.random() * itemsIds.length)];
-
-        // 拿出這個item
-        const itemRef = doc(db, 'brands', randomBrandId, 'categories', randomCategoryId, 'items', randomItemId);
-        const randomItemDoc = await getDoc(itemRef);
-        randomItemFromDb = await randomItemDoc.data();
-        // 加上brand資訊
-        randomItemFromDb = {
-          ...randomItemFromDb,
-          itemId: randomItemDoc.id,
-          brand: allBrandsInfo[randomBrandId].name,
-          brandId: randomBrandId,
-        };
-        console.log(randomItemFromDb);
-        setRandomItem(randomItemFromDb as RandomItem);
-        setIsFinding(false);
-      }
-    } else if (selectedBrands.length > 0 && !selectedRating) {
-      // selected brand
-      // 從user選的裡面選一個brand
-      const randomIndex = selectedBrands.length === 1 ? 0 : Math.floor(Math.random() * selectedBrands.length);
-      // randomBrandId = selectedBrands[randomIndex];
-      const randomBrandId = selectedBrands[randomIndex];
-
-      if (!randomBrandId) return;
-      // 拿出這個brand的所有categories
-      const categoriesRef = collection(db, 'brands', randomBrandId, 'categories');
-      const categoriesSnapshot = await getDocs(categoriesRef);
-
-      // 隨機選一個category
-      const categoriesIds = categoriesSnapshot.docs.map((c) => c.id);
-      const randomCategoryId = categoriesIds[Math.floor(Math.random() * categoriesIds.length)];
-
-      // 拿出這個category的所有item
-      const itemsRef = collection(db, 'brands', randomBrandId, 'categories', randomCategoryId, 'items');
-      const itemsSnapshot = await getDocs(itemsRef);
-
-      // 隨機選一個item
-      const itemsIds = itemsSnapshot.docs.map((i) => i.id);
-      const randomItemId = itemsIds[Math.floor(Math.random() * itemsIds.length)];
-
-      // 拿出這個item
-      const itemRef = doc(db, 'brands', randomBrandId, 'categories', randomCategoryId, 'items', randomItemId);
-      const randomItemDoc = await getDoc(itemRef);
-      let randomItemFromDb = await randomItemDoc.data();
-      // 加上brand資訊
-      randomItemFromDb = {
-        ...randomItemFromDb,
-        itemId: randomItemDoc.id,
-        brand: allBrandsInfo[randomBrandId].name,
-        brandId: randomBrandId,
-      };
-      console.log(randomItemFromDb);
-      setRandomItem(randomItemFromDb as RandomItem);
-      setIsFinding(false);
-    } else {
-      // selected none
-      // 隨機選一個brand
-      const randomBrandId = Object.keys(allBrandsInfo)[Math.floor(Math.random() * Object.keys(allBrandsInfo).length)];
-
-      if (!randomBrandId) return;
-      // 拿出這個brand的所有categories
-      const categoriesRef = collection(db, 'brands', randomBrandId, 'categories');
-      const categoriesSnapshot = await getDocs(categoriesRef);
-
-      // 隨機選一個category
-      const categoriesIds = categoriesSnapshot.docs.map((c) => c.id);
-      const randomCategoryId = categoriesIds[Math.floor(Math.random() * categoriesIds.length)];
-
-      // 拿出這個category的所有item
-      const itemsRef = collection(db, 'brands', randomBrandId, 'categories', randomCategoryId, 'items');
-      const itemsSnapshot = await getDocs(itemsRef);
-
-      // 隨機選一個item
-      const itemsIds = itemsSnapshot.docs.map((i) => i.id);
-      const randomItemId = itemsIds[Math.floor(Math.random() * itemsIds.length)];
-
-      // 拿出這個item
-      const itemRef = doc(db, 'brands', randomBrandId, 'categories', randomCategoryId, 'items', randomItemId);
-      const randomItemDoc = await getDoc(itemRef);
-      let randomItemFromDb = await randomItemDoc.data();
-      // 加上brand資訊
-      randomItemFromDb = {
-        ...randomItemFromDb,
-        itemId: randomItemDoc.id,
-        brand: allBrandsInfo[randomBrandId].name,
-        brandId: randomBrandId,
-      };
-      console.log(randomItemFromDb);
-      setRandomItem(randomItemFromDb as RandomItem);
-      setIsFinding(false);
+    if (selectedBrands.length === 0) {
+      selectedBrands = Object.keys(allBrandsInfo);
     }
+    let foundItem = false;
+    const indexQueue = Array(selectedBrands.length)
+      .fill('')
+      .map((_, index) => index);
+    brandLoop: while (indexQueue.length > 0) {
+      // 從user選的裡面選一個brand
+      const randomQueueIndex = Math.floor(Math.random() * indexQueue.length);
+      const randomBrandId = selectedBrands[indexQueue[randomQueueIndex]];
+      // 把選到的剔除
+      indexQueue.splice(randomQueueIndex, 1);
+
+      // 拿出這個brand的所有categories
+      const categoriesRef = collection(db, 'brands', randomBrandId, 'categories');
+      const categoriesSnapshot = await getDocs(categoriesRef);
+      const categoriesIds = categoriesSnapshot.docs.map((c) => c.id);
+
+      while (categoriesIds.length > 0) {
+        // 隨機選一個category
+        const randomCategoryIndex = Math.floor(Math.random() * categoriesIds.length);
+        const randomCategoryId = categoriesIds[randomCategoryIndex];
+        // 把選到的剔除
+        categoriesIds.splice(randomCategoryIndex, 1);
+
+        let itemsRef;
+
+        // 拿出這個category的所有item
+        if (!selectedRating) {
+          itemsRef = query(collection(db, 'brands', randomBrandId, 'categories', randomCategoryId, 'items'));
+        } else {
+          // 有選rating的話變成拿出這個category的大於n分的所有item
+          itemsRef = query(
+            collection(db, 'brands', randomBrandId, 'categories', randomCategoryId, 'items'),
+            where('averageRating', '>=', selectedRating)
+          );
+        }
+
+        const itemsSnapshot = await getDocs(itemsRef);
+        if (itemsSnapshot.size === 0) {
+          // 跳過這個loop去下個loop
+          continue;
+        }
+
+        // 隨機選一個item
+        const itemsIds = itemsSnapshot.docs.map((i) => i.id);
+        const randomItemId = itemsIds[Math.floor(Math.random() * itemsIds.length)];
+
+        // 拿出這個item
+        const itemRef = doc(db, 'brands', randomBrandId, 'categories', randomCategoryId, 'items', randomItemId);
+        const randomItemDoc = await getDoc(itemRef);
+        randomItemFromDb = await randomItemDoc.data();
+        // 加上brand資訊
+        randomItemFromDb = {
+          ...randomItemFromDb,
+          itemId: randomItemDoc.id,
+          brand: allBrandsInfo[randomBrandId].name,
+          brandId: randomBrandId,
+        };
+        setRandomItem(randomItemFromDb as RandomItem);
+        setIsFinding(false);
+        foundItem = true;
+        break brandLoop;
+      }
+    }
+    !foundItem && alert('no item');
+    setIsFinding(false);
   };
 
   return (
@@ -319,7 +208,7 @@ function Inspiration() {
         GO!
       </button>
       {isFinding && <div>choosing drinks for you~~~</div>}
-      {randomItem && (
+      {!isFinding && randomItem && (
         <div className='flex flex-col items-center justify-center'>
           <p>推薦你喝</p>
           <Link to={`/catalogue/${randomItem.brandId}`}>
@@ -334,11 +223,12 @@ function Inspiration() {
               {randomItem.averageRating} / {randomItem.numRatings}
             </p>
           )}
-          {Object.entries(randomItem.price).map((p) => (
-            <p key={p[0]}>
-              {p[0]}: ${p[1]}
-            </p>
-          ))}
+          {randomItem.price &&
+            Object.entries(randomItem.price).map((p) => (
+              <p key={p[0]}>
+                {p[0]}: ${p[1]}
+              </p>
+            ))}
         </div>
       )}
     </div>
