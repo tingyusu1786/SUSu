@@ -1,5 +1,4 @@
 import { useState, useEffect, ChangeEvent, KeyboardEvent, useRef } from 'react';
-import { Link } from 'react-router-dom';
 import { db } from '../../services/firebase';
 import {
   collection,
@@ -26,12 +25,10 @@ import {
 } from 'firebase/firestore';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { showNotification, closeNotification } from '../../components/notification/notificationSlice';
-import { Post, Like, Comment } from '../../interfaces/interfaces';
-import { getTimeDiff } from '../../utils/common';
-import CommentInputSection from './CommentInputSection';
-import CommentDiv from './CommentDiv';
+import { Post, Comment } from '../../interfaces/interfaces';
+import PostCard from './PostCard';
 
-function RenderPosts() {
+function PostsFeed() {
   const dispatch = useAppDispatch();
   const isLoading = useAppSelector((state) => state.auth.isLoading);
 
@@ -43,21 +40,25 @@ function RenderPosts() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [hashtagFilter, setHashtagFilter] = useState<string | undefined>();
 
-  const [authorData, setAuthorData] = useState<Record<string, any>>({});
+  // const [authorData, setAuthorData] = useState<Record<string, any>>({});
   const [lastKey, setLastKey] = useState<Timestamp>();
   const [bottomMessage, setBottomMessage] = useState('');
   const initSnap = useRef(true);
 
   useEffect(() => {
     fetchFivePosts(lastKey, hashtagFilter);
-    console.log('hashtagFilter', hashtagFilter);
+    // console.log('hashtagFilter', hashtagFilter);
   }, [hashtagFilter]);
 
   // add listener for newly added post
   useEffect(() => {
     const postsCollection = collection(db, 'posts');
     // todo
-    const q = query(postsCollection, orderBy('timeCreated', 'desc'));
+    const q = query(
+      postsCollection,
+      or(where('audience', '==', 'public'), where('authorId', '==', currentUserId)),
+      orderBy('timeCreated', 'desc')
+    );
 
     const unsubscribe = onSnapshot(q, async (querySnapshot: QuerySnapshot) => {
       const addedChanges = querySnapshot.docChanges().filter((change) => change.type === 'added');
@@ -91,9 +92,9 @@ function RenderPosts() {
     return unsubscribe;
   }, []);
 
-  // 有新文之後社下一個key
+  // 有新文之後設下一個key
   useEffect(() => {
-    if (posts.length == 0) return;
+    if (posts.length === 0) return;
     let lastTimestamp = posts[posts.length - 1].timeCreated;
     setLastKey(lastTimestamp);
   }, [posts]);
@@ -104,7 +105,7 @@ function RenderPosts() {
       const isBottom = window.innerHeight + window.pageYOffset >= document.body.offsetHeight;
       if (isBottom) {
         fetchFivePosts(lastKey, hashtagFilter);
-        console.log('isBottom');
+        // console.log('isBottom');
       }
     };
 
@@ -160,7 +161,7 @@ function RenderPosts() {
     const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);
     if (querySnapshot.docs.length === 0) {
       setBottomMessage('no more posts');
-      console.log('no more posts');
+      // console.log('no more posts');
       return;
     }
     const postsArray = querySnapshot.docs.map(async (change) => {
@@ -278,9 +279,7 @@ function RenderPosts() {
       authorName: currentUserName,
       authorPhoto: currentUserPhotoURL,
       timeCreated: timestamp,
-      ...(isComment
-        ? { content: post.commentInput }
-        : {}),
+      ...(isComment ? { content: post.commentInput } : {}),
     };
     const targetArray = isComment ? post.comments : post.likes;
     const hasLiked = isComment ? undefined : targetArray?.some((like) => like.authorId === userId);
@@ -366,6 +365,11 @@ function RenderPosts() {
     }
   };
 
+  const handleClickHashtag = (hashtag: string) => {
+    setHashtagFilter(hashtag);
+    setLastKey(undefined);
+  };
+
   const fireNotification = () => {
     dispatch(showNotification({ type: 'success', content: 'hihi' }));
     setTimeout(() => dispatch(closeNotification()), 5000);
@@ -377,18 +381,6 @@ function RenderPosts() {
 
   return (
     <div className='flex flex-col items-center justify-center'>
-      <button onClick={fireNotification}>notification</button>
-      <h1 className='font-heal text-3xl'>see posts ({posts.length})</h1>
-      <select
-        name='audience'
-        id=''
-        className='w-50 my-1 rounded bg-gray-200'
-        // value={inputs.audience}
-        // onChange={handleInputChange}
-      >
-        <option value='all'>（all）</option>
-        <option value='friends'>（friends）</option>
-      </select>
       {hashtagFilter && (
         <div>
           <span className='before:content-["#"]'>{hashtagFilter}</span>
@@ -396,7 +388,6 @@ function RenderPosts() {
             onClick={() => {
               setHashtagFilter(undefined);
               setLastKey(undefined);
-              // setRestart(true);
             }}
           >
             &nbsp;&times;
@@ -404,89 +395,19 @@ function RenderPosts() {
         </div>
       )}
       <div className='flex flex-col items-center justify-center gap-3'>
-        {posts.map((post, index) => {
-          return (
-            <div className='relative w-96 rounded bg-gray-100 p-3' key={index}>
-              {<div>{`audience: ${post.audience}`}</div>}
-              {post.authorId === currentUserId && (
-                <button className='absolute right-1 top-1' onClick={() => handleDeletePost(post, index)}>
-                  delete post
-                </button>
-              )}
-              <Link to={`/profile/${post.authorId}`}>
-                <img src={post.authorPhoto} alt='' className='inline-block h-10 w-10 rounded-full object-cover' />
-                <span>{post.authorName}</span>
-              </Link>
-              <br />
-              <span> 喝了</span>
-              <div>
-                <Link to={`/catalogue/${post.brandId}`}>
-                  <span className='text-xl after:content-["の"]'>{post.brandName}</span>
-                </Link>
-                <Link to={`/catalogue/${post.brandId}/${post.itemId}`}>
-                  <span className='text-xl  font-bold'>{post.itemName}</span>
-                </Link>
-              </div>
-              <span>{post.size && `size: ${post.size} / `}</span>
-              <span>{post.sugar && `sugar: ${post.sugar} / `}</span>
-              <span>{post.ice && `ice: ${post.ice} / `}</span>
-              <span>{post.orderNum && `orderNum: ${post.orderNum} / `}</span>
-              <span>{post.rating && `rating: ${post.rating} / `}</span>
-              <div>{post.selfComment && `💬 ${post.selfComment}`}</div>
-              <div className='flex flex-wrap gap-1'>
-                {post.hashtags?.map((hashtag) => (
-                  <button
-                    className='rounded bg-gray-300 px-2 before:content-["#"]'
-                    key={hashtag}
-                    onClick={() => {
-                      setHashtagFilter(hashtag);
-                      setLastKey(undefined);
-                    }}
-                  >
-                    {hashtag}
-                  </button>
-                ))}
-              </div>
-              <div>{post.timeCreated?.toDate().toLocaleString()}</div>
-              <div className='flex gap-3'>
-                <button
-                  onClick={() => {
-                    currentUserId && handleLike(post, currentUserId, index);
-                  }}
-                  className={`rounded border-2 border-solid border-gray-400 ${
-                    currentUserId && post.likes?.some((like) => like.authorId === currentUserId) && 'bg-gray-800 text-white'
-                  }`}
-                >
-                  likes
-                </button>
-
-                <span>{post.likes?.length || 0}</span>
-                <button
-                  className='rounded border-2 border-solid border-gray-400'
-                  onClick={() => handleCommentsShown(index)}
-                >
-                  comments
-                </button>
-                <span>{post.comments?.length || 0}</span>
-              </div>
-              {post.commentsShown && (
-                <div className='mt-2 flex flex-col gap-1 rounded-lg bg-gray-300 p-1'>
-                  {post.comments?.map((comment, index) => (
-                    <CommentDiv comment={comment} index={index} />
-                  ))}
-
-                  <CommentInputSection
-                    post={post}
-                    handleCommentInput={handleCommentInput}
-                    handleCommentSubmit={handleCommentSubmit}
-                    index={index}
-                  />
-                </div>
-              )}
-            </div>
-          );
-        })}
-
+        {posts.map((post, index) => (
+          <PostCard
+            post={post}
+            index={index}
+            handleDeletePost={handleDeletePost}
+            handleLike={handleLike}
+            handleCommentsShown={handleCommentsShown}
+            handleCommentInput={handleCommentInput}
+            handleCommentSubmit={handleCommentSubmit}
+            handleUpdatePost={handleUpdatePost}
+            handleClickHashtag={handleClickHashtag}
+          />
+        ))}
         <h1 className='font-heal text-3xl'>({posts.length})</h1>
         <span>{bottomMessage}</span>
       </div>
@@ -494,4 +415,4 @@ function RenderPosts() {
   );
 }
 
-export default RenderPosts;
+export default PostsFeed;

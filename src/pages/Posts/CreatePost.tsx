@@ -5,19 +5,19 @@ import {
   doc,
   getDoc,
   addDoc,
-  setDoc,
-  serverTimestamp,
-  Timestamp,
   getDocs,
   updateDoc,
-  arrayUnion,
+  // setDoc,
+  // serverTimestamp,
+  // Timestamp,
+  // arrayUnion,
 } from 'firebase/firestore';
 import { useAppSelector } from '../../app/hooks';
 import dbApi from '../../utils/dbApi';
 
 function CreatePost() {
   const initialInput = {
-    audience: 'public', //改成從currentUser資料裡拿
+    audience: 'public', //todo: 改成從currentUser資料裡拿
     brandId: '',
     itemId: '',
     sugar: '',
@@ -452,7 +452,7 @@ function CreatePost() {
               ))}
             </select>
           </div>
-          <label htmlFor='orderNum'>單號</label>
+          {/*<label htmlFor='orderNum'>單號</label>
           <input
             name='orderNum'
             id='orderNum'
@@ -460,22 +460,22 @@ function CreatePost() {
             className='border-2 border-solid border-gray-400 bg-gray-100'
             value={inputs.orderNum}
             onChange={handleInputChange}
-          />
+          />*/}
           <label htmlFor='rating'>rating</label>
           {/*todo: 變成星星*/}
           {/*todo: 「不評分了」按鈕*/}
           <div>
-          <input
-            name='rating'
-            id='rating'
-            type='number'
-            max='5'
-            min='1'
-            className='border-2 border-solid border-gray-400 bg-gray-100'
-            value={inputs.rating}
-            onChange={handleInputChange}
-          />
-          <small>{inputs.rating === '' && '（未評分）'}</small>
+            <input
+              name='rating'
+              id='rating'
+              type='number'
+              max='5'
+              min='1'
+              className='border-2 border-solid border-gray-400 bg-gray-100'
+              value={inputs.rating}
+              onChange={handleInputChange}
+            />
+            <small>{inputs.rating === '' && '（未評分）'}</small>
           </div>
           <label htmlFor='selfComment'>說些話吧</label>
           <input
