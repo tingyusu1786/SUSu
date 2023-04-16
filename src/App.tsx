@@ -51,7 +51,6 @@ function App() {
                 acc[key] = userData[key];
                 return acc;
               }, {});
-            console.log('filteredUserData', filteredUserData);
             dispatch(signInSuccess({ user: filteredUserData, id: user.uid, name: userName, photoURL: userPhotoURL }));
           }
         };
