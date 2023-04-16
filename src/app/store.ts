@@ -3,7 +3,7 @@ import counterReducer from '../components/counter/counterSlice';
 import authReducer from '../components/auth/authSlice';
 import notificationReducer from '../components/notification/notificationSlice';
 import infoReducer from './infoSlice';
-import postsReducer from './postsSlice';
+// import postsReducer from '../components/postsFeed/postsSlice';
 
 export const store = configureStore({
   reducer: {
@@ -11,7 +11,7 @@ export const store = configureStore({
     auth: authReducer,
     notification: notificationReducer,
     info: infoReducer,
-    posts: postsReducer,
+    // posts: postsReducer,
   },
 });
 

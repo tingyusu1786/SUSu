@@ -24,40 +24,48 @@ import {
   and,
 } from 'firebase/firestore';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
+import { updatePosts } from './postsSlice';
 import { showNotification, closeNotification } from '../../components/notification/notificationSlice';
 import { Post, Comment } from '../../interfaces/interfaces';
 import PostCard from './PostCard';
 
-const PostsFeed = () => {
-  const dispatch = useAppDispatch();
+interface PostsProps {
+  onlySeeFollowing?: boolean;
+}
 
+const PostsFeed: React.FC<PostsProps> = ({ onlySeeFollowing = false }) => {
+  const dispatch = useAppDispatch();
+  // const posts = useAppSelector((state) => state.posts.posts);
+  const currentUser = useAppSelector((state) => state.auth.currentUser);
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
-  const currentUserName = useAppSelector((state) => state.auth.currentUserName);
-  const currentUserPhotoURL = useAppSelector((state) => state.auth.currentUserPhotoURL);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
 
   const [posts, setPosts] = useState<Post[]>([]);
   const [hashtagFilter, setHashtagFilter] = useState<string | undefined>();
 
-  // const [authorData, setAuthorData] = useState<Record<string, any>>({});
   const [lastKey, setLastKey] = useState<Timestamp>();
   const [bottomMessage, setBottomMessage] = useState('');
   const initSnap = useRef(true);
 
-  useEffect(() => {
-    fetchFivePosts(lastKey, hashtagFilter);
-    // console.log('hashtagFilter', hashtagFilter);
-  }, [hashtagFilter]);
-
   // add listener for newly added post
   useEffect(() => {
-    const postsCollection = collection(db, 'posts');
-    // todo
-    const q = query(
-      postsCollection,
-      or(where('audience', '==', 'public'), where('authorId', '==', currentUserId)),
-      orderBy('timeCreated', 'desc')
-    );
+    let q: Query<DocumentData>;
+    if (onlySeeFollowing) {
+      q = query(
+        collection(db, 'posts'),
+        and(
+          where('authorId', 'in', currentUser.following),
+          or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+        ),
+        orderBy('timeCreated', 'desc')
+      );
+    } else {
+      q = query(
+        collection(db, 'posts'),
+        or(where('audience', '==', 'public'), where('authorId', '==', currentUserId)),
+        orderBy('timeCreated', 'desc')
+      );
+    }
 
     const unsubscribe = onSnapshot(q, async (querySnapshot: QuerySnapshot) => {
       const addedChanges = querySnapshot.docChanges().filter((change) => change.type === 'added');
@@ -77,11 +85,10 @@ const PostsFeed = () => {
       );
 
       const postsWithQueriedInfos = await Promise.all(newPosts);
-      // console.log('postsWithQueriedInfos', postsWithQueriedInfos);
 
       !initSnap.current &&
         setPosts((posts) => {
-          console.log('set from snapshot');
+          // console.log('set from snapshot');
           const newPosts = [...postsWithQueriedInfos, ...posts];
           return newPosts;
         });
@@ -90,6 +97,14 @@ const PostsFeed = () => {
 
     return unsubscribe;
   }, []);
+
+  useEffect(() => {
+    fetchFivePosts(undefined, hashtagFilter);
+  }, [onlySeeFollowing]);
+
+  useEffect(() => {
+    fetchFivePosts(lastKey, hashtagFilter);
+  }, [hashtagFilter]);
 
   // 有新文之後設下一個key
   useEffect(() => {
@@ -115,46 +130,96 @@ const PostsFeed = () => {
   }, [lastKey, hashtagFilter]);
 
   const fetchFivePosts = async (lastKey: Timestamp | undefined, hashtag: string | undefined) => {
-    const postsRef = collection(db, 'posts');
-
     let q: Query<DocumentData>;
 
     if (lastKey && hashtag) {
-      q = query(
-        postsRef,
-        and(
-          where('hashtags', 'array-contains', hashtag),
-          or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
-        ),
-        orderBy('timeCreated', 'desc'),
-        startAfter(lastKey),
-        limit(5)
-      );
+      if (onlySeeFollowing) {
+        q = query(
+          collection(db, 'posts'),
+          and(
+            where('authorId', 'in', currentUser.following),
+            where('hashtags', 'array-contains', hashtag),
+            or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+          ),
+          orderBy('timeCreated', 'desc'),
+          startAfter(lastKey),
+          limit(5)
+        );
+      } else {
+        q = query(
+          collection(db, 'posts'),
+          and(
+            where('hashtags', 'array-contains', hashtag),
+            or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+          ),
+          orderBy('timeCreated', 'desc'),
+          startAfter(lastKey),
+          limit(5)
+        );
+      }
     } else if (lastKey) {
-      q = query(
-        postsRef,
-        or(where('audience', '==', 'public'), where('authorId', '==', currentUserId)),
-        orderBy('timeCreated', 'desc'),
-        startAfter(lastKey),
-        limit(5)
-      );
+      if (onlySeeFollowing) {
+        q = query(
+          collection(db, 'posts'),
+          and(
+            where('authorId', 'in', currentUser.following),
+            or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+          ),
+          orderBy('timeCreated', 'desc'),
+          startAfter(lastKey),
+          limit(5)
+        );
+      } else {
+        q = query(
+          collection(db, 'posts'),
+          or(where('audience', '==', 'public'), where('authorId', '==', currentUserId)),
+          orderBy('timeCreated', 'desc'),
+          startAfter(lastKey),
+          limit(5)
+        );
+      }
     } else if (hashtag) {
-      q = query(
-        postsRef,
-        and(
-          where('hashtags', 'array-contains', hashtag),
-          or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
-        ),
-        orderBy('timeCreated', 'desc'),
-        limit(5)
-      );
+      if (onlySeeFollowing) {
+        q = query(
+          collection(db, 'posts'),
+          and(
+            where('authorId', 'in', currentUser.following),
+            where('hashtags', 'array-contains', hashtag),
+            or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+          ),
+          orderBy('timeCreated', 'desc'),
+          limit(5)
+        );
+      } else {
+        q = query(
+          collection(db, 'posts'),
+          and(
+            where('hashtags', 'array-contains', hashtag),
+            or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+          ),
+          orderBy('timeCreated', 'desc'),
+          limit(5)
+        );
+      }
     } else {
-      q = query(
-        postsRef,
-        or(where('audience', '==', 'public'), where('authorId', '==', currentUserId)),
-        orderBy('timeCreated', 'desc'),
-        limit(5)
-      );
+      if (onlySeeFollowing) {
+        q = query(
+          collection(db, 'posts'),
+          and(
+            where('authorId', 'in', currentUser.following),
+            or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+          ),
+          orderBy('timeCreated', 'desc'),
+          limit(5)
+        );
+      } else {
+        q = query(
+          collection(db, 'posts'),
+          or(where('audience', '==', 'public'), where('authorId', '==', currentUserId)),
+          orderBy('timeCreated', 'desc'),
+          limit(5)
+        );
+      }
     }
 
     const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);
@@ -175,7 +240,7 @@ const PostsFeed = () => {
     const postsWithQueriedInfos = await Promise.all(postsArray);
     setPosts((posts) => {
       const newPosts = lastKey ? [...posts, ...postsWithQueriedInfos] : postsWithQueriedInfos;
-      console.log(`set from fetchFivePosts,${currentUserId}`, newPosts);
+      // console.log(`set from fetchFivePosts,${currentUserId}`, newPosts);
       return newPosts;
     });
   };
@@ -271,8 +336,8 @@ const PostsFeed = () => {
     const isComment = type === 'comment';
     const newEntry = {
       authorId: userId,
-      authorName: currentUserName,
-      authorPhoto: currentUserPhotoURL,
+      authorName: currentUser.name,
+      authorPhoto: currentUser.photoURL,
       timeCreated: timestamp,
       ...(isComment ? { content: post.commentInput } : {}),
     };
@@ -370,6 +435,10 @@ const PostsFeed = () => {
     setTimeout(() => dispatch(closeNotification()), 5000);
   };
 
+  if (onlySeeFollowing && !currentUserId) {
+    return <div>login to see your follower's posts</div>;
+  }
+
   return (
     <div className='flex flex-col items-center justify-center'>
       {hashtagFilter && (
@@ -388,6 +457,7 @@ const PostsFeed = () => {
       <div className='flex flex-col items-center justify-center gap-3'>
         {posts.map((post, index) => (
           <PostCard
+            key={post.postId}
             post={post}
             index={index}
             handleDeletePost={handleDeletePost}
