@@ -28,9 +28,8 @@ import { showNotification, closeNotification } from '../../components/notificati
 import { Post, Comment } from '../../interfaces/interfaces';
 import PostCard from './PostCard';
 
-function PostsFeed() {
+const PostsFeed = () => {
   const dispatch = useAppDispatch();
-  const isLoading = useAppSelector((state) => state.auth.isLoading);
 
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
   const currentUserName = useAppSelector((state) => state.auth.currentUserName);
@@ -215,16 +214,6 @@ function PostsFeed() {
     };
   };
 
-  const getDocField = async (docRef: DocumentReference, field: string) => {
-    const doc = await getDoc(docRef);
-    if (!doc.exists()) {
-      alert('No such document!');
-      return '';
-    }
-    const data = doc.data();
-    return data[field];
-  };
-
   const getInfo = async (id: string | undefined, type: string, field: string) => {
     if (id !== undefined) {
       let docRef;
@@ -247,7 +236,13 @@ function PostsFeed() {
         }
       }
       if (docRef !== undefined) {
-        const fieldValue = await getDocField(docRef, field);
+        const doc = await getDoc(docRef);
+        if (!doc.exists()) {
+          alert('No such document!');
+          return '';
+        }
+        const data = doc.data();
+        const fieldValue = data[field];
         return fieldValue;
       }
     }
@@ -375,10 +370,6 @@ function PostsFeed() {
     setTimeout(() => dispatch(closeNotification()), 5000);
   };
 
-  if (isLoading) {
-    return <div>loading...</div>;
-  }
-
   return (
     <div className='flex flex-col items-center justify-center'>
       {hashtagFilter && (
@@ -413,6 +404,6 @@ function PostsFeed() {
       </div>
     </div>
   );
-}
+};
 
 export default PostsFeed;
