@@ -6,6 +6,7 @@ export interface AuthState {
   isSignedIn: boolean;
   isLoading: boolean;
   error: string | null;
+  currentUser: any; //todo
   currentUserId: string | null;
   currentUserName: string | null;
   currentUserPhotoURL: string;
@@ -16,6 +17,7 @@ const initialState: AuthState = {
   isSignedIn: false,
   isLoading: true,
   error: null,
+  currentUser: {},
   currentUserId: null,
   currentUserName: null,
   currentUserPhotoURL: nullPhoto,
@@ -34,6 +36,7 @@ export const authSlice = createSlice({
       state.isLoading = false;
       state.isSignedIn = true;
       state.isAuthWindow = false;
+      state.currentUser = action.payload.user;
       state.currentUserId = action.payload.id;
       state.currentUserName = action.payload.name;
       state.currentUserPhotoURL = action.payload.photoURL;
@@ -51,6 +54,7 @@ export const authSlice = createSlice({
       state.isLoading = false;
       state.isSignedIn = false;
       state.isAuthWindow = false;
+      state.currentUser = {};
       state.currentUserId = null;
       state.currentUserName = null;
       state.currentUserPhotoURL = nullPhoto;
@@ -67,9 +71,11 @@ export const authSlice = createSlice({
       state.isAuthWindow = false;
     },
     updateUserName: (state, action) => {
+      state.currentUser.name = action.payload.name;
       state.currentUserName = action.payload.name;
     },
     updateUserPhoto: (state, action) => {
+      state.currentUser.photoURL = action.payload.photoURL;
       state.currentUserPhotoURL = action.payload.photoURL;
     },
   },

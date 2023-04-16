@@ -15,6 +15,8 @@ import {
 } from './components/auth/authSlice';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './services/firebase';
+import { db } from './services/firebase';
+import { doc, setDoc, getDoc, collection, serverTimestamp } from 'firebase/firestore';
 
 import algoliasearch from 'algoliasearch/lite';
 import { InstantSearch, SearchBox } from 'react-instantsearch-hooks-web';
@@ -40,7 +42,8 @@ function App() {
         const getUser = async () => {
           const userName = await dbApi.getUserField(user.uid, 'name');
           const userPhotoURL = await dbApi.getUserField(user.uid, 'photoURL');
-          dispatch(signInSuccess({ id: user.uid, name: userName, photoURL: userPhotoURL }));
+          const userDoc = await getDoc(doc(db, 'users', user.uid));
+          dispatch(signInSuccess({ user: userDoc.data(), id: user.uid, name: userName, photoURL: userPhotoURL }));
         };
         getUser();
       } else {
@@ -51,14 +54,14 @@ function App() {
   }, []);
 
   // useEffect(() => {
-    // Navigate to the current URL when the authentication state changes
-    // userId === null && navigate(window.location.pathname);
-    // Refresh the page when the authentication state changes
-    // window.location.reload();
+  // Navigate to the current URL when the authentication state changes
+  // userId === null && navigate(window.location.pathname);
+  // Refresh the page when the authentication state changes
+  // window.location.reload();
   // }, [isSignedIn]);
 
   if (isLoading) {
-    return (<div>loading...</div>)
+    return <div>loading...</div>;
   }
 
   return (

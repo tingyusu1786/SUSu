@@ -53,15 +53,22 @@ export function Authentication() {
         name: user.displayName,
         email: user.email,
         photoURL: user.photoURL,
-        timeCreated: serverTimestamp(),
+        timeCreated: new Date(),
       });
       alert(`Signed up user: ${user.displayName} (${user.email})`);
-      dispatch(signInSuccess({ id: user.uid, name: user.displayName, photoURL: user.photoURL }));
-
-      // localStorage.setItem(
-      //   'userData',
-      //   JSON.stringify({ id: user.uid, name: user.displayName, photoURL: user.photoURL })
-      // );
+      dispatch(
+        signInSuccess({
+          user: {
+            name: user.displayName,
+            email: user.email,
+            photoURL: user.photoURL,
+            timeCreated: new Date(),
+          },
+          id: user.uid,
+          name: user.displayName,
+          photoURL: user.photoURL,
+        })
+      );
     } catch (error: any) {
       const errorCode = error.code;
       const errorMessage = error.message;
@@ -85,12 +92,14 @@ export function Authentication() {
       const userDoc = await getDoc(userDocRef);
 
       userDoc.data() &&
-        dispatch(signInSuccess({ id: userDoc.id, name: userDoc.data()?.name, photoURL: userDoc.data()?.photoURL }));
-
-      // localStorage.setItem(
-      //   'userData',
-      //   JSON.stringify({ id: user.uid, name: userDoc.data()?.name, photoURL: userDoc.data()?.photoURL })
-      // );
+        dispatch(
+          signInSuccess({
+            user: userDoc.data(),
+            id: userDoc.id,
+            name: userDoc.data()?.name,
+            photoURL: userDoc.data()?.photoURL,
+          })
+        );
 
       alert(`Logged in user: ${userDoc.data()?.name} (${user.email})`);
     } catch (error: any) {
@@ -132,11 +141,10 @@ export function Authentication() {
         } else {
           alert(`google sign in successful, user: ${user.displayName}`);
         }
-        dispatch(signInSuccess({ id: user.uid, name: user.displayName, photoURL: user.photoURL }));
-        // localStorage.setItem(
-        //   'userData',
-        //   JSON.stringify({ id: user.uid, name: user.displayName, photoURL: user.photoURL })
-        // );
+        const userDoc = await getDoc(doc(db, 'users', user.uid));
+        dispatch(
+          signInSuccess({ user: userDoc.data(), id: user.uid, name: user.displayName, photoURL: user.photoURL })
+        );
       }
     } catch (error: any) {
       const errorCode = error.code;
