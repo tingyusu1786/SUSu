@@ -4,29 +4,7 @@ import { useState, useEffect, ChangeEvent } from 'react';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
 import { addAllBrands } from '../app/infoSlice';
 import { db } from '../services/firebase';
-import {
-  collection,
-  doc,
-  DocumentSnapshot,
-  getDoc,
-  getDocs,
-  query,
-  Query,
-  orderBy,
-  limit,
-  onSnapshot,
-  QuerySnapshot,
-  Timestamp,
-  updateDoc,
-  where,
-  DocumentReference,
-  DocumentData,
-  deleteDoc,
-  startAfter,
-  arrayUnion,
-  arrayRemove,
-  CollectionReference,
-} from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, query, where, DocumentData } from 'firebase/firestore';
 
 function Inspiration() {
   type RandomItem = {
@@ -45,11 +23,13 @@ function Inspiration() {
   const [showBrands, setShowBrands] = useState(false);
   const [showRatings, setShowRatings] = useState(false);
   const [randomItem, setRandomItem] = useState<RandomItem | null>();
+  const [noItemMessage, setNoItemMessage] = useState<string>();
   const [isFinding, setIsFinding] = useState(false);
 
   useEffect(() => {
     if (Object.keys(allBrandsInfo).length > 0) return;
     fetchAllBrandsInfo();
+    // eslint-disable-next-line
   }, []);
 
   const fetchAllBrandsInfo = async () => {
@@ -71,6 +51,7 @@ function Inspiration() {
 
   const getRandomItem = async (selectedBrands: string[], selectedRating: number | undefined) => {
     setRandomItem(undefined);
+    setNoItemMessage(undefined);
     setIsFinding(true);
 
     let randomItemFromDb: DocumentData | RandomItem | undefined = undefined;
@@ -141,7 +122,7 @@ function Inspiration() {
         break brandLoop;
       }
     }
-    !foundItem && alert('no item');
+    !foundItem && setNoItemMessage('no item, try another brand or lower the rating');
     setIsFinding(false);
   };
 
@@ -231,6 +212,7 @@ function Inspiration() {
             ))}
         </div>
       )}
+      {!isFinding && noItemMessage && <div>{noItemMessage}</div>}
     </div>
   );
 }
