@@ -47,7 +47,7 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts }) => {
     const { drankBrandsStatistic, drankItemsStatistic, drankDatesValues, priceStatistic, streaks, prevDate } =
       reversedProfileUserPosts.reduce(
         (accumulator, post) => {
-          console.log('author:', post.authorId);
+          // console.log('author:', post.authorId);
           // drank brands
           const { drankBrandsStatistic } = accumulator;
           drankBrandsStatistic[post.brandId]
@@ -77,7 +77,7 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts }) => {
           const currentDate = new Date(dateString);
 
           if (prevDate.getTime() !== currentDate.getTime()) {
-            console.log(currentDate);
+            // console.log(currentDate);
             const areConsecutive = currentDate.getTime() - prevDate.getTime() === 86400000;
             if (areConsecutive) {
               streaks.current += 1;
@@ -89,7 +89,7 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts }) => {
             }
             accumulator.prevDate = currentDate;
           }
-          console.log('prevDate', prevDate, 'currentDate', currentDate, 'streak', streaks);
+          // console.log('prevDate', prevDate, 'currentDate', currentDate, 'streak', streaks);
 
           // price statistic
           const { priceStatistic } = accumulator;

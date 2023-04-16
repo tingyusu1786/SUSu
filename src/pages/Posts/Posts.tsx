@@ -55,7 +55,7 @@ function Posts() {
             <option value='following'>following</option>
           </select>
         </div>
-        <PostsFeed onlySeeFollowing={onlySeeFollowing} />
+        <PostsFeed onlySeeFollowing={onlySeeFollowing} currentPage='posts' />
       </div>
     </div>
   );

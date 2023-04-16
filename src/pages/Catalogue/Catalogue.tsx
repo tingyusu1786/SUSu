@@ -5,15 +5,16 @@ import dbApi from '../../utils/dbApi';
 import { doc, getDoc, collection, query, where, getDocs, orderBy, QuerySnapshot } from 'firebase/firestore';
 import BrandCatalogue from './BrandCatalogue';
 import ItemCatalogue from './ItemCatalogue';
+import PostsFeed from '../../components/postsFeed/PostsFeed';
 
-interface CatalogueProps {
+interface BreadcrumProps {
   catalogueBrandId: string | undefined;
   catalogueItemId: string | undefined;
   catalogueBrandName: string | undefined;
   catalogueItemName: string | undefined;
 }
 
-const BreadcrumbNav: React.FC<CatalogueProps> = ({
+const BreadcrumbNav: React.FC<BreadcrumProps> = ({
   catalogueBrandId,
   catalogueItemId,
   catalogueBrandName,
@@ -243,6 +244,9 @@ function Catalogue() {
                   ))}
               </div>
             ))}
+          {catalogueBrandId && !catalogueItemId && (
+            <PostsFeed currentPage='brand' catalogueBrandId={catalogueBrandId} />
+          )}
         </div>
         {catalogueItemId && <div> item:{catalogueItemName}</div>}
         {catalogueItemId && catalogueItemObj?.averageRating && (
@@ -265,6 +269,7 @@ function Catalogue() {
               </div>
             ))}
         </div>
+        {catalogueItemId && <PostsFeed currentPage='item' catalogueItemId={catalogueItemId} />}
       </div>
     </div>
   );

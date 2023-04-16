@@ -289,7 +289,9 @@ function Profile() {
       </div>
       <div className='flex gap-5'>
         <div>
-          {tab === 'posts' && <PostsSection profileUserPosts={profileUserPosts} />}
+          {tab === 'posts' && profileUserId && (
+            <PostsSection profileUserPosts={profileUserPosts} profileUserId={profileUserId} />
+          )}
           {tab === 'dashboard' && (
             <DashboardSection
               // startDate={startDate}

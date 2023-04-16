@@ -22,6 +22,7 @@ import {
   arrayRemove,
   or,
   and,
+  WhereFilterOp,
 } from 'firebase/firestore';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { updatePosts } from './postsSlice';
@@ -31,9 +32,19 @@ import PostCard from './PostCard';
 
 interface PostsProps {
   onlySeeFollowing?: boolean;
+  currentPage: 'posts' | 'profile' | 'brand' | 'item';
+  profileUserId?: string;
+  catalogueBrandId?: string;
+  catalogueItemId?: string;
 }
 
-const PostsFeed: React.FC<PostsProps> = ({ onlySeeFollowing = false }) => {
+const PostsFeed: React.FC<PostsProps> = ({
+  onlySeeFollowing = false,
+  currentPage,
+  profileUserId,
+  catalogueBrandId,
+  catalogueItemId,
+}) => {
   const dispatch = useAppDispatch();
   // const posts = useAppSelector((state) => state.posts.posts);
   const currentUser = useAppSelector((state) => state.auth.currentUser);
@@ -130,18 +141,186 @@ const PostsFeed: React.FC<PostsProps> = ({ onlySeeFollowing = false }) => {
   }, [lastKey, hashtagFilter]);
 
   const fetchFivePosts = async (lastKey: Timestamp | undefined, hashtag: string | undefined) => {
-    let q: Query<DocumentData>;
-
     if (onlySeeFollowing && (currentUser.following === undefined || currentUser.following?.length === 0)) {
       return;
     }
 
-    if (lastKey && hashtag) {
-      if (onlySeeFollowing) {
+    let q: Query<DocumentData> = query(collection(db, 'posts'));
+
+    if (currentPage === 'posts') {
+      if (lastKey && hashtag) {
+        if (onlySeeFollowing) {
+          q = query(
+            collection(db, 'posts'),
+            and(
+              where('authorId', 'in', currentUser.following),
+              where('hashtags', 'array-contains', hashtag),
+              or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+            ),
+            orderBy('timeCreated', 'desc'),
+            startAfter(lastKey),
+            limit(5)
+          );
+        } else {
+          q = query(
+            collection(db, 'posts'),
+            and(
+              where('hashtags', 'array-contains', hashtag),
+              or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+            ),
+            orderBy('timeCreated', 'desc'),
+            startAfter(lastKey),
+            limit(5)
+          );
+        }
+      } else if (lastKey) {
+        if (onlySeeFollowing) {
+          q = query(
+            collection(db, 'posts'),
+            and(
+              where('authorId', 'in', currentUser.following),
+              or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+            ),
+            orderBy('timeCreated', 'desc'),
+            startAfter(lastKey),
+            limit(5)
+          );
+        } else {
+          q = query(
+            collection(db, 'posts'),
+            or(where('audience', '==', 'public'), where('authorId', '==', currentUserId)),
+            orderBy('timeCreated', 'desc'),
+            startAfter(lastKey),
+            limit(5)
+          );
+        }
+      } else if (hashtag) {
+        if (onlySeeFollowing) {
+          q = query(
+            collection(db, 'posts'),
+            and(
+              where('authorId', 'in', currentUser.following),
+              where('hashtags', 'array-contains', hashtag),
+              or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+            ),
+            orderBy('timeCreated', 'desc'),
+            limit(5)
+          );
+        } else {
+          q = query(
+            collection(db, 'posts'),
+            and(
+              where('hashtags', 'array-contains', hashtag),
+              or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+            ),
+            orderBy('timeCreated', 'desc'),
+            limit(5)
+          );
+        }
+      } else {
+        if (onlySeeFollowing) {
+          q = query(
+            collection(db, 'posts'),
+            and(
+              where('authorId', 'in', currentUser.following),
+              or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+            ),
+            orderBy('timeCreated', 'desc'),
+            limit(5)
+          );
+        } else {
+          q = query(
+            collection(db, 'posts'),
+            or(where('audience', '==', 'public'), where('authorId', '==', currentUserId)),
+            orderBy('timeCreated', 'desc'),
+            limit(5)
+          );
+        }
+      }
+    } else if (currentPage === 'profile') {
+      if (lastKey && hashtag) {
+        if (profileUserId === currentUserId) {
+          q = query(
+            collection(db, 'posts'),
+            and(where('authorId', '==', profileUserId), where('hashtags', 'array-contains', hashtag)),
+            orderBy('timeCreated', 'desc'),
+            startAfter(lastKey),
+            limit(5)
+          );
+        } else {
+          q = query(
+            collection(db, 'posts'),
+            and(
+              where('audience', '==', 'public'),
+              where('authorId', '==', profileUserId),
+              where('hashtags', 'array-contains', hashtag)
+            ),
+            orderBy('timeCreated', 'desc'),
+            startAfter(lastKey),
+            limit(5)
+          );
+        }
+      } else if (lastKey) {
+        if (profileUserId === currentUserId) {
+          q = query(
+            collection(db, 'posts'),
+            where('authorId', '==', profileUserId),
+            orderBy('timeCreated', 'desc'),
+            startAfter(lastKey),
+            limit(5)
+          );
+        } else {
+          q = query(
+            collection(db, 'posts'),
+            and(where('audience', '==', 'public'), where('authorId', '==', profileUserId)),
+            orderBy('timeCreated', 'desc'),
+            startAfter(lastKey),
+            limit(5)
+          );
+        }
+      } else if (hashtag) {
+        if (profileUserId === currentUserId) {
+          q = query(
+            collection(db, 'posts'),
+            and(where('authorId', '==', profileUserId), where('hashtags', 'array-contains', hashtag)),
+            orderBy('timeCreated', 'desc'),
+            limit(5)
+          );
+        } else {
+          q = query(
+            collection(db, 'posts'),
+            and(
+              where('audience', '==', 'public'),
+              where('authorId', '==', profileUserId),
+              where('hashtags', 'array-contains', hashtag)
+            ),
+            orderBy('timeCreated', 'desc'),
+            limit(5)
+          );
+        }
+      } else {
+        if (profileUserId === currentUserId) {
+          q = query(
+            collection(db, 'posts'),
+            where('authorId', '==', profileUserId),
+            orderBy('timeCreated', 'desc'),
+            limit(5)
+          );
+        } else {
+          q = query(
+            collection(db, 'posts'),
+            and(where('audience', '==', 'public'), where('authorId', '==', profileUserId)),
+            orderBy('timeCreated', 'desc'),
+            limit(5)
+          );
+        }
+      }
+    } else if (currentPage === 'brand') {
+      if (lastKey && hashtag) {
         q = query(
           collection(db, 'posts'),
           and(
-            where('authorId', 'in', currentUser.following),
+            where('brandId', '==', catalogueBrandId),
             where('hashtags', 'array-contains', hashtag),
             or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
           ),
@@ -149,45 +328,68 @@ const PostsFeed: React.FC<PostsProps> = ({ onlySeeFollowing = false }) => {
           startAfter(lastKey),
           limit(5)
         );
-      } else {
+      } else if (lastKey) {
         q = query(
           collection(db, 'posts'),
           and(
-            where('hashtags', 'array-contains', hashtag),
+            where('brandId', '==', catalogueBrandId),
             or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
           ),
           orderBy('timeCreated', 'desc'),
           startAfter(lastKey),
+          limit(5)
+        );
+      } else if (hashtag) {
+        q = query(
+          collection(db, 'posts'),
+          and(
+            where('brandId', '==', catalogueBrandId),
+            where('hashtags', 'array-contains', hashtag),
+            or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+          ),
+          orderBy('timeCreated', 'desc'),
+          limit(5)
+        );
+      } else {
+        q = query(
+          collection(db, 'posts'),
+          and(
+            where('brandId', '==', catalogueBrandId),
+            or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+          ),
+          orderBy('timeCreated', 'desc'),
           limit(5)
         );
       }
-    } else if (lastKey) {
-      if (onlySeeFollowing) {
+    } else if (currentPage === 'item') {
+      if (lastKey && hashtag) {
         q = query(
           collection(db, 'posts'),
           and(
-            where('authorId', 'in', currentUser.following),
+            where('itemId', '==', catalogueItemId),
+            where('hashtags', 'array-contains', hashtag),
             or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
           ),
           orderBy('timeCreated', 'desc'),
           startAfter(lastKey),
           limit(5)
         );
-      } else {
+      } else if (lastKey) {
         q = query(
           collection(db, 'posts'),
-          or(where('audience', '==', 'public'), where('authorId', '==', currentUserId)),
+          and(
+            where('itemId', '==', catalogueItemId),
+            or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+          ),
           orderBy('timeCreated', 'desc'),
           startAfter(lastKey),
           limit(5)
         );
-      }
-    } else if (hashtag) {
-      if (onlySeeFollowing) {
+      } else if (hashtag) {
         q = query(
           collection(db, 'posts'),
           and(
-            where('authorId', 'in', currentUser.following),
+            where('itemId', '==', catalogueItemId),
             where('hashtags', 'array-contains', hashtag),
             or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
           ),
@@ -198,28 +400,9 @@ const PostsFeed: React.FC<PostsProps> = ({ onlySeeFollowing = false }) => {
         q = query(
           collection(db, 'posts'),
           and(
-            where('hashtags', 'array-contains', hashtag),
+            where('itemId', '==', catalogueItemId),
             or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
           ),
-          orderBy('timeCreated', 'desc'),
-          limit(5)
-        );
-      }
-    } else {
-      if (onlySeeFollowing) {
-        q = query(
-          collection(db, 'posts'),
-          and(
-            where('authorId', 'in', currentUser.following),
-            or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
-          ),
-          orderBy('timeCreated', 'desc'),
-          limit(5)
-        );
-      } else {
-        q = query(
-          collection(db, 'posts'),
-          or(where('audience', '==', 'public'), where('authorId', '==', currentUserId)),
           orderBy('timeCreated', 'desc'),
           limit(5)
         );
