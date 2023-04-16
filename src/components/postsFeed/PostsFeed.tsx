@@ -132,6 +132,10 @@ const PostsFeed: React.FC<PostsProps> = ({ onlySeeFollowing = false }) => {
   const fetchFivePosts = async (lastKey: Timestamp | undefined, hashtag: string | undefined) => {
     let q: Query<DocumentData>;
 
+    if (onlySeeFollowing && (currentUser.following === undefined || currentUser.following?.length === 0)) {
+      return;
+    }
+
     if (lastKey && hashtag) {
       if (onlySeeFollowing) {
         q = query(
@@ -439,6 +443,10 @@ const PostsFeed: React.FC<PostsProps> = ({ onlySeeFollowing = false }) => {
     return <div>login to see your follower's posts</div>;
   }
 
+  if (onlySeeFollowing && (currentUser.following === undefined || currentUser.following?.length === 0)) {
+    return <div>follow users to their posts</div>;
+  }
+
   return (
     <div className='flex flex-col items-center justify-center'>
       {hashtagFilter && (
@@ -457,7 +465,7 @@ const PostsFeed: React.FC<PostsProps> = ({ onlySeeFollowing = false }) => {
       <div className='flex flex-col items-center justify-center gap-3'>
         {posts.map((post, index) => (
           <PostCard
-            key={post.postId}
+            key={post.postId + index}
             post={post}
             index={index}
             handleDeletePost={handleDeletePost}
