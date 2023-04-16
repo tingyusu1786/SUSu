@@ -62,7 +62,6 @@ export function Authentication() {
             name: user.displayName,
             email: user.email,
             photoURL: user.photoURL,
-            timeCreated: new Date(),
           },
           id: user.uid,
           name: user.displayName,
@@ -91,15 +90,19 @@ export function Authentication() {
       const userDocRef = doc(db, 'users', user.uid);
       const userDoc = await getDoc(userDocRef);
 
-      userDoc.data() &&
+      const userData = userDoc.data();
+
+      if (userData) {
+        let filteredUserData: { [key: string]: any } = Object.keys(userDoc)
+          .filter((key) => key != 'timeCreated')
+          .reduce((acc: { [key: string]: any }, key) => {
+            acc[key] = userData[key];
+            return acc;
+          }, {});
         dispatch(
-          signInSuccess({
-            user: userDoc.data(),
-            id: userDoc.id,
-            name: userDoc.data()?.name,
-            photoURL: userDoc.data()?.photoURL,
-          })
+          signInSuccess({ user: filteredUserData, id: user.uid, name: userData.name, photoURL: userData.photoURL })
         );
+      }
 
       alert(`Logged in user: ${userDoc.data()?.name} (${user.email})`);
     } catch (error: any) {
@@ -142,9 +145,19 @@ export function Authentication() {
           alert(`google sign in successful, user: ${user.displayName}`);
         }
         const userDoc = await getDoc(doc(db, 'users', user.uid));
-        dispatch(
-          signInSuccess({ user: userDoc.data(), id: user.uid, name: user.displayName, photoURL: user.photoURL })
-        );
+
+        const userData = userDoc.data();
+        if (userData) {
+          let filteredUserData: { [key: string]: any } = Object.keys(userDoc)
+            .filter((key) => key != 'timeCreated')
+            .reduce((acc: { [key: string]: any }, key) => {
+              acc[key] = userData[key];
+              return acc;
+            }, {});
+          dispatch(
+            signInSuccess({ user: filteredUserData, id: user.uid, name: user.displayName, photoURL: user.photoURL })
+          );
+        }
       }
     } catch (error: any) {
       const errorCode = error.code;

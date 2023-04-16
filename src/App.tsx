@@ -43,7 +43,16 @@ function App() {
           const userName = await dbApi.getUserField(user.uid, 'name');
           const userPhotoURL = await dbApi.getUserField(user.uid, 'photoURL');
           const userDoc = await getDoc(doc(db, 'users', user.uid));
-          dispatch(signInSuccess({ user: userDoc.data(), id: user.uid, name: userName, photoURL: userPhotoURL }));
+          const userData = userDoc.data();
+          if (userData) {
+            let filteredUserData: { [key: string]: any } = Object.keys(userDoc)
+              .filter((key) => key != 'timeCreated')
+              .reduce((acc: { [key: string]: any }, key) => {
+                acc[key] = userData[key];
+                return acc;
+              }, {});
+            dispatch(signInSuccess({ user: filteredUserData, id: user.uid, name: userName, photoURL: userPhotoURL }));
+          }
         };
         getUser();
       } else {
