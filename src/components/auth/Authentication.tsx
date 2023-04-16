@@ -94,7 +94,7 @@ export function Authentication() {
 
       if (userData) {
         let filteredUserData: { [key: string]: any } = Object.keys(userDoc)
-          .filter((key) => key != 'timeCreated')
+          .filter((key) => key !== 'timeCreated' && key !== 'notifications')
           .reduce((acc: { [key: string]: any }, key) => {
             acc[key] = userData[key];
             return acc;
@@ -149,7 +149,7 @@ export function Authentication() {
         const userData = userDoc.data();
         if (userData) {
           let filteredUserData: { [key: string]: any } = Object.keys(userDoc)
-            .filter((key) => key != 'timeCreated')
+            .filter((key) => key !== 'timeCreated' && key !== 'notifications')
             .reduce((acc: { [key: string]: any }, key) => {
               acc[key] = userData[key];
               return acc;

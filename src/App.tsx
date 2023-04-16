@@ -45,12 +45,13 @@ function App() {
           const userDoc = await getDoc(doc(db, 'users', user.uid));
           const userData = userDoc.data();
           if (userData) {
-            let filteredUserData: { [key: string]: any } = Object.keys(userDoc)
-              .filter((key) => key != 'timeCreated')
+            let filteredUserData: { [key: string]: any } = Object.keys(userData)
+              .filter((key) => key !== 'timeCreated' && key !== 'notifications')
               .reduce((acc: { [key: string]: any }, key) => {
                 acc[key] = userData[key];
                 return acc;
               }, {});
+            console.log('filteredUserData', filteredUserData);
             dispatch(signInSuccess({ user: filteredUserData, id: user.uid, name: userName, photoURL: userPhotoURL }));
           }
         };
