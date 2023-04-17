@@ -64,6 +64,73 @@ const dbApi = {
     });
     return allBrandsInfo;
   },
+  async getInfo(id: string | undefined, type: string, field: string) {
+    if (id !== undefined) {
+      let docRef;
+      switch (type) {
+        case 'brand': {
+          docRef = doc(db, 'brands', id);
+          break;
+        }
+        case 'item': {
+          const idArray = id.split('-');
+          docRef = doc(db, 'brands', idArray[0], 'categories', idArray[0] + '-' + idArray[1], 'items', id);
+          break;
+        }
+        case 'user': {
+          docRef = doc(db, 'users', id);
+          break;
+        }
+        default: {
+          return;
+        }
+      }
+      if (docRef !== undefined) {
+        const doc = await getDoc(docRef);
+        if (!doc.exists()) {
+          alert('No such document!');
+          return '';
+        }
+        const data = doc.data();
+        const fieldValue = data[field];
+        return fieldValue;
+      }
+    }
+  },
+
+  async getPostInfo(postData: any) {
+    const brandName: string = await this.getInfo(postData?.brandId, 'brand', 'name');
+    const itemName: string = await this.getInfo(postData?.itemId, 'item', 'name');
+    const authorName: string = await this.getInfo(postData?.authorId, 'user', 'name');
+    const authorPhoto: string = await this.getInfo(postData?.authorId, 'user', 'photoURL');
+
+    if (postData.comments) {
+      const comments: Comment[] = await Promise.all(
+        postData.comments.map(async (comment: any) => {
+          const commentAuthorName: string = await this.getInfo(comment.authorId, 'user', 'name');
+          const commentAuthorPhoto: string = await this.getInfo(comment.authorId, 'user', 'photoURL');
+          return { ...comment, authorName: commentAuthorName, authorPhoto: commentAuthorPhoto };
+        })
+      );
+
+      return {
+        ...postData,
+        brandName,
+        itemName,
+        authorName,
+        authorPhoto,
+        comments,
+      };
+    }
+
+    return {
+      ...postData,
+      brandName,
+      itemName,
+      authorName,
+      authorPhoto,
+    };
+  },
 };
 
 export default dbApi;

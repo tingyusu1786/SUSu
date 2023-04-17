@@ -1,5 +1,6 @@
 import { useState, useEffect, ChangeEvent, KeyboardEvent, useRef } from 'react';
 import { db } from '../../services/firebase';
+import dbApi from '../../utils/dbApi';
 import {
   collection,
   doc,
@@ -68,22 +69,6 @@ const PostsFeed: React.FC<PostsProps> = ({
     }
 
     let q: Query<DocumentData> = query(collection(db, 'posts'));
-    // if (onlySeeFollowing) {
-    //   q = query(
-    //     collection(db, 'posts'),
-    //     and(
-    //       where('authorId', 'in', currentUser.following),
-    //       or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
-    //     ),
-    //     orderBy('timeCreated', 'desc')
-    //   );
-    // } else {
-    //   q = query(
-    //     collection(db, 'posts'),
-    //     or(where('audience', '==', 'public'), where('authorId', '==', currentUserId)),
-    //     orderBy('timeCreated', 'desc')
-    //   );
-    // }
     if (currentPage === 'posts') {
       if (onlySeeFollowing) {
         q = query(
@@ -137,7 +122,7 @@ const PostsFeed: React.FC<PostsProps> = ({
       const newPosts: Post[] = await Promise.all(
         addedChanges.map(async (change) => {
           const postData = change.doc.data();
-          const postInfo = await getPostInfo(postData);
+          const postInfo = await dbApi.getPostInfo(postData);
           const newPost = {
             ...postInfo,
             postId: change.doc.id,
@@ -474,7 +459,7 @@ const PostsFeed: React.FC<PostsProps> = ({
     const postsArray = querySnapshot.docs.map(async (change) => {
       const postData = change.data();
       return {
-        ...(await getPostInfo(postData)),
+        ...(await dbApi.getPostInfo(postData)),
         postId: change.id,
         commentsShown: false,
         commentInput: '',
@@ -486,74 +471,6 @@ const PostsFeed: React.FC<PostsProps> = ({
       // console.log(`set from fetchFivePosts,${currentUserId}`, newPosts);
       return newPosts;
     });
-  };
-
-  const getPostInfo = async (postData: any) => {
-    const brandName: string = await getInfo(postData?.brandId, 'brand', 'name');
-    const itemName: string = await getInfo(postData?.itemId, 'item', 'name');
-    const authorName: string = await getInfo(postData?.authorId, 'user', 'name');
-    const authorPhoto: string = await getInfo(postData?.authorId, 'user', 'photoURL');
-
-    if (postData.comments) {
-      const comments: Comment[] = await Promise.all(
-        postData.comments.map(async (comment: any) => {
-          const commentAuthorName: string = await getInfo(comment.authorId, 'user', 'name');
-          const commentAuthorPhoto: string = await getInfo(comment.authorId, 'user', 'photoURL');
-          return { ...comment, authorName: commentAuthorName, authorPhoto: commentAuthorPhoto };
-        })
-      );
-
-      return {
-        ...postData,
-        brandName,
-        itemName,
-        authorName,
-        authorPhoto,
-        comments,
-      };
-    }
-
-    return {
-      ...postData,
-      brandName,
-      itemName,
-      authorName,
-      authorPhoto,
-    };
-  };
-
-  const getInfo = async (id: string | undefined, type: string, field: string) => {
-    if (id !== undefined) {
-      let docRef;
-      switch (type) {
-        case 'brand': {
-          docRef = doc(db, 'brands', id);
-          break;
-        }
-        case 'item': {
-          const idArray = id.split('-');
-          docRef = doc(db, 'brands', idArray[0], 'categories', idArray[0] + '-' + idArray[1], 'items', id);
-          break;
-        }
-        case 'user': {
-          docRef = doc(db, 'users', id);
-          break;
-        }
-        default: {
-          return;
-        }
-      }
-      if (docRef !== undefined) {
-        const doc = await getDoc(docRef);
-        if (!doc.exists()) {
-          alert('No such document!');
-          return '';
-        }
-        const data = doc.data();
-        const fieldValue = data[field];
-        return fieldValue;
-      }
-    }
   };
 
   const handleCommentsShown = (index: number) => {
