@@ -60,20 +60,73 @@ const PostsFeed: React.FC<PostsProps> = ({
 
   // add listener for newly added post
   useEffect(() => {
-    let q: Query<DocumentData>;
-    if (onlySeeFollowing) {
+    if (
+      onlySeeFollowing &&
+      (currentUser.following === undefined || currentUser.following?.length === 0 || !currentUserId)
+    ) {
+      return;
+    }
+
+    let q: Query<DocumentData> = query(collection(db, 'posts'));
+    // if (onlySeeFollowing) {
+    //   q = query(
+    //     collection(db, 'posts'),
+    //     and(
+    //       where('authorId', 'in', currentUser.following),
+    //       or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+    //     ),
+    //     orderBy('timeCreated', 'desc')
+    //   );
+    // } else {
+    //   q = query(
+    //     collection(db, 'posts'),
+    //     or(where('audience', '==', 'public'), where('authorId', '==', currentUserId)),
+    //     orderBy('timeCreated', 'desc')
+    //   );
+    // }
+    if (currentPage === 'posts') {
+      if (onlySeeFollowing) {
+        q = query(
+          collection(db, 'posts'),
+          and(
+            where('authorId', 'in', currentUser.following),
+            or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+          ),
+          orderBy('timeCreated', 'desc')
+        );
+      } else {
+        q = query(
+          collection(db, 'posts'),
+          or(where('audience', '==', 'public'), where('authorId', '==', currentUserId)),
+          orderBy('timeCreated', 'desc')
+        );
+      }
+    } else if (currentPage === 'profile') {
+      if (profileUserId === currentUserId) {
+        q = query(collection(db, 'posts'), where('authorId', '==', profileUserId), orderBy('timeCreated', 'desc'));
+      } else {
+        q = query(
+          collection(db, 'posts'),
+          and(where('audience', '==', 'public'), where('authorId', '==', profileUserId)),
+          orderBy('timeCreated', 'desc')
+        );
+      }
+    } else if (currentPage === 'brand') {
       q = query(
         collection(db, 'posts'),
         and(
-          where('authorId', 'in', currentUser.following),
+          where('brandId', '==', catalogueBrandId),
           or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
         ),
         orderBy('timeCreated', 'desc')
       );
-    } else {
+    } else if (currentPage === 'item') {
       q = query(
         collection(db, 'posts'),
-        or(where('audience', '==', 'public'), where('authorId', '==', currentUserId)),
+        and(
+          where('itemId', '==', catalogueItemId),
+          or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+        ),
         orderBy('timeCreated', 'desc')
       );
     }
@@ -141,7 +194,10 @@ const PostsFeed: React.FC<PostsProps> = ({
   }, [lastKey, hashtagFilter]);
 
   const fetchFivePosts = async (lastKey: Timestamp | undefined, hashtag: string | undefined) => {
-    if (onlySeeFollowing && (currentUser.following === undefined || currentUser.following?.length === 0)) {
+    if (
+      onlySeeFollowing &&
+      (currentUser.following === undefined || currentUser.following?.length === 0 || !currentUserId)
+    ) {
       return;
     }
 
