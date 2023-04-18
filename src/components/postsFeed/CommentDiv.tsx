@@ -1,17 +1,39 @@
 import React from 'react';
+import { useAppSelector } from '../../app/hooks';
 import { Link } from 'react-router-dom';
-import { Comment } from '../../interfaces/interfaces';
+import { Post, Comment } from '../../interfaces/interfaces';
 import { getTimeDiff } from '../../utils/common';
 
 interface CommentsProps {
+  post: Post;
+  postIndex: number;
   comment: Comment;
-  index: number;
+  commentIndex: number;
+  handleDeleteComment: (
+    userId: string,
+    post: Post,
+    postIndex: number,
+    comment: Comment,
+    commentIndex: number
+  ) => Promise<void>;
 }
 
-const CommentDiv: React.FC<CommentsProps> = ({ comment, index }) => {
+const CommentDiv: React.FC<CommentsProps> = ({ post, postIndex, comment, commentIndex, handleDeleteComment }) => {
+  const currentUserId = useAppSelector((state) => state.auth.currentUserId);
   const timeDiff = getTimeDiff(comment.timeCreated);
+
   return (
-    <div className='rounded-lg bg-white p-1' key={index}>
+    <div className='relative rounded-lg bg-white p-1' key={commentIndex}>
+      {comment.authorId === currentUserId && (
+        <button
+          className='absolute right-1 top-1'
+          onClick={() => {
+            handleDeleteComment(currentUserId, post, postIndex, comment, commentIndex);
+          }}
+        >
+          delete
+        </button>
+      )}
       <Link to={`/profile/${comment.authorId}`}>
         <img src={comment.authorPhoto} alt='123' className='mr-1 inline-block h-6 w-6 rounded-full object-cover' />
       </Link>

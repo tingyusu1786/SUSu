@@ -2,9 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  font-family: 'sayger';
+}
+
 @font-face {
   font-family: 'heal';
   src: url('../public/fonts/HealTheWebA-Regular.otf');
+}
+
+@font-face {
+  font-family: 'sayger';
+  src: url('../public/fonts/Sayger.otf');
 }
 
 .color-empty {

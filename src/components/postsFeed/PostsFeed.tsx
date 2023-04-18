@@ -28,7 +28,7 @@ import {
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { updatePosts } from './postsSlice';
 import { showNotification, closeNotification } from '../../components/notification/notificationSlice';
-import { Post, Comment } from '../../interfaces/interfaces';
+import { Post, Comment, Like } from '../../interfaces/interfaces';
 import PostCard from './PostCard';
 
 interface PostsProps {
@@ -47,7 +47,6 @@ const PostsFeed: React.FC<PostsProps> = ({
   catalogueItemId,
 }) => {
   const dispatch = useAppDispatch();
-  // const posts = useAppSelector((state) => state.posts.posts);
   const currentUser = useAppSelector((state) => state.auth.currentUser);
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
@@ -489,11 +488,18 @@ const PostsFeed: React.FC<PostsProps> = ({
     });
   };
 
-  const handleUpdatePost = async (post: Post, userId: string, index: number, type: 'like' | 'comment') => {
+  // todo: delete comment
+  const handleUpdatePost = async (
+    post: Post,
+    userId: string,
+    index: number,
+    type: 'like' | 'comment' | 'deleteComment',
+    commentIndexToDelete?: number
+  ) => {
     const postRef = doc(db, 'posts', post.postId);
     const curretTime = new Date();
     const timestamp = Timestamp.fromDate(curretTime);
-    const isComment = type === 'comment';
+    const isComment = type === ('comment' || 'deleteComment');
     const newEntry = {
       authorId: userId,
       authorName: currentUser.name,
@@ -501,33 +507,54 @@ const PostsFeed: React.FC<PostsProps> = ({
       timeCreated: timestamp,
       ...(isComment ? { content: post.commentInput } : {}),
     };
-    const targetArray = isComment ? post.comments : post.likes;
+    const targetArray = isComment || type === 'deleteComment' ? post.comments : post.likes;
     const hasLiked = isComment ? undefined : targetArray?.some((like) => like.authorId === userId);
-    const updatedArray = targetArray
-      ? hasLiked
-        ? targetArray.filter((entry) => entry.authorId !== userId)
-        : [...targetArray, newEntry]
-      : [newEntry];
-    await updateDoc(postRef, {
-      [type + 's']: updatedArray,
-    });
+    let updatedArray: Like[] | Comment[];
+    if (targetArray) {
+      if (hasLiked) {
+        updatedArray = targetArray.filter((entry) => entry.authorId !== userId);
+      } else if (type === 'deleteComment') {
+        updatedArray = targetArray.filter((comment, index) => index !== commentIndexToDelete);
+      } else {
+        updatedArray = [...targetArray, newEntry];
+      }
+    } else {
+      updatedArray = [newEntry];
+    }
+
+    if (type === 'like') {
+      await updateDoc(postRef, {
+        likes: updatedArray,
+      });
+    } else {
+      await updateDoc(postRef, {
+        comments: updatedArray,
+      });
+    }
+
     setPosts((prev) => {
       const newPosts = [...prev];
-      if (type === 'comment') {
+      if (type === ('comment' || 'deleteComment')) {
         newPosts[index].comments = updatedArray;
       }
       if (type === 'like') {
-        newPosts[index].likes = updatedArray;
+        newPosts[index].likes = updatedArray as Like[];
       }
       newPosts[index].commentInput = '';
       return newPosts;
     });
 
-    !hasLiked && notifyOtherUser(post.postId, post.authorId as string, newEntry, type);
-    hasLiked && unnotifyOtherUser(post.postId, post.authorId as string, newEntry, type);
+    // todo: unnotify comment
+    !hasLiked && type !== 'deleteComment' && notifyOtherUser(post.postId, post.authorId as string, newEntry, type);
+    hasLiked && type !== 'deleteComment' && unnotifyOtherUser(post.postId, post.authorId as string, newEntry, type);
   };
 
-  const unnotifyOtherUser = async (postId: string, postAuthorId: string, content: any, type: 'like' | 'comment') => {
+  const unnotifyOtherUser = async (
+    postId: string,
+    postAuthorId: string,
+    content: any,
+    type: 'like' | 'comment' | 'deleteComment'
+  ) => {
     const userRef = doc(db, 'users', postAuthorId);
     if (!userRef) return;
     const userData = await getDoc(userRef);
@@ -585,6 +612,21 @@ const PostsFeed: React.FC<PostsProps> = ({
     }
   };
 
+  const handleDeleteComment = async (
+    userId: string,
+    post: Post,
+    postIndex: number,
+    comment: Comment,
+    commentIndex: number
+  ) => {
+    const confirmed = window.confirm('Are you sure you want to delete this comment?');
+    if (confirmed) {
+      handleUpdatePost(post, userId, postIndex, 'deleteComment', commentIndex);
+    } else {
+      return;
+    }
+  };
+
   const handleClickHashtag = (hashtag: string) => {
     setHashtagFilter(hashtag);
     setLastKey(undefined);
@@ -625,6 +667,7 @@ const PostsFeed: React.FC<PostsProps> = ({
             post={post}
             index={index}
             handleDeletePost={handleDeletePost}
+            handleDeleteComment={handleDeleteComment}
             handleLike={handleLike}
             handleCommentsShown={handleCommentsShown}
             handleCommentInput={handleCommentInput}
