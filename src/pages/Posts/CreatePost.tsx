@@ -318,7 +318,7 @@ function CreatePost() {
 
   return (
     <div className='flex flex-col items-center justify-center'>
-      <h1 className='font-heal text-3xl'>create post</h1>
+      <h1 className='font-sayger text-3xl font-bold'>create post♥︎♡</h1>
       {currentUserId ? (
         <div className='flex flex-col items-start gap-3'>
           <select

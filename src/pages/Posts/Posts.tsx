@@ -39,7 +39,16 @@ function Posts() {
   };
 
   return (
-    <div className='flex items-start justify-center gap-10'>
+    <div
+      className='flex items-start justify-center gap-10 '
+      style={{
+        backgroundColor: '#F6F6F9',
+        // opacity: 0.3,
+        backgroundImage:
+          'linear-gradient(#BEEFCE 1px, transparent 1px), linear-gradient(to right, #BEEFCE 1px, #F6F6F9 1px)',
+        backgroundSize: '20px 20px',
+      }}
+    >
       <CreatePost />
       <div>
         <div>
