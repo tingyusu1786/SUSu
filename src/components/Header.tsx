@@ -1,23 +1,81 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { db } from '../services/firebase';
 import { Link } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
-import {
-  signInStart,
-  signInSuccess,
-  signInFail,
-  signOutStart,
-  signOutSuccess,
-  signOutFail,
-  openAuthWindow,
-  closeAuthWindow,
-} from '../components/auth/authSlice';
+import { openAuthWindow, closeAuthWindow } from '../components/auth/authSlice';
 import { showNotification, closeNotification } from '../components/notification/notificationSlice';
 import { Authentication } from '../components/auth/Authentication';
-import { NotificationPopUp } from '../components/notification/NotificationPopUp';
+import { SearchBox } from 'react-instantsearch-hooks-web';
+import { useNavigate } from 'react-router-dom';
+import { Notification } from '../interfaces/interfaces';
+import { doc, DocumentSnapshot, DocumentReference, DocumentData, onSnapshot } from 'firebase/firestore';
+import dbApi from '../utils/dbApi';
 
-import { InstantSearch, SearchBox, Hits, Highlight, RefinementList } from 'react-instantsearch-hooks-web';
+function NotificationsListener() {
+  const dispatch = useAppDispatch();
+  const currentUserId = useAppSelector((state) => state.auth.currentUserId);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const initSnap = useRef(true);
+  const notificationsLength = useRef(0);
 
-import { useNavigate } from "react-router-dom";
+  let currentUserRef: DocumentReference<DocumentData> | undefined;
+
+  if (currentUserId) {
+    currentUserRef = doc(db, 'users', currentUserId);
+  }
+
+  useEffect(() => {
+    if (!currentUserRef) {
+      return;
+    }
+    fetchNotifications(currentUserRef);
+    const unsubscribe = onSnapshot(currentUserRef, async (docSnapshot: DocumentSnapshot) => {
+      const newNotifications = docSnapshot
+        .data()
+        ?.notifications?.reverse()
+        .filter((notif: any) => notif.authorId !== currentUserId);
+
+      !initSnap.current && setNotifications(newNotifications);
+      !initSnap.current &&
+        newNotifications.length > notificationsLength.current &&
+        fireNotification(newNotifications[0]);
+      notificationsLength.current = newNotifications.length;
+      initSnap.current = false;
+    });
+
+    return unsubscribe;
+  }, [currentUserId]);
+
+  const fireNotification = (notification: Notification) => {
+    const content = {
+      authorId: notification.authorId,
+      authorName: notification.authorName,
+      content: notification.content,
+      postId: notification.postId,
+      type: notification.type,
+      unread: notification.unread,
+    };
+    dispatch(showNotification({ type: 'normal', content }));
+    setTimeout(() => dispatch(closeNotification()), 5000);
+  };
+
+  const fetchNotifications = async (currentUserRef: DocumentReference<DocumentData> | undefined) => {
+    if (!currentUserRef) {
+      return;
+    }
+    const currentUserDoc = await dbApi.getDoc(currentUserRef);
+    if (!currentUserDoc.exists()) {
+      alert('No such user!');
+      return;
+    }
+    const currentUserData = currentUserDoc.data();
+    const currentUserNotifications =
+      currentUserData?.notifications?.reverse().filter((notif: any) => notif.authorId !== currentUserId) || [];
+    notificationsLength.current = currentUserNotifications.length;
+    setNotifications(currentUserNotifications);
+  };
+  return <></>;
+}
 
 function Header() {
   const dispatch = useAppDispatch();
@@ -28,33 +86,20 @@ function Header() {
   const currentUserName = useAppSelector((state) => state.auth.currentUserName);
   const currentUserphotoURL = useAppSelector((state) => state.auth.currentUserPhotoURL);
   const isAuthWindow = useAppSelector((state) => state.auth.isAuthWindow);
-  const isNotification = useAppSelector((state) => state.notification.isShown);
   const navigate = useNavigate();
-  
-  function handleRedirect() {
-    navigate("/search");
-  }
-  // todo: delete
-  // useEffect(() => {
-  //   const userData = localStorage.getItem('userData');
-  //   if (userData) {
-  //     dispatch(signInSuccess(JSON.parse(localStorage.getItem('userData') as string)));
-  //   }
-  // }, []);
 
-  const fireNotice = (content: string) => {
-    dispatch(showNotification({ type: 'success', content }));
-    setTimeout(() => dispatch(closeNotification()), 5000);
-  };
+  function handleRedirect() {
+    navigate('/search');
+  }
 
   return (
-    <div className='mb-8 flex flex-row items-center justify-center gap-5 bg-gray-100'>
+    <div className='mb-8 flex flex-row items-center justify-center gap-5 bg-gray-100 '>
+      <NotificationsListener />
       <div>
         <img src={currentUserphotoURL} alt='' className='h-32 w-32 rounded-full object-cover' />
         <div className='text-center'>{isSignedIn ? `Hi ${currentUserName}` : 'not signed-in'}</div>
       </div>
       <div>
-        
         <nav className='flex gap-3'>
           <Link to='/' className='bg-lime-200'>
             home
@@ -75,21 +120,12 @@ function Header() {
             今天喝什麼
           </Link>
         </nav>
-        <SearchBox
-          placeholder="Search anything"
-          searchAsYouType={false}
-          onSubmit={handleRedirect}
-          className='mt-5'
-        />
-        {/*<Hits hitComponent={Hit} className='absolute top-24'/>*/}
+        <SearchBox placeholder='Search anything' searchAsYouType={false} onSubmit={handleRedirect} className='mt-5' />
       </div>
       <div className='flex flex-col'>
         <button onClick={() => dispatch(openAuthWindow())}>[ open auth window ]</button>
         <button onClick={() => dispatch(closeAuthWindow())}>[ close ]</button>
-        <button onClick={()=>fireNotice('yaya')}>[ show notice ]</button>
-
         {isAuthWindow && <Authentication />}
-        {isNotification && <NotificationPopUp />}
       </div>
       <div>
         <h3 className='text-2xl'>auth status</h3>

@@ -5,7 +5,7 @@ import { doc, DocumentSnapshot, DocumentReference, DocumentData, onSnapshot, Tim
 import dbApi from '../utils/dbApi';
 import { openAuthWindow } from '../components/auth/authSlice';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
-import { showNotification } from '../components/notification/notificationSlice';
+import { showNotification, closeNotification } from '../components/notification/notificationSlice';
 import { getTimeDiff } from '../utils/common';
 import { Notification } from '../interfaces/interfaces';
 
@@ -17,6 +17,7 @@ function Notifications() {
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const initSnap = useRef(true);
+  // const notificationsLength = useRef(0);
 
   let currentUserRef: DocumentReference<DocumentData> | undefined;
 
@@ -38,11 +39,8 @@ function Notifications() {
         ?.notifications?.reverse()
         .filter((notif: any) => notif.authorId !== currentUserId);
 
-      console.log('newNotifications', newNotifications);
-
       !initSnap.current && setNotifications(newNotifications);
       initSnap.current = false;
-      // changeRead();
     });
 
     return unsubscribe;
@@ -69,16 +67,6 @@ function Notifications() {
         });
         return newNotifications;
       });
-      // if (!currentUserRef) {
-      //   return;
-      // }
-      // const newNotifications = notifications.map((n) => {
-      //   n.unread = false;
-      //   return n;
-      // });
-      // await updateDoc(currentUserRef, {
-      //   notifications: newNotifications,
-      // });
     }, 3000);
   };
 
@@ -98,6 +86,7 @@ function Notifications() {
     //   alert('no 通知 yet');
     //   return;
     // }
+
     setNotifications(currentUserNotifications);
   };
 

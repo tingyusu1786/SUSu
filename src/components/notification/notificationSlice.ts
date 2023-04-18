@@ -1,9 +1,10 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState, AppThunk } from '../../app/store';
+import { Notification } from '../../interfaces/interfaces';
 
 export interface NotificationState {
   isShown: boolean;
-  content: string | null;
+  content: Notification | string | null;
   type: 'success' | 'fail' | 'normal' | null;
 }
 
