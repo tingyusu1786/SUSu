@@ -25,6 +25,15 @@ function Inspiration() {
   const [randomItem, setRandomItem] = useState<RandomItem | null>();
   const [noItemMessage, setNoItemMessage] = useState<string>();
   const [isFinding, setIsFinding] = useState(false);
+  const [currentLocation, setCurrentLocation] = useState<{ latitude: number; longitude: number }>();
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition((position) => {
+      const { latitude, longitude } = position.coords;
+      console.log('latitude', latitude, 'longitude', longitude);
+      setCurrentLocation({ latitude, longitude });
+    });
+  }, []);
 
   useEffect(() => {
     if (Object.keys(allBrandsInfo).length > 0) return;
@@ -210,6 +219,32 @@ function Inspiration() {
                 {p[0]}: ${p[1]}
               </p>
             ))}
+          附近的店：
+          <iframe
+            width='640'
+            height='480'
+            style={{ border: 0, marginBottom: 5 }}
+            loading='lazy'
+            allowFullScreen
+            referrerPolicy='no-referrer-when-downgrade'
+            src={`https://www.google.com/maps/embed/v1/search?key=AIzaSyAyK3jgOTFT1B6-Vt85wxc_2aaGLUlU738
+                &q=${randomItem.brand}+nearby&language=zh-TW&center=${Number(currentLocation?.latitude)},${Number(
+              currentLocation?.longitude
+            )}&zoom=13`}
+          ></iframe>
+          到最近（？）店的路線
+          <iframe
+            width='640'
+            height='480'
+            style={{ border: 0 }}
+            loading='lazy'
+            allowFullScreen
+            referrerPolicy='no-referrer-when-downgrade'
+            src={`https://www.google.com/maps/embed/v1/directions?key=AIzaSyAyK3jgOTFT1B6-Vt85wxc_2aaGLUlU738
+                &destination=${randomItem.brand}&origin=${Number(currentLocation?.latitude)},${Number(
+              currentLocation?.longitude
+            )}&mode=walking`}
+          ></iframe>
         </div>
       )}
       {!isFinding && noItemMessage && <div>{noItemMessage}</div>}
