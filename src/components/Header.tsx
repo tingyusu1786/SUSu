@@ -130,13 +130,13 @@ function Header() {
         <button onClick={() => dispatch(closeAuthWindow())}>[ close ]</button>
         {isAuthWindow && <Authentication />}
       </div>
-      <div>
+      {/* <div>
         <h3 className='text-2xl'>auth status</h3>
         <div className=''>{`is signed in: ${isSignedIn}`}</div>
         <div className=''>{`loading: ${loading}`}</div>
         <div className=''>{`error: ${error}`}</div>
         <div className=''>{`signed-in user id: ${userId}`}</div>
-      </div>
+      </div>*/}
       {isShown && <NotificationPopUp />}
     </div>
   );

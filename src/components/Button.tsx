@@ -6,6 +6,7 @@ import dbApi from '../utils/dbApi';
 interface Props {
   type: 'confirm' | 'cancel' | 'edit';
   disabled: boolean;
+  // onClick: () => {};
 }
 
 const Button: React.FC<Props> = ({ type, disabled }) => {

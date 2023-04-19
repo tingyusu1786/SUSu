@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  font-family: 'sayger';
+  font-family: 'sayger', 'tp-bold';
 }
 
 @font-face {
@@ -14,6 +14,21 @@
 @font-face {
   font-family: 'sayger';
   src: url('../public/fonts/Sayger.otf');
+}
+
+@font-face {
+  font-family: 'tp-bold';
+  src: url('../public/fonts/TaipeiSansTCBeta-Bold.ttf');
+}
+
+@font-face {
+  font-family: 'tp-reg';
+  src: url('../public/fonts/TaipeiSansTCBeta-Regular.ttf');
+}
+
+@font-face {
+  font-family: 'tp-light';
+  src: url('../public/fonts/TaipeiSansTCBeta-Light.ttf');
 }
 
 .color-empty {
