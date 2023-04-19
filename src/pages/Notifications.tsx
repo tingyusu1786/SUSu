@@ -1,19 +1,16 @@
-import { useState, useEffect, ChangeEvent, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { db } from '../services/firebase';
 import { Link } from 'react-router-dom';
-import { doc, DocumentSnapshot, DocumentReference, DocumentData, onSnapshot, Timestamp } from 'firebase/firestore';
+import { doc, DocumentSnapshot, DocumentReference, DocumentData, onSnapshot } from 'firebase/firestore';
 import dbApi from '../utils/dbApi';
 import { openAuthWindow } from '../components/auth/authSlice';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
-import { showNotification, closeNotification } from '../components/notification/notificationSlice';
 import { getTimeDiff } from '../utils/common';
 import { Notification } from '../interfaces/interfaces';
 
 function Notifications() {
   const dispatch = useAppDispatch();
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
-  const currentUserName = useAppSelector((state) => state.auth.currentUserName);
-  const currentUserPhotoURL = useAppSelector((state) => state.auth.currentUserPhotoURL);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const initSnap = useRef(true);

@@ -1,20 +1,16 @@
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { showNotification, closeNotification } from './notificationSlice';
+import { closeNotification } from './notificationSlice';
 // import { Notification } from '../../interfaces/interfaces';
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 export function NotificationPopUp() {
   const dispatch = useAppDispatch();
-  // todo: get what i need from useAppSelector
   const content = useAppSelector((state) => state.notification.content);
-  const isShown = useAppSelector((state) => state.notification.isShown);
   const [displayMessage, setDisplayMessage] = useState<any>('');
 
   useEffect(() => {
-    console.log('content', content);
     if (typeof content === 'object' && content !== null) {
-      // content is a Notification instance
       setDisplayMessage(
         <div>
           <Link to={`/profile/${content.authorId}`} className='hover:font-bold'>
@@ -30,14 +26,9 @@ export function NotificationPopUp() {
         </div>
       );
     } else {
-      // content is either a string or null
       setDisplayMessage(content);
     }
   }, []);
-
-  // if (!isShown) {
-  //   return <></>;
-  // }
 
   return (
     <div className='top-30 left-30 fixed z-10 h-20 w-20 rounded bg-lime-200/30 backdrop-blur-md'>

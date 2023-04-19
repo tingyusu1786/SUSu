@@ -3,29 +3,7 @@ import CreatePost from './CreatePost';
 import PostsFeed from '../../components/postsFeed/PostsFeed';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { db } from '../../services/firebase';
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  Query,
-  orderBy,
-  limit,
-  onSnapshot,
-  QuerySnapshot,
-  Timestamp,
-  updateDoc,
-  where,
-  DocumentReference,
-  DocumentData,
-  deleteDoc,
-  startAfter,
-  arrayUnion,
-  arrayRemove,
-  or,
-  and,
-} from 'firebase/firestore';
+import { doc, updateDoc } from 'firebase/firestore';
 import { updateUserFeedSource } from '../../components/auth/authSlice';
 
 function Posts() {
@@ -65,7 +43,7 @@ function Posts() {
             <option value='following'>following</option>
           </select>
         </div>
-        <PostsFeed onlySeeFollowing={feedSource == 'following' ? true : false} currentPage='posts' />
+        <PostsFeed onlySeeFollowing={feedSource === 'following' ? true : false} currentPage='posts' />
       </div>
     </div>
   );

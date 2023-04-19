@@ -1,6 +1,5 @@
 import { Timestamp } from 'firebase/firestore';
 
-
 export interface User {
   name: string;
   email: string;
@@ -35,6 +34,7 @@ export interface Comment {
   authorId: string;
   authorName: string;
   authorPhoto: string;
+  commentId: string;
   timeCreated: Timestamp;
   type?: 'comment';
   content: string;
@@ -71,5 +71,3 @@ export interface BrandsInfo {
     photoURL: string;
   };
 }
-
-

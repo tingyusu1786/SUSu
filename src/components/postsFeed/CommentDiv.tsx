@@ -9,13 +9,7 @@ interface CommentsProps {
   postIndex: number;
   comment: Comment;
   commentIndex: number;
-  handleDeleteComment: (
-    userId: string,
-    post: Post,
-    postIndex: number,
-    comment: Comment,
-    commentIndex: number
-  ) => Promise<void>;
+  handleDeleteComment: (post: Post, postIndex: number, commentIndex: number, commentId: string) => Promise<void>;
 }
 
 const CommentDiv: React.FC<CommentsProps> = ({ post, postIndex, comment, commentIndex, handleDeleteComment }) => {
@@ -23,12 +17,12 @@ const CommentDiv: React.FC<CommentsProps> = ({ post, postIndex, comment, comment
   const timeDiff = getTimeDiff(comment.timeCreated);
 
   return (
-    <div className='relative rounded-lg bg-white p-1' key={commentIndex}>
+    <div className='relative rounded-lg bg-white p-1'>
       {comment.authorId === currentUserId && (
         <button
           className='absolute right-1 top-1'
           onClick={() => {
-            handleDeleteComment(currentUserId, post, postIndex, comment, commentIndex);
+            handleDeleteComment(post, postIndex, commentIndex, comment.commentId);
           }}
         >
           delete

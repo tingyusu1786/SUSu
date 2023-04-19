@@ -15,7 +15,6 @@ import {
   Timestamp,
   updateDoc,
   where,
-  DocumentReference,
   DocumentData,
   deleteDoc,
   startAfter,
@@ -23,13 +22,11 @@ import {
   arrayRemove,
   or,
   and,
-  WhereFilterOp,
 } from 'firebase/firestore';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { updatePosts } from './postsSlice';
-import { showNotification, closeNotification } from '../../components/notification/notificationSlice';
-import { Post, Comment, Like } from '../../interfaces/interfaces';
+import { Post } from '../../interfaces/interfaces';
 import PostCard from './PostCard';
+import { v4 as uuidv4 } from 'uuid';
 
 interface PostsProps {
   onlySeeFollowing?: boolean;
@@ -49,7 +46,6 @@ const PostsFeed: React.FC<PostsProps> = ({
   const dispatch = useAppDispatch();
   const currentUser = useAppSelector((state) => state.auth.currentUser);
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
-  const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
 
   const [posts, setPosts] = useState<Post[]>([]);
   const [hashtagFilter, setHashtagFilter] = useState<string | undefined>();
@@ -488,82 +484,99 @@ const PostsFeed: React.FC<PostsProps> = ({
     });
   };
 
-  // todo: delete comment
-  const handleUpdatePost = async (
+  const handleCommentSubmit = async (
+    event: KeyboardEvent<HTMLInputElement>,
     post: Post,
     userId: string,
-    index: number,
-    type: 'like' | 'comment' | 'deleteComment',
-    commentIndexToDelete?: number
+    index: number
   ) => {
+    if (post.commentInput !== '') {
+      await handleUpdatePost(post, userId, index, 'comment');
+    }
+    return;
+  };
+
+  const handleDeleteComment = async (post: Post, postIndex: number, commentIndex: number, commentId: string) => {
+    if (!post.comments || post.comments.length === 0) return;
+    const confirmed = window.confirm('Are you sure you want to delete this comment?');
+    if (confirmed) {
+      // updateDoc
+      const postRef = doc(db, 'posts', post.postId);
+      const updatedComments = post.comments.filter((comment, index) => index !== commentIndex);
+      await updateDoc(postRef, { comments: updatedComments });
+      // setState
+      setPosts((prev) => {
+        const newPosts = [...prev];
+        newPosts[postIndex].comments = updatedComments;
+        return newPosts;
+      });
+      // unnotify
+      post.authorId && unnotifyOtherUser(post.postId, post.authorId, 'comment', commentId);
+    } else {
+      return;
+    }
+  };
+
+  const handleUpdatePost = async (post: Post, userId: string, postIndex: number, type: 'like' | 'comment') => {
     const postRef = doc(db, 'posts', post.postId);
     const curretTime = new Date();
     const timestamp = Timestamp.fromDate(curretTime);
-    const isComment = type === ('comment' || 'deleteComment');
+    const isComment = type === 'comment';
     const newEntry = {
       authorId: userId,
       authorName: currentUser.name,
       authorPhoto: currentUser.photoURL,
       timeCreated: timestamp,
-      ...(isComment ? { content: post.commentInput } : {}),
+      ...(isComment ? { content: post.commentInput, commentId: uuidv4() } : {}),
     };
-    const targetArray = isComment || type === 'deleteComment' ? post.comments : post.likes;
+    const targetArray = isComment ? post.comments : post.likes;
     const hasLiked = isComment ? undefined : targetArray?.some((like) => like.authorId === userId);
-    let updatedArray: Like[] | Comment[];
-    if (targetArray) {
-      if (hasLiked) {
-        updatedArray = targetArray.filter((entry) => entry.authorId !== userId);
-      } else if (type === 'deleteComment') {
-        updatedArray = targetArray.filter((comment, index) => index !== commentIndexToDelete);
-      } else {
-        updatedArray = [...targetArray, newEntry];
-      }
-    } else {
-      updatedArray = [newEntry];
-    }
-
-    if (type === 'like') {
-      await updateDoc(postRef, {
-        likes: updatedArray,
-      });
-    } else {
-      await updateDoc(postRef, {
-        comments: updatedArray,
-      });
-    }
-
+    const updatedArray = targetArray
+      ? hasLiked
+        ? targetArray.filter((entry) => entry.authorId !== userId)
+        : [...targetArray, newEntry]
+      : [newEntry];
+    await updateDoc(postRef, {
+      [type + 's']: updatedArray,
+    });
     setPosts((prev) => {
       const newPosts = [...prev];
-      if (type === ('comment' || 'deleteComment')) {
-        newPosts[index].comments = updatedArray;
+      if (type === 'comment') {
+        newPosts[postIndex].comments = updatedArray;
       }
       if (type === 'like') {
-        newPosts[index].likes = updatedArray as Like[];
+        newPosts[postIndex].likes = updatedArray;
       }
-      newPosts[index].commentInput = '';
+      newPosts[postIndex].commentInput = '';
       return newPosts;
     });
 
-    // todo: unnotify comment
-    !hasLiked && type !== 'deleteComment' && notifyOtherUser(post.postId, post.authorId as string, newEntry, type);
-    hasLiked && type !== 'deleteComment' && unnotifyOtherUser(post.postId, post.authorId as string, newEntry, type);
+    !hasLiked && notifyOtherUser(post.postId, post.authorId as string, newEntry, type);
+    hasLiked && unnotifyOtherUser(post.postId, post.authorId as string, type);
   };
 
   const unnotifyOtherUser = async (
     postId: string,
     postAuthorId: string,
-    content: any,
-    type: 'like' | 'comment' | 'deleteComment'
+    type: 'like' | 'comment',
+    commentId?: string
   ) => {
+    alert('unnotify');
     const userRef = doc(db, 'users', postAuthorId);
     if (!userRef) return;
     const userData = await getDoc(userRef);
     const originNotifications = userData.data()?.notifications;
     if (!originNotifications) return;
-    const notificationToRemove = originNotifications.find(
-      (notification: any) =>
-        notification.postId === postId && notification.authorId === currentUserId && notification.type === 'like'
-    );
+    let notificationToRemove;
+    if (type === 'like') {
+      notificationToRemove = originNotifications.find(
+        (notification: any) =>
+          notification.postId === postId && notification.authorId === currentUserId && notification.type === 'like'
+      );
+    } else {
+      notificationToRemove = originNotifications.find((notification: any) => notification.commentId === commentId);
+      console.log(notificationToRemove);
+    }
 
     await updateDoc(userRef, {
       notifications: arrayRemove(notificationToRemove),
@@ -578,18 +591,6 @@ const PostsFeed: React.FC<PostsProps> = ({
     await updateDoc(userRef, {
       notifications: arrayUnion(contentWithType),
     });
-  };
-
-  const handleCommentSubmit = async (
-    event: KeyboardEvent<HTMLInputElement>,
-    post: Post,
-    userId: string,
-    index: number
-  ) => {
-    if (post.commentInput !== '') {
-      await handleUpdatePost(post, userId, index, 'comment');
-    }
-    return;
   };
 
   const handleLike = async (post: Post, userId: string, index: number) => {
@@ -612,29 +613,9 @@ const PostsFeed: React.FC<PostsProps> = ({
     }
   };
 
-  const handleDeleteComment = async (
-    userId: string,
-    post: Post,
-    postIndex: number,
-    comment: Comment,
-    commentIndex: number
-  ) => {
-    const confirmed = window.confirm('Are you sure you want to delete this comment?');
-    if (confirmed) {
-      handleUpdatePost(post, userId, postIndex, 'deleteComment', commentIndex);
-    } else {
-      return;
-    }
-  };
-
   const handleClickHashtag = (hashtag: string) => {
     setHashtagFilter(hashtag);
     setLastKey(undefined);
-  };
-
-  const fireNotification = () => {
-    dispatch(showNotification({ type: 'success', content: 'hihi' }));
-    setTimeout(() => dispatch(closeNotification()), 5000);
   };
 
   if (onlySeeFollowing && !currentUserId) {

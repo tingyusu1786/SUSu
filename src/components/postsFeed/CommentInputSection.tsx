@@ -1,7 +1,7 @@
 import React from 'react';
 import { ChangeEvent, KeyboardEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { useAppSelector, useAppDispatch } from '../../app/hooks';
+import { useAppSelector } from '../../app/hooks';
 import { Post } from '../../interfaces/interfaces';
 
 interface PostProps {
@@ -36,7 +36,11 @@ const CommentInputSection: React.FC<PostProps> = ({ post, handleCommentInput, ha
         <input
           type='text'
           placeholder={
-            isSignedIn ? (post.comments && post.comments.length > 0 ? 'write a comment' : 'be the first to comment!') : 'sign in to comment'
+            isSignedIn
+              ? post.comments && post.comments.length > 0
+                ? 'write a comment'
+                : 'be the first to comment!'
+              : 'sign in to comment'
           }
           className='bg-transparent'
           disabled={!isSignedIn}

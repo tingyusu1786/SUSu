@@ -1,7 +1,7 @@
 import { ChangeEvent, KeyboardEvent, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '../../app/hooks';
-import { Post, Comment } from '../../interfaces/interfaces';
+import { Post } from '../../interfaces/interfaces';
 import CommentInputSection from './CommentInputSection';
 import CommentDiv from './CommentDiv';
 
@@ -9,13 +9,7 @@ interface PostProps {
   post: Post;
   index: number;
   handleDeletePost: (post: Post, index: number) => Promise<void>;
-  handleDeleteComment: (
-    userId: string,
-    post: Post,
-    postIndex: number,
-    comment: Comment,
-    commentIndex: number
-  ) => Promise<void>;
+  handleDeleteComment: (post: Post, postIndex: number, commentIndex: number, commentId: string) => Promise<void>;
   handleLike: (post: Post, userId: string, index: number) => Promise<void>;
   handleCommentsShown: (index: number) => void;
   handleCommentInput: (event: ChangeEvent<HTMLInputElement>, index: number) => void;
@@ -25,13 +19,7 @@ interface PostProps {
     userId: string,
     index: number
   ) => Promise<void>;
-  handleUpdatePost: (
-    post: Post,
-    userId: string,
-    index: number,
-    type: 'like' | 'comment' | 'deleteComment',
-    commentIndexToDelete?: number
-  ) => Promise<void>;
+  handleUpdatePost: (post: Post, userId: string, postIndex: number, type: 'like' | 'comment') => Promise<void>;
   handleClickHashtag: (hashtag: string) => void;
 }
 
