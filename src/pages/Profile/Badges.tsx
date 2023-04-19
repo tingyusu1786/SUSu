@@ -30,8 +30,8 @@ const Badges: React.FC<BadgesProps> = ({ drankBrands, drankItems, numPosts, stre
 
   return (
     <div className=''>
-      {badgeCategories.map((category) => (
-        <div>
+      {badgeCategories.map((category, index) => (
+        <div key={index}>
           <h3>{category.name}</h3>
           <div className='flex gap-3'>
             {category.goals.map(
