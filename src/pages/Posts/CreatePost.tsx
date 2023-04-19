@@ -9,11 +9,82 @@ import {
   updateDoc,
   // setDoc,
   // serverTimestamp,
-  // Timestamp,
+  Timestamp,
   // arrayUnion,
 } from 'firebase/firestore';
 import { useAppSelector } from '../../app/hooks';
 import dbApi from '../../utils/dbApi';
+
+interface DateInputProps {
+  defaultDate?: Date;
+  onDateChange?: (date: Date) => void;
+}
+
+const DateInput = ({ defaultDate = new Date(), onDateChange }: DateInputProps) => {
+  const [year, setYear] = useState(defaultDate.getFullYear());
+  const [month, setMonth] = useState(defaultDate.getMonth() + 1);
+  const [date, setDate] = useState(defaultDate.getDate());
+  const [hour, setHour] = useState(defaultDate.getHours());
+  const [minute, setMinute] = useState(defaultDate.getMinutes());
+
+  const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setYear(parseInt(e.target.value));
+  };
+
+  const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMonth(parseInt(e.target.value));
+  };
+
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setDate(parseInt(e.target.value));
+  };
+
+  const handleHourChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setHour(parseInt(e.target.value));
+  };
+
+  const handleMinuteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMinute(parseInt(e.target.value));
+  };
+
+  const handleDateBlur = () => {
+    const newDate = new Date(year, month - 1, date, hour, minute);
+    if (onDateChange) {
+      onDateChange(newDate);
+    }
+  };
+
+  return (
+    <>
+      <label htmlFor='year'>Year:</label>
+      <input type='number' id='year' name='year' value={year} onChange={handleYearChange} onBlur={handleDateBlur} />
+      <br />
+
+      <label htmlFor='month'>Month:</label>
+      <input type='number' id='month' name='month' value={month} onChange={handleMonthChange} onBlur={handleDateBlur} />
+      <br />
+
+      <label htmlFor='date'>Date:</label>
+      <input type='number' id='date' name='date' value={date} onChange={handleDateChange} onBlur={handleDateBlur} />
+      <br />
+
+      <label htmlFor='hour'>Hour:</label>
+      <input type='number' id='hour' name='hour' value={hour} onChange={handleHourChange} onBlur={handleDateBlur} />
+      <br />
+
+      <label htmlFor='minute'>Minute:</label>
+      <input
+        type='number'
+        id='minute'
+        name='minute'
+        value={minute}
+        onChange={handleMinuteChange}
+        onBlur={handleDateBlur}
+      />
+      <br />
+    </>
+  );
+};
 
 function CreatePost() {
   const initialInput = {
@@ -37,6 +108,12 @@ function CreatePost() {
   const [itemsOfBrand, setItemsOfBrand] = useState<string[][][]>([]);
   const [sizesOfItem, setSizesOfItem] = useState<string[][]>([]);
   const [inputs, setInputs] = useState(initialInput);
+  const [showDate, setShowDate] = useState(false);
+  const [date, setDate] = useState(new Date());
+
+  const handleDateChange = (newDate: Date) => {
+    setDate(newDate);
+  };
 
   const sugarOptions = [
     '0（無糖）',
@@ -144,7 +221,7 @@ function CreatePost() {
     const postInputs = Object.assign({}, inputs, {
       authorId: currentUserId,
       hashtags: customTags.concat(autoTags),
-      timeCreated: new Date(), //serverTimestamp()會lag
+      timeCreated: date, //serverTimestamp()會lag
       likes: [],
       comments: [],
     });
@@ -331,6 +408,15 @@ function CreatePost() {
             <option value='public'>public</option>
             <option value='private'>private</option>
           </select>
+          <button
+            onClick={() => {
+              setShowDate((prev) => !prev);
+            }}
+          >
+            show date
+          </button>
+          <h1>{date.toString()}</h1>
+          {showDate && <DateInput defaultDate={date} onDateChange={handleDateChange} />}
           <div>
             <span>我喝了</span>
             <select
