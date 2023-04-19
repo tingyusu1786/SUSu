@@ -78,6 +78,9 @@ export const authSlice = createSlice({
       state.currentUser.photoURL = action.payload.photoURL;
       state.currentUserPhotoURL = action.payload.photoURL;
     },
+    updateUserFeedSource: (state, action) => {
+      state.currentUser.feedSource = action.payload.feedSource;
+    },
   },
 });
 
@@ -92,5 +95,6 @@ export const {
   closeAuthWindow,
   updateUserName,
   updateUserPhoto,
+  updateUserFeedSource,
 } = authSlice.actions;
 export default authSlice.reducer;

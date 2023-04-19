@@ -26,16 +26,18 @@ import {
   or,
   and,
 } from 'firebase/firestore';
+import { updateUserFeedSource } from '../../components/auth/authSlice';
 
 function Posts() {
   const dispatch = useAppDispatch();
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
   const currentUser = useAppSelector((state) => state.auth.currentUser);
-  const [onlySeeFollowing, setOnlySeeFollowing] = useState(currentUser.feedSource || 'all');
+  const [feedSource, setFeedSource] = useState<string>(currentUser.feedSource || 'all');
 
   const handlePostsSourceChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    setOnlySeeFollowing(e.target.value === 'all' ? false : true);
+    setFeedSource(e.target.value);
     currentUserId && updateDoc(doc(db, 'users', currentUserId), { feedSource: e.target.value });
+    dispatch(updateUserFeedSource({ feedSource: e.target.value }));
   };
 
   return (
@@ -43,7 +45,6 @@ function Posts() {
       className='flex items-start justify-center gap-10 '
       style={{
         backgroundColor: '#F6F6F9',
-        // opacity: 0.3,
         backgroundImage:
           'linear-gradient(#BEEFCE 1px, transparent 1px), linear-gradient(to right, #BEEFCE 1px, #F6F6F9 1px)',
         backgroundSize: '20px 20px',
@@ -57,14 +58,14 @@ function Posts() {
             name='audience'
             id=''
             className='w-50 my-1 rounded bg-gray-200'
-            value={onlySeeFollowing ? 'following' : 'all'}
+            value={feedSource}
             onChange={handlePostsSourceChange}
           >
             <option value='all'>all</option>
             <option value='following'>following</option>
           </select>
         </div>
-        <PostsFeed onlySeeFollowing={onlySeeFollowing} currentPage='posts' />
+        <PostsFeed onlySeeFollowing={feedSource == 'following' ? true : false} currentPage='posts' />
       </div>
     </div>
   );
