@@ -51,7 +51,11 @@ const PostCard: React.FC<PostProps> = ({
   const [isActive, setIsActive] = useState(false);
 
   return (
-    <div className='relative w-96 rounded-md border-[3px] border-solid border-slate-900 bg-gray-100 p-3' key={index}>
+    <div
+      className='relative w-96 rounded-md border-[3px] border-solid border-slate-900 bg-gray-100 p-3'
+      style={{ boxShadow: '4px 4px rgb(15 23 42)' }}
+      key={index}
+    >
       {<div>{`audience: ${post.audience}`}</div>}
       {post.authorId === currentUserId && (
         <button

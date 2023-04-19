@@ -5,6 +5,7 @@ import { useAppSelector, useAppDispatch } from '../app/hooks';
 import { addAllBrands } from '../app/infoSlice';
 import { db } from '../services/firebase';
 import { collection, doc, getDoc, getDocs, query, where, DocumentData } from 'firebase/firestore';
+import Button from '../components/Button';
 
 function Inspiration() {
   type RandomItem = {
@@ -232,7 +233,7 @@ function Inspiration() {
               currentLocation?.longitude
             )}&zoom=13`}
           ></iframe>
-          到最近（？）店的路線
+          {/*到最近（？）店的路線
           <iframe
             width='640'
             height='480'
@@ -244,10 +245,14 @@ function Inspiration() {
                 &destination=${randomItem.brand}&origin=${Number(currentLocation?.latitude)},${Number(
               currentLocation?.longitude
             )}&mode=walking`}
-          ></iframe>
+          ></iframe>*/}
         </div>
       )}
       {!isFinding && noItemMessage && <div>{noItemMessage}</div>}
+      <Button type='confirm' disabled={false} />
+      <Button type='confirm' disabled={true} />
+      <Button type='cancel' disabled={false} />
+      <Button type='edit' disabled={false} />
     </div>
   );
 }
