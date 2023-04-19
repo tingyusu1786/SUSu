@@ -8,9 +8,11 @@ export function NotificationPopUp() {
   const dispatch = useAppDispatch();
   // todo: get what i need from useAppSelector
   const content = useAppSelector((state) => state.notification.content);
+  const isShown = useAppSelector((state) => state.notification.isShown);
   const [displayMessage, setDisplayMessage] = useState<any>('');
 
   useEffect(() => {
+    console.log('content', content);
     if (typeof content === 'object' && content !== null) {
       // content is a Notification instance
       setDisplayMessage(
@@ -33,8 +35,12 @@ export function NotificationPopUp() {
     }
   }, []);
 
+  // if (!isShown) {
+  //   return <></>;
+  // }
+
   return (
-    <div className='top-30 left-30 fixed z-10 rounded bg-lime-200/30 backdrop-blur-md'>
+    <div className='top-30 left-30 fixed z-10 h-20 w-20 rounded bg-lime-200/30 backdrop-blur-md'>
       <button onClick={() => dispatch(closeNotification())} className='absolute right-3 top-3'>
         close
       </button>

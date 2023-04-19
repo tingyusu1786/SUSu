@@ -5,6 +5,7 @@ import { useAppSelector, useAppDispatch } from '../app/hooks';
 import { openAuthWindow, closeAuthWindow } from '../components/auth/authSlice';
 import { showNotification, closeNotification } from '../components/notification/notificationSlice';
 import { Authentication } from '../components/auth/Authentication';
+import { NotificationPopUp } from '../components/notification/NotificationPopUp';
 import { SearchBox } from 'react-instantsearch-hooks-web';
 import { useNavigate } from 'react-router-dom';
 import { Notification } from '../interfaces/interfaces';
@@ -47,6 +48,7 @@ function NotificationsListener() {
   }, [currentUserId]);
 
   const fireNotification = (notification: Notification) => {
+    console.log('fireNotification');
     const content = {
       authorId: notification.authorId,
       authorName: notification.authorName,
@@ -86,6 +88,7 @@ function Header() {
   const currentUserName = useAppSelector((state) => state.auth.currentUserName);
   const currentUserphotoURL = useAppSelector((state) => state.auth.currentUserPhotoURL);
   const isAuthWindow = useAppSelector((state) => state.auth.isAuthWindow);
+  const isShown = useAppSelector((state) => state.notification.isShown);
   const navigate = useNavigate();
 
   function handleRedirect() {
@@ -134,6 +137,7 @@ function Header() {
         <div className=''>{`error: ${error}`}</div>
         <div className=''>{`signed-in user id: ${userId}`}</div>
       </div>
+      {isShown && <NotificationPopUp />}
     </div>
   );
 }
