@@ -37,7 +37,7 @@ const Badges: React.FC<BadgesProps> = ({ drankBrands, drankItems, numPosts, stre
             {category.goals.map(
               (goal, index) =>
                 goal !== 0 && (
-                  <div>
+                  <div key={index}>
                     <div
                       className={` flex h-24 w-24 items-center justify-center rounded-full ${
                         category.num >= goal ? 'bg-amber-500 font-bold' : 'bg-amber-100'

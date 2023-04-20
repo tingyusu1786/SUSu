@@ -205,7 +205,7 @@ function Catalogue() {
   };
 
   return (
-    <div>
+    <main>
       <BreadcrumbNav
         catalogueBrandId={catalogueBrandId}
         catalogueItemId={catalogueItemId}
@@ -271,7 +271,7 @@ function Catalogue() {
         </div>
         {catalogueItemId && <PostsFeed currentPage='item' catalogueItemId={catalogueItemId} />}
       </div>
-    </div>
+    </main>
   );
 }
 

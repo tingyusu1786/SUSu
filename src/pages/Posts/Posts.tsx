@@ -19,7 +19,7 @@ function Posts() {
   };
 
   return (
-    <div
+    <main
       className='min-h-screen bg-fixed'
       style={{
         backgroundImage:
@@ -45,7 +45,7 @@ function Posts() {
           <PostsFeed onlySeeFollowing={feedSource === 'following' ? true : false} currentPage='posts' />
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 

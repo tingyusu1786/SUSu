@@ -137,7 +137,14 @@ function Inspiration() {
   };
 
   return (
-    <div className='flex flex-col items-center justify-center gap-5'>
+    <main
+      className='min-h-screen bg-fixed'
+      style={{
+        backgroundImage:
+          'linear-gradient(#BEEFCE 1px, transparent 1px), linear-gradient(to right, #BEEFCE 1px, #F6F6F9 1px)',
+        backgroundSize: '20px 20px',
+      }}
+    >
       <div className='text-center font-heal text-3xl'>what to drink today?</div>
       <div className='flex flex-col items-center justify-center'>
         <button
@@ -253,7 +260,7 @@ function Inspiration() {
       <Button type='confirm' disabled={true} />
       <Button type='cancel' disabled={false} />
       <Button type='edit' disabled={false} />*/}
-    </div>
+    </main>
   );
 }
 
