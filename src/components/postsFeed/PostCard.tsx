@@ -46,7 +46,8 @@ const PostCard: React.FC<PostProps> = ({
 
   return (
     <div
-      className=' flex w-full flex-col flex-nowrap rounded-md border-[3px] border-solid border-neutral-900 bg-neutral-100 shadow-[4px_4px_#171717] hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[8px_8px_#171717]'
+      className=' flex w-full flex-col flex-nowrap rounded-md border-[3px] border-solid border-neutral-900 bg-neutral-100 shadow-[4px_4px_#171717]'
+      // hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[8px_8px_#171717]
       key={index}
     >
       <div className='flex h-10 flex-nowrap items-center justify-between border-b-[3px] border-solid border-neutral-900  px-2 text-base'>
@@ -116,7 +117,7 @@ const PostCard: React.FC<PostProps> = ({
           </Button>
         }
         <span className='ml-2 w-6 pt-2'>{post.likes?.length === 0 ? '' : post.likes?.length || 0}</span>
-        <button className='rounded border-2 border-solid border-gray-400' onClick={() => handleCommentsShown(index)}>
+        <button className='' onClick={() => handleCommentsShown(index)}>
           comments
         </button>
         <span>{post.comments?.length || 0}</span>

@@ -11,14 +11,14 @@ interface Props {
 const Button: React.FC<Props> = ({ type, disabled, onClick, children, liked }) => {
   const [text, setText] = useState<string>();
   let style =
-    'w-16 rounded border-2 border-solid border-slate-900 pt-1 font-sayger shadow-[3px_3px_#171717] active:shadow-[1px_1px_#171717] ';
+    'rounded border-2 border-solid border-slate-900 pt-1 font-sayger shadow-[3px_3px_#171717] active:shadow-[1px_1px_#171717] ';
   if (!disabled) {
     style += 'active:translate-y-0.5 ';
   }
 
-  if (disabled) {
-    style += 'opacity-70 ';
-  }
+  // if (disabled) {
+  //   style += 'opacity-70 ';
+  // }
 
   if (liked) {
     style += 'bg-[#3ddc84] ';

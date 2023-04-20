@@ -216,13 +216,14 @@ function Authentication() {
         className='absolute left-1/2 top-1/2 z-30 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-md border-[3px] border-solid border-slate-900 bg-[#F5F3EA] p-3'
         style={{ boxShadow: '4px 4px rgb(15 23 42)' }}
       >
-        <button onClick={() => dispatch(closeAuthWindow())}>ESC</button>
+        <button onClick={() => dispatch(closeAuthWindow())} className='text-xs'>
+          ESC
+        </button>
         <h1 className='text-center text-2xl font-bold'>{haveAccount ? 'Welcome back!' : 'start using su-su today'}</h1>
         <div className='flex flex-col'>
-          <button onClick={googleSignIn} className='rounded border border-solid border-gray-600 px-12'>
+          <button onClick={googleSignIn} className=''>
             continue with Google
           </button>
-          <hr />
           <div>or</div>
           <h1 className='text-xl font-bold'>{haveAccount ? 'sign in with email' : 'sign up with email'}</h1>
           {!haveAccount && (
@@ -289,9 +290,9 @@ function Authentication() {
               handleNativeSignUp(input.name, input.email, input.password);
               handleReset();
             }}
-            className='rounded border border-solid border-gray-600 px-2'
+            className=''
           >
-            create user by email
+            sign up
           </button>
         )}
         {haveAccount && (
@@ -300,7 +301,7 @@ function Authentication() {
               nativeSignIn(input.email, input.password);
               handleReset();
             }}
-            className='rounded border border-solid border-gray-600 px-2'
+            className=''
           >
             sign in by email
           </button>
