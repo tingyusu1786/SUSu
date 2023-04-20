@@ -2,15 +2,21 @@ import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../services/firebase';
 import { Link } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
-import { openAuthWindow, closeAuthWindow } from '../components/auth/authSlice';
+import {
+  openAuthWindow,
+  closeAuthWindow,
+  signOutStart,
+  signOutSuccess,
+  signOutFail,
+} from '../components/auth/authSlice';
 import { showNotification, closeNotification } from '../components/notification/notificationSlice';
-import { Authentication } from '../components/auth/Authentication';
 import { NotificationPopUp } from '../components/notification/NotificationPopUp';
 import { SearchBox } from 'react-instantsearch-hooks-web';
 import { useNavigate } from 'react-router-dom';
 import { Notification } from '../interfaces/interfaces';
 import { doc, DocumentSnapshot, DocumentReference, DocumentData, onSnapshot } from 'firebase/firestore';
 import dbApi from '../utils/dbApi';
+import authApi from '../utils/authApi';
 
 function NotificationsListener() {
   const dispatch = useAppDispatch();
@@ -95,13 +101,22 @@ function Header() {
     navigate('/search');
   }
 
+  const handleSignOut = async () => {
+    try {
+      await authApi.signOut();
+      dispatch(signOutStart());
+      alert('sign out successful!');
+      dispatch(signOutSuccess());
+    } catch (error: any) {
+      alert(`Error logging out. (${error})`);
+      dispatch(signOutFail(error));
+    }
+  };
+
   return (
-    <div className='mb-8 flex flex-row items-center justify-center gap-5 bg-gray-100 '>
+    <div className='fixed top-0 flex flex-row items-center justify-center gap-5 bg-gray-100'>
       <NotificationsListener />
-      <div>
-        <img src={currentUserphotoURL} alt='' className='h-32 w-32 rounded-full object-cover' />
-        <div className='text-center'>{isSignedIn ? `Hi ${currentUserName}` : 'not signed-in'}</div>
-      </div>
+
       <div>
         <nav className='flex gap-3'>
           <Link to='/' className='bg-lime-200'>
@@ -125,11 +140,18 @@ function Header() {
         </nav>
         <SearchBox placeholder='Search anything' searchAsYouType={false} onSubmit={handleRedirect} className='mt-5' />
       </div>
-      <div className='flex flex-col'>
-        <button onClick={() => dispatch(openAuthWindow())}>[ open auth window ]</button>
-        <button onClick={() => dispatch(closeAuthWindow())}>[ close ]</button>
-        {isAuthWindow && <Authentication />}
-      </div>
+      {!isSignedIn && <button onClick={() => dispatch(openAuthWindow())}>sign in</button>}
+      {isSignedIn && (
+        <button onClick={handleSignOut} className='scroll-px-28 rounded border border-solid border-gray-600'>
+          sign out
+        </button>
+      )}
+      {isSignedIn && (
+        <div>
+          <img src={currentUserphotoURL} alt='' className='rounded-full object-cover' />
+          <div className='text-center'>{`Hi ${currentUserName}`}</div>
+        </div>
+      )}
       {/* <div>
         <h3 className='text-2xl'>auth status</h3>
         <div className=''>{`is signed in: ${isSignedIn}`}</div>

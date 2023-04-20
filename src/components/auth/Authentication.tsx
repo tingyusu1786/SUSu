@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, KeyboardEvent, ChangeEvent } from 'react';
 import { db } from '../../services/firebase'; //todo
 import { useNavigate } from 'react-router-dom';
 import storageApi from '../../utils/storageApi';
@@ -19,13 +19,34 @@ import {
   closeAuthWindow,
 } from './authSlice';
 
-export function Authentication() {
+function Authentication() {
   const dispatch = useAppDispatch();
   const isAuthWindow = useAppSelector((state) => state.auth.isAuthWindow);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
-
   const [input, setInput] = useState({ name: '', email: '', password: '' });
+  const [haveAccount, setHaveAccount] = useState(false);
+  const [passwordType, setPasswordType] = useState('password');
   const navigate = useNavigate();
+  const nameRef = useRef(null);
+  const emailRef = useRef(null);
+  const passwordRef = useRef(null);
+
+  useEffect(() => {
+    //todo: any
+    const handleKeyDown = (event: any) => {
+      // alert(event.key);
+      if (
+        ![nameRef, emailRef, passwordRef].some((ref) => document.activeElement === ref.current) &&
+        event.key === 'Escape'
+      ) {
+        dispatch(closeAuthWindow());
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   const handleNativeSignUp = async (name: string, email: string, password: string) => {
     if ([name, email, password].some((input) => input === '')) {
@@ -176,117 +197,136 @@ export function Authentication() {
     }
   };
 
-  const handleSignOut = async () => {
-    try {
-      await authApi.signOut();
-      dispatch(signOutStart());
-      alert('sign out successful!');
-      dispatch(signOutSuccess());
-      // localStorage.removeItem('userData');
-    } catch (error: any) {
-      alert(`Error logging out. (${error})`);
-      dispatch(signOutFail(error));
-    }
-  };
-
   const handleReset = () => {
     setInput({ name: '', email: '', password: '' });
   };
 
-  const inputField = (
-    <div className='flex flex-col'>
-      <label htmlFor='name'>name:</label>
-      <input
-        id='name'
-        type='text'
-        className='border-2 border-solid border-gray-400'
-        value={input.name}
-        onChange={(e) => {
-          setInput(() => {
-            return { ...input, name: e.target.value };
-          });
-        }}
-      />
-      <label htmlFor='email'>email:</label>
-      <input
-        id='email'
-        type='text'
-        className='border-2 border-solid border-gray-400'
-        value={input.email}
-        onChange={(e) => {
-          setInput(() => {
-            return { ...input, email: e.target.value };
-          });
-        }}
-      />
-      <label htmlFor='password'>password:</label>
-      <input
-        id='password'
-        type='text'
-        className='border-2 border-solid border-gray-400'
-        value={input.password}
-        onChange={(e) => {
-          setInput(() => {
-            return { ...input, password: e.target.value };
-          });
-        }}
-      />
-    </div>
-  );
-
-  const buttonNativeSignUp = (
-    <button
-      onClick={() => {
-        handleNativeSignUp(input.name, input.email, input.password);
-        handleReset();
-      }}
-      className='rounded border border-solid border-gray-600 px-2'
-    >
-      create user by email
-    </button>
-  );
-
-  const buttonNativeSignIn = (
-    <button
-      onClick={() => {
-        nativeSignIn(input.email, input.password);
-        handleReset();
-      }}
-      className='rounded border border-solid border-gray-600 px-2'
-    >
-      sign in by email
-    </button>
-  );
-
-  const buttonGoogleSignIn = (
-    <button onClick={googleSignIn} className='rounded border border-solid border-gray-600 px-12'>
-      sign in by google
-    </button>
-  );
-
-  const buttonSignOut = (
-    <button onClick={handleSignOut} className='scroll-px-28 rounded border border-solid border-gray-600'>
-      sign out
-    </button>
-  );
-
-  const buttonResetInputField = (
-    <button className='rounded border border-solid border-gray-600 px-2' onClick={handleReset}>
-      reset
-    </button>
-  );
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const key = e.target.name;
+    setInput(() => {
+      return { ...input, [key]: e.target.value };
+    });
+  };
 
   return (
-    <div className='absolute left-1/3 top-1/4 z-50 flex flex-col items-center gap-10 rounded-xl bg-lime-100 p-10'>
-      <button onClick={() => dispatch(closeAuthWindow())}>X</button>
-      {inputField}
-      <div className='flex gap-3'>
-        <>{buttonNativeSignUp}</>
-        <>{buttonNativeSignIn}</>
-        <>{buttonGoogleSignIn}</>
-        <>{buttonSignOut}</>
-        <>{buttonResetInputField}</>
-      </div>
+    <div className='fixed top-0 z-10 h-screen w-screen'>
+      <form
+        className='absolute left-1/2 top-1/2 z-30 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-md border-[3px] border-solid border-slate-900 bg-[#F5F3EA] p-3'
+        style={{ boxShadow: '4px 4px rgb(15 23 42)' }}
+      >
+        <button onClick={() => dispatch(closeAuthWindow())}>ESC</button>
+        <h1 className='text-center text-2xl font-bold'>{haveAccount ? '' : 'start logging today'}</h1>
+        <div className='flex flex-col'>
+          <button onClick={googleSignIn} className='rounded border border-solid border-gray-600 px-12'>
+            continue with Google
+          </button>
+          <hr />
+          <div>or</div>
+          <h1 className='text-xl font-bold'>{haveAccount ? 'sign in with email' : 'sign up with email'}</h1>
+          {!haveAccount && (
+            <label htmlFor='name'>
+              name:
+              <input
+                id='name'
+                name='name'
+                type='text'
+                className='border-2 border-solid border-gray-400'
+                value={input.name}
+                onChange={handleInputChange}
+                autoComplete='name'
+                required
+              />
+            </label>
+          )}
+          <label htmlFor='email'>email:</label>
+          <input
+            id='email'
+            name='email'
+            type='text'
+            className='border-2 border-solid border-gray-400'
+            value={input.email}
+            onChange={handleInputChange}
+            autoComplete={haveAccount ? 'email' : 'off'}
+            required
+          />
+          <label>
+            password:
+            <input
+              id='password'
+              type={passwordType}
+              name='password'
+              className='border-2 border-solid border-gray-400'
+              value={input.password}
+              onChange={handleInputChange}
+              autoComplete={haveAccount ? 'current-password' : 'new-password'}
+              required
+            />
+            <span
+              onClick={() => {
+                setPasswordType((prev) => (prev === 'password' ? 'text' : 'password'));
+              }}
+            >
+              🕶️👀
+            </span>
+          </label>
+        </div>
+        {haveAccount && <span>Forgot password?</span>}
+        {!haveAccount && (
+          <button
+            onClick={() => {
+              handleNativeSignUp(input.name, input.email, input.password);
+              handleReset();
+            }}
+            className='rounded border border-solid border-gray-600 px-2'
+          >
+            create user by email
+          </button>
+        )}
+        {haveAccount && (
+          <button
+            onClick={() => {
+              nativeSignIn(input.email, input.password);
+              handleReset();
+            }}
+            className='rounded border border-solid border-gray-600 px-2'
+          >
+            sign in by email
+          </button>
+        )}
+
+        {haveAccount && (
+          <div>
+            <span>Don't have an account?</span>
+            <span
+              className='cursor-pointer hover:underline'
+              onClick={() => {
+                setHaveAccount(false);
+              }}
+            >
+              Create one
+            </span>
+          </div>
+        )}
+        {!haveAccount && (
+          <div>
+            <span>Already have an account?</span>
+            <span
+              className='cursor-pointer hover:underline'
+              onClick={() => {
+                setHaveAccount(true);
+              }}
+            >
+              Log in with email
+            </span>
+          </div>
+        )}
+      </form>
+      <div
+        className='absolute top-0 h-full w-full bg-white opacity-80'
+        onClick={() => dispatch(closeAuthWindow())}
+      ></div>
     </div>
   );
 }
+
+export default Authentication;
