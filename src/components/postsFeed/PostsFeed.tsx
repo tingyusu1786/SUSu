@@ -561,7 +561,6 @@ const PostsFeed: React.FC<PostsProps> = ({
     type: 'like' | 'comment',
     commentId?: string
   ) => {
-    alert('unnotify');
     const userRef = doc(db, 'users', postAuthorId);
     if (!userRef) return;
     const userData = await getDoc(userRef);
@@ -627,7 +626,7 @@ const PostsFeed: React.FC<PostsProps> = ({
   }
 
   return (
-    <div className='flex flex-col items-center justify-center'>
+    <div className='justify-top flex flex-col items-center gap-3'>
       {hashtagFilter && (
         <div>
           <span className='before:content-["#"]'>{hashtagFilter}</span>
@@ -641,25 +640,23 @@ const PostsFeed: React.FC<PostsProps> = ({
           </button>
         </div>
       )}
-      <div className='flex flex-col items-center justify-center gap-3'>
-        {posts.map((post, index) => (
-          <PostCard
-            key={post.postId + index}
-            post={post}
-            index={index}
-            handleDeletePost={handleDeletePost}
-            handleDeleteComment={handleDeleteComment}
-            handleLike={handleLike}
-            handleCommentsShown={handleCommentsShown}
-            handleCommentInput={handleCommentInput}
-            handleCommentSubmit={handleCommentSubmit}
-            handleUpdatePost={handleUpdatePost}
-            handleClickHashtag={handleClickHashtag}
-          />
-        ))}
-        <h1 className='font-heal text-3xl'>({posts.length})</h1>
-        <span>{bottomMessage}</span>
-      </div>
+      {posts.map((post, index) => (
+        <PostCard
+          key={post.postId + index}
+          post={post}
+          index={index}
+          handleDeletePost={handleDeletePost}
+          handleDeleteComment={handleDeleteComment}
+          handleLike={handleLike}
+          handleCommentsShown={handleCommentsShown}
+          handleCommentInput={handleCommentInput}
+          handleCommentSubmit={handleCommentSubmit}
+          handleUpdatePost={handleUpdatePost}
+          handleClickHashtag={handleClickHashtag}
+        />
+      ))}
+      <h1 className='font-heal text-3xl'>({posts.length})</h1>
+      <span>{bottomMessage}</span>
     </div>
   );
 };

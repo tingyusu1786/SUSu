@@ -20,30 +20,30 @@ function Posts() {
 
   return (
     <div
-      className='flex items-start justify-center gap-10 '
+      className='min-h-screen bg-fixed'
       style={{
-        backgroundColor: '#F6F6F9',
         backgroundImage:
           'linear-gradient(#BEEFCE 1px, transparent 1px), linear-gradient(to right, #BEEFCE 1px, #F6F6F9 1px)',
         backgroundSize: '20px 20px',
       }}
     >
-      <CreatePost />
-      <div>
+      <div className='flex w-screen flex-col items-center justify-start gap-10'>
+        <CreatePost />
         <div>
-          <h1 className='font-heal text-3xl'>see posts</h1>
-          <select
-            name='audience'
-            id=''
-            className='w-50 my-1 rounded bg-gray-200'
-            value={feedSource}
-            onChange={handlePostsSourceChange}
-          >
-            <option value='all'>all</option>
-            <option value='following'>following</option>
-          </select>
+          <div>
+            <select
+              name='audience'
+              id=''
+              className='w-50 my-1 rounded bg-gray-200'
+              value={feedSource}
+              onChange={handlePostsSourceChange}
+            >
+              <option value='all'>all</option>
+              <option value='following'>following</option>
+            </select>
+          </div>
+          <PostsFeed onlySeeFollowing={feedSource === 'following' ? true : false} currentPage='posts' />
         </div>
-        <PostsFeed onlySeeFollowing={feedSource === 'following' ? true : false} currentPage='posts' />
       </div>
     </div>
   );

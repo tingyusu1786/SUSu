@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 
 import Header from './components/Header';
+import Authentication from './components/auth/Authentication';
 import { useAppSelector, useAppDispatch } from './app/hooks';
 import {
   signInStart,
@@ -34,6 +35,7 @@ function App() {
   const navigate = useNavigate();
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
   const isLoading = useAppSelector((state) => state.auth.isLoading);
+  const isAuthWindow = useAppSelector((state) => state.auth.isAuthWindow);
   const userId = useAppSelector((state) => state.auth.currentUserId);
 
   useEffect(() => {
@@ -79,6 +81,7 @@ function App() {
       {/*<GlobalStyle />*/}
       <InstantSearch searchClient={searchClient} indexName='brands'>
         <Header />
+        {isAuthWindow && <Authentication />}
         <Outlet />
       </InstantSearch>
     </>

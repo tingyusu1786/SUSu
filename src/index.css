@@ -4,6 +4,8 @@
 
 :root {
   font-family: 'sayger', 'tp-bold';
+  color: #171717;
+  box-sizing: border-box;
 }
 
 @font-face {

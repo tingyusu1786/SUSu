@@ -4,6 +4,8 @@ import { useAppSelector } from '../../app/hooks';
 import { Post } from '../../interfaces/interfaces';
 import CommentInputSection from './CommentInputSection';
 import CommentDiv from './CommentDiv';
+import Button from '../../components/Button';
+import { TrashIcon, GlobeAsiaAustraliaIcon, UserIcon } from '@heroicons/react/24/solid';
 
 interface PostProps {
   post: Post;
@@ -36,34 +38,41 @@ const PostCard: React.FC<PostProps> = ({
   handleClickHashtag,
 }) => {
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
-  const [isActive, setIsActive] = useState(false);
+
+  const date = post.timeCreated?.toDate();
+  const formattedTime = date?.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+  const formattedDate = date?.toLocaleDateString('en-US');
+  const formattedDateTime = `${formattedDate} ${formattedTime}`;
 
   return (
     <div
-      className='relative w-96 rounded-md border-[3px] border-solid border-slate-900 bg-gray-100 p-3'
-      style={{ boxShadow: '4px 4px rgb(15 23 42)' }}
+      className=' flex w-full flex-col flex-nowrap rounded-md border-[3px] border-solid border-neutral-900 bg-neutral-100 shadow-[4px_4px_#171717] hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[8px_8px_#171717]'
       key={index}
     >
-      {<div>{`audience: ${post.audience}`}</div>}
+      <div className='flex h-10 flex-nowrap items-center justify-between border-b-[3px] border-solid border-neutral-900  px-2 text-base'>
+        <Link to={`/profile/${post.authorId}`} className='flex items-center'>
+          <img
+            src={post.authorPhoto}
+            alt={post.authorName}
+            className='mr-1 inline-block h-6 w-6 rounded-full object-cover'
+          />
+          <span className='mt-px'>{post.authorName}</span>
+        </Link>
+        <div className=' flex items-center justify-between'>
+          <span className='mt-1 after:mx-1 after:content-["•"]'>{formattedDateTime}</span>
+          {post.audience === 'public' ? (
+            <GlobeAsiaAustraliaIcon className=' h-4 w-4 ' title='public' />
+          ) : (
+            <UserIcon className='h-4 w-4 ' title='private' />
+          )}
+        </div>
+      </div>
       {post.authorId === currentUserId && (
-        <button
-          className='absolute right-1 top-1 h-5 w-5 rounded-full border-2 border-solid border-slate-900 bg-red-700 pb-px text-sm text-white active:translate-y-0.5'
-          style={{ boxShadow: isActive ? '1px 1px rgb(15 23 42)' : '1px 1px rgb(15 23 42)' }}
+        <TrashIcon
+          className='h-6 w-6 cursor-pointer rounded border-2 border-solid border-neutral-900 bg-red-700 p-1 text-sm text-white shadow-[1px_1px_#171717] active:translate-y-0.5 active:shadow-[0.5px_0,5px_#171717]'
           onClick={() => handleDeletePost(post, index)}
-        >
-          x
-        </button>
-      )}
-      <Link to={`/profile/${post.authorId}`}>
-        <img
-          src={post.authorPhoto}
-          alt={post.authorName}
-          className='inline-block h-10 w-10 rounded-full object-cover outline outline-2 outline-offset-2 outline-slate-900'
         />
-      </Link>
-      <Link to={`/profile/${post.authorId}`}>
-        <span>{post.authorName}</span>
-      </Link>
+      )}
       <br />
       <span> 喝了</span>
       <div>
@@ -93,25 +102,19 @@ const PostCard: React.FC<PostProps> = ({
           </button>
         ))}
       </div>
-      <div>{post.timeCreated?.toDate().toLocaleString()}</div>
+
       <div className='flex gap-3'>
-        <button
-          onClick={() => {
-            currentUserId && handleLike(post, currentUserId, index);
-          }}
-          onMouseDown={() => {
-            setIsActive(true);
-          }}
-          onMouseUp={() => {
-            setIsActive(false);
-          }}
-          className={`w-16 rounded border-2 border-solid border-slate-900 pt-1 font-sayger active:translate-y-0.5 ${
-            currentUserId && post.likes?.some((like) => like.authorId === currentUserId) && 'bg-[#3ddc84] '
-          }`}
-          style={{ boxShadow: isActive ? '1px 1px rgb(15 23 42)' : '3px 3px rgb(15 23 42)' }}
-        >
-          like
-        </button>
+        {
+          <Button
+            disabled={!currentUserId}
+            liked={post.likes?.some((like) => like.authorId === currentUserId)}
+            onClick={() => {
+              currentUserId && handleLike(post, currentUserId, index);
+            }}
+          >
+            like
+          </Button>
+        }
         <span className='ml-2 w-6 pt-2'>{post.likes?.length === 0 ? '' : post.likes?.length || 0}</span>
         <button className='rounded border-2 border-solid border-gray-400' onClick={() => handleCommentsShown(index)}>
           comments

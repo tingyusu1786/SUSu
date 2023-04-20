@@ -6,6 +6,8 @@ import authApi from '../../utils/authApi';
 import { doc, setDoc, getDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../services/firebase';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/solid';
+import Button from '../../components/Button';
 
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import {
@@ -215,7 +217,7 @@ function Authentication() {
         style={{ boxShadow: '4px 4px rgb(15 23 42)' }}
       >
         <button onClick={() => dispatch(closeAuthWindow())}>ESC</button>
-        <h1 className='text-center text-2xl font-bold'>{haveAccount ? '' : 'start logging today'}</h1>
+        <h1 className='text-center text-2xl font-bold'>{haveAccount ? 'Welcome back!' : 'start using su-su today'}</h1>
         <div className='flex flex-col'>
           <button onClick={googleSignIn} className='rounded border border-solid border-gray-600 px-12'>
             continue with Google
@@ -261,12 +263,22 @@ function Authentication() {
               autoComplete={haveAccount ? 'current-password' : 'new-password'}
               required
             />
-            <span
-              onClick={() => {
-                setPasswordType((prev) => (prev === 'password' ? 'text' : 'password'));
-              }}
-            >
-              🕶️👀
+            <span>
+              {passwordType === 'password' ? (
+                <EyeIcon
+                  className='-ml-10 inline h-6 w-6'
+                  onClick={() => {
+                    setPasswordType((prev) => (prev === 'password' ? 'text' : 'password'));
+                  }}
+                />
+              ) : (
+                <EyeSlashIcon
+                  className='-ml-10 inline h-6 w-6'
+                  onClick={() => {
+                    setPasswordType((prev) => (prev === 'password' ? 'text' : 'password'));
+                  }}
+                />
+              )}
             </span>
           </label>
         </div>

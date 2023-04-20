@@ -114,7 +114,7 @@ function Header() {
   };
 
   return (
-    <div className='fixed top-0 flex flex-row items-center justify-center gap-5 bg-gray-100'>
+    <div className='fixed top-0 flex h-24 flex-row items-center justify-center gap-5 bg-gray-100'>
       <NotificationsListener />
 
       <div>
@@ -147,8 +147,8 @@ function Header() {
         </button>
       )}
       {isSignedIn && (
-        <div>
-          <img src={currentUserphotoURL} alt='' className='rounded-full object-cover' />
+        <div className='h-full'>
+          <img src={currentUserphotoURL} alt='' className='h-full rounded-full object-cover' />
           <div className='text-center'>{`Hi ${currentUserName}`}</div>
         </div>
       )}

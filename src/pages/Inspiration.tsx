@@ -249,10 +249,10 @@ function Inspiration() {
         </div>
       )}
       {!isFinding && noItemMessage && <div>{noItemMessage}</div>}
-      <Button type='confirm' disabled={false} />
+      {/*      <Button type='confirm' disabled={false} />
       <Button type='confirm' disabled={true} />
       <Button type='cancel' disabled={false} />
-      <Button type='edit' disabled={false} />
+      <Button type='edit' disabled={false} />*/}
     </div>
   );
 }
