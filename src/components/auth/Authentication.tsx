@@ -6,7 +6,7 @@ import authApi from '../../utils/authApi';
 import { doc, setDoc, getDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../services/firebase';
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/solid';
+import { EyeIcon, EyeSlashIcon, HeartIcon } from '@heroicons/react/24/solid';
 import Button from '../../components/Button';
 
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
@@ -36,11 +36,7 @@ function Authentication() {
   useEffect(() => {
     //todo: any
     const handleKeyDown = (event: any) => {
-      // alert(event.key);
-      if (
-        ![nameRef, emailRef, passwordRef].some((ref) => document.activeElement === ref.current) &&
-        event.key === 'Escape'
-      ) {
+      if (event.key === 'Escape') {
         dispatch(closeAuthWindow());
       }
     };
@@ -52,7 +48,7 @@ function Authentication() {
 
   const handleNativeSignUp = async (name: string, email: string, password: string) => {
     if ([name, email, password].some((input) => input === '')) {
-      alert(`please fill in all input field`);
+      // alert(`please fill in all input field`);
       return;
     }
     try {
@@ -212,124 +208,139 @@ function Authentication() {
 
   return (
     <div className='fixed top-0 z-10 h-screen w-screen'>
-      <form
-        className='absolute left-1/2 top-1/2 z-30 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-md border-[3px] border-solid border-slate-900 bg-[#F5F3EA] p-3'
-        style={{ boxShadow: '4px 4px rgb(15 23 42)' }}
-      >
-        <button onClick={() => dispatch(closeAuthWindow())} className='text-xs'>
+      <form className='absolute left-1/2 top-1/2 z-30 flex w-96 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-start gap-3 rounded-md border-[3px] border-solid border-neutral-900 bg-[#F5F3EA] p-3 shadow-[4px_4px_#10172A]'>
+        <div className='text-2xl'>SUSU</div>
+        {/*<button onClick={() => dispatch(closeAuthWindow())} className='self-end bg-red-700 text-xs text-white'>
           ESC
+        </button>*/}
+
+        <div className='mb-3 text-center text-lg font-bold'>
+          {haveAccount ? 'Welcome back!' : 'Start logging your drinks ;)'}
+        </div>
+        <button
+          onClick={googleSignIn}
+          className='mb-3 h-10 w-full rounded-full bg-green-400 bg-white p-0 text-xl transition-all duration-100 hover:text-white'
+        >
+          continue with Google
         </button>
-        <h1 className='text-center text-2xl font-bold'>{haveAccount ? 'Welcome back!' : 'start using su-su today'}</h1>
-        <div className='flex flex-col'>
-          <button onClick={googleSignIn} className=''>
-            continue with Google
-          </button>
-          <div>or</div>
-          <h1 className='text-xl font-bold'>{haveAccount ? 'sign in with email' : 'sign up with email'}</h1>
-          {!haveAccount && (
-            <label htmlFor='name'>
-              name:
-              <input
-                id='name'
-                name='name'
-                type='text'
-                className='border-2 border-solid border-gray-400'
-                value={input.name}
-                onChange={handleInputChange}
-                autoComplete='name'
-                required
-              />
-            </label>
-          )}
-          <label htmlFor='email'>email:</label>
+        <div className='flex w-full items-baseline justify-around gap-3 px-6'>
+          <div className='grow border-b border-solid border-gray-400'></div>
+          <span className='text-sm '>or</span>
+          <div className='grow border-b border-solid border-gray-400'></div>
+        </div>
+        {/*<h1 className='text-xl font-bold'>{haveAccount ? 'sign in with email' : 'sign up with email'}</h1>*/}
+        {!haveAccount && (
+          <label className='flex w-full flex-col'>
+            <span className='ml-4'>name</span>
+            <input
+              id='name'
+              name='name'
+              type='text'
+              className='h-10 w-full rounded-full border-2 border-solid border-gray-400 p-3 focus:outline-green-400'
+              value={input.name}
+              onChange={handleInputChange}
+              autoComplete='name'
+              required
+            />
+          </label>
+        )}
+        <label className='flex w-full flex-col'>
+          <span className='ml-4'>email</span>
           <input
             id='email'
             name='email'
             type='text'
-            className='border-2 border-solid border-gray-400'
+            className='h-10 w-full rounded-full border-2 border-solid border-gray-400 p-3 focus:outline-green-400'
             value={input.email}
             onChange={handleInputChange}
             autoComplete={haveAccount ? 'email' : 'off'}
             required
           />
-          <label>
-            password:
+        </label>
+        <label className='flex w-full flex-col'>
+          <span className='ml-4'>password</span>
+          <div className='relative'>
             <input
               id='password'
               type={passwordType}
               name='password'
-              className='border-2 border-solid border-gray-400'
+              className='h-10 w-full rounded-full border-2 border-solid border-gray-400 p-3 focus:outline-green-400'
               value={input.password}
               onChange={handleInputChange}
               autoComplete={haveAccount ? 'current-password' : 'new-password'}
               required
             />
-            <span>
-              {passwordType === 'password' ? (
-                <EyeIcon
-                  className='-ml-10 inline h-6 w-6'
-                  onClick={() => {
-                    setPasswordType((prev) => (prev === 'password' ? 'text' : 'password'));
-                  }}
-                />
-              ) : (
-                <EyeSlashIcon
-                  className='-ml-10 inline h-6 w-6'
-                  onClick={() => {
-                    setPasswordType((prev) => (prev === 'password' ? 'text' : 'password'));
-                  }}
-                />
-              )}
-            </span>
-          </label>
-        </div>
-        {haveAccount && <span>Forgot password?</span>}
-        {!haveAccount && (
+            {passwordType === 'password' ? (
+              <EyeSlashIcon
+                className='absolute right-4 top-[0.6rem] h-5 w-5 text-gray-400 hover:text-green-400'
+                onClick={() => {
+                  setPasswordType((prev) => (prev === 'password' ? 'text' : 'password'));
+                }}
+              />
+            ) : (
+              <EyeIcon
+                className='absolute right-4 top-[0.6rem] h-5 w-5 text-gray-400 hover:text-green-400'
+                onClick={() => {
+                  setPasswordType((prev) => (prev === 'password' ? 'text' : 'password'));
+                }}
+              />
+            )}
+          </div>
+        </label>
+        {haveAccount && (
+          <div className='-mt-2 mr-4 self-end text-sm'>
+            <span>Forgot password? </span>
+            <span className='cursor-pointer hover:underline'>Reset</span>
+          </div>
+        )}
+
+        {haveAccount ? (
+          <button
+            onClick={() => {
+              nativeSignIn(input.email, input.password);
+              // handleReset();
+            }}
+            className='h-10 w-full rounded-full bg-white p-0 text-xl transition-all duration-100 hover:bg-green-400 '
+          >
+            sign in by email
+          </button>
+        ) : (
           <button
             onClick={() => {
               handleNativeSignUp(input.name, input.email, input.password);
-              handleReset();
+              // handleReset();
             }}
-            className=''
+            className='h-10 w-full rounded-full bg-white p-0 text-xl transition-all duration-100 hover:bg-green-400 '
           >
             sign up
           </button>
         )}
-        {haveAccount && (
-          <button
-            onClick={() => {
-              nativeSignIn(input.email, input.password);
-              handleReset();
-            }}
-            className=''
-          >
-            sign in by email
-          </button>
-        )}
 
-        {haveAccount && (
-          <div>
-            <span>Don't have an account?</span>
+        {haveAccount ? (
+          <div className='text-sm'>
+            <span>Don't have an account? </span>
             <span
               className='cursor-pointer hover:underline'
               onClick={() => {
                 setHaveAccount(false);
+                handleReset();
               }}
+              aria-label='Create an account'
             >
               Create one
             </span>
           </div>
-        )}
-        {!haveAccount && (
-          <div>
-            <span>Already have an account?</span>
+        ) : (
+          <div className='text-sm'>
+            <span>Already have an account? </span>
             <span
               className='cursor-pointer hover:underline'
               onClick={() => {
                 setHaveAccount(true);
               }}
+              aria-label='Log in with email'
             >
-              Log in with email
+              Log in
             </span>
           </div>
         )}
