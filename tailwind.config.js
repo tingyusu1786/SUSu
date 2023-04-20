@@ -10,6 +10,19 @@ module.exports = {
         tpReg: ['tp-reg', 'sans-serif'],
         tpLight: ['tp-light', 'sans-serif'],
       },
+      keyframes: {
+        wave: {
+          from: {
+            transform: 'translateX(-1px)',
+          },
+          to: {
+            transform: 'translateX(-55px)',
+          },
+        },
+      },
+    },
+    animation: {
+      wave: 'wave 1.5s linear infinite',
     },
   },
   plugins: [],

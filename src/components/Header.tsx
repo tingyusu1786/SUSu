@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../services/firebase';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
 import {
   openAuthWindow,
@@ -17,6 +17,7 @@ import { Notification } from '../interfaces/interfaces';
 import { doc, DocumentSnapshot, DocumentReference, DocumentData, onSnapshot } from 'firebase/firestore';
 import dbApi from '../utils/dbApi';
 import authApi from '../utils/authApi';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 
 function NotificationsListener() {
   const dispatch = useAppDispatch();
@@ -113,54 +114,94 @@ function Header() {
     }
   };
 
-  return (
-    <div className='fixed top-0 flex h-24 flex-row items-center justify-center gap-5 bg-gray-100'>
-      <NotificationsListener />
+  function useScrollDirection() {
+    const [scrollDirection, setScrollDirection] = useState<'down' | 'up' | null>(null);
 
-      <div>
-        <nav className='flex gap-3'>
-          <Link to='/' className='bg-lime-200'>
-            home
-          </Link>
-          <Link to={`/profile/${userId}`} className='bg-lime-200'>
-            profile
-          </Link>
-          <Link to='/posts' className='bg-lime-200'>
-            喝po
-          </Link>
-          <Link to='/notifications' className='bg-lime-200'>
-            通知中心
-          </Link>
-          <Link to='/catalogue' className='bg-lime-200'>
-            大全
-          </Link>
-          <Link to='/inspiration' className='bg-lime-200'>
-            今天喝什麼
-          </Link>
-        </nav>
-        <SearchBox placeholder='Search anything' searchAsYouType={false} onSubmit={handleRedirect} className='mt-5' />
-      </div>
-      {!isSignedIn && <button onClick={() => dispatch(openAuthWindow())}>sign in</button>}
-      {isSignedIn && (
-        <button onClick={handleSignOut} className='scroll-px-28 rounded border border-solid border-gray-600'>
-          sign out
-        </button>
-      )}
-      {isSignedIn && (
-        <div className='h-full'>
-          <img src={currentUserphotoURL} alt='' className='h-full rounded-full object-cover' />
-          <div className='text-center'>{`Hi ${currentUserName}`}</div>
+    useEffect(() => {
+      let lastScrollY = window.pageYOffset;
+
+      const updateScrollDirection = () => {
+        const scrollY = window.pageYOffset;
+        const direction = scrollY > lastScrollY ? 'down' : 'up';
+        if (direction !== scrollDirection && (scrollY - lastScrollY > 10 || scrollY - lastScrollY < -10)) {
+          setScrollDirection(direction);
+        }
+        lastScrollY = scrollY > 0 ? scrollY : 0;
+      };
+      window.addEventListener('scroll', updateScrollDirection); // add event listener
+      return () => {
+        window.removeEventListener('scroll', updateScrollDirection); // clean up
+      };
+    }, [scrollDirection]);
+
+    return scrollDirection;
+  }
+  const scrollDirection = useScrollDirection();
+
+  const navLi = [
+    { name: 'DRINK LOGS', to: '/posts' },
+    { name: 'NOTIFICATIONS', to: '/notifications' },
+    { name: 'DRINK CATALOGUE', to: '/catalogue' },
+    { name: 'INSPIRATION', to: '/inspiration' },
+  ];
+  const location = useLocation();
+
+  return (
+    <header
+      className={`sticky ${
+        scrollDirection === 'down' ? '-top-11 xl:top-0' : 'top-0'
+      } flex h-11 w-screen flex-row items-center justify-around gap-5 border-b-4 border-solid border-green-400 bg-gray-100 transition-all duration-300 xl:h-16`}
+    >
+      <NotificationsListener />
+      <nav>
+        <ul className='flex gap-4'>
+          <li>
+            <Link to='/' className='mt-8 block pb-8'>
+              LOGO
+            </Link>
+          </li>
+          {navLi.map((li) => (
+            <li key={li.name}>
+              <Link
+                to={li.to}
+                className={`relative mt-8 block overflow-hidden pb-8 before:absolute before:whitespace-nowrap before:text-transparent before:underline before:underline-offset-8 before:content-[attr(data-text)attr(data-text)] hover:before:animate-wave hover:before:decoration-sky-400 hover:before:decoration-wavy ${
+                  location.pathname === li.to ? 'before:decoration-sky-400 before:decoration-wavy' : ''
+                }`}
+                data-text={li.name}
+              >
+                {li.name}
+              </Link>
+            </li>
+          ))}
+          <li>
+            <MagnifyingGlassIcon className='mt-8 h-5 w-5 cursor-pointer text-neutral-900' />
+          </li>
+        </ul>
+      </nav>
+      <SearchBox placeholder='Search anything' searchAsYouType={false} onSubmit={handleRedirect} className='mt-5' />
+      {!isSignedIn && (
+        <div onClick={() => dispatch(openAuthWindow())} className='cursor-pointer'>
+          sign in
         </div>
       )}
-      {/* <div>
-        <h3 className='text-2xl'>auth status</h3>
-        <div className=''>{`is signed in: ${isSignedIn}`}</div>
-        <div className=''>{`loading: ${loading}`}</div>
-        <div className=''>{`error: ${error}`}</div>
-        <div className=''>{`signed-in user id: ${userId}`}</div>
-      </div>*/}
+      {isSignedIn && <div className='text-center'>{`Hi ${currentUserName}`}</div>}
+      {isSignedIn && (
+        <Link to={`/profile/${userId}`} className=''>
+          <img
+            src={currentUserphotoURL}
+            alt=''
+            className='box-content h-10 w-10 rounded-full border-2 border-solid border-neutral-900 object-cover transition-all duration-100 hover:border-4 hover:border-green-400'
+          />
+        </Link>
+      )}
+      {isSignedIn && (
+        <div onClick={handleSignOut} className='cursor-pointer scroll-px-2.5'>
+          sign out
+        </div>
+      )}
+
       {isShown && <NotificationPopUp />}
-    </div>
+    </header>
   );
 }
 
