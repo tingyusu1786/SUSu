@@ -208,7 +208,7 @@ function Authentication() {
 
   return (
     <div className='fixed top-0 z-10 h-screen w-screen'>
-      <form className='absolute left-1/2 top-1/2 z-30 flex w-96 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-start gap-3 rounded-md border-[3px] border-solid border-neutral-900 bg-[#F5F3EA] p-3 shadow-[4px_4px_#10172A]'>
+      <form className='absolute left-1/2 top-1/2 z-30 flex w-96 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-start gap-3 rounded-md border-[3px] border-solid border-neutral-900 bg-[#F5F3EA] px-4 py-5 shadow-[4px_4px_#10172A]'>
         <div className='text-2xl'>SUSU</div>
         {/*<button onClick={() => dispatch(closeAuthWindow())} className='self-end bg-red-700 text-xs text-white'>
           ESC
