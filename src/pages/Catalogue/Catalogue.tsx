@@ -205,7 +205,15 @@ function Catalogue() {
   };
 
   return (
-    <main>
+    <main
+      className='flex min-h-[calc(100vh-64px)] flex-col items-center bg-fixed p-10'
+      style={{
+        backgroundImage:
+          'linear-gradient(#BEEFCE 1px, transparent 1px), linear-gradient(to right, #BEEFCE 1px, #F6F6F9 1px)',
+        backgroundSize: '20px 20px',
+      }}
+    >
+      <h1 className='mb-10 text-center text-7xl'>Find peoples' favorite!</h1>
       <BreadcrumbNav
         catalogueBrandId={catalogueBrandId}
         catalogueItemId={catalogueItemId}
