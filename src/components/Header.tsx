@@ -11,13 +11,16 @@ import {
 } from '../components/auth/authSlice';
 import { showNotification, closeNotification } from '../components/notification/notificationSlice';
 import { NotificationPopUp } from '../components/notification/NotificationPopUp';
+import { NotificationsList } from '../components/notification/NotificationsList';
 import { SearchBox } from 'react-instantsearch-hooks-web';
 import { useNavigate } from 'react-router-dom';
 import { Notification } from '../interfaces/interfaces';
+import type { SearchBoxProps } from 'react-instantsearch-hooks-web';
 import { doc, DocumentSnapshot, DocumentReference, DocumentData, onSnapshot } from 'firebase/firestore';
 import dbApi from '../utils/dbApi';
 import authApi from '../utils/authApi';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import { BellIcon } from '@heroicons/react/24/solid';
 
 function NotificationsListener() {
   const dispatch = useAppDispatch();
@@ -97,10 +100,17 @@ function Header() {
   const isAuthWindow = useAppSelector((state) => state.auth.isAuthWindow);
   const isShown = useAppSelector((state) => state.notification.isShown);
   const navigate = useNavigate();
+  const [searchShown, setSearchShown] = useState(false);
 
   function handleRedirect() {
     navigate('/search');
   }
+
+  const queryHook: SearchBoxProps['queryHook'] = (query, search) => {
+    const searchQuery = query.replace(/\s/g, '');
+    if (searchQuery === '') return;
+    search(searchQuery);
+  };
 
   const handleSignOut = async () => {
     try {
@@ -140,7 +150,7 @@ function Header() {
 
   const navLi = [
     { name: 'DRINK LOGS', to: '/posts' },
-    { name: 'NOTIFICATIONS', to: '/notifications' },
+    // { name: 'NOTIFICATIONS', to: '/notifications' },
     { name: 'DRINK CATALOGUE', to: '/catalogue' },
     { name: 'INSPIRATION', to: '/inspiration' },
   ];
@@ -150,14 +160,14 @@ function Header() {
     <header
       className={`sticky ${
         scrollDirection === 'down' ? '-top-11 xl:top-0' : 'top-0'
-      } flex h-11 w-screen flex-row items-center justify-around gap-5 border-b-4 border-solid border-green-400 bg-gray-100 transition-all duration-300 xl:h-16`}
+      } z-40 flex h-11 w-screen flex-row items-center justify-between gap-5 border-b-4 border-solid border-green-400 bg-gray-100 px-16 transition-all duration-300 xl:h-16`}
     >
       <NotificationsListener />
       <nav>
         <ul className='flex gap-4'>
           <li>
             <Link to='/' className='mt-8 block pb-8'>
-              LOGO
+              SUSU
             </Link>
           </li>
           {navLi.map((li) => (
@@ -174,29 +184,62 @@ function Header() {
             </li>
           ))}
           <li>
-            <MagnifyingGlassIcon className='mt-8 h-5 w-5 cursor-pointer text-neutral-900' />
+            <MagnifyingGlassIcon
+              className='mt-8 h-5 w-5 cursor-pointer text-neutral-900 transition-all duration-150 hover:scale-125'
+              onClick={() => {
+                setSearchShown((prev) => !prev);
+              }}
+            />
           </li>
         </ul>
       </nav>
-      <SearchBox placeholder='Search anything' searchAsYouType={false} onSubmit={handleRedirect} className='mt-5' />
+      {searchShown && (
+        <SearchBox
+          placeholder='Search anything'
+          // queryHook={queryHook}
+          searchAsYouType={false}
+          onSubmit={handleRedirect}
+          submitIconComponent={({ classNames }) => <span className={classNames.submitIcon}></span>}
+          resetIconComponent={({ classNames }) => <span className={classNames.resetIcon}></span>}
+          loadingIconComponent={() => <span></span>}
+          classNames={{
+            // root: 'MyCustomSearchBox',
+            form: '',
+            input:
+              'h-10 rounded-full border-2 border-solid border-gray-400 p-3 focus:border-green-400 focus:outline-green-400',
+            submitIcon: 'hidden',
+            resetIcon: 'bg-red-700 hidden',
+            loadingIcon: 'hidden',
+          }}
+        />
+      )}
       {!isSignedIn && (
-        <div onClick={() => dispatch(openAuthWindow())} className='cursor-pointer'>
-          sign in
+        <div onClick={() => dispatch(openAuthWindow())} className='group relative cursor-pointer'>
+          <span>sign in</span>
+          <div className='absolute right-1/2 top-10 hidden text-center group-hover:block'>
+            sign in to see your profile and notifications!
+          </div>
         </div>
       )}
-      {isSignedIn && <div className='text-center'>{`Hi ${currentUserName}`}</div>}
+
       {isSignedIn && (
-        <Link to={`/profile/${userId}`} className=''>
-          <img
-            src={currentUserphotoURL}
-            alt=''
-            className='box-content h-10 w-10 rounded-full border-2 border-solid border-neutral-900 object-cover transition-all duration-100 hover:border-4 hover:border-green-400'
-          />
-        </Link>
-      )}
-      {isSignedIn && (
-        <div onClick={handleSignOut} className='cursor-pointer scroll-px-2.5'>
-          sign out
+        <div className='flex items-center gap-3'>
+          <div className='text-center'>{`Hi ${currentUserName}`}</div>
+
+          <Link to={`/profile/${userId}`} className=''>
+            <img
+              src={currentUserphotoURL}
+              alt=''
+              className='box-content h-10 w-10 rounded-full border-2 border-solid border-neutral-900 object-cover transition-all duration-100 hover:border-4 hover:border-green-400'
+            />
+          </Link>
+          {/*<Link to='/notifications'>*/}
+          <BellIcon className='h-5 w-5 cursor-pointer text-neutral-900 transition-all duration-150 hover:scale-125' />
+          <NotificationsList />
+          {/*</Link>*/}
+          <div onClick={handleSignOut} className='cursor-pointer scroll-px-2.5'>
+            sign out
+          </div>
         </div>
       )}
 

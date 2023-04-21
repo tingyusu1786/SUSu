@@ -1,14 +1,14 @@
 import { useState, useEffect, useRef } from 'react';
-import { db } from '../services/firebase';
+import { db } from '../../services/firebase';
 import { Link } from 'react-router-dom';
 import { doc, DocumentSnapshot, DocumentReference, DocumentData, onSnapshot } from 'firebase/firestore';
-import dbApi from '../utils/dbApi';
-import { openAuthWindow } from '../components/auth/authSlice';
-import { useAppSelector, useAppDispatch } from '../app/hooks';
-import { getTimeDiff } from '../utils/common';
-import { Notification } from '../interfaces/interfaces';
+import dbApi from '../../utils/dbApi';
+import { openAuthWindow } from '../../components/auth/authSlice';
+import { useAppSelector, useAppDispatch } from '../../app/hooks';
+import { getTimeDiff } from '../../utils/common';
+import { Notification } from '../../interfaces/interfaces';
 
-function Notifications() {
+export function NotificationsList() {
   const dispatch = useAppDispatch();
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
@@ -99,7 +99,7 @@ function Notifications() {
   }
 
   return (
-    <div className='flex flex-col items-center justify-center gap-1 text-xl'>
+    <div className='justify-top absolute right-0 top-[64px] flex max-h-screen w-96 flex-col items-center gap-1 overflow-scroll bg-red-900 text-xl'>
       {notifications.length === 0 && <div>no notification yet</div>}
       {notifications.length > 0 && <div>({notifications?.length})</div>}
       {notifications.map((notification, index) => {
@@ -129,5 +129,3 @@ function Notifications() {
     </div>
   );
 }
-
-export default Notifications;
