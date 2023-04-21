@@ -248,7 +248,7 @@ function Inspiration() {
               allowFullScreen
               referrerPolicy='no-referrer-when-downgrade'
               src={`https://www.google.com/maps/embed/v1/search?key=AIzaSyAyK3jgOTFT1B6-Vt85wxc_2aaGLUlU738
-                &q=${randomItem.brand}+nearby&language=zh-TW&center=${Number(currentLocation?.latitude)},${Number(
+                &q=${randomItem.brand}+nearby&language=en&center=${Number(currentLocation?.latitude)},${Number(
                 currentLocation?.longitude
               )}&zoom=13`}
             ></iframe>

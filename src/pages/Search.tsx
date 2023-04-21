@@ -8,7 +8,16 @@ import { showNotification } from '../components/notification/notificationSlice';
 import { Link } from 'react-router-dom';
 
 import algoliasearch from 'algoliasearch/lite';
-import { InstantSearch, SearchBox, Hits, Highlight, RefinementList, Index } from 'react-instantsearch-hooks-web';
+import {
+  InstantSearch,
+  SearchBox,
+  useHits,
+  Hits,
+  Highlight,
+  RefinementList,
+  Index,
+  InfiniteHits,
+} from 'react-instantsearch-hooks-web';
 
 function BrandHit({ hit }: any) {
   return (
@@ -84,7 +93,6 @@ function PostHit({ hit }: any) {
           <Highlight attribute='hashtags' hit={hit} className='rounded text-sm' />
         </div>
       )}
-      
     </article>
   );
 }
@@ -92,75 +100,48 @@ function PostHit({ hit }: any) {
 function Search() {
   const dispatch = useAppDispatch();
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
-  const [tab, setTab] = useState<'all'|'brands'|'users'|'posts'|'items'>('brands');
+  const tabs = ['all', 'brands', 'items', 'posts', 'users'];
+  const [tab, setTab] = useState('all');
 
   return (
-    <div className='text-xl'>
-      <div className='text-center font-heal text-3xl'>search results:</div>
+    <main
+      className='flex min-h-[calc(100vh-64px)] flex-col items-center bg-fixed p-10'
+      style={{
+        backgroundImage:
+          'linear-gradient(#BEEFCE 1px, transparent 1px), linear-gradient(to right, #BEEFCE 1px, #F6F6F9 1px)',
+        backgroundSize: '20px 20px',
+      }}
+    >
+      <div className='text-center text-7xl'>Here are what you want</div>
       {/*<RefinementList attribute={"name"} />*/}
-      <div className='text-center'>
-        <button
-          onClick={() => {
-            setTab('all');
-          }}
-          className={tab === 'all' ? 'font-bold text-blue-600' : ''}
-        >
-          all
-        </button>
-        <span>&nbsp;&nbsp;&nbsp;</span>
-        <button
-          onClick={() => {
-            setTab('brands');
-          }}
-          className={tab === 'brands' ? 'font-bold text-blue-600' : ''}
-        >
-          brands
-        </button>
-        <span>&nbsp;&nbsp;&nbsp;</span>
-        <button
-          onClick={() => {
-            setTab('items');
-          }}
-          className={tab === 'items' ? 'font-bold text-blue-600' : ''}
-        >
-          items
-        </button>
-        <span>&nbsp;&nbsp;&nbsp;</span>
-        <button
-          onClick={() => {
-            setTab('posts');
-          }}
-          className={tab === 'posts' ? 'font-bold text-blue-600' : ''}
-        >
-          posts
-        </button>
-        <span>&nbsp;&nbsp;&nbsp;</span>
-        <button
-          onClick={() => {
-            setTab('users');
-          }}
-          className={tab === 'users'? 'font-bold text-blue-600': ''}
-        >
-          users
-        </button>
-      </div>
+      <nav className='flex gap-3'>
+        {tabs.map((tabName) => (
+          <button
+            key={tabName}
+            onClick={() => setTab(tabName)}
+            className={tab === tabName ? 'font-bold text-sky-400 underline decoration-2 underline-offset-8' : ''}
+          >
+            {tabName}
+          </button>
+        ))}
+      </nav>
       {/*把全部的hits放在一起變成all*/}
       {tab === 'brands' && (
         <Index indexName='brands'>
-          <Hits hitComponent={BrandHit} className='flex flex-col items-center' />
+          <InfiniteHits hitComponent={BrandHit} className='flex flex-col items-center' showPrevious={false} />
         </Index>
       )}
       {tab === 'posts' && (
         <Index indexName='posts'>
-          <Hits hitComponent={PostHit} className='flex flex-col items-center' />
+          <InfiniteHits hitComponent={PostHit} className='flex flex-col items-center' showPrevious={false} />
         </Index>
       )}
       {tab === 'users' && (
         <Index indexName='users'>
-          <Hits hitComponent={UserHit} className='flex flex-col items-center' />
+          <InfiniteHits hitComponent={UserHit} className='flex flex-col items-center' showPrevious={false} />
         </Index>
       )}
-    </div>
+    </main>
   );
 }
 

@@ -158,6 +158,7 @@ const PostsFeed: React.FC<PostsProps> = ({
   }, [posts]);
 
   // scroll listener
+  // todo: phone, firefox, safari
   useEffect(() => {
     const handleScroll = () => {
       const isBottom = window.innerHeight + window.pageYOffset >= document.body.offsetHeight;
