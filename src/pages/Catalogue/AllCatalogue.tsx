@@ -14,7 +14,7 @@ const AllCatalogue: React.FC<Props> = ({ brands }) => {
   return (
     <div className='w-full '>
       <h1 className='mb-10 text-center text-7xl'>Discover peoples' favorites!</h1>
-      <h2 className='mb-20 text-center text-3xl'>(almost) all chain hand-shake drink store in Taiwan listed</h2>
+      <h2 className='mb-28 text-center text-3xl'>(almost) all chain hand-shake drink store in Taiwan listed</h2>
       <div className='grid w-full gap-10 ' style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(15rem, 1fr))' }}>
         {brands.map((brand, index) => (
           <BrandCard brand={brand} key={index} />

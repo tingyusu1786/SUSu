@@ -55,10 +55,10 @@ const BrandCatalogue: React.FC<CatalogueProps> = ({
               <div className='flex flex-wrap content-start gap-3'>
                 {itemsOfCategory.length !== 0 &&
                   itemsOfCategory.map((item: any) => (
-                    <Link to={`/catalogue/${catalogueBrandObj.brandId}/${item[0]}`}>
+                    <Link to={`/catalogue/${catalogueBrandId}/${item[0]}`}>
                       <div
                         key={item[0]}
-                        className='flex h-16 min-w-min items-center justify-center rounded-md border-2 border-solid border-neutral-900 bg-gray-100 px-3 shadow-[4px_4px_#171717] hover:-translate-y-1 hover:shadow-[4px_8px_#171717]'
+                        className='flex h-16 min-w-min items-center justify-center rounded-md border-2 border-solid border-neutral-900 bg-gray-100 px-3 shadow-[4px_4px_#171717] transition-all duration-200 hover:-translate-y-1 hover:shadow-[4px_8px_#171717]'
                       >
                         {item[1]}
                       </div>
@@ -68,11 +68,12 @@ const BrandCatalogue: React.FC<CatalogueProps> = ({
             </div>
           ))}
       </div>
-      <div className='my-5 flex w-full items-baseline justify-around gap-3 px-6'>
+      <div className='mt-5 flex w-full items-baseline justify-around gap-3 px-6'>
         <div className='grow border-b-4 border-solid border-neutral-900'></div>
         <span className=''>RELATED LOGS</span>
         <div className='grow border-b-4 border-solid border-neutral-900'></div>
       </div>
+      <div className='mb-5 text-center text-sm'>(private logs may not be shown)</div>
       <PostsFeed currentPage='brand' catalogueBrandId={catalogueBrandId} />
     </div>
   );

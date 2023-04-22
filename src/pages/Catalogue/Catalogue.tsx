@@ -9,6 +9,7 @@ import ItemCatalogue from './ItemCatalogue';
 import PostsFeed from '../../components/postsFeed/PostsFeed';
 import BrandCard from '../../components/BrandCard';
 import { Brand } from '../../interfaces/interfaces';
+import { ArrowRightIcon } from '@heroicons/react/24/solid';
 
 interface BreadcrumProps {
   catalogueBrandId: string | undefined;
@@ -24,7 +25,7 @@ const BreadcrumbNav: React.FC<BreadcrumProps> = ({
   catalogueItemName,
 }) => {
   return (
-    <nav aria-label='breadcrumb' className=' absolute left-5 top-5'>
+    <nav aria-label='breadcrumb' className=' absolute left-10 top-10 '>
       <ol className='breadcrumb flex'>
         <li className='breadcrumb-item'>
           <Link to='/catalogue' className='text-gray-500 hover:text-gray-700'>
@@ -33,7 +34,7 @@ const BreadcrumbNav: React.FC<BreadcrumProps> = ({
         </li>
         {catalogueBrandId && (
           <li className='breadcrumb-item'>
-            <span className='text-gray-500'>&nbsp;»&nbsp;</span>
+            <ArrowRightIcon className='mx-1 -mt-1 inline-block h-5 text-gray-500' />
             <Link to={`/catalogue/${catalogueBrandId}`} className='text-gray-500 hover:text-gray-700'>
               {catalogueBrandName}
             </Link>
@@ -41,7 +42,7 @@ const BreadcrumbNav: React.FC<BreadcrumProps> = ({
         )}
         {catalogueItemId && (
           <li className='breadcrumb-item'>
-            <span className='text-gray-500'>&nbsp;»&nbsp;</span>
+            <ArrowRightIcon className='mx-1 -mt-1 inline-block h-5 text-gray-500' />
             <span className='text-gray-500'>{catalogueItemName}</span>
           </li>
         )}
@@ -193,7 +194,7 @@ function Catalogue() {
 
   return (
     <main
-      className='relative min-h-[calc(100vh-64px)] bg-fixed px-10 py-10 sm:px-0'
+      className='relative min-h-[calc(100vh-64px)] bg-red-300 bg-fixed px-10 py-20 sm:px-0'
       style={{
         backgroundImage:
           'linear-gradient(#BEEFCE 1px, transparent 1px), linear-gradient(to right, #BEEFCE 1px, #F6F6F9 1px)',
