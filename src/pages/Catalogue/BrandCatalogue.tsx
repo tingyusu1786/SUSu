@@ -2,60 +2,78 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { db } from '../../services/firebase';
 import dbApi from '../../utils/dbApi';
+import PostsFeed from '../../components/postsFeed/PostsFeed';
 import { doc, getDoc, collection, query, where, getDocs, orderBy, QuerySnapshot } from 'firebase/firestore';
+import { StarIcon, BuildingStorefrontIcon } from '@heroicons/react/24/solid';
 
 interface CatalogueProps {
-  catalogueBrandId?: string | undefined;
+  catalogueBrandId: string | undefined;
   catalogueItemId?: string | undefined;
   catalogueBrandName?: string | undefined;
   catalogueItemName?: string | undefined;
-  catalogueBrandObj?: any;
-  categories?: string[];
+  catalogueBrandObj: any;
+  categories?: string[][];
   itemsOfBrand?: any;
 }
 
 const BrandCatalogue: React.FC<CatalogueProps> = ({
-  catalogueBrandId,
-  catalogueItemId,
-  catalogueBrandName,
-  catalogueItemName,
   catalogueBrandObj,
   categories,
   itemsOfBrand,
+  catalogueBrandId,
 }) => {
   return (
-    <div>
-      {catalogueBrandId && <div className='text-3xl'>{catalogueBrandName}</div>}
-      {catalogueBrandId && catalogueBrandObj?.averageRating && (
-        <div>
-          <span>
-            brand rating: <span className='font-heal text-2xl font-bold'>{catalogueBrandObj?.averageRating}</span>
-          </span>
-          <span>
-            {' '}
-            by <span className='font-heal font-bold'>{catalogueBrandObj?.numRatings}</span> people
-          </span>
-        </div>
-      )}
+    <div className='mx-auto mt-5 max-w-[960px] '>
+      <div className='flex items-center gap-5'>
+        <h1 className='inline-block text-6xl'>{catalogueBrandObj?.name}</h1>
+        <img src={catalogueBrandObj?.photoURL} alt='' className='-mt-3 inline-block h-20' />
+      </div>
+      <div className='mb-5 flex items-center justify-start gap-1 text-lg'>
+        <BuildingStorefrontIcon className='mb-1 inline h-5 w-5 text-sky-400' />
+        <span className='mr-5'>{catalogueBrandObj?.numStore || '?'}</span>
+        <StarIcon className='mb-1 inline h-5 w-5 text-amber-400' />
+        <span>{catalogueBrandObj?.averageRating || '-'}</span>
+        <span>({catalogueBrandObj?.numRatings || 0})</span>
+      </div>
+      <div className='flex items-center justify-start gap-1 text-lg'></div>
+      <div className='relative before:absolute before:-left-3 before:-top-3 before:font-heal before:text-5xl before:opacity-20 before:content-[open-quote]  '>
+        {catalogueBrandObj?.story}
+      </div>
 
-      <div className='mt-8 flex gap-1'>
-        {catalogueBrandId &&
-          !catalogueItemId &&
-          itemsOfBrand.length !== 0 &&
+      <div className='mt-8 flex flex-col gap-10'>
+        {itemsOfBrand.length !== 0 &&
           categories &&
           categories.length !== 0 &&
           itemsOfBrand.map((itemsOfCategory: [], index: number) => (
-            <div key={index}>
-              <div className='font-bold'>{categories[index]?.[1]}</div>
-              {itemsOfCategory.length !== 0 &&
-                itemsOfCategory.map((item: any) => (
-                  <div key={item[0]}>
-                    <Link to={`/catalogue/${catalogueBrandId}/${item[0]}`}>{item[1]}</Link>
-                  </div>
-                ))}
+            <div key={index} className='flex justify-start gap-3'>
+              <div
+                className='self-start rounded-md border-2 border-solid border-neutral-900 bg-green-700 pb-5 pl-2 pr-3 pt-6 text-xl tracking-[10px] text-white'
+                style={{ writingMode: 'vertical-lr' }}
+              >
+                {categories[index]?.[1]}
+              </div>
+              <div className='flex flex-wrap content-start gap-3'>
+                {itemsOfCategory.length !== 0 &&
+                  itemsOfCategory.map((item: any) => (
+                    <Link to={`/catalogue/${catalogueBrandObj.brandId}/${item[0]}`}>
+                      <div
+                        key={item[0]}
+                        className='flex h-16 min-w-min items-center justify-center rounded-md border-2 border-solid border-neutral-900 bg-gray-100 px-3 shadow-[4px_4px_#171717] hover:-translate-y-1 hover:shadow-[4px_8px_#171717]'
+                      >
+                        {item[1]}
+                      </div>
+                    </Link>
+                  ))}
+              </div>
             </div>
           ))}
       </div>
+      <div className='my-5 flex w-full items-baseline justify-around gap-3 px-6'>
+        <div className='grow border-b-4 border-solid border-neutral-900'></div>
+        <span className=''>RELATED LOGS</span>
+        <div className='grow border-b-4 border-solid border-neutral-900'></div>
+      </div>
+      <PostsFeed currentPage='brand' catalogueBrandId={catalogueBrandId} />
     </div>
   );
 };

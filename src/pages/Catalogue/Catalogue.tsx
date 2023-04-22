@@ -24,8 +24,8 @@ const BreadcrumbNav: React.FC<BreadcrumProps> = ({
   catalogueItemName,
 }) => {
   return (
-    <nav aria-label='breadcrumb'>
-      <ol className='breadcrumb flex p-2'>
+    <nav aria-label='breadcrumb' className=' absolute left-5 top-5'>
+      <ol className='breadcrumb flex'>
         <li className='breadcrumb-item'>
           <Link to='/catalogue' className='text-gray-500 hover:text-gray-700'>
             All Brands
@@ -193,81 +193,36 @@ function Catalogue() {
 
   return (
     <main
-      className='flex min-h-[calc(100vh-64px)] flex-col items-center bg-fixed px-10 px-36 py-10 sm:px-0'
+      className='relative min-h-[calc(100vh-64px)] bg-fixed px-10 py-10 sm:px-0'
       style={{
         backgroundImage:
           'linear-gradient(#BEEFCE 1px, transparent 1px), linear-gradient(to right, #BEEFCE 1px, #F6F6F9 1px)',
         backgroundSize: '20px 20px',
       }}
     >
-      <h1 className='mb-10 text-center text-7xl'>Discover peoples' favorites!</h1>
       <BreadcrumbNav
         catalogueBrandId={catalogueBrandId}
         catalogueItemId={catalogueItemId}
         catalogueBrandName={catalogueBrandName}
         catalogueItemName={catalogueItemName}
       />
-      <div className='flex w-full flex-col items-center'>
-        {!catalogueBrandId && !catalogueItemId && (
-          <AllCatalogue brands={brands} catalogueBrandId={catalogueBrandId} catalogueItemId={catalogueItemId} />
-        )}
-        {catalogueBrandId && !catalogueItemId && <BrandCatalogue />}
-        {catalogueBrandId && catalogueItemId && <ItemCatalogue />}
-        {catalogueBrandId && <div className='text-3xl'>{catalogueBrandName}</div>}
-        {catalogueBrandId && catalogueBrandObj?.averageRating && (
-          <div>
-            <span>
-              brand rating: <span className='font-heal text-2xl font-bold'>{catalogueBrandObj?.averageRating}</span>
-            </span>
-            <span>
-              by <span className='font-heal font-bold'>{catalogueBrandObj?.numRatings}</span> people
-            </span>
-          </div>
-        )}
-
-        <div className='mt-8 flex gap-1'>
-          {catalogueBrandId &&
-            !catalogueItemId &&
-            itemsOfBrand.length !== 0 &&
-            categories.length !== 0 &&
-            itemsOfBrand.map((itemsOfCategory, index) => (
-              <div key={index}>
-                <div className='font-bold'>{categories[index]?.[1]}</div>
-                {itemsOfCategory.length !== 0 &&
-                  itemsOfCategory.map((item) => (
-                    <div key={item[0]}>
-                      <Link to={`/catalogue/${catalogueBrandId}/${item[0]}`}>{item[1]}</Link>
-                    </div>
-                  ))}
-              </div>
-            ))}
-          {catalogueBrandId && !catalogueItemId && (
-            <PostsFeed currentPage='brand' catalogueBrandId={catalogueBrandId} />
-          )}
-        </div>
-        {catalogueItemId && <div> item:{catalogueItemName}</div>}
-        {catalogueItemId && catalogueItemObj?.averageRating && (
-          <div>
-            <span>
-              item rating: <span className='font-heal text-2xl font-bold'>{catalogueItemObj?.averageRating}</span>
-            </span>
-            <span>
-              by <span className='font-heal font-bold'>{catalogueItemObj?.numRatings}</span> people
-            </span>
-          </div>
-        )}
-        <div>
-          {catalogueItemObj &&
-            Object.entries(catalogueItemObj.price).map((p) => (
-              <div key={p[0]}>
-                <span>{p[0]}</span>
-                <span>: $</span>
-                <span>{p[1] as number}</span>
-              </div>
-            ))}
-        </div>
-        {catalogueItemId && <PostsFeed currentPage='item' catalogueItemId={catalogueItemId} />}
-      </div>
+      {!catalogueBrandId && !catalogueItemId && <AllCatalogue brands={brands} />}
+      {catalogueBrandId && !catalogueItemId && (
+        <BrandCatalogue
+          catalogueBrandObj={catalogueBrandObj}
+          categories={categories}
+          itemsOfBrand={itemsOfBrand}
+          catalogueBrandId={catalogueBrandId}
+        />
+      )}
+      {catalogueBrandId && catalogueItemId && (
+        <ItemCatalogue
+          catalogueBrandId={catalogueBrandId}
+          catalogueItemId={catalogueItemId}
+          catalogueItemName={catalogueItemName}
+          catalogueItemObj={catalogueItemObj}
+        />
+      )}
     </main>
   );
 }
