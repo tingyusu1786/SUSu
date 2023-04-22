@@ -65,6 +65,19 @@ export interface Post {
   timeCreated?: Timestamp;
 }
 
+export interface Brand {
+  averageRating?: number;
+  brandId: string;
+  headquarter: string;
+  myCupDiscount: number;
+  name: string;
+  numRatings?: number;
+  numStore: number;
+  size: { [key: string]: number };
+  story: any;
+  photoURL?: string;
+}
+
 export interface BrandsInfo {
   [brandId: string]: {
     name: string;

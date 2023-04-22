@@ -5,13 +5,13 @@ import dbApi from '../../utils/dbApi';
 import { doc, getDoc, collection, query, where, getDocs, orderBy, QuerySnapshot } from 'firebase/firestore';
 
 interface CatalogueProps {
-  catalogueBrandId: string | undefined;
-  catalogueItemId: string | undefined;
-  catalogueBrandName: string | undefined;
-  catalogueItemName: string | undefined;
-  catalogueBrandObj: any;
-  categories: string[];
-  itemsOfBrand: any;
+  catalogueBrandId?: string | undefined;
+  catalogueItemId?: string | undefined;
+  catalogueBrandName?: string | undefined;
+  catalogueItemName?: string | undefined;
+  catalogueBrandObj?: any;
+  categories?: string[];
+  itemsOfBrand?: any;
 }
 
 const BrandCatalogue: React.FC<CatalogueProps> = ({
@@ -42,6 +42,7 @@ const BrandCatalogue: React.FC<CatalogueProps> = ({
         {catalogueBrandId &&
           !catalogueItemId &&
           itemsOfBrand.length !== 0 &&
+          categories &&
           categories.length !== 0 &&
           itemsOfBrand.map((itemsOfCategory: [], index: number) => (
             <div key={index}>

@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { db } from '../../services/firebase';
 import dbApi from '../../utils/dbApi';
-import { doc, getDoc, collection, query, where, getDocs, orderBy, QuerySnapshot } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, getDocs, orderBy, QuerySnapshot, setDoc } from 'firebase/firestore';
+import AllCatalogue from './AllCatalogue';
 import BrandCatalogue from './BrandCatalogue';
 import ItemCatalogue from './ItemCatalogue';
 import PostsFeed from '../../components/postsFeed/PostsFeed';
+import BrandCard from '../../components/BrandCard';
+import { Brand } from '../../interfaces/interfaces';
 
 interface BreadcrumProps {
   catalogueBrandId: string | undefined;
@@ -47,18 +50,6 @@ const BreadcrumbNav: React.FC<BreadcrumProps> = ({
   );
 };
 
-interface BrandProps {
-  brand: string[];
-}
-
-const BrandCard: React.FC<BrandProps> = ({ brand }) => {
-  return (
-    <Link key={brand[0]} to={`/catalogue/${brand[0]}`}>
-      <div className='flex h-32 w-32 items-center justify-center rounded-2xl bg-lime-100'>{brand[1]}</div>
-    </Link>
-  );
-};
-
 function Catalogue() {
   const { catalogueBrandId } = useParams<{ catalogueBrandId: string }>();
   const { catalogueItemId } = useParams<{ catalogueItemId: string }>();
@@ -66,21 +57,21 @@ function Catalogue() {
   const [catalogueItemObj, setCatalogueItemObj] = useState<any>();
   const [catalogueBrandName, setCatalogueBrandName] = useState<string>();
   const [catalogueItemName, setCatalogueItemName] = useState<string>();
-  const [brands, setBrands] = useState<string[][]>([]);
+  const [brands, setBrands] = useState<Brand[]>([]);
   const [categories, setCategories] = useState<string[][]>([]);
   const [itemsOfBrand, setItemsOfBrand] = useState<string[][][]>([]);
 
   useEffect(() => {
     const fetchBrands = async () => {
-      const brandInfos = await getBrandsIdAndName();
+      const brandInfos = await getBrands();
       setBrands(brandInfos);
     };
     fetchBrands();
   }, []);
 
   useEffect(() => {
-    const currentBrand = brands?.find((brand) => brand[0] === catalogueBrandId);
-    const currentBrandName = currentBrand && currentBrand[1];
+    const currentBrand = brands?.find((brand) => brand.brandId === catalogueBrandId);
+    const currentBrandName = currentBrand && currentBrand.name;
     setCatalogueBrandName(currentBrandName);
     catalogueBrandId && getCatalogueBrandObj(catalogueBrandId);
   }, [brands, catalogueBrandId]);
@@ -147,16 +138,12 @@ function Catalogue() {
     itemDocData && setCatalogueItemObj(itemDocData);
   };
 
-  const getBrandsIdAndName = async (): Promise<string[][]> => {
+  const getBrands = async (): Promise<Brand[]> => {
     const querySnapshot = await getDocs(collection(db, 'brands'));
-    const documents: string[][] = [];
+    const documents: Brand[] = [];
     querySnapshot.forEach((doc) => {
-      const docInfo = [];
-      docInfo.push(doc.id);
-      if (doc.data() && doc.data().name) {
-        docInfo.push(doc.data().name);
-      }
-      documents.push(docInfo);
+      const newDoc = { ...doc.data(), brandId: doc.id };
+      documents.push(newDoc as Brand);
     });
     return documents;
   };
@@ -206,24 +193,26 @@ function Catalogue() {
 
   return (
     <main
-      className='flex min-h-[calc(100vh-64px)] flex-col items-center bg-fixed p-10'
+      className='flex min-h-[calc(100vh-64px)] flex-col items-center bg-fixed px-10 px-36 py-10 sm:px-0'
       style={{
         backgroundImage:
           'linear-gradient(#BEEFCE 1px, transparent 1px), linear-gradient(to right, #BEEFCE 1px, #F6F6F9 1px)',
         backgroundSize: '20px 20px',
       }}
     >
-      <h1 className='mb-10 text-center text-7xl'>Find peoples' favorite!</h1>
+      <h1 className='mb-10 text-center text-7xl'>Discover peoples' favorites!</h1>
       <BreadcrumbNav
         catalogueBrandId={catalogueBrandId}
         catalogueItemId={catalogueItemId}
         catalogueBrandName={catalogueBrandName}
         catalogueItemName={catalogueItemName}
       />
-      <div className='flex flex-col items-center'>
-        <div className='grid grid-cols-3 grid-rows-3 gap-4'>
-          {!catalogueBrandId && !catalogueItemId && brands.map((brand) => <BrandCard brand={brand} />)}
-        </div>
+      <div className='flex w-full flex-col items-center'>
+        {!catalogueBrandId && !catalogueItemId && (
+          <AllCatalogue brands={brands} catalogueBrandId={catalogueBrandId} catalogueItemId={catalogueItemId} />
+        )}
+        {catalogueBrandId && !catalogueItemId && <BrandCatalogue />}
+        {catalogueBrandId && catalogueItemId && <ItemCatalogue />}
         {catalogueBrandId && <div className='text-3xl'>{catalogueBrandName}</div>}
         {catalogueBrandId && catalogueBrandObj?.averageRating && (
           <div>
