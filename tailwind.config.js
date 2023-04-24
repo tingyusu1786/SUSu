@@ -10,6 +10,10 @@ module.exports = {
         tpReg: ['tp-reg', 'sans-serif'],
         tpLight: ['tp-light', 'sans-serif'],
       },
+      animation: {
+        wave: 'wave 1.5s linear infinite',
+        arrow: 'arrow 1s ease-out infinite',
+      },
       keyframes: {
         wave: {
           from: {
@@ -31,10 +35,6 @@ module.exports = {
           },
         },
       },
-    },
-    animation: {
-      wave: 'wave 1.5s linear infinite',
-      arrow: 'arrow 1s ease-out infinite',
     },
     screens: {
       xl: { max: '1279px' },
