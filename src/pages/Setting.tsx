@@ -26,6 +26,7 @@ import { useState, useEffect, ChangeEvent, KeyboardEvent, useRef } from 'react';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
 import { User } from '../interfaces/interfaces';
 import { updateUserName, updateUserPhoto } from '../components/auth/authSlice';
+import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 
 function Setting() {
   const dispatch = useAppDispatch();
@@ -40,6 +41,7 @@ function Setting() {
     status: profileUser?.status || '',
   });
   const [file, setFile] = useState<File | null>(null);
+  const [imgPreview, setImgPreview] = useState<string>();
 
   useEffect(() => {
     if (currentUserId === null) return;
@@ -56,6 +58,24 @@ function Setting() {
     }
     setInputs({ name: profileUser?.name, status: profileUser?.status || '' });
   }, [profileUser]);
+
+  useEffect(() => {
+    if (!file) {
+      setImgPreview(undefined);
+      return;
+    }
+
+    const objectUrl = URL.createObjectURL(file);
+    setImgPreview(objectUrl);
+
+    // free memory when ever this component is unmounted
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [file]);
+
+  const handleFileInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files) return;
+    setFile(event.target.files[0]);
+  };
 
   const updatePhoto = async () => {
     if (currentAuthUser === null || file === null || !currentUserId) return;
@@ -106,11 +126,6 @@ function Setting() {
     return profileUserData;
   };
 
-  const handleFileInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    if (!event.target.files) return;
-    setFile(event.target.files[0]);
-  };
-
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const key = e.target.name;
     switch (key) {
@@ -144,46 +159,64 @@ function Setting() {
     return <div>loading...</div>;
   }
   return (
-    <div className='flex flex-col items-center justify-center'>
-      {/*<div className='text-3xl'>Setting</div>*/}
-      <button>
-        <Link to={`/profile/${currentUserId}`} className='text-3xl'>
-          back to profile
-        </Link>
-      </button>
-      <div className='flex flex-col items-center'>
-        <div className='text-sm text-gray-400'>{profileUser.email}</div>
-        <div>
+    <main className='bg-boxes-diag relative min-h-[calc(100vh-64px)] bg-fixed p-10'>
+      <h1 className='mb-6 mt-10 text-center text-3xl'>Edit Profile</h1>
+      <Link to={`/profile/${currentUserId}`} className='group absolute left-10 top-10 flex items-start gap-2 text-lg '>
+        <ArrowLeftIcon className='w-6 group-hover:animate-arrowLeft' />
+        back to profile
+      </Link>
+      <div className='mx-auto grid max-w-[960px] grid-cols-[30%_70%] grid-rows-[auto_1fr_1fr_2fr] items-center gap-4'>
+        <label className='group relative col-span-2 cursor-pointer justify-self-center'>
           <img
-            className='inline-block h-32 w-32 rounded-full object-cover'
-            src={currentUserphotoURL}
+            className='h-32 w-32 rounded-full border-4 border-solid border-neutral-900 object-cover group-hover:border-green-400'
+            src={file ? imgPreview : currentUserphotoURL}
             alt={currentUserName || ''}
           />
-          <label>
-            upload new image
-            <input
-              type='file'
-              className='box-border rounded-lg border-2 border-solid border-lime-800 px-2'
-              onChange={handleFileInputChange}
-            />
-          </label>
-          <button onClick={updatePhoto}>confirm</button>
-        </div>
-        <br />
-        <div>
-          <input name='name' type='text' className='text-2xl' value={inputs.name} onChange={handleInputChange} />
-          <button className='box-border rounded-lg border-2 border-solid border-lime-800 px-2' onClick={updateName}>
-            confirm
-          </button>
-        </div>
-        <div>
-          <input name='status' type='text' value={inputs.status} onChange={handleInputChange} />
-          <button className='box-border rounded-lg border-2 border-solid border-lime-800 px-2' onClick={updateStatus}>
-            confirm
-          </button>
-        </div>
+          <div className='absolute bottom-1 left-24 w-40 rounded-full border-2 border-solid border-gray-400 bg-white pt-1 text-center'>
+            {file ? 'cancel' : 'Upload new pic'}
+          </div>
+          <input
+            type='file'
+            className='box-border hidden rounded-lg border-2 border-solid border-lime-800 px-2'
+            onChange={handleFileInputChange}
+          />
+        </label>
+        <div className='justify-self-end'>nick name</div>
+        <input
+          name='name'
+          type='text'
+          className='h-10 w-full rounded-full border-2 border-solid border-gray-400 p-3 focus:outline-green-400'
+          value={inputs.name}
+          onChange={handleInputChange}
+        />
+        <div className='justify-self-end'>status</div>
+        <input
+          name='status'
+          type='text'
+          className='h-10 w-full rounded-full border-2 border-solid border-gray-400 p-3 focus:outline-green-400'
+          value={inputs.status}
+          onChange={handleInputChange}
+        />
+        <button
+          className='button col-span-2 h-10 justify-self-stretch rounded-full bg-green-300 px-3 hover:bg-green-400'
+          onClick={() => {
+            updatePhoto();
+            updateName();
+            updateStatus();
+          }}
+        >
+          CONFIRM
+        </button>
       </div>
-    </div>
+
+      {/*<button onClick={updatePhoto}>confirm photo</button>
+      <button className='box-border rounded-lg border-2 border-solid border-lime-800 px-2' onClick={updateName}>
+        confirm name
+      </button>
+      <button className='box-border rounded-lg border-2 border-solid border-lime-800 px-2' onClick={updateStatus}>
+        confirm status
+      </button>*/}
+    </main>
   );
 }
 

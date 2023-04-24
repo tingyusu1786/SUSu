@@ -13,6 +13,7 @@ module.exports = {
       animation: {
         wave: 'wave 1.5s linear infinite',
         arrow: 'arrow 1s ease-out infinite',
+        arrowLeft: 'arrowLeft 1s ease-out infinite',
       },
       keyframes: {
         wave: {
@@ -29,6 +30,17 @@ module.exports = {
           },
           '50%': {
             transform: 'translateX(10px)',
+          },
+          '100%': {
+            transform: 'translateX(0px)',
+          },
+        },
+        arrowLeft: {
+          '0%': {
+            transform: 'translateX(0px)',
+          },
+          '50%': {
+            transform: 'translateX(-10px)',
           },
           '100%': {
             transform: 'translateX(0px)',

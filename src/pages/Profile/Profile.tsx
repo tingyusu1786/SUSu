@@ -221,7 +221,7 @@ function Profile() {
   }
 
   return (
-    <main className='bg-boxes relative z-0 min-h-[calc(100vh-64px)] p-10'>
+    <main className='bg-boxes-diag relative min-h-[calc(100vh-64px)] bg-fixed p-10'>
       {currentUserId === profileUserId && (
         <Link to={`/setting/${currentUserId}`} className='rounded bg-gray-600 text-white'>
           setting
@@ -231,10 +231,9 @@ function Profile() {
       <div className='flex flex-col items-center'>
         <img className='h-32 w-32 rounded-full object-cover' src={profileUser.photoURL} alt={profileUser.name} />
         {profileUser.status && (
-          <div>
-            <span>🎙️ </span>
-            <span>{profileUser.status}</span>
-          </div>
+          <span className=' top-8 rounded-full border-2 border-solid border-neutral-900 bg-[#F5F3EA] text-center text-sm'>
+            {profileUser.status}
+          </span>
         )}
         <h3 className='text-2xl'>This is {profileUser.name}'s Page</h3>
         <div className='text-sm text-gray-400'>{profileUser.email}</div>
