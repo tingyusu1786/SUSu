@@ -40,11 +40,11 @@ function Profile() {
   const [usersFollowers, setUsersFollowers] = useState<{ id: string; name: string; photoURL: string }[]>([]);
   const [profileUserPosts, setProfileUserPosts] = useState<any[]>([]);
   const { profileUserId } = useParams<{ profileUserId: string }>();
-  const [tab, setTab] = useState<'posts' | 'dashboard' | 'followers' | 'following'>('posts');
+  const [tab, setTab] = useState<'LOGS' | 'DASHBOARD' | 'FOLLOWING' | 'FOLLOWERS'>('LOGS');
 
   // set default tab = dashboard
   useEffect(() => {
-    setTab('dashboard');
+    setTab('DASHBOARD');
   }, [profileUserId]);
 
   useEffect(() => {
@@ -220,29 +220,47 @@ function Profile() {
     return <div>user not found ~~~ see these users to follow:</div>;
   }
 
+  // const date = post.timeCreated?.toDate();
+  // const formattedTime = date?.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+  // const formattedDate = date?.toLocaleDateString('en-US');
+  // const formattedDateTime = `${formattedDate} ${formattedTime}`;
+
   return (
     <main className='bg-boxes-diag relative min-h-[calc(100vh-64px)] bg-fixed p-10'>
       {currentUserId === profileUserId && (
-        <Link to={`/setting/${currentUserId}`} className='rounded bg-gray-600 text-white'>
-          setting
+        <Link
+          to={`/setting/${currentUserId}`}
+          className='absolute left-1/2 top-3 -translate-x-1/2 opacity-60 transition-all duration-100 hover:opacity-100'
+        >
+          edit profile
         </Link>
       )}
       {/*personal data*/}
-      <div className='flex flex-col items-center'>
-        <img className='h-32 w-32 rounded-full object-cover' src={profileUser.photoURL} alt={profileUser.name} />
+      <div className='flex flex-col items-center gap-4'>
+        <img
+          className='h-32 w-32 rounded-full border-4 border-solid border-neutral-900 object-cover'
+          src={profileUser.photoURL}
+          alt={profileUser.name}
+        />
         {profileUser.status && (
-          <span className=' top-8 rounded-full border-2 border-solid border-neutral-900 bg-[#F5F3EA] text-center text-sm'>
+          <span className='-mt-8 w-max -skew-y-6 rounded-full bg-white bg-gradient-to-r from-violet-500 to-fuchsia-500 px-3 pt-1 text-center text-white'>
             {profileUser.status}
           </span>
         )}
-        <h3 className='text-2xl'>This is {profileUser.name}'s Page</h3>
-        <div className='text-sm text-gray-400'>{profileUser.email}</div>
-        <div>建立時間：{profileUser.timeCreated?.toDate().toLocaleString()}</div>
+        <h3 className='text-3xl'>{profileUser.name}</h3>
+        <div className='-mt-4 text-sm text-gray-400'>{profileUser.email}</div>
+        <div>
+          member from{' '}
+          {profileUser.timeCreated
+            ?.toDate()
+            .toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })
+            .replace(/\//g, '/')}
+        </div>
 
         {profileUserId !== currentUserId && isSignedIn && (
           <button
-            className={`box-border rounded-lg border-2 border-solid px-2 ${
-              isFollowing ? 'border-lime-800' : 'border-white bg-lime-800 text-white'
+            className={`button w-32 rounded-full border-2 border-solid border-neutral-900 px-2 ${
+              isFollowing ? ' bg-gray-100 ' : 'bg-green-400 '
             }`}
             onClick={handleFollow}
           >
@@ -250,60 +268,43 @@ function Profile() {
           </button>
         )}
       </div>
-      <div className='flex gap-3 text-center'>
-        <button
-          onClick={() => {
-            setTab('posts');
-          }}
-          className={tab === 'posts' ? 'font-bold text-blue-600' : ''}
-        >
-          posts
-        </button>
-        <button
-          onClick={() => {
-            setTab('dashboard');
-          }}
-          className={tab === 'dashboard' ? 'font-bold text-blue-600' : ''}
-        >
-          dashboard
-        </button>
-
-        <button
-          onClick={() => {
-            setTab('following');
-          }}
-          className={tab === 'following' ? 'font-bold text-blue-600' : ''}
-        >
-          following<span className='font-bold'> {profileUser.following?.length || 0}</span>
-        </button>
-        <button
-          onClick={() => {
-            setTab('followers');
-          }}
-          className={tab === 'followers' ? 'font-bold text-blue-600' : ''}
-        >
-          followers
-          <span className='font-bold'> {profileUser.followers?.length || 0}</span>
-        </button>
+      <div className='my-5 grid h-10 w-full grid-flow-col justify-stretch'>
+        {['LOGS', 'DASHBOARD', 'FOLLOWING', 'FOLLOWERS'].map((tabName) => (
+          <button
+            key={tabName}
+            onClick={() => {
+              setTab(tabName as 'LOGS' | 'DASHBOARD' | 'FOLLOWING' | 'FOLLOWERS');
+            }}
+            className={`rounded-t-full border-2  border-solid border-neutral-900 ${
+              tab === tabName ? 'grow border-b-0' : 'text-gray-400'
+            }`}
+          >
+            {tabName === 'FOLLOWING' ? (
+              <>
+                FOLLOWING
+                <span className=''> ({profileUser.following?.length || 0})</span>
+              </>
+            ) : tabName === 'FOLLOWERS' ? (
+              <>
+                FOLLOWERS
+                <span className=''> ({profileUser.followers?.length || 0})</span>
+              </>
+            ) : (
+              tabName
+            )}
+          </button>
+        ))}
       </div>
-      <div className='flex gap-5'>
-        <div>
-          {tab === 'posts' && profileUserId && (
-            <PostsSection profileUserPosts={profileUserPosts} profileUserId={profileUserId} />
-          )}
-          {tab === 'dashboard' && (
-            <DashboardSection
-              // startDate={startDate}
-              // endDate={endDate}
-              // values={values}
-              profileUserPosts={profileUserPosts}
-            />
-          )}
-          {tab === 'following' &&
-            profileUser?.following?.map((followingId) => <NameCard userId={followingId} key={followingId} />)}
-          {tab === 'followers' &&
-            profileUser?.followers?.map((followerId) => <NameCard userId={followerId} key={followerId} />)}
-        </div>
+
+      <div>
+        {tab === 'LOGS' && profileUserId && (
+          <PostsSection profileUserPosts={profileUserPosts} profileUserId={profileUserId} />
+        )}
+        {tab === 'DASHBOARD' && <DashboardSection profileUserPosts={profileUserPosts} />}
+        {tab === 'FOLLOWING' &&
+          profileUser?.following?.map((followingId) => <NameCard userId={followingId} key={followingId} />)}
+        {tab === 'FOLLOWERS' &&
+          profileUser?.followers?.map((followerId) => <NameCard userId={followerId} key={followerId} />)}
       </div>
     </main>
   );
