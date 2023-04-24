@@ -27,6 +27,8 @@ import { useAppSelector, useAppDispatch } from '../app/hooks';
 import { User } from '../interfaces/interfaces';
 import { updateUserName, updateUserPhoto } from '../components/auth/authSlice';
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 function Setting() {
   const dispatch = useAppDispatch();
@@ -42,6 +44,7 @@ function Setting() {
   });
   const [file, setFile] = useState<File | null>(null);
   const [imgPreview, setImgPreview] = useState<string>();
+  const MySwal = withReactContent(Swal);
 
   useEffect(() => {
     if (currentUserId === null) return;
@@ -149,6 +152,21 @@ function Setting() {
     }
   };
 
+  const handleConfirmAll = async () => {
+    try {
+      await updatePhoto();
+      await updateName();
+      await updateStatus();
+      MySwal.fire({ title: <p>Profile updated!</p>, icon: 'success', confirmButtonColor: '#4ade80' });
+    } catch {
+      MySwal.fire({
+        title: <p>Something went wrong ☹ please try again</p>,
+        icon: 'error',
+        confirmButtonColor: '#b91c1c',
+      });
+    }
+  };
+
   if (currentUserId !== settingUserId) {
     return <div>you don't have access to this page</div>;
   }
@@ -199,23 +217,11 @@ function Setting() {
         />
         <button
           className='button col-span-2 h-10 justify-self-stretch rounded-full bg-green-300 px-3 hover:bg-green-400'
-          onClick={() => {
-            updatePhoto();
-            updateName();
-            updateStatus();
-          }}
+          onClick={handleConfirmAll}
         >
           CONFIRM
         </button>
       </div>
-
-      {/*<button onClick={updatePhoto}>confirm photo</button>
-      <button className='box-border rounded-lg border-2 border-solid border-lime-800 px-2' onClick={updateName}>
-        confirm name
-      </button>
-      <button className='box-border rounded-lg border-2 border-solid border-lime-800 px-2' onClick={updateStatus}>
-        confirm status
-      </button>*/}
     </main>
   );
 }
