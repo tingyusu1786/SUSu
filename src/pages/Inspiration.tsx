@@ -6,6 +6,10 @@ import { addAllBrands } from '../app/infoSlice';
 import { db } from '../services/firebase';
 import { collection, doc, getDoc, getDocs, query, where, DocumentData } from 'firebase/firestore';
 import Button from '../components/Button';
+import { Star_10, Line_8, Shine_4, Sun_16 } from '../images/star_10';
+import { StarIcon as SolidStar } from '@heroicons/react/24/solid';
+import { HandRaisedIcon, FaceFrownIcon } from '@heroicons/react/24/outline';
+import Shaker from '../images/shaker.gif';
 
 function Inspiration() {
   type RandomItem = {
@@ -21,12 +25,13 @@ function Inspiration() {
   const allBrandsInfo = useAppSelector((state) => state.info.brands);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [selectedRating, setSelectedRating] = useState<number>();
-  const [showBrands, setShowBrands] = useState(true);
-  const [showRatings, setShowRatings] = useState(true);
+  // const [showBrands, setShowBrands] = useState(true);
+  // const [showRatings, setShowRatings] = useState(true);
   const [randomItem, setRandomItem] = useState<RandomItem | null>();
   const [noItemMessage, setNoItemMessage] = useState<string>();
   const [isFinding, setIsFinding] = useState(false);
   const [currentLocation, setCurrentLocation] = useState<{ latitude: number; longitude: number }>();
+  const [showMap, setShowMap] = useState(true);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position) => {
@@ -132,13 +137,13 @@ function Inspiration() {
         break brandLoop;
       }
     }
-    !foundItem && setNoItemMessage('no item, try another brand or lower the rating');
+    !foundItem && setNoItemMessage('no item ☹ try another brand or lower the rating');
     setIsFinding(false);
   };
 
   return (
     <main
-      className='flex min-h-[calc(100vh-64px)] flex-col items-center bg-fixed p-10'
+      className='relative z-0 min-h-[calc(100vh-64px)] bg-fixed p-10'
       style={{
         backgroundImage:
           'linear-gradient(#BEEFCE 1px, transparent 1px), linear-gradient(to right, #BEEFCE 1px, #F6F6F9 1px)',
@@ -146,116 +151,174 @@ function Inspiration() {
       }}
     >
       <h1 className='mb-10 text-center text-7xl'>In the mood for something new?</h1>
-      <div className='flex max-w-3xl flex-col content-center'>
-        <div className='flex flex-col items-center justify-center'>
-          {/*<div
-            className='self-start font-bold'
-            onClick={() => {
-              selectedBrands.length === 0 && setShowBrands((prev) => !prev);
-            }}
-          >
-            篩選店家
-          </div>*/}
-          <div className={`flex flex-wrap justify-start gap-3 ${showBrands === false && 'hidden'}`}>
-            {Object.keys(allBrandsInfo).map((key) => (
-              <label
-                key={key}
-                className={`button cursor-pointer rounded-full border-2 border-solid border-neutral-900 px-2 pt-1 transition-all duration-100 hover:bg-amber-400 ${
-                  selectedBrands.includes(key) ? 'bg-amber-400' : 'bg-transparent'
-                } ${selectedBrands.length !== 0 && !selectedBrands.includes(key) && 'opacity-40'}`}
-              >
-                <input
-                  type='checkbox'
-                  name={key}
-                  checked={selectedBrands.includes(key)}
-                  onChange={handleBrandsChange}
-                  className='hidden'
-                />
-                <span className={``}>{allBrandsInfo[key].name}</span>
-              </label>
-            ))}
-            <span className='text-sm text-gray-400' onClick={() => setSelectedBrands([])}>
-              clear
-            </span>
-          </div>
-        </div>
-        <div className='flex flex-col items-center justify-center'>
-          {/*<div
-            className='font-bold'
-            onClick={() => {
-              !selectedRating && setShowRatings((prev) => !prev);
-            }}
-          >
-            篩選評分
-          </div>*/}
-          <div className={`flex gap-3 ${showRatings === false && 'hidden'}`}>
-            {[1, 2, 3, 4].map((num) => (
-              <label key={num}>
-                <input
-                  type='radio'
-                  name='rating'
-                  value={num}
-                  checked={selectedRating === num}
-                  onChange={handleRatingChange}
-                />
-                <span>
-                  {Array(num)
-                    .fill(0)
-                    .map((n) => '⭐️')}
-                  +
-                </span>
-              </label>
-            ))}
-            <span className='text-sm text-gray-400' onClick={() => setSelectedRating(undefined)}>
-              clear
-            </span>
-          </div>
-        </div>
-        <button
-          className='rounded bg-lime-300 px-2 font-heal'
-          onClick={() => getRandomItem(selectedBrands, selectedRating)}
+      <div className='mx-auto max-w-[960px]'>
+        <span className='mb-3 mr-3 inline-block before:mr-2 before:content-["✦"]'>filter some brands if you want</span>
+        <span
+          className={`cursor-pointer text-sm text-gray-400 ${selectedBrands.length > 0 ? 'inline-block' : 'hidden'}`}
+          onClick={() => setSelectedBrands([])}
         >
-          GO!
-        </button>
-        {isFinding && <div>choosing drinks for you~~~</div>}
-        {!isFinding && randomItem && (
-          <div className='flex flex-col items-center justify-center'>
-            <p>推薦你喝</p>
-            <Link to={`/catalogue/${randomItem.brandId}`}>
-              <p className='text-xl'>{randomItem.brand}</p>
-            </Link>
-            <span>的</span>
-            <Link to={`/catalogue/${randomItem.brandId}/${randomItem.itemId}`}>
-              <h1 className='text-3xl'>\ {randomItem.name} /</h1>
-            </Link>
-            {randomItem.averageRating && (
-              <p>
-                {randomItem.averageRating} / {randomItem.numRatings}
-              </p>
-            )}
-            {randomItem.price &&
-              Object.entries(randomItem.price).map((p) => (
-                <p key={p[0]}>
-                  {p[0]}: ${p[1]}
-                </p>
-              ))}
-            附近的店：
-            <iframe
-              width='640'
-              height='480'
-              style={{ border: 0, marginBottom: 5 }}
-              loading='lazy'
-              allowFullScreen
-              referrerPolicy='no-referrer-when-downgrade'
-              src={`https://www.google.com/maps/embed/v1/search?key=AIzaSyAyK3jgOTFT1B6-Vt85wxc_2aaGLUlU738
-                &q=${randomItem.brand}+nearby&language=en&center=${Number(currentLocation?.latitude)},${Number(
-                currentLocation?.longitude
-              )}&zoom=13`}
-            ></iframe>
-          </div>
-        )}
-        {!isFinding && noItemMessage && <div>{noItemMessage}</div>}
+          clear all brands
+        </span>
+        <div className='mb-10 flex flex-wrap items-center justify-start gap-3'>
+          {Object.keys(allBrandsInfo).map((key) => (
+            <label
+              key={key}
+              className={`button cursor-pointer rounded-full border-2 border-solid border-neutral-900 px-2 pt-1 transition-all duration-100 hover:bg-amber-400 ${
+                selectedBrands.includes(key) ? 'bg-amber-400' : 'bg-transparent'
+              } ${selectedBrands.length !== 0 && !selectedBrands.includes(key) && 'opacity-40'}`}
+            >
+              <input
+                type='checkbox'
+                name={key}
+                checked={selectedBrands.includes(key)}
+                onChange={handleBrandsChange}
+                className='hidden'
+              />
+              <span>{allBrandsInfo[key].name}</span>
+            </label>
+          ))}
+        </div>
+        <span className='mb-3 mr-3 inline-block before:mr-2 before:content-["✦"]'>
+          set the rating lower bound if you wish
+        </span>
+        <span
+          className={`cursor-pointer text-sm text-gray-400 ${selectedRating ? 'inline-block' : 'hidden'}`}
+          onClick={() => setSelectedRating(undefined)}
+        >
+          clear rating
+        </span>
+        <div className={`mb-4 flex gap-3 `}>
+          {[1, 2, 3, 4].map((num) => (
+            <label
+              key={num}
+              className={`button cursor-pointer rounded-full border-2 border-solid border-neutral-900 px-2 pt-1 transition-all duration-100 hover:bg-amber-400 ${
+                selectedRating === num ? ' bg-amber-400 ' : 'bg-transparent'
+              } ${selectedRating !== undefined && selectedRating !== num && 'opacity-40'}`}
+            >
+              <input
+                className='hidden'
+                type='radio'
+                name='rating'
+                value={num}
+                checked={selectedRating === num}
+                onChange={handleRatingChange}
+              />
+              <span className='flex items-center gap-1'>
+                <SolidStar className='mb-1 w-5 text-neutral-900' />
+                {num}+
+              </span>
+            </label>
+          ))}
+        </div>
+        {/*<button
+          className='mx-auto h-48 w-48 rounded-full bg-gradient-to-r from-green-400 to-sky-300 bg-clip-text px-2 text-3xl text-transparent hover:animate-arrow hover:border-solid hover:border-none hover:bg-clip-border hover:text-white'
+          // style={{ WebkitTextFillColor: 'transparent' }}
+          onClick={() => getRandomItem(selectedBrands, selectedRating)}
+        >*/}
+        <div className='flex w-full justify-center'>
+          <button
+            className='mx-auto h-40 w-40 rounded-full bg-gradient-to-r from-green-400 to-sky-300 px-2 text-2xl  text-white transition-all duration-300 hover:rotate-45 hover:from-violet-500 hover:to-fuchsia-500 '
+            // style={{ WebkitTextFillColor: 'transparent' }}
+            onClick={() => getRandomItem(selectedBrands, selectedRating)}
+          >
+            I'm feeling lucky :)
+          </button>
+        </div>
       </div>
+      {isFinding && (
+        <div>
+          {/*<img src={Shaker} alt='' />*/}
+          loading...
+        </div>
+      )}
+      {!isFinding && randomItem && (
+        <div className='mt-10 flex flex-col items-center '>
+          <div className='mb-10 flex w-full justify-center'>
+            <HandRaisedIcon className='w-32 rotate-[225deg] ' />
+            <div
+              className='flex w-1/3 flex-col items-center justify-center bg-gradient-to-br from-[#8EC5FC] to-[#E0C3FC]'
+              style={{
+                WebkitMask:
+                  'conic-gradient(from 45deg at left,#0000,#000 1deg 89deg,#0000 90deg) left/51% 84.00px repeat-y, conic-gradient(from -135deg at right,#0000,#000 1deg 89deg,#0000 90deg) right/51% 84.00px repeat-y',
+              }}
+            >
+              <span>we picked </span>
+              <div className='flex items-end'>
+                <Link to={`/catalogue/${randomItem.brandId}`}>
+                  <span className='text-2xl'>{randomItem.brand}</span>
+                </Link>
+                <span className='mr-2 text-2xl'>'s</span>
+                <Link to={`/catalogue/${randomItem.brandId}/${randomItem.itemId}`}>
+                  <span className='mr-1 text-2xl'>{randomItem.name}</span>
+                </Link>
+                {randomItem.averageRating && (
+                  <div className='flex items-center'>
+                    <SolidStar className='mb-1 w-5 text-amber-400' />
+                    <span className=''>
+                      &nbsp;{randomItem.averageRating} ({randomItem.numRatings})
+                    </span>
+                  </div>
+                )}
+              </div>
+              <span> for you!</span>
+              <div className='flex items-center gap-3'>
+                {randomItem.price &&
+                  Object.entries(randomItem.price).map((p) => (
+                    <div key={p[0]} className='inline-block flex items-center justify-start gap-1'>
+                      <div className='flex h-6 w-6 items-center justify-center rounded-full border-2 border-solid border-neutral-900 bg-green-400 pt-1 text-sm'>
+                        {p[0]}
+                      </div>
+                      <span className='mt-1 before:content-["$"]'>{p[1] as number}</span>
+                    </div>
+                  ))}
+              </div>
+            </div>
+            <HandRaisedIcon className='w-32 rotate-[135deg] -scale-x-100 ' />
+          </div>
+          <div
+            className={`flex h-10 w-full max-w-[960px] items-center justify-between gap-2 rounded-t-md border-4 border-solid border-neutral-900 bg-[#F5F3EA] px-5 ${
+              !showMap && 'rounded-b-md'
+            }`}
+          >
+            <div className=''>Check out the stores near you</div>
+            <span
+              onClick={() => {
+                setShowMap((prev) => !prev);
+              }}
+              className={`cursor-pointer ${showMap && 'rotate-180'} transition-all duration-200`}
+            >
+              ▲
+            </span>
+          </div>
+          <iframe
+            className={`h-[480px] h-full w-full max-w-[960px] rounded-b-md border-4 border-t-0 border-solid border-neutral-900 ${
+              !showMap && 'hidden'
+            }`}
+            // style={{ border: 0, marginBottom: 5 }}
+            loading='lazy'
+            allowFullScreen
+            referrerPolicy='no-referrer-when-downgrade'
+            src={`https://www.google.com/maps/embed/v1/search?key=AIzaSyAyK3jgOTFT1B6-Vt85wxc_2aaGLUlU738
+                &q=${randomItem.brand}+nearby&language=en&center=${Number(currentLocation?.latitude)},${Number(
+              currentLocation?.longitude
+            )}&zoom=13`}
+          ></iframe>
+          <div className='absolute bottom-[200px] left-40 -z-10'>
+            <Line_8 />
+          </div>
+          <div className='absolute bottom-[500px] right-60 -z-10'>
+            <Shine_4 />
+          </div>
+          <div className='absolute left-80 top-[200px] -z-10'>
+            <Sun_16 />
+          </div>
+        </div>
+      )}
+      {!isFinding && noItemMessage && <div className='mt-10 w-full text-center text-lg'>{noItemMessage}</div>}
+
+      {/*<Star_10 />
+      <Line_8 />
+      <Shine_4 />*/}
     </main>
   );
 }
