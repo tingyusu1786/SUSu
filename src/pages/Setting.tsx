@@ -203,6 +203,8 @@ function Setting() {
         <input
           name='name'
           type='text'
+          maxLength={20}
+          placeholder='max 20 characters'
           className='h-10 w-full rounded-full border-2 border-solid border-gray-400 p-3 focus:outline-green-400'
           value={inputs.name}
           onChange={handleInputChange}
@@ -211,6 +213,8 @@ function Setting() {
         <input
           name='status'
           type='text'
+          maxLength={30}
+          placeholder='max 30 characters'
           className='h-10 w-full rounded-full border-2 border-solid border-gray-400 p-3 focus:outline-green-400'
           value={inputs.status}
           onChange={handleInputChange}

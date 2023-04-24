@@ -20,6 +20,8 @@ import dbApi from '../utils/dbApi';
 import authApi from '../utils/authApi';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { BellIcon } from '@heroicons/react/24/solid';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 function NotificationsListener() {
   const dispatch = useAppDispatch();
@@ -141,6 +143,7 @@ function Header() {
   const navigate = useNavigate();
   const [searchShown, setSearchShown] = useState(false);
   const [notificationShown, setNotificationShown] = useState(false);
+  const MySwal = withReactContent(Swal);
 
   function handleRedirect() {
     navigate('/search');
@@ -152,41 +155,59 @@ function Header() {
     search(searchQuery);
   };
 
+  const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    didOpen: (toast) => {
+      toast.addEventListener('mouseenter', Swal.stopTimer);
+      toast.addEventListener('mouseleave', Swal.resumeTimer);
+    },
+  });
+
   const handleSignOut = async () => {
     try {
       await authApi.signOut();
       dispatch(signOutStart());
-      alert('sign out successful!');
       dispatch(signOutSuccess());
+      Toast.fire({
+        icon: 'success',
+        title: 'signed out. see u next time 👋',
+      });
     } catch (error: any) {
-      alert(`Error logging out. (${error})`);
+      Toast.fire({
+        icon: 'error',
+        title: 'something went wrong...',
+      });
       dispatch(signOutFail(error));
     }
   };
 
-  function useScrollDirection() {
-    const [scrollDirection, setScrollDirection] = useState<'down' | 'up' | null>(null);
+  // function useScrollDirection() {
+  //   const [scrollDirection, setScrollDirection] = useState<'down' | 'up' | null>(null);
 
-    useEffect(() => {
-      let lastScrollY = window.pageYOffset;
+  //   useEffect(() => {
+  //     let lastScrollY = window.pageYOffset;
 
-      const updateScrollDirection = () => {
-        const scrollY = window.pageYOffset;
-        const direction = scrollY > lastScrollY ? 'down' : 'up';
-        if (direction !== scrollDirection && (scrollY - lastScrollY > 10 || scrollY - lastScrollY < -10)) {
-          setScrollDirection(direction);
-        }
-        lastScrollY = scrollY > 0 ? scrollY : 0;
-      };
-      window.addEventListener('scroll', updateScrollDirection); // add event listener
-      return () => {
-        window.removeEventListener('scroll', updateScrollDirection); // clean up
-      };
-    }, [scrollDirection]);
+  //     const updateScrollDirection = () => {
+  //       const scrollY = window.pageYOffset;
+  //       const direction = scrollY > lastScrollY ? 'down' : 'up';
+  //       if (direction !== scrollDirection && (scrollY - lastScrollY > 10 || scrollY - lastScrollY < -10)) {
+  //         setScrollDirection(direction);
+  //       }
+  //       lastScrollY = scrollY > 0 ? scrollY : 0;
+  //     };
+  //     window.addEventListener('scroll', updateScrollDirection); // add event listener
+  //     return () => {
+  //       window.removeEventListener('scroll', updateScrollDirection); // clean up
+  //     };
+  //   }, [scrollDirection]);
 
-    return scrollDirection;
-  }
-  const scrollDirection = useScrollDirection();
+  //   return scrollDirection;
+  // }
+  // const scrollDirection = useScrollDirection();
 
   const navLi = [
     { name: 'DRINK LOGS', to: '/posts' },
@@ -260,8 +281,9 @@ function Header() {
       {!isSignedIn && (
         <div onClick={() => dispatch(openAuthWindow())} className='group relative cursor-pointer '>
           <span>sign in</span>
-          <div className='absolute -right-1/2 top-8 hidden min-w-[192px] rounded-full border-2 border-solid border-neutral-900 bg-[#F5F3EA] p-2 text-center text-sm group-hover:block'>
-            sign in to see your profile and notifications!
+          <div className='absolute -right-1/2 top-8 hidden w-[200px] rounded-full border-2 border-solid border-neutral-900 bg-[#F5F3EA] p-2 text-center text-sm group-hover:block'>
+            sign in to see your
+            <br /> profile and notifications!
           </div>
         </div>
       )}
@@ -269,22 +291,24 @@ function Header() {
       {isSignedIn && (
         <div className='flex items-center gap-3'>
           <div className='text-center'>{`Hi ${currentUserName}`}</div>
-
-          <Link to={`/profile/${userId}`} className=''>
+          <Link to={`/profile/${userId}`} className='group relative'>
             <img
               src={currentUserphotoURL}
               alt=''
-              className='box-content h-10 w-10 rounded-full border-4 border-solid border-neutral-900 object-cover transition-all duration-100 hover:border-green-400 '
+              className='box-content h-10 min-w-[40px] rounded-full border-2 border-solid border-neutral-900 object-cover transition-all duration-100 hover:border-green-400 '
             />
+            <div className='absolute -right-1/2 top-11 hidden w-[120px] rounded-full border-2 border-solid border-neutral-900 bg-[#F5F3EA] p-2 text-center text-sm group-hover:block'>
+              your profile
+            </div>
           </Link>
           <BellIcon
-            className='h-5 w-5 cursor-pointer text-neutral-900 transition-all duration-150 hover:scale-125'
+            className='h-5 w-5 cursor-pointer text-neutral-900 transition-all duration-150 hover:scale-110'
             onClick={() => {
               setNotificationShown((prev) => !prev);
             }}
           />
           {notificationShown && <NotificationsList />}
-          <div onClick={handleSignOut} className='cursor-pointer scroll-px-2.5'>
+          <div onClick={handleSignOut} className='cursor-pointer scroll-px-2.5 text-gray-500'>
             sign out
           </div>
         </div>
