@@ -112,7 +112,7 @@ function Search() {
         backgroundSize: '20px 20px',
       }}
     >
-      <div className='text-center text-7xl'>Here are what you want</div>
+      <div className='text-center text-7xl'>I hop you find what you want</div>
       {/*<RefinementList attribute={"name"} />*/}
       <nav className='flex gap-3'>
         {tabs.map((tabName) => (

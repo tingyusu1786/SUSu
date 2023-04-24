@@ -142,14 +142,7 @@ function Inspiration() {
   };
 
   return (
-    <main
-      className='relative z-0 min-h-[calc(100vh-64px)] bg-fixed p-10'
-      style={{
-        backgroundImage:
-          'linear-gradient(#BEEFCE 1px, transparent 1px), linear-gradient(to right, #BEEFCE 1px, #F6F6F9 1px)',
-        backgroundSize: '20px 20px',
-      }}
-    >
+    <main className='bg-boxes relative z-0 min-h-[calc(100vh-64px)] bg-fixed p-10'>
       <h1 className='mb-10 text-center text-7xl'>In the mood for something new?</h1>
       <div className='mx-auto max-w-[960px]'>
         <span className='mb-3 mr-3 inline-block before:mr-2 before:content-["✦"]'>filter some brands if you want</span>
@@ -231,6 +224,7 @@ function Inspiration() {
           loading...
         </div>
       )}
+      <div className='h-6 w-full bg-[url("https://static.thenounproject.com/png/924541-200.png")]'></div>
       {!isFinding && randomItem && (
         <div className='mt-10 flex flex-col items-center '>
           <div className='mb-10 flex w-full justify-center'>
@@ -291,7 +285,7 @@ function Inspiration() {
             </span>
           </div>
           <iframe
-            className={`h-[480px] h-full w-full max-w-[960px] rounded-b-md border-4 border-t-0 border-solid border-neutral-900 ${
+            className={`h-[480px] w-full max-w-[960px] rounded-b-md border-4 border-t-0 border-solid border-neutral-900 ${
               !showMap && 'hidden'
             }`}
             // style={{ border: 0, marginBottom: 5 }}

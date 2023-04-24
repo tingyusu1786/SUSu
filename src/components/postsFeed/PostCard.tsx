@@ -5,7 +5,8 @@ import { Post } from '../../interfaces/interfaces';
 import CommentInputSection from './CommentInputSection';
 import CommentDiv from './CommentDiv';
 import Button from '../../components/Button';
-import { TrashIcon, GlobeAsiaAustraliaIcon, UserIcon } from '@heroicons/react/24/solid';
+import { TrashIcon, GlobeAsiaAustraliaIcon, UserIcon, HeartIcon as SolidHeart } from '@heroicons/react/24/solid';
+import { HeartIcon as LineHeart } from '@heroicons/react/24/outline';
 
 interface PostProps {
   post: Post;
@@ -46,18 +47,19 @@ const PostCard: React.FC<PostProps> = ({
 
   return (
     <div
-      className=' flex w-full flex-col flex-nowrap rounded-md border-[3px] border-solid border-neutral-900 bg-neutral-100 shadow-[4px_4px_#171717]'
-      // hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[8px_8px_#171717]
+      className='relative w-full rounded-md border-[3px] border-solid border-neutral-900 bg-neutral-100 shadow-[4px_4px_#171717]'
       key={index}
     >
-      <div className='flex h-10 flex-nowrap items-center justify-between border-b-[3px] border-solid border-neutral-900  px-2 text-base'>
-        <Link to={`/profile/${post.authorId}`} className='flex items-center'>
+      <div className='flex h-12 flex-nowrap items-center justify-between border-b-[3px] border-solid border-neutral-900 px-2'>
+        <Link to={`/profile/${post.authorId}`} className='group flex items-center'>
           <img
             src={post.authorPhoto}
             alt={post.authorName}
-            className='mr-1 inline-block h-6 w-6 rounded-full object-cover'
+            className='mr-2 inline-block h-8 w-8 rounded-full border-2 border-solid border-neutral-900 object-cover transition-all'
           />
-          <span className='mt-px'>{post.authorName}</span>
+          <span className=' group-hover:underline group-hover:decoration-green-400 group-hover:decoration-wavy group-hover:underline-offset-[5px]'>
+            {post.authorName}
+          </span>
         </Link>
         <div className=' flex items-center justify-between'>
           <span className='mt-1 after:mx-1 after:content-["•"]'>{formattedDateTime}</span>
@@ -70,16 +72,17 @@ const PostCard: React.FC<PostProps> = ({
       </div>
       {post.authorId === currentUserId && (
         <TrashIcon
-          className='h-6 w-6 cursor-pointer rounded border-2 border-solid border-neutral-900 bg-red-700 p-1 text-sm text-white shadow-[1px_1px_#171717] active:translate-y-0.5 active:shadow-[0.5px_0,5px_#171717]'
+          title='delete post'
+          className='absolute right-3 top-14 h-6 w-6 cursor-pointer rounded border-2 border-solid border-neutral-900 bg-red-700 p-1 text-sm text-white shadow-[1px_1px_#171717] active:translate-y-0.5 active:shadow-[0.5px_0,5px_#171717]'
           onClick={() => handleDeletePost(post, index)}
         />
       )}
-      <br />
-      <span> 喝了</span>
       <div>
+        <span>I drank </span>
         <Link to={`/catalogue/${post.brandId}`}>
-          <span className='text-xl after:content-["の"]'>{post.brandName}</span>
+          <span className='text-xl after:content-[]'>{post.brandName}</span>
         </Link>
+        <span>'s </span>
         <Link to={`/catalogue/${post.brandId}/${post.itemId}`}>
           <span className='text-xl  font-bold'>{post.itemName}</span>
         </Link>
@@ -104,18 +107,21 @@ const PostCard: React.FC<PostProps> = ({
         ))}
       </div>
 
-      <div className='flex gap-3'>
-        {
-          <Button
-            disabled={!currentUserId}
-            liked={post.likes?.some((like) => like.authorId === currentUserId)}
-            onClick={() => {
-              currentUserId && handleLike(post, currentUserId, index);
-            }}
-          >
-            like
-          </Button>
-        }
+      <div className=''>
+        <div className='w-6'>
+          <SolidHeart />
+          <LineHeart />
+        </div>
+        <Button
+          disabled={!currentUserId}
+          liked={post.likes?.some((like) => like.authorId === currentUserId)}
+          onClick={() => {
+            currentUserId && handleLike(post, currentUserId, index);
+          }}
+        >
+          like
+        </Button>
+
         <span className='ml-2 w-6 pt-2'>{post.likes?.length === 0 ? '' : post.likes?.length || 0}</span>
         <button className='' onClick={() => handleCommentsShown(index)}>
           comments

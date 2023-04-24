@@ -193,14 +193,8 @@ function Catalogue() {
   };
 
   return (
-    <main
-      className='relative min-h-[calc(100vh-64px)] bg-red-300 bg-fixed px-10 py-20 sm:px-0'
-      style={{
-        backgroundImage:
-          'linear-gradient(#BEEFCE 1px, transparent 1px), linear-gradient(to right, #BEEFCE 1px, #F6F6F9 1px)',
-        backgroundSize: '20px 20px',
-      }}
-    >
+    <main className='bg-boxes relative min-h-[calc(100vh-64px)] bg-fixed px-10 py-20'>
+      {/*<main className=' bg-fixed px-10 py-20 sm:px-0'>*/}
       <BreadcrumbNav
         catalogueBrandId={catalogueBrandId}
         catalogueItemId={catalogueItemId}

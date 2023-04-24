@@ -14,6 +14,8 @@ import {
 } from 'firebase/firestore';
 import { useAppSelector } from '../../app/hooks';
 import dbApi from '../../utils/dbApi';
+import { StarIcon as SolidStar } from '@heroicons/react/24/solid';
+import { StarIcon as LineStar } from '@heroicons/react/24/outline';
 
 interface DateInputProps {
   defaultDate?: Date;
@@ -394,8 +396,8 @@ function CreatePost() {
   };
 
   return (
-    <div className='flex flex-col items-center justify-center'>
-      <h1 className='font-sayger text-3xl font-bold'>create post♥︎♡</h1>
+    <div className=''>
+      {/*<h1 className='text-3xl'>create post</h1>*/}
       {currentUserId ? (
         <div className='flex flex-col items-start gap-3'>
           <select
@@ -550,19 +552,37 @@ function CreatePost() {
           <label htmlFor='rating'>rating</label>
           {/*todo: 變成星星*/}
           {/*todo: 「不評分了」按鈕*/}
-          <div>
-            <input
-              name='rating'
-              id='rating'
-              type='number'
-              max='5'
-              min='1'
-              className='border-2 border-solid border-gray-400 bg-gray-100'
-              value={inputs.rating}
-              onChange={handleInputChange}
-            />
-            <small>{inputs.rating === '' && '（未評分）'}</small>
+          <input
+            name='rating'
+            id='rating'
+            type='number'
+            max='5'
+            min='1'
+            className='border-2 border-solid border-gray-400 bg-gray-100'
+            value={inputs.rating}
+            onChange={handleInputChange}
+          />
+          <div className='w-10 '>
+            {['1', '2', '3', '4', '5'].map((num) => (
+              <div key={num} className='transition-all duration-150 hover:scale-125 '>
+                <label className='group text-amber-400 ' htmlFor={`rating-${num}`}>
+                  <SolidStar className={`${inputs.rating >= num ? 'block' : 'hidden'}`} />
+                  <LineStar className={`${inputs.rating >= num ? 'hidden' : 'block'}`} />
+                </label>
+                <input
+                  id={`rating-${num}`}
+                  className='hidden'
+                  type='radio'
+                  name='rating'
+                  value={num}
+                  checked={inputs.rating === num}
+                  onChange={handleInputChange}
+                />
+              </div>
+            ))}
           </div>
+
+          <small>{inputs.rating === '' && '（未評分）'}</small>
           <label htmlFor='selfComment'>說些話吧</label>
           <input
             name='selfComment'

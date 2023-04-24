@@ -20,6 +20,13 @@
   }
 }
 
+@layer utilities {
+  .bg-boxes {
+    background-image: linear-gradient(#beefce 1px, transparent 1px), linear-gradient(to right, #beefce 1px, #f6f6f9 1px);
+    background-size: 20px 20px;
+  }
+}
+
 @font-face {
   font-family: 'heal';
   src: url('../public/fonts/HealTheWebA-Regular.otf');

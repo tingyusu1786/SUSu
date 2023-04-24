@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../services/firebase';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
 import {
   openAuthWindow,
@@ -13,7 +13,6 @@ import { showNotification, closeNotification } from '../components/notification/
 import { NotificationPopUp } from '../components/notification/NotificationPopUp';
 import { NotificationsList } from '../components/notification/NotificationsList';
 import { SearchBox } from 'react-instantsearch-hooks-web';
-import { useNavigate } from 'react-router-dom';
 import { Notification } from '../interfaces/interfaces';
 import type { SearchBoxProps } from 'react-instantsearch-hooks-web';
 import { doc, DocumentSnapshot, DocumentReference, DocumentData, onSnapshot } from 'firebase/firestore';
@@ -89,6 +88,46 @@ function NotificationsListener() {
   return <></>;
 }
 
+function ScreenSize() {
+  const [width, setWidth] = useState(window.innerWidth);
+  const [height, setHeight] = useState(window.innerHeight);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setWidth(window.innerWidth);
+      setHeight(window.innerHeight);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const getSize = () => {
+    let size: string;
+    if (width >= 1536) {
+      size = 'over 2xl';
+    } else if (width >= 1279) {
+      size = '2xl';
+    } else if (width >= 1023) {
+      size = 'xl';
+    } else if (width >= 767) {
+      size = 'lg';
+    } else if (width >= 639) {
+      size = 'md';
+    } else {
+      size = 'sm';
+    }
+
+    return size;
+  };
+
+  return (
+    // <></>
+    <span className='absolute bottom-[-10px] left-[30px]'>
+      Screen size: [{getSize()}]: {width}px x {height}px
+    </span>
+  );
+}
+
 function Header() {
   const dispatch = useAppDispatch();
   const userId = useAppSelector((state) => state.auth.currentUserId);
@@ -101,6 +140,7 @@ function Header() {
   const isShown = useAppSelector((state) => state.notification.isShown);
   const navigate = useNavigate();
   const [searchShown, setSearchShown] = useState(false);
+  const [notificationShown, setNotificationShown] = useState(false);
 
   function handleRedirect() {
     navigate('/search');
@@ -156,12 +196,15 @@ function Header() {
   ];
   const location = useLocation();
 
+  // transition - all duration - 300
+  // ${
+  //   scrollDirection === 'down' ? '-top-11 xl:top-0' : 'top-0'
+  // }
   return (
     <header
-      className={`sticky ${
-        scrollDirection === 'down' ? '-top-11 xl:top-0' : 'top-0'
-      } z-40 flex h-11 w-screen flex-row items-center justify-between gap-5 border-b-4 border-solid border-green-400 bg-gray-100 px-16 transition-all duration-300 xl:h-16`}
+      className={`sticky top-0 z-40 flex h-11 h-16 w-screen flex-row items-center justify-between gap-5 border-b-4 border-solid border-green-400 bg-gray-100 px-16 `}
     >
+      <ScreenSize />
       <NotificationsListener />
       <nav>
         <ul className='flex gap-4'>
@@ -191,32 +234,33 @@ function Header() {
               }}
             />
           </li>
+          {searchShown && (
+            <SearchBox
+              placeholder='Search anything'
+              // queryHook={queryHook}
+              searchAsYouType={false}
+              onSubmit={handleRedirect}
+              submitIconComponent={({ classNames }) => <span className={classNames.submitIcon}></span>}
+              resetIconComponent={({ classNames }) => <span className={classNames.resetIcon}></span>}
+              loadingIconComponent={() => <span></span>}
+              classNames={{
+                // root: 'MyCustomSearchBox',
+                form: '',
+                input:
+                  'h-10 rounded-full border-2 border-solid border-gray-400 p-3 focus:border-green-400 focus:outline-green-400 mt-6',
+                submitIcon: 'hidden',
+                resetIcon: 'bg-red-700 hidden',
+                loadingIcon: 'hidden',
+              }}
+            />
+          )}
         </ul>
       </nav>
-      {searchShown && (
-        <SearchBox
-          placeholder='Search anything'
-          // queryHook={queryHook}
-          searchAsYouType={false}
-          onSubmit={handleRedirect}
-          submitIconComponent={({ classNames }) => <span className={classNames.submitIcon}></span>}
-          resetIconComponent={({ classNames }) => <span className={classNames.resetIcon}></span>}
-          loadingIconComponent={() => <span></span>}
-          classNames={{
-            // root: 'MyCustomSearchBox',
-            form: '',
-            input:
-              'h-10 rounded-full border-2 border-solid border-gray-400 p-3 focus:border-green-400 focus:outline-green-400',
-            submitIcon: 'hidden',
-            resetIcon: 'bg-red-700 hidden',
-            loadingIcon: 'hidden',
-          }}
-        />
-      )}
+
       {!isSignedIn && (
-        <div onClick={() => dispatch(openAuthWindow())} className='group relative cursor-pointer'>
+        <div onClick={() => dispatch(openAuthWindow())} className='group relative cursor-pointer '>
           <span>sign in</span>
-          <div className='absolute right-1/2 top-10 hidden text-center group-hover:block'>
+          <div className='absolute -right-1/2 top-8 hidden min-w-[192px] rounded-full border-2 border-solid border-neutral-900 bg-[#F5F3EA] p-2 text-center text-sm group-hover:block'>
             sign in to see your profile and notifications!
           </div>
         </div>
@@ -230,13 +274,16 @@ function Header() {
             <img
               src={currentUserphotoURL}
               alt=''
-              className='box-content h-10 w-10 rounded-full border-2 border-solid border-neutral-900 object-cover transition-all duration-100 hover:border-4 hover:border-green-400'
+              className='box-content h-10 w-10 rounded-full border-4 border-solid border-neutral-900 object-cover transition-all duration-100 hover:border-green-400 '
             />
           </Link>
-          {/*<Link to='/notifications'>*/}
-          <BellIcon className='h-5 w-5 cursor-pointer text-neutral-900 transition-all duration-150 hover:scale-125' />
-          <NotificationsList />
-          {/*</Link>*/}
+          <BellIcon
+            className='h-5 w-5 cursor-pointer text-neutral-900 transition-all duration-150 hover:scale-125'
+            onClick={() => {
+              setNotificationShown((prev) => !prev);
+            }}
+          />
+          {notificationShown && <NotificationsList />}
           <div onClick={handleSignOut} className='cursor-pointer scroll-px-2.5'>
             sign out
           </div>

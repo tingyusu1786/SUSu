@@ -99,7 +99,7 @@ export function NotificationsList() {
   }
 
   return (
-    <div className='justify-top absolute right-0 top-[64px] flex max-h-screen w-96 flex-col items-center gap-1 overflow-scroll bg-red-900 text-xl'>
+    <div className='justify-top absolute right-5 top-20 flex max-h-96 w-96 flex-col items-center gap-1 overflow-scroll text-xl'>
       {notifications.length === 0 && <div>no notification yet</div>}
       {notifications.length > 0 && <div>({notifications?.length})</div>}
       {notifications.map((notification, index) => {

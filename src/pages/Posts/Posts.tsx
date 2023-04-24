@@ -19,32 +19,23 @@ function Posts() {
   };
 
   return (
-    <main
-      className='min-h-screen bg-fixed'
-      style={{
-        backgroundImage:
-          'linear-gradient(#BEEFCE 1px, transparent 1px), linear-gradient(to right, #BEEFCE 1px, #F6F6F9 1px)',
-        backgroundSize: '20px 20px',
-      }}
-    >
-      <div className='flex w-screen flex-col items-center justify-start gap-10'>
-        <CreatePost />
-        <div>
-          <div>
-            <select
-              name='audience'
-              id=''
-              className='w-50 my-1 rounded bg-gray-200'
-              value={feedSource}
-              onChange={handlePostsSourceChange}
-            >
-              <option value='all'>all</option>
-              <option value='following'>following</option>
-            </select>
-          </div>
-          <PostsFeed onlySeeFollowing={feedSource === 'following' ? true : false} currentPage='posts' />
-        </div>
-      </div>
+    <main className='bg-boxes relative min-h-[calc(100vh-64px)] bg-fixed p-10'>
+      <h1 className='mb-10 text-center text-7xl'>Drink. Log. Explore. Repeat.</h1>
+      {/*<div className='flex w-screen flex-col items-center justify-start gap-10 bg-red-300'>*/}
+      <CreatePost />
+      {/*<div className='bg-sky-200'>*/}
+      <select
+        name='audience'
+        className='w-50 my-1 rounded bg-gray-200'
+        value={feedSource}
+        onChange={handlePostsSourceChange}
+      >
+        <option value='all'>all</option>
+        <option value='following'>following</option>
+      </select>
+      <PostsFeed onlySeeFollowing={feedSource === 'following' ? true : false} currentPage='posts' />
+      {/*</div>*/}
+      {/*</div>*/}
     </main>
   );
 }

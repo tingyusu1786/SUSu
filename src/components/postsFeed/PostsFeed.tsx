@@ -448,7 +448,11 @@ const PostsFeed: React.FC<PostsProps> = ({
 
     const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);
     if (querySnapshot.docs.length === 0) {
-      setBottomMessage('no more posts');
+      if (currentPage === 'brand' || currentPage === 'item') {
+        setBottomMessage('');
+      } else {
+        setBottomMessage('no more posts');
+      }
       // console.log('no more posts');
       return;
     }
@@ -641,6 +645,7 @@ const PostsFeed: React.FC<PostsProps> = ({
           </button>
         </div>
       )}
+      <span className=''>({posts.length})</span>
       {posts.map((post, index) => (
         <PostCard
           key={post.postId + index}
@@ -656,7 +661,7 @@ const PostsFeed: React.FC<PostsProps> = ({
           handleClickHashtag={handleClickHashtag}
         />
       ))}
-      <h1 className='font-heal text-3xl'>({posts.length})</h1>
+
       <span>{bottomMessage}</span>
     </div>
   );

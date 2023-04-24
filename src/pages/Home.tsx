@@ -33,7 +33,7 @@ function Home() {
   const currentUserName = useAppSelector((state) => state.auth.currentUserName);
   const currentUserphotoURL = useAppSelector((state) => state.auth.currentUserPhotoURL);
   const currentAuthUser = auth.currentUser;
-  return <div className='flex flex-col items-center justify-center'>HOMEEEEEEE</div>;
+  return <main className='bg-boxes relative min-h-[calc(100vh-64px)] bg-fixed p-10'>HOMEEEEEEE</main>;
 }
 
 export default Home;

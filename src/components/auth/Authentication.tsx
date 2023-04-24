@@ -219,7 +219,7 @@ function Authentication() {
         </div>
         <button
           onClick={googleSignIn}
-          className='button mb-3 h-10 w-full rounded-full bg-green-400 p-0 text-xl transition-all duration-100 hover:bg-green-400'
+          className='button mb-3 h-10 w-full rounded-full bg-green-300 p-0 text-xl transition-all duration-100 hover:bg-green-400'
         >
           continue with Google
         </button>
@@ -228,7 +228,6 @@ function Authentication() {
           <span className='text-sm '>or</span>
           <div className='grow border-b border-solid border-gray-400'></div>
         </div>
-        {/*<h1 className='text-xl font-bold'>{haveAccount ? 'sign in with email' : 'sign up with email'}</h1>*/}
         {!haveAccount && (
           <label className='flex w-full flex-col'>
             <span className='ml-4'>name</span>
@@ -300,7 +299,7 @@ function Authentication() {
               nativeSignIn(input.email, input.password);
               // handleReset();
             }}
-            className='button h-10 w-full rounded-full bg-white p-0 text-xl transition-all duration-100 hover:bg-green-400 '
+            className='button mb-3 h-10 w-full rounded-full bg-white p-0 text-xl transition-all duration-100 hover:bg-green-400'
           >
             sign in by email
           </button>
@@ -310,7 +309,7 @@ function Authentication() {
               handleNativeSignUp(input.name, input.email, input.password);
               // handleReset();
             }}
-            className='button h-10 w-full rounded-full bg-white p-0 text-xl transition-all duration-100 hover:bg-green-400 '
+            className='button mb-3 h-10 w-full rounded-full bg-white p-0 text-xl transition-all duration-100 hover:bg-green-400'
           >
             sign up
           </button>

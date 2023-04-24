@@ -221,7 +221,7 @@ function Profile() {
   }
 
   return (
-    <div className='m-10 flex flex-col items-center'>
+    <main className='bg-boxes relative z-0 min-h-[calc(100vh-64px)] p-10'>
       {currentUserId === profileUserId && (
         <Link to={`/setting/${currentUserId}`} className='rounded bg-gray-600 text-white'>
           setting
@@ -306,7 +306,7 @@ function Profile() {
             profileUser?.followers?.map((followerId) => <NameCard userId={followerId} key={followerId} />)}
         </div>
       </div>
-    </div>
+    </main>
   );
 }
 
