@@ -185,7 +185,7 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts }) => {
   };
 
   return (
-    <div className=''>
+    <div className='flex w-full flex-col items-center gap-10'>
       <div>current streak {streaks.current}天</div>
       <div>longest streak {streaks.longest}天</div>
       <div>總共花ㄌ${priceStatistic.overall}</div>

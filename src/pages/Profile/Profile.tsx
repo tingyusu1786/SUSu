@@ -275,7 +275,7 @@ function Profile() {
             onClick={() => {
               setTab(tabName as 'LOGS' | 'DASHBOARD' | 'FOLLOWING' | 'FOLLOWERS');
             }}
-            className={`rounded-t-full border-2  border-solid border-neutral-900 ${
+            className={`rounded-t-full border-2 border-solid border-neutral-900 pt-2 md:text-sm sm:text-xs ${
               tab === tabName ? 'grow border-b-0' : 'text-gray-400'
             }`}
           >
