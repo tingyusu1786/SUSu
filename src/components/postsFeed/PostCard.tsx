@@ -5,8 +5,19 @@ import { Post } from '../../interfaces/interfaces';
 import CommentInputSection from './CommentInputSection';
 import CommentDiv from './CommentDiv';
 import Button from '../../components/Button';
-import { TrashIcon, GlobeAsiaAustraliaIcon, UserIcon, HeartIcon as SolidHeart } from '@heroicons/react/24/solid';
-import { HeartIcon as LineHeart } from '@heroicons/react/24/outline';
+import {
+  TrashIcon,
+  GlobeAsiaAustraliaIcon,
+  UserIcon,
+  HeartIcon as SolidHeart,
+  StarIcon as SolidStar,
+} from '@heroicons/react/24/solid';
+import {
+  HeartIcon as LineHeart,
+  StarIcon as LineStar,
+  ChatBubbleOvalLeftIcon,
+  ChatBubbleOvalLeftEllipsisIcon,
+} from '@heroicons/react/24/outline';
 
 interface PostProps {
   post: Post;
@@ -47,15 +58,21 @@ const PostCard: React.FC<PostProps> = ({
 
   return (
     <div
-      className='relative w-full rounded-md border-[3px] border-solid border-neutral-900 bg-neutral-100 shadow-[4px_4px_#171717]'
+      className='relative w-full max-w-3xl rounded-md border-[3px] border-solid border-neutral-900 bg-neutral-100 shadow-[4px_4px_#171717]'
       key={index}
     >
-      <div className='flex h-12 flex-nowrap items-center justify-between border-b-[3px] border-solid border-neutral-900 px-2'>
+      <div className='absolute right-0 top-32'>
+        <div className='absolute right-[15%] top-[1/4] h-52 w-52 -skew-y-12 skew-x-12 scale-x-125 scale-y-50 overflow-hidden rounded-full border-2 border-solid border-neutral-900 bg-gradient-to-l from-sky-500 to-green-500 px-6 pt-10 text-3xl opacity-90'>
+          五十嵐紅茶拿鐵sssss一分糖 去冰
+        </div>
+        <div className='absolute -left-[130px] -top-[20px] h-[130px] w-3 -rotate-[18deg] border-x-2 border-solid border-neutral-900 bg-white opacity-60'></div>
+      </div>
+      <div className='flex h-12 flex-nowrap items-center justify-between border-b-[3px] border-solid border-neutral-900 px-3'>
         <Link to={`/profile/${post.authorId}`} className='group flex items-center'>
           <img
             src={post.authorPhoto}
             alt={post.authorName}
-            className='mr-2 inline-block h-8 w-8 rounded-full border-2 border-solid border-neutral-900 object-cover transition-all'
+            className='mr-2 inline-block h-8 w-8 rounded-full border-2 border-solid border-neutral-900 object-cover group-hover:border-green-400'
           />
           <span className=' group-hover:underline group-hover:decoration-green-400 group-hover:decoration-wavy group-hover:underline-offset-[5px]'>
             {post.authorName}
@@ -77,56 +94,77 @@ const PostCard: React.FC<PostProps> = ({
           onClick={() => handleDeletePost(post, index)}
         />
       )}
-      <div>
-        <span>I drank </span>
-        <Link to={`/catalogue/${post.brandId}`}>
-          <span className='text-xl after:content-[]'>{post.brandName}</span>
-        </Link>
-        <span>'s </span>
-        <Link to={`/catalogue/${post.brandId}/${post.itemId}`}>
-          <span className='text-xl  font-bold'>{post.itemName}</span>
-        </Link>
-      </div>
-      <span>{post.size && `size: ${post.size} / `}</span>
-      <span>{post.sugar && `sugar: ${post.sugar} / `}</span>
-      <span>{post.ice && `ice: ${post.ice} / `}</span>
-      <span>{post.orderNum && `orderNum: ${post.orderNum} / `}</span>
-      <span>{post.rating && `rating: ${post.rating} / `}</span>
-      <div>{post.selfComment && `💬 ${post.selfComment}`}</div>
-      <div className='flex flex-wrap gap-1'>
-        {post.hashtags?.map((hashtag) => (
-          <button
-            className='rounded bg-gray-300 px-2 before:content-["#"]'
-            key={hashtag}
-            onClick={() => {
-              handleClickHashtag(hashtag);
-            }}
-          >
-            {hashtag}
-          </button>
-        ))}
-      </div>
-
-      <div className=''>
-        <div className='w-6'>
-          <SolidHeart />
-          <LineHeart />
+      <div className=' p-5'>
+        <div className='text-xl'>
+          <span>I drank </span>
+          <Link to={`/catalogue/${post.brandId}`}>
+            <span className=''>{post.brandName}</span>
+          </Link>
+          <span>'s </span>
+          <Link to={`/catalogue/${post.brandId}/${post.itemId}`}>
+            <span className=''>{post.itemName}</span>
+          </Link>
         </div>
-        <Button
-          disabled={!currentUserId}
-          liked={post.likes?.some((like) => like.authorId === currentUserId)}
+        {post?.rating && (
+          <div className='flex text-amber-400'>
+            {[1, 2, 3, 4, 5].map((num) => {
+              return Number(post.rating) >= num ? (
+                <SolidStar className='h-6 drop-shadow-sm' />
+              ) : (
+                <LineStar className='h-6 drop-shadow-md' />
+              );
+            })}
+          </div>
+        )}
+        {post.size && (
+          <div className='flex items-baseline gap-1'>
+            <span className='flex h-6 w-6 items-center justify-center rounded-full border-2 border-solid border-neutral-900 bg-green-400 pt-1 text-sm'>
+              {post.size}
+            </span>
+            <span className='before:content-["$"]'>{post.price}</span>
+          </div>
+        )}
+        <span>{post.sugar && `sugar: ${post.sugar} / `}</span>
+        <span>{post.ice && `ice: ${post.ice} / `}</span>
+        <span>{post.orderNum && `orderNum: ${post.orderNum} / `}</span>
+
+        <div>{post.selfComment && `💬 ${post.selfComment}`}</div>
+        <div className='flex flex-wrap gap-3'>
+          {post.hashtags?.map((hashtag) => (
+            <button
+              className=' before:mr-px before:content-["#"] hover:bg-gradient-to-l hover:from-sky-500 hover:to-green-500 hover:bg-clip-text hover:text-transparent '
+              key={hashtag}
+              onClick={() => {
+                handleClickHashtag(hashtag);
+              }}
+            >
+              {hashtag}
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className=''>
+        <div
+          className='relative w-8 rounded-full transition-all hover:scale-110'
           onClick={() => {
             currentUserId && handleLike(post, currentUserId, index);
           }}
         >
-          like
-        </Button>
+          {post.likes?.some((like) => like.authorId === currentUserId) ? (
+            <SolidHeart className='cursor-pointer rounded-full ' />
+          ) : (
+            <LineHeart className='cursor-pointer rounded-full' />
+          )}
+        </div>
 
         <span className='ml-2 w-6 pt-2'>{post.likes?.length === 0 ? '' : post.likes?.length || 0}</span>
-        <button className='' onClick={() => handleCommentsShown(index)}>
-          comments
-        </button>
-        <span>{post.comments?.length || 0}</span>
+
+        {post.comments?.length === 0 ? (
+          <ChatBubbleOvalLeftIcon className='w-8 cursor-pointer' onClick={() => handleCommentsShown(index)} />
+        ) : (
+          <ChatBubbleOvalLeftEllipsisIcon className='w-8 cursor-pointer' onClick={() => handleCommentsShown(index)} />
+        )}
+        <span>{post.comments?.length === 0 ? '' : post.comments?.length || 0}</span>
       </div>
       {post.commentsShown && (
         <div className='mt-2 flex flex-col gap-1 rounded-lg bg-gray-300 p-1'>

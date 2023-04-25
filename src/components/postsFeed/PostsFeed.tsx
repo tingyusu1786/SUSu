@@ -166,7 +166,6 @@ const PostsFeed: React.FC<PostsProps> = ({
       const bufferHeight = 15;
       const isBottom = window.innerHeight + window.pageYOffset + bufferHeight >= document.body.offsetHeight;
       if (isBottom) {
-        // alert('isBottom');
         fetchFivePosts(lastKey, hashtagFilter);
       }
     };
