@@ -159,14 +159,13 @@ function Profile() {
     }
   };
 
-  const handleFollow = async () => {
+  const handleFollow = async (profileUserId: string, isFollowing: boolean | undefined) => {
     if (!profileUserId || !currentUserId) {
       return;
     }
-    setIsFollowing((prev) => {
-      console.log('setIsFollowing');
-      return !prev;
-    });
+    // setIsFollowing((prev) => {
+    //   return !prev;
+    // });
     const profileUserRef = doc(db, 'users', profileUserId);
     const currentUserRef = doc(db, 'users', currentUserId);
     const newEntry = {
@@ -177,6 +176,7 @@ function Profile() {
       unread: true,
     };
     if (!isFollowing) {
+      // alert('!isFollowing');
       await updateDoc(profileUserRef, { followers: arrayUnion(currentUserId) });
       await updateDoc(currentUserRef, { following: arrayUnion(profileUserId) });
       await updateDoc(profileUserRef, { notifications: arrayUnion(newEntry) });
@@ -232,7 +232,7 @@ function Profile() {
           to={`/setting/${currentUserId}`}
           className='absolute left-1/2 top-3 -translate-x-1/2 opacity-60 transition-all duration-100 hover:opacity-100'
         >
-          edit profile
+          Edit Profile
         </Link>
       )}
       {/*personal data*/}
@@ -257,12 +257,12 @@ function Profile() {
             .replace(/\//g, '/')}
         </div>
 
-        {profileUserId !== currentUserId && isSignedIn && (
+        {profileUserId && profileUserId !== currentUserId && isSignedIn && (
           <button
             className={`button w-32 rounded-full border-2 border-solid border-neutral-900 px-2 ${
               isFollowing ? ' bg-gray-100 ' : 'bg-green-400 '
             }`}
-            onClick={handleFollow}
+            onClick={() => handleFollow(profileUserId, isFollowing)}
           >
             {isFollowing ? 'unfollow' : 'follow'}
           </button>
@@ -296,15 +296,19 @@ function Profile() {
         ))}
       </div>
 
-      <div>
+      <div className='bg-sky-100'>
         {tab === 'LOGS' && profileUserId && (
           <PostsSection profileUserPosts={profileUserPosts} profileUserId={profileUserId} />
         )}
         {tab === 'DASHBOARD' && <DashboardSection profileUserPosts={profileUserPosts} />}
         {tab === 'FOLLOWING' &&
-          profileUser?.following?.map((followingId) => <NameCard userId={followingId} key={followingId} />)}
+          profileUser?.following?.map((followingId) => (
+            <NameCard userId={followingId} key={followingId} handleFollow={handleFollow} />
+          ))}
         {tab === 'FOLLOWERS' &&
-          profileUser?.followers?.map((followerId) => <NameCard userId={followerId} key={followerId} />)}
+          profileUser?.followers?.map((followerId) => (
+            <NameCard userId={followerId} key={followerId} handleFollow={handleFollow} />
+          ))}
       </div>
     </main>
   );
