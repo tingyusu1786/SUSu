@@ -39,9 +39,15 @@ function Authentication() {
   const Toast = Swal.mixin({
     toast: true,
     position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
+    showConfirmButton: true,
+    confirmButtonColor: '#4ade80',
+    timer: 2500,
     timerProgressBar: true,
+    showClass: {
+      popup: '',
+      backdrop: 'swal2-backdrop-show',
+      icon: 'swal2-icon-show',
+    },
     didOpen: (toast) => {
       toast.addEventListener('mouseenter', Swal.stopTimer);
       toast.addEventListener('mouseleave', Swal.resumeTimer);
@@ -92,6 +98,7 @@ function Authentication() {
       Toast.fire({
         icon: 'success',
         title: 'Signed up successful 🫰',
+        confirmButtonText: 'ya',
       });
       // alert(`Signed up user: ${user.displayName} (${user.email})`);
       dispatch(
@@ -149,6 +156,7 @@ function Authentication() {
       Toast.fire({
         icon: 'success',
         title: `Welcome back ${userData?.name} 🫰`,
+        confirmButtonText: 'hi!',
       });
       // alert(`Logged in user: ${userDoc.data()?.name} (${user.email})`);
     } catch (error: any) {
@@ -194,12 +202,14 @@ function Authentication() {
           Toast.fire({
             icon: 'success',
             title: `Hi ${user.displayName} 🫰`,
+            confirmButtonText: 'hi!',
           });
           // alert(`google sign up successful, new user created: ${user.displayName}`);
         } else {
           Toast.fire({
             icon: 'success',
             title: `Welcome back ${user.displayName} 🫰`,
+            confirmButtonText: 'hi!',
           });
           // alert(`google sign in successful, user: ${user.displayName}`);
         }

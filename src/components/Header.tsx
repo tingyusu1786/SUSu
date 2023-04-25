@@ -158,9 +158,18 @@ function Header() {
   const Toast = Swal.mixin({
     toast: true,
     position: 'top-end',
-    showConfirmButton: false,
-    timer: 3000,
+    showConfirmButton: true,
+    confirmButtonColor: '#4ade80',
+    timer: 2500,
     timerProgressBar: true,
+    customClass: {
+      htmlContainer: 'absolute top-[64px]',
+    },
+    showClass: {
+      popup: '',
+      backdrop: 'swal2-backdrop-show',
+      icon: 'swal2-icon-show',
+    },
     didOpen: (toast) => {
       toast.addEventListener('mouseenter', Swal.stopTimer);
       toast.addEventListener('mouseleave', Swal.resumeTimer);
@@ -174,6 +183,7 @@ function Header() {
       dispatch(signOutSuccess());
       Toast.fire({
         icon: 'success',
+        confirmButtonText: 'bye',
         title: 'signed out. see u next time 👋',
       });
     } catch (error: any) {
@@ -185,30 +195,6 @@ function Header() {
     }
   };
 
-  // function useScrollDirection() {
-  //   const [scrollDirection, setScrollDirection] = useState<'down' | 'up' | null>(null);
-
-  //   useEffect(() => {
-  //     let lastScrollY = window.pageYOffset;
-
-  //     const updateScrollDirection = () => {
-  //       const scrollY = window.pageYOffset;
-  //       const direction = scrollY > lastScrollY ? 'down' : 'up';
-  //       if (direction !== scrollDirection && (scrollY - lastScrollY > 10 || scrollY - lastScrollY < -10)) {
-  //         setScrollDirection(direction);
-  //       }
-  //       lastScrollY = scrollY > 0 ? scrollY : 0;
-  //     };
-  //     window.addEventListener('scroll', updateScrollDirection); // add event listener
-  //     return () => {
-  //       window.removeEventListener('scroll', updateScrollDirection); // clean up
-  //     };
-  //   }, [scrollDirection]);
-
-  //   return scrollDirection;
-  // }
-  // const scrollDirection = useScrollDirection();
-
   const navLi = [
     { name: 'DRINK LOGS', to: '/posts' },
     // { name: 'NOTIFICATIONS', to: '/notifications' },
@@ -217,10 +203,6 @@ function Header() {
   ];
   const location = useLocation();
 
-  // transition - all duration - 300
-  // ${
-  //   scrollDirection === 'down' ? '-top-11 xl:top-0' : 'top-0'
-  // }
   return (
     <header
       className={`sticky top-0 z-40 flex h-11 h-16 w-screen flex-row items-center justify-between gap-5 border-b-4 border-solid border-green-400 bg-gray-100 px-16 `}
@@ -298,7 +280,7 @@ function Header() {
               className='box-content h-10 min-w-[40px] rounded-full border-2 border-solid border-neutral-900 object-cover transition-all duration-100 hover:border-green-400 '
             />
             <div className='absolute -right-1/2 top-11 hidden w-[120px] rounded-full border-2 border-solid border-neutral-900 bg-[#F5F3EA] p-2 text-center text-sm group-hover:block'>
-              your profile
+              go to your profile
             </div>
           </Link>
           <BellIcon
@@ -315,6 +297,17 @@ function Header() {
       )}
 
       {isShown && <NotificationPopUp />}
+      {/*<button
+        onClick={() => {
+          Toast.fire({
+            icon: 'success',
+            confirmButtonText: 'bye',
+            title: 'signed out. see u next time 👋',
+          });
+        }}
+      >
+        swal
+      </button>*/}
     </header>
   );
 }
