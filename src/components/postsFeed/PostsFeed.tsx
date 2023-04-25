@@ -53,6 +53,7 @@ const PostsFeed: React.FC<PostsProps> = ({
   const [lastKey, setLastKey] = useState<Timestamp>();
   const [bottomMessage, setBottomMessage] = useState('');
   const initSnap = useRef(true);
+  const [isFetching, setIsFetching] = useState(false);
 
   // add listener for newly added post
   useEffect(() => {
@@ -161,16 +162,20 @@ const PostsFeed: React.FC<PostsProps> = ({
   // todo: phone, firefox, safari
   useEffect(() => {
     const handleScroll = () => {
-      const isBottom = window.innerHeight + window.pageYOffset >= document.body.offsetHeight;
+      if (isFetching) return;
+      const bufferHeight = 15;
+      const isBottom = window.innerHeight + window.pageYOffset + bufferHeight >= document.body.offsetHeight;
       if (isBottom) {
+        // alert('isBottom');
         fetchFivePosts(lastKey, hashtagFilter);
-        // console.log('isBottom');
       }
     };
 
     window.addEventListener('scroll', handleScroll);
+    window.addEventListener('touchmove', handleScroll);
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('touchmove', handleScroll);
     };
   }, [lastKey, hashtagFilter]);
 
@@ -181,7 +186,7 @@ const PostsFeed: React.FC<PostsProps> = ({
     ) {
       return;
     }
-
+    setIsFetching(true);
     let q: Query<DocumentData> = query(collection(db, 'posts'));
 
     if (currentPage === 'posts') {
@@ -471,6 +476,7 @@ const PostsFeed: React.FC<PostsProps> = ({
       // console.log(`set from fetchFivePosts,${currentUserId}`, newPosts);
       return newPosts;
     });
+    setIsFetching(false);
   };
 
   const handleCommentsShown = (index: number) => {
