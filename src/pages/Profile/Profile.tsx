@@ -40,12 +40,12 @@ function Profile() {
   const [usersFollowers, setUsersFollowers] = useState<{ id: string; name: string; photoURL: string }[]>([]);
   const [profileUserPosts, setProfileUserPosts] = useState<any[]>([]);
   const { profileUserId } = useParams<{ profileUserId: string }>();
-  const [tab, setTab] = useState<'LOGS' | 'DASHBOARD' | 'FOLLOWING' | 'FOLLOWERS'>('LOGS');
+  const [tab, setTab] = useState<'LOGS' | 'DASHBOARD' | 'FOLLOWING' | 'FOLLOWERS'>('FOLLOWING');
 
   // set default tab = dashboard
-  useEffect(() => {
-    setTab('DASHBOARD');
-  }, [profileUserId]);
+  // useEffect(() => {
+  //   setTab('DASHBOARD');
+  // }, [profileUserId]);
 
   useEffect(() => {
     if (!profileUserId) return;
@@ -259,7 +259,7 @@ function Profile() {
 
         {profileUserId && profileUserId !== currentUserId && isSignedIn && (
           <button
-            className={`button w-32 rounded-full border-2 border-solid border-neutral-900 px-2 ${
+            className={`button w-32 rounded-full border-2 border-solid border-neutral-900 px-2 hover:bg-green-300 ${
               isFollowing ? ' bg-gray-100 ' : 'bg-green-400 '
             }`}
             onClick={() => handleFollow(profileUserId, isFollowing)}
@@ -268,7 +268,7 @@ function Profile() {
           </button>
         )}
       </div>
-      <div className='my-5 grid h-10 w-full grid-flow-col justify-stretch'>
+      <div className='my-10 grid h-10 w-full grid-flow-col justify-stretch'>
         {['LOGS', 'DASHBOARD', 'FOLLOWING', 'FOLLOWERS'].map((tabName) => (
           <button
             key={tabName}
@@ -296,19 +296,25 @@ function Profile() {
         ))}
       </div>
 
-      <div className='bg-sky-100'>
+      <div className=''>
         {tab === 'LOGS' && profileUserId && (
           <PostsSection profileUserPosts={profileUserPosts} profileUserId={profileUserId} />
         )}
         {tab === 'DASHBOARD' && <DashboardSection profileUserPosts={profileUserPosts} />}
-        {tab === 'FOLLOWING' &&
-          profileUser?.following?.map((followingId) => (
-            <NameCard userId={followingId} key={followingId} handleFollow={handleFollow} />
-          ))}
-        {tab === 'FOLLOWERS' &&
-          profileUser?.followers?.map((followerId) => (
-            <NameCard userId={followerId} key={followerId} handleFollow={handleFollow} />
-          ))}
+        {tab === 'FOLLOWING' && (
+          <div className='flex flex-col flex-nowrap items-center gap-5'>
+            {profileUser?.following?.map((followingId) => (
+              <NameCard userId={followingId} key={followingId} handleFollow={handleFollow} />
+            ))}
+          </div>
+        )}
+        {tab === 'FOLLOWERS' && (
+          <div className='flex flex-col flex-nowrap items-center gap-4'>
+            {profileUser?.followers?.map((followerId) => (
+              <NameCard userId={followerId} key={followerId} handleFollow={handleFollow} />
+            ))}
+          </div>
+        )}
       </div>
     </main>
   );
