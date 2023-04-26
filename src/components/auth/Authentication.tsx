@@ -10,6 +10,7 @@ import { EyeIcon, EyeSlashIcon, HeartIcon } from '@heroicons/react/24/solid';
 import Button from '../../components/Button';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import 'animate.css';
 
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import {
@@ -272,12 +273,9 @@ function Authentication() {
   };
 
   return (
-    <div className='fixed top-0 z-50 h-screen w-screen'>
-      <form className='absolute left-1/2 top-1/2 z-30 flex w-96 -translate-x-1/2 -translate-y-1/2 flex-col items-center justify-start gap-3 rounded-md border-[3px] border-solid border-neutral-900 bg-[#F5F3EA] px-4 py-5 shadow-[4px_4px_#10172A]'>
-        <div className='text-2xl'>SUSU</div>
-        {/*<button onClick={() => dispatch(closeAuthWindow())} className='self-end bg-red-700 text-xs text-white'>
-          ESC
-        </button>*/}
+    <div className='fixed top-0 z-50 flex h-screen w-screen items-center justify-center'>
+      <form className='animate__faster animate__animated animate__bounceIn z-30  flex w-96 flex-col items-center justify-start gap-3 rounded-md border-[3px] border-solid border-neutral-900 bg-[#F5F3EA] px-4 py-5 shadow-[4px_4px_#10172A]'>
+        <div className='text-2xl'>SUSü</div>
 
         <div className='mb-3 text-center text-lg font-bold'>
           {haveAccount ? 'Welcome back!' : 'Start logging your drinks ;)'}
@@ -366,7 +364,7 @@ function Authentication() {
             }}
             className='button mb-3 h-10 w-full rounded-full bg-white p-0 text-xl transition-all duration-100 hover:bg-green-400'
           >
-            sign in by email
+            Log in by email
           </button>
         ) : (
           <button
@@ -376,7 +374,7 @@ function Authentication() {
             }}
             className='button mb-3 h-10 w-full rounded-full bg-white p-0 text-xl transition-all duration-100 hover:bg-green-400'
           >
-            sign up
+            Sign up
           </button>
         )}
 
