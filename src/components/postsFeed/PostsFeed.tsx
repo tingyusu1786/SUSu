@@ -486,7 +486,7 @@ const PostsFeed: React.FC<PostsProps> = ({
     });
   };
 
-  const handleCommentInput = (event: ChangeEvent<HTMLInputElement>, index: number) => {
+  const handleCommentInput = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => {
     setPosts((prev) => {
       const newPosts = [...prev];
       newPosts[index].commentInput = event.target.value;
@@ -495,7 +495,7 @@ const PostsFeed: React.FC<PostsProps> = ({
   };
 
   const handleCommentSubmit = async (
-    event: KeyboardEvent<HTMLInputElement>,
+    event: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
     post: Post,
     userId: string,
     index: number
@@ -537,7 +537,7 @@ const PostsFeed: React.FC<PostsProps> = ({
       authorName: currentUser.name,
       authorPhoto: currentUser.photoURL,
       timeCreated: timestamp,
-      ...(isComment ? { content: post.commentInput, commentId: uuidv4() } : {}),
+      ...(isComment ? { content: post.commentInput?.replace(/\n/g, '<br>'), commentId: uuidv4() } : {}),
     };
     const targetArray = isComment ? post.comments : post.likes;
     const hasLiked = isComment ? undefined : targetArray?.some((like) => like.authorId === userId);

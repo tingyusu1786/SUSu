@@ -20,7 +20,7 @@ function Posts() {
 
   return (
     <main className='bg-boxes relative min-h-[calc(100vh-64px)] bg-fixed p-10'>
-      <h1 className='mb-10 text-center text-7xl'>Drink. Log. Explore. Repeat.</h1>
+      <h1 className='mb-10 text-center text-7xl'>Drink. Log. Repeat.</h1>
       {/*<div className='flex w-screen flex-col items-center justify-start gap-10 bg-red-300'>*/}
       <CreatePost />
       {/*<div className='bg-sky-200'>*/}
