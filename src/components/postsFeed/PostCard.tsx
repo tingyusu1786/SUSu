@@ -18,6 +18,10 @@ import {
   ChatBubbleOvalLeftIcon,
   ChatBubbleOvalLeftEllipsisIcon,
 } from '@heroicons/react/24/outline';
+import heartFill from '../../images/heartFill.png';
+import heartLine from '../../images/heartLine.png';
+import comment from '../../images/comment.png';
+import { ReactComponent as Trash } from '../../images/trash.svg';
 
 import { Random_0, Random_1, Random_2 } from '../../images/star_10';
 
@@ -86,13 +90,7 @@ const PostCard: React.FC<PostProps> = ({
           )}
         </div>
       </div>
-      {post.authorId === currentUserId && (
-        <TrashIcon
-          title='delete post'
-          className='absolute right-3 top-14 h-6 w-6 cursor-pointer rounded border-2 border-solid border-neutral-900 bg-red-700 p-1 text-sm text-white shadow-[1px_1px_#171717] active:translate-y-0.5 active:shadow-[0.5px_0,5px_#171717]'
-          onClick={() => handleDeletePost(post, index)}
-        />
-      )}
+
       <div className=' p-5'>
         <div className='flex items-center gap-3'>
           <span className='text-2xl'>
@@ -116,6 +114,12 @@ const PostCard: React.FC<PostProps> = ({
               </span>
               <span className='before:content-["$"]'>{post.price}</span>
             </span>
+          )}
+          {post.authorId === currentUserId && (
+            <Trash
+              className='mb-px ml-auto h-5 w-5 cursor-pointer hover:text-red-600'
+              onClick={() => handleDeletePost(post, index)}
+            />
           )}
         </div>
         {post.sugar && (
@@ -157,31 +161,42 @@ const PostCard: React.FC<PostProps> = ({
           ))}
         </div>
       </div>
-      <div className='grid grid-cols-[repeat(4,30px)] items-center  px-5 pb-2'>
-        {post.likes?.some((like) => like.authorId === currentUserId) ? (
-          <SolidHeart
+      {/*<SolidHeart
             className='w-8 cursor-pointer'
+            onClick={() => currentUserId && handleLike(post, currentUserId, index)}
+          />*/}
+      {/*<LineHeart
+        className='w-8 cursor-pointer'
+        onClick={() => currentUserId && handleLike(post, currentUserId, index)}
+      />*/}
+      <div className='mb-5 grid grid-cols-[repeat(4,30px)] items-center px-5'>
+        {post.likes?.some((like) => like.authorId === currentUserId) ? (
+          <img
+            className='cursor-pointer'
+            src={heartFill}
+            alt=''
             onClick={() => currentUserId && handleLike(post, currentUserId, index)}
           />
         ) : (
-          <LineHeart
-            className='w-8 cursor-pointer'
+          <img
+            className='cursor-pointer'
+            src={heartLine}
+            alt=''
             onClick={() => currentUserId && handleLike(post, currentUserId, index)}
           />
         )}
         {/*todo: signin to like*/}
         <div className='mt-1 text-center'>{post.likes?.length || ''}</div>
 
-        <ChatBubbleOvalLeftIcon className='mb-1 w-8 cursor-pointer' onClick={() => handleCommentsShown(index)} />
+        {/*<ChatBubbleOvalLeftIcon className='mb-1 w-8 cursor-pointer' onClick={() => handleCommentsShown(index)} />*/}
+        <img className='mb-px w-7 cursor-pointer' src={comment} alt='' onClick={() => handleCommentsShown(index)} />
 
         <div className='mt-1 text-center'>{post.comments?.length || ''}</div>
-        <div className='absolute right-6 top-10 hover:rotate-90'>
+        {/*<div className='absolute right-6 top-10 hover:rotate-90'>
           {randomNum === 0 && <Random_0 />}
           {randomNum === 1 && <Random_1 />}
           {randomNum === 2 && <Random_2 />}
-          {/*  {<Random_1 />}
-          {<Random_2 />}*/}
-        </div>
+        </div>*/}
       </div>
 
       {/*{post.commentsShown && (*/}

@@ -169,3 +169,103 @@ export const BadgeBack = () => {
     </svg>
   );
 };
+export const Random_1 = () => {
+  return (
+    <svg
+      width='150'
+      height='150'
+      viewBox='0 0 200 200'
+      fill='none'
+      xmlns='http://www.w3.org/2000/svg'
+      className='transition-all duration-300 ease-out hover:rotate-180'
+    >
+      {' '}
+      <g clip-path='url(#clip0_116_159)'>
+        {' '}
+        <path
+          d='M100 0L101.384 87.0669C101.44 90.5691 105.651 92.3134 108.167 89.8763L170.711 29.2893L110.124 91.8335C107.687 94.3493 109.431 98.5604 112.933 98.6161L200 100L112.933 101.384C109.431 101.44 107.687 105.651 110.124 108.167L170.711 170.711L108.167 110.124C105.651 107.687 101.44 109.431 101.384 112.933L100 200L98.6161 112.933C98.5604 109.431 94.3493 107.687 91.8335 110.124L29.2893 170.711L89.8763 108.167C92.3134 105.651 90.5691 101.44 87.0669 101.384L0 100L87.0669 98.6161C90.5691 98.5604 92.3134 94.3493 89.8763 91.8335L29.2893 29.2893L91.8335 89.8763C94.3493 92.3134 98.5604 90.5691 98.6161 87.0669L100 0Z'
+          fill='url(#paint0_linear_116_159)'
+        />{' '}
+      </g>{' '}
+      <defs>
+        {' '}
+        <linearGradient id='paint0_linear_116_159' x1='27.5' y1='19' x2='149' y2='174.5' gradientUnits='userSpaceOnUse'>
+          {' '}
+          <stop stop-color='#453BCD' /> <stop offset='1' stop-color='#18BDB0' />{' '}
+        </linearGradient>{' '}
+        <clipPath id='clip0_116_159'>
+          {' '}
+          <rect width='200' height='200' fill='white' />{' '}
+        </clipPath>{' '}
+      </defs>{' '}
+    </svg>
+  );
+};
+
+export const Random_2 = () => {
+  return (
+    <svg
+      width='150'
+      height='150'
+      viewBox='0 0 200 200'
+      fill='none'
+      xmlns='http://www.w3.org/2000/svg'
+      className='transition-all duration-300 ease-out hover:rotate-45'
+    >
+      {' '}
+      <g clip-path='url(#clip0_105_296)'>
+        {' '}
+        <path
+          fill-rule='evenodd'
+          clip-rule='evenodd'
+          d='M200 98.5234C196.477 99.4861 192.769 100 188.941 100H144.233C121.117 100 102.378 118.739 102.378 141.854V191.319C102.378 194.295 102.067 197.199 101.477 200C100.514 196.477 100 192.769 100 188.941V144.233C100 121.117 81.2612 102.378 58.1456 102.378H8.68122C5.70469 102.378 2.80073 102.067 0 101.477C3.52289 100.514 7.23105 100 11.0593 100H55.7675C78.8831 100 97.622 81.2611 97.622 58.1456L97.622 8.68118C97.622 5.70466 97.9327 2.80071 98.5234 0C99.4861 3.5229 100 7.23107 100 11.0593V55.7675C100 78.8831 118.739 97.622 141.855 97.622H191.319C194.295 97.622 197.199 97.9327 200 98.5234Z'
+          fill='url(#paint0_linear_105_296)'
+        />{' '}
+      </g>{' '}
+      <defs>
+        {' '}
+        <linearGradient id='paint0_linear_105_296' x1='100' y1='0' x2='100' y2='200' gradientUnits='userSpaceOnUse'>
+          {' '}
+          <stop stop-color='#DF99F7' /> <stop offset='1' stop-color='#FFDBB0' />{' '}
+        </linearGradient>{' '}
+        <clipPath id='clip0_105_296'>
+          {' '}
+          <rect width='200' height='200' fill='white' />{' '}
+        </clipPath>{' '}
+      </defs>{' '}
+    </svg>
+  );
+};
+
+export const Random_0 = () => {
+  return (
+    <svg
+      width='150'
+      height='150'
+      viewBox='0 0 200 200'
+      fill='none'
+      xmlns='http://www.w3.org/2000/svg'
+      className='transition-all duration-300 ease-out hover:-rotate-45'
+    >
+      {' '}
+      <g clip-path='url(#clip0_118_201)'>
+        {' '}
+        <path
+          d='M100 0L102.039 58.4951C102.498 71.6824 118.257 78.21 127.907 69.2101L170.711 29.2893L130.79 72.0931C121.79 81.7429 128.318 97.5019 141.505 97.9615L200 100L141.505 102.039C128.318 102.498 121.79 118.257 130.79 127.907L170.711 170.711L127.907 130.79C118.257 121.79 102.498 128.318 102.039 141.505L100 200L97.9615 141.505C97.5019 128.318 81.7429 121.79 72.0931 130.79L29.2893 170.711L69.2101 127.907C78.21 118.257 71.6824 102.498 58.4951 102.039L0 100L58.4951 97.9615C71.6824 97.5019 78.21 81.7429 69.2101 72.0931L29.2893 29.2893L72.0931 69.2101C81.7429 78.21 97.5019 71.6824 97.9615 58.4951L100 0Z'
+          fill='url(#paint0_linear_118_201)'
+        />{' '}
+      </g>{' '}
+      <defs>
+        {' '}
+        <linearGradient id='paint0_linear_118_201' x1='100' y1='0' x2='100' y2='200' gradientUnits='userSpaceOnUse'>
+          {' '}
+          <stop stop-color='#A7B5FF' /> <stop offset='1' stop-color='#F3ACFF' />{' '}
+        </linearGradient>{' '}
+        <clipPath id='clip0_118_201'>
+          {' '}
+          <rect width='200' height='200' fill='white' />{' '}
+        </clipPath>{' '}
+      </defs>{' '}
+    </svg>
+  );
+};

@@ -27,6 +27,8 @@ import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { Post } from '../../interfaces/interfaces';
 import PostCard from './PostCard';
 import { v4 as uuidv4 } from 'uuid';
+import Swal from 'sweetalert2';
+import withReactContent from 'sweetalert2-react-content';
 
 interface PostsProps {
   onlySeeFollowing?: boolean;
@@ -508,8 +510,19 @@ const PostsFeed: React.FC<PostsProps> = ({
 
   const handleDeleteComment = async (post: Post, postIndex: number, commentIndex: number, commentId: string) => {
     if (!post.comments || post.comments.length === 0) return;
-    const confirmed = window.confirm('Are you sure you want to delete this comment?');
-    if (confirmed) {
+    const result = await Swal.fire({
+      title: 'Do you want to delete this comment?',
+      text: 'this cannot be undone',
+      showCancelButton: true,
+      confirmButtonText: 'Yes',
+      customClass: {
+        cancelButton: 'order-1 right-gap',
+        confirmButton: 'order-2',
+      },
+      confirmButtonColor: '#4ade80',
+    });
+
+    if (result.isConfirmed) {
       // updateDoc
       const postRef = doc(db, 'posts', post.postId);
       const updatedComments = post.comments.filter((comment, index) => index !== commentIndex);
@@ -522,6 +535,12 @@ const PostsFeed: React.FC<PostsProps> = ({
       });
       // unnotify
       post.authorId && unnotifyOtherUser(post.postId, post.authorId, 'comment', commentId);
+      await Swal.fire({
+        title: 'Comment deleted!',
+        icon: 'success',
+        confirmButtonColor: '#4ade80',
+        // showClass: { popup: '' },
+      });
     } else {
       return;
     }
@@ -607,16 +626,26 @@ const PostsFeed: React.FC<PostsProps> = ({
   };
 
   const handleDeletePost = async (post: Post, index: number) => {
-    const confirmed = window.confirm('Are you sure you want to delete this post?');
-    if (confirmed) {
-      const postRef = doc(db, 'posts', post.postId);
-      await deleteDoc(postRef);
-      // alert(`post deleted: was ${post.postId}`);
+    const result = await Swal.fire({
+      title: 'Do you want to delete this log?',
+      text: 'this cannot be undone',
+      showCancelButton: true,
+      confirmButtonText: 'Yes',
+      customClass: {
+        cancelButton: 'order-1 right-gap',
+        confirmButton: 'order-2',
+      },
+      confirmButtonColor: '#4ade80',
+    });
 
+    if (result.isConfirmed) {
+      const postRef = doc(db, 'posts', post.postId);
       setPosts((prev) => {
         const newPosts = prev.filter((keptPost) => keptPost.postId !== post.postId);
         return newPosts;
       });
+      await deleteDoc(postRef);
+      await Swal.fire({ title: 'Log deleted!', icon: 'success', confirmButtonColor: '#4ade80' });
     } else {
       return;
     }
