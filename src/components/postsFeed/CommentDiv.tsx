@@ -40,7 +40,7 @@ const CommentDiv: React.FC<CommentsProps> = ({ post, postIndex, comment, comment
         </div>
       </div>
       <div className='flex w-full rounded-md bg-neutral-200 shadow-inner'>
-        <div className=' w-full grow overflow-scroll px-2 py-2' style={{ whiteSpace: 'pre-wrap' }}>
+        <div className=' w-full grow overflow-scroll px-3 pb-2 pt-3' style={{ whiteSpace: 'pre-wrap' }}>
           {comment.content.replace(/<br>/g, '\n')}
         </div>
         {comment.authorId === currentUserId && (

@@ -19,23 +19,26 @@ function Posts() {
   };
 
   return (
-    <main className='bg-boxes relative min-h-[calc(100vh-64px)] bg-fixed p-10'>
+    <main className='bg-boxes min-h-[calc(100vh-64px)] bg-fixed p-10'>
       <h1 className='mb-10 text-center text-7xl'>Drink. Log. Repeat.</h1>
       {/*<div className='flex w-screen flex-col items-center justify-start gap-10 bg-red-300'>*/}
       <CreatePost />
       {/*<div className='bg-sky-200'>*/}
-      <select
-        name='audience'
-        className='w-50 my-1 rounded bg-gray-200'
-        value={feedSource}
-        onChange={handlePostsSourceChange}
-      >
-        <option value='all'>all</option>
-        <option value='following'>following</option>
-      </select>
+      <div className='grid grid-cols-[1fr_48rem_1fr]'>
+        <div className='col-start-2'>
+          <span>see logs from </span>
+          <select
+            name='audience'
+            className='w-50 my-1 h-6 border-b-2 border-neutral-900 bg-transparent'
+            value={feedSource}
+            onChange={handlePostsSourceChange}
+          >
+            <option value='all'>all over the world</option>
+            <option value='following'>people you follow</option>
+          </select>
+        </div>
+      </div>
       <PostsFeed onlySeeFollowing={feedSource === 'following' ? true : false} currentPage='posts' />
-      {/*</div>*/}
-      {/*</div>*/}
     </main>
   );
 }

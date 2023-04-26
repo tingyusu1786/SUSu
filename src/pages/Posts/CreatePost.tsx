@@ -1,96 +1,14 @@
 import { useState, useEffect, ChangeEvent } from 'react';
 import { db } from '../../services/firebase';
-import {
-  collection,
-  doc,
-  getDoc,
-  addDoc,
-  getDocs,
-  updateDoc,
-  // setDoc,
-  // serverTimestamp,
-  Timestamp,
-  // arrayUnion,
-} from 'firebase/firestore';
+import { collection, doc, getDoc, addDoc, getDocs, updateDoc, Timestamp } from 'firebase/firestore';
 import { useAppSelector } from '../../app/hooks';
 import dbApi from '../../utils/dbApi';
-import { StarIcon as SolidStar } from '@heroicons/react/24/solid';
+import { StarIcon as SolidStar, TrashIcon, GlobeAsiaAustraliaIcon, UserIcon } from '@heroicons/react/24/solid';
 import { StarIcon as LineStar } from '@heroicons/react/24/outline';
-
-interface DateInputProps {
-  defaultDate?: Date;
-  onDateChange?: (date: Date) => void;
-}
-
-const DateInput = ({ defaultDate = new Date(), onDateChange }: DateInputProps) => {
-  const [year, setYear] = useState(defaultDate.getFullYear());
-  const [month, setMonth] = useState(defaultDate.getMonth() + 1);
-  const [date, setDate] = useState(defaultDate.getDate());
-  const [hour, setHour] = useState(defaultDate.getHours());
-  const [minute, setMinute] = useState(defaultDate.getMinutes());
-
-  const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setYear(parseInt(e.target.value));
-  };
-
-  const handleMonthChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setMonth(parseInt(e.target.value));
-  };
-
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setDate(parseInt(e.target.value));
-  };
-
-  const handleHourChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setHour(parseInt(e.target.value));
-  };
-
-  const handleMinuteChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setMinute(parseInt(e.target.value));
-  };
-
-  const handleDateBlur = () => {
-    const newDate = new Date(year, month - 1, date, hour, minute);
-    if (onDateChange) {
-      onDateChange(newDate);
-    }
-  };
-
-  return (
-    <>
-      <label htmlFor='year'>Year:</label>
-      <input type='number' id='year' name='year' value={year} onChange={handleYearChange} onBlur={handleDateBlur} />
-      <br />
-
-      <label htmlFor='month'>Month:</label>
-      <input type='number' id='month' name='month' value={month} onChange={handleMonthChange} onBlur={handleDateBlur} />
-      <br />
-
-      <label htmlFor='date'>Date:</label>
-      <input type='number' id='date' name='date' value={date} onChange={handleDateChange} onBlur={handleDateBlur} />
-      <br />
-
-      <label htmlFor='hour'>Hour:</label>
-      <input type='number' id='hour' name='hour' value={hour} onChange={handleHourChange} onBlur={handleDateBlur} />
-      <br />
-
-      <label htmlFor='minute'>Minute:</label>
-      <input
-        type='number'
-        id='minute'
-        name='minute'
-        value={minute}
-        onChange={handleMinuteChange}
-        onBlur={handleDateBlur}
-      />
-      <br />
-    </>
-  );
-};
 
 function CreatePost() {
   const initialInput = {
-    audience: 'public', //todo: 改成從currentUser資料裡拿
+    audience: 'public',
     brandId: '',
     itemId: '',
     sugar: '',
@@ -102,6 +20,8 @@ function CreatePost() {
     selfComment: '',
   };
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
+  const userName = useAppSelector((state) => state.auth.currentUserName);
+  const userPhotoURL = useAppSelector((state) => state.auth.currentUserPhotoURL);
   const [customTagsInput, setCustomTagsInput] = useState('');
   const [customTags, setCustomTags] = useState<string[]>([]);
   const [autoTags, setAutoTags] = useState<string[]>([]);
@@ -111,9 +31,19 @@ function CreatePost() {
   const [sizesOfItem, setSizesOfItem] = useState<string[][]>([]);
   const [inputs, setInputs] = useState(initialInput);
   const [showDate, setShowDate] = useState(false);
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState<Date>(new Date());
 
-  const handleDateChange = (newDate: Date) => {
+  const formatDate = (date: Date): string => {
+    return date.toISOString().slice(0, 16);
+  };
+
+  // const handleDateChange = (newDate: Date) => {
+  //   setDate(newDate);
+  // };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value } = event.target;
+    const newDate = new Date(value);
     setDate(newDate);
   };
 
@@ -292,7 +222,7 @@ function CreatePost() {
     });
   };
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const key = e.target.name;
     switch (key) {
       case 'brandId': {
@@ -396,119 +326,120 @@ function CreatePost() {
   };
 
   return (
-    <div className=''>
-      {/*<h1 className='text-3xl'>create post</h1>*/}
-      {currentUserId ? (
-        <div className='flex flex-col items-start gap-3'>
-          <select
-            name='audience'
-            id=''
-            className='w-50 rounded bg-gray-200'
-            value={inputs.audience}
-            onChange={handleInputChange}
-          >
+    <div className='relative mx-auto flex w-full max-w-3xl flex-col rounded-md border-[3px] border-solid border-neutral-900 bg-neutral-100 shadow-[4px_4px_#171717]'>
+      <div className='flex h-12 flex-nowrap items-center justify-between border-b-[3px] border-solid border-neutral-900 px-5'>
+        <div>
+          <img
+            src={userPhotoURL}
+            className='mr-2 inline-block h-9 w-9 rounded-full border-2 border-solid border-neutral-900 object-cover group-hover:border-green-400'
+          />
+          <span className='text-lg group-hover:underline group-hover:decoration-green-400 group-hover:decoration-wavy group-hover:underline-offset-[5px]'>
+            {userName}
+          </span>
+        </div>
+        <div className='relative flex items-center justify-between'>
+          <input type='datetime-local' value={formatDate(date)} onChange={handleChange} max={formatDate(new Date())} />
+          <span className='mx-1 '>•</span>
+          {inputs.audience === 'public' ? (
+            <GlobeAsiaAustraliaIcon className=' h-4 w-4 ' title='public' />
+          ) : (
+            <UserIcon className='h-4 w-4 ' title='private' />
+          )}
+          <select name='audience' id='' className='w-50 rounded ' value={inputs.audience} onChange={handleInputChange}>
             <option value='public'>public</option>
             <option value='private'>private</option>
           </select>
-          <button
-            onClick={() => {
-              setShowDate((prev) => !prev);
+        </div>
+      </div>
+      <div className='flex flex-col gap-y-2 p-5'>
+        <div className='flex text-2xl'>
+          <span className=''>I drank </span>
+          {/*todo: text top cut*/}
+          <select
+            required
+            name='brandId'
+            className=' grow border-b-2 border-neutral-900 bg-transparent p-0 align-baseline text-2xl text-neutral-500 focus:outline-green-400'
+            value={inputs.brandId}
+            onChange={(e) => {
+              handleInputChange(e);
             }}
           >
-            show date
-          </button>
-          <h1>{date.toString()}</h1>
-          {showDate && <DateInput defaultDate={date} onDateChange={handleDateChange} />}
-          <div>
-            <span>我喝了</span>
-            <select
-              required
-              name='brandId'
-              className='border-2 border-solid border-gray-400 bg-gray-100'
-              value={inputs.brandId}
-              onChange={(e) => {
-                handleInputChange(e);
-              }}
-            >
-              <option value='' disabled>
-                select a brand
-              </option>
-              {brands.length !== 0 &&
-                brands.map((brand) => (
-                  <option value={brand[0]} key={brand[0]}>
-                    {brand[1]}
-                  </option>
-                ))}
-            </select>
-            <span>的</span>
-            <select
-              required
-              disabled={itemsOfBrand.length === 0}
-              name='itemId'
-              className='border-2 border-solid border-gray-400 bg-gray-100'
-              value={inputs.itemId}
-              onChange={(e) => {
-                handleInputChange(e);
-              }}
-            >
-              <option value='' disabled>
-                select a item
-              </option>
-              {itemsOfBrand.length !== 0 &&
-                categories.length !== 0 &&
-                itemsOfBrand.map((itemsOfCategory, index) => (
-                  <optgroup label={categories[index]?.[1]} key={index}>
-                    {itemsOfCategory.length !== 0 &&
-                      itemsOfCategory.map((item) => (
-                        <option value={item[0]} key={item[0]}>
-                          {item[1]}
-                        </option>
-                      ))}
-                  </optgroup>
-                ))}
-            </select>
-            ！
-          </div>
-          <div>
-            <label htmlFor='size' className=''>
-              size
-            </label>
-            <select
-              disabled={sizesOfItem.length === 0}
-              required
-              name='size'
-              id='size'
-              className='border-2 border-solid border-gray-400 bg-gray-100'
-              value={inputs.size}
-              onChange={handleInputChange}
-            >
-              <option value='' disabled>
-                choose size
-              </option>
-              {sizesOfItem.map((option) => (
-                <option value={option[0]} key={option[0]}>
-                  {option[0]}
+            <option value='' disabled className='w-56'>
+              select a brand
+            </option>
+            {brands.length !== 0 &&
+              brands.map((brand) => (
+                <option value={brand[0]} key={brand[0]} className=' align-baseline '>
+                  {brand[1]}
                 </option>
               ))}
-            </select>
-            <label htmlFor='price'>價錢</label>
-            <input
-              required
-              name='price'
-              id='price'
-              type='number'
-              className='border-2 border-solid border-gray-400 bg-gray-100'
-              value={inputs.price}
-              onChange={handleInputChange}
-            />
-          </div>
+          </select>
+          <span className=''>'s </span>
+          <select
+            required
+            disabled={itemsOfBrand.length === 0}
+            name='itemId'
+            className='w-1/2 grow border-b-2 border-neutral-900 bg-transparent p-0 align-baseline text-neutral-500 focus:outline-green-400'
+            value={inputs.itemId}
+            onChange={(e) => {
+              handleInputChange(e);
+            }}
+          >
+            <option value='' disabled className='w-68'>
+              select a item
+            </option>
+            {itemsOfBrand.length !== 0 &&
+              categories.length !== 0 &&
+              itemsOfBrand.map((itemsOfCategory, index) => (
+                <optgroup label={categories[index]?.[1]} key={index} className=''>
+                  {itemsOfCategory.length !== 0 &&
+                    itemsOfCategory.map((item) => (
+                      <option value={item[0]} key={item[0]} className='align-baseline '>
+                        {item[1]}
+                      </option>
+                    ))}
+                </optgroup>
+              ))}
+          </select>
+        </div>
+        <div className='flex items-center gap-1'>
+          <select
+            disabled={sizesOfItem.length === 0}
+            required
+            name='size'
+            id='size'
+            className='h-8 w-16 rounded-full border-2 border-solid border-neutral-900 px-1 pt-1 text-sm'
+            value={inputs.size}
+            onChange={handleInputChange}
+          >
+            <option value='' disabled>
+              size
+            </option>
+            {sizesOfItem.map((option) => (
+              <option value={option[0]} key={option[0]}>
+                {option[0]}
+              </option>
+            ))}
+          </select>
+          <span className='before:ml-3 before:content-["$"]'></span>
+          <input
+            required
+            name='price'
+            id='price'
+            type='number'
+            className='h-8 w-16 rounded-full border-2 border-solid border-neutral-900 p-0 px-1 pt-1 text-sm'
+            value={inputs.price}
+            onChange={handleInputChange}
+          />
+        </div>
+        <div className='flex gap-x-3'>
           <div>
-            <label htmlFor='sugar'>糖</label>
+            <span className='text-neutral-500'>sugar_ </span>
             <select
               required
               name='sugar'
               id='sugar'
-              className='border-2 border-solid border-gray-400 bg-gray-100'
+              className='h-8 w-36 rounded-full border-2 border-solid border-neutral-900 p-0 px-1 pt-1 text-sm focus:outline-green-400'
               value={inputs.sugar}
               onChange={handleInputChange}
             >
@@ -521,12 +452,14 @@ function CreatePost() {
                 </option>
               ))}
             </select>
-            <label htmlFor='ice'>冰</label>
+          </div>
+          <div>
+            <span className='text-neutral-500'>ice_ </span>
             <select
               required
               name='ice'
               id='ice'
-              className='border-2 border-solid border-gray-400 bg-gray-100'
+              className='h-8 w-36 rounded-full border-2 border-solid border-neutral-900 p-0 px-1 pt-1 text-sm focus:outline-green-400'
               value={inputs.ice}
               onChange={handleInputChange}
             >
@@ -540,100 +473,93 @@ function CreatePost() {
               ))}
             </select>
           </div>
-          {/*<label htmlFor='orderNum'>單號</label>
-          <input
-            name='orderNum'
-            id='orderNum'
-            type='number'
-            className='border-2 border-solid border-gray-400 bg-gray-100'
-            value={inputs.orderNum}
-            onChange={handleInputChange}
-          />*/}
-          <label htmlFor='rating'>rating</label>
-          {/*todo: 變成星星*/}
-          {/*todo: 「不評分了」按鈕*/}
-          <input
-            name='rating'
-            id='rating'
-            type='number'
-            max='5'
-            min='1'
-            className='border-2 border-solid border-gray-400 bg-gray-100'
-            value={inputs.rating}
-            onChange={handleInputChange}
-          />
-          <div className='w-10 '>
-            {['1', '2', '3', '4', '5'].map((num) => (
-              <div key={num} className='transition-all duration-150 hover:scale-125 '>
-                <label className='group text-amber-400 ' htmlFor={`rating-${num}`}>
-                  <SolidStar className={`${inputs.rating >= num ? 'block' : 'hidden'}`} />
-                  <LineStar className={`${inputs.rating >= num ? 'hidden' : 'block'}`} />
-                </label>
-                <input
-                  id={`rating-${num}`}
-                  className='hidden'
-                  type='radio'
-                  name='rating'
-                  value={num}
-                  checked={inputs.rating === num}
-                  onChange={handleInputChange}
-                />
-              </div>
-            ))}
-          </div>
-
-          <small>{inputs.rating === '' && '（未評分）'}</small>
-          <label htmlFor='selfComment'>說些話吧</label>
-          <input
-            name='selfComment'
-            id='selfComment'
-            type='text'
-            className='border-2 border-solid border-gray-400 bg-gray-100'
-            value={inputs.selfComment}
-            onChange={handleInputChange}
-          />
-          <div>
-            <span># </span>
-            <input
-              onKeyPress={(e) => handleTagInputKeyPress(e)}
-              onChange={(e) => setCustomTagsInput(e.target.value)}
-              value={customTagsInput}
-              type='text'
-              placeholder='custom hashtags'
-              className='border-2 border-solid border-gray-400 bg-gray-100'
-            />
-            <div className='w-50 flex gap-3'>
-              {autoTags.map(
-                (tag, index) =>
-                  tag !== '' && (
-                    <div key={index} className='rounded bg-gray-200'>
-                      <span className='mx-3 before:content-["#"]'>{tag}</span>
-                    </div>
-                  )
-              )}
-              {customTags.map(
-                (tag, index) =>
-                  tag !== '' && (
-                    <div key={index} className='rounded bg-gray-200'>
-                      <span className='mx-3 before:content-["#"]'>{tag}</span>
-                      <span
-                        onClick={() => removeTag(index)}
-                        className='cursor-pointer text-gray-600 hover:text-red-500'
-                      >
-                        &times;
-                      </span>
-                    </div>
-                  )
-              )}
-            </div>
-          </div>
-          <button onClick={handlePostSubmit} className='rounded border-2 border-solid border-gray-400'>
-            submit
-          </button>
         </div>
-      ) : (
-        <div>please sign in to post</div>
-      )}
+
+        <div className='flex text-amber-400'>
+          {['1', '2', '3', '4', '5'].map((num) => (
+            <label key={num} htmlFor={`rating-${num}`}>
+              {inputs.rating >= num ? (
+                <SolidStar className='h-8 transition-all duration-150 hover:scale-125 ' />
+              ) : (
+                <LineStar className='h-8 transition-all duration-150 hover:scale-125 ' />
+              )}
+
+              <input
+                id={`rating-${num}`}
+                className='hidden'
+                type='radio'
+                name='rating'
+                value={num}
+                checked={inputs.rating === num}
+                onChange={handleInputChange}
+              />
+            </label>
+          ))}
+          {inputs.rating && (
+            <div key='x' className='ml-1 text-neutral-500'>
+              <label className='cursor-pointer' htmlFor={`rating-x`}>
+                &times;
+              </label>
+              <input
+                id={`rating-x`}
+                className='hidden'
+                type='radio'
+                name='rating'
+                value={undefined}
+                onChange={handleInputChange}
+              />
+            </div>
+          )}
+        </div>
+        <textarea
+          name='selfComment'
+          id='selfComment'
+          className='w-full border-b-2 border-neutral-900 bg-transparent p-2 text-xl focus:outline-green-400'
+          placeholder='say something'
+          value={inputs.selfComment}
+          onChange={handleInputChange}
+        />
+
+        <div>
+          <span>#</span>
+          <input
+            onKeyPress={(e) => handleTagInputKeyPress(e)}
+            onChange={(e) => setCustomTagsInput(e.target.value)}
+            value={customTagsInput}
+            type='text'
+            placeholder='add your hashtags'
+            className='bg-transparent focus:outline-green-400'
+          />
+          <div className='flex flex-wrap gap-x-3'>
+            {autoTags.map(
+              (tag, index) =>
+                tag !== '' && (
+                  <div key={index} className='text-neutral-400 before:mr-px before:content-["#"]'>
+                    {tag}
+                  </div>
+                )
+            )}
+            {customTags.map(
+              (tag, index) =>
+                tag !== '' && (
+                  <div key={index} className=''>
+                    <span className='text-neutral-400 before:mr-px before:content-["#"]'>{tag}</span>
+                    <span
+                      onClick={() => removeTag(index)}
+                      className='ml-1 cursor-pointer text-neutral-500 hover:text-red-500'
+                    >
+                      &times;
+                    </span>
+                  </div>
+                )
+            )}
+          </div>
+        </div>
+        <button onClick={handlePostSubmit} className='button'>
+          submit
+        </button>
+      </div>
+      {/*{currentUserId ? <div className='flex flex-col items-start gap-3'></div> : <div>please sign in to post</div>}*/}
     </div>
   );
 }

@@ -19,7 +19,7 @@ import {
   ChatBubbleOvalLeftEllipsisIcon,
 } from '@heroicons/react/24/outline';
 
-import { Random_1, Random_2 } from '../../images/star_10';
+import { Random_0, Random_1, Random_2 } from '../../images/star_10';
 
 interface PostProps {
   post: Post;
@@ -52,23 +52,20 @@ const PostCard: React.FC<PostProps> = ({
   handleClickHashtag,
 }) => {
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
-
   const date = post.timeCreated?.toDate();
   const formattedTime = date?.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
   const formattedDate = date?.toLocaleDateString('en-US');
   const formattedDateTime = `${formattedDate} ${formattedTime}`;
+  const [randomNum, setRandomNum] = useState(getRandomInt(3));
+  function getRandomInt(max: number) {
+    return Math.floor(Math.random() * max);
+  }
 
   return (
     <div
       className='relative w-full max-w-3xl rounded-md border-[3px] border-solid border-neutral-900 bg-neutral-100 shadow-[4px_4px_#171717]'
       key={index}
     >
-      {/*<div className='absolute right-0 top-32'>
-        <div className='absolute right-[15%] top-[1/4] h-52 w-52 -skew-y-12 skew-x-12 scale-x-125 scale-y-50 overflow-hidden rounded-full border-2 border-solid border-neutral-900 bg-gradient-to-l from-sky-500 to-green-500 px-6 pt-10 text-3xl opacity-90'>
-          五十嵐紅茶拿鐵sssss一分糖 去冰
-        </div>
-        <div className='absolute -left-[130px] -top-[20px] h-[130px] w-3 -rotate-[18deg] border-x-2 border-solid border-neutral-900 bg-white opacity-60'></div>
-      </div>*/}
       <div className='flex h-12 flex-nowrap items-center justify-between border-b-[3px] border-solid border-neutral-900 px-5'>
         <Link to={`/profile/${post.authorId}`} className='group flex items-center'>
           <img
@@ -101,16 +98,20 @@ const PostCard: React.FC<PostProps> = ({
           <span className='text-2xl'>
             <span>I drank </span>
             <Link to={`/catalogue/${post.brandId}`}>
-              <span className=''>{post.brandName}</span>
+              <span className='inline-block transition-all duration-150 ease-out hover:-translate-y-1'>
+                {post.brandName}
+              </span>
             </Link>
             <span>'s </span>
-            <Link to={`/catalogue/${post.brandId}/${post.itemId}`}>
-              <span className=''>{post.itemName}</span>
+            <Link to={`/catalogue/${post.brandId}/${post.itemId}`} className='hover:translate-y-1'>
+              <span className='inline-block transition-all duration-150 ease-out hover:-translate-y-1'>
+                {post.itemName}
+              </span>
             </Link>
           </span>
           {post.size && (
             <span className='flex items-baseline gap-1'>
-              <span className='flex h-6 w-6 items-center justify-center rounded-full border-2 border-solid border-neutral-900 bg-green-400 pt-1 text-sm'>
+              <span className='flex h-6 w-8 items-center justify-center rounded-full border-2 border-solid border-neutral-900 pt-1 text-sm'>
                 {post.size}
               </span>
               <span className='before:content-["$"]'>{post.price}</span>
@@ -142,10 +143,10 @@ const PostCard: React.FC<PostProps> = ({
         )}
 
         {post.selfComment && <div className='text-xl'>{post.selfComment}</div>}
-        <div className='flex flex-wrap gap-3'>
+        <div className='flex flex-wrap gap-x-3'>
           {post.hashtags?.map((hashtag) => (
             <button
-              className='text-xl before:mr-px before:content-["#"] hover:bg-gradient-to-l hover:from-sky-500 hover:to-green-500 hover:bg-clip-text hover:text-transparent '
+              className=' text-neutral-400 before:mr-px before:content-["#"] hover:bg-gradient-to-l hover:from-sky-500 hover:to-green-500 hover:bg-clip-text hover:text-transparent'
               key={hashtag}
               onClick={() => {
                 handleClickHashtag(hashtag);
@@ -156,7 +157,7 @@ const PostCard: React.FC<PostProps> = ({
           ))}
         </div>
       </div>
-      <div className='grid grid-cols-[40px_50px_40px_50px] items-center  px-5 pb-2'>
+      <div className='grid grid-cols-[repeat(4,30px)] items-center  px-5 pb-2'>
         {post.likes?.some((like) => like.authorId === currentUserId) ? (
           <SolidHeart
             className='w-8 cursor-pointer'
@@ -168,38 +169,46 @@ const PostCard: React.FC<PostProps> = ({
             onClick={() => currentUserId && handleLike(post, currentUserId, index)}
           />
         )}
-        <span className=''>{post.likes?.length || ''}</span>
+        {/*todo: signin to like*/}
+        <div className='mt-1 text-center'>{post.likes?.length || ''}</div>
 
         <ChatBubbleOvalLeftIcon className='mb-1 w-8 cursor-pointer' onClick={() => handleCommentsShown(index)} />
 
-        <span className=''>{post.comments?.length || ''}</span>
-        <div className='absolute right-6 top-10'>
-          {/*<Random_1 />*/}
-          {<Random_2 />}
+        <div className='mt-1 text-center'>{post.comments?.length || ''}</div>
+        <div className='absolute right-6 top-10 hover:rotate-90'>
+          {randomNum === 0 && <Random_0 />}
+          {randomNum === 1 && <Random_1 />}
+          {randomNum === 2 && <Random_2 />}
+          {/*  {<Random_1 />}
+          {<Random_2 />}*/}
         </div>
       </div>
 
-      {post.commentsShown && (
-        <div className='flex flex-col gap-y-1 border-t-2 border-dashed border-neutral-900 px-3 py-2'>
-          {post.comments?.map((comment, commentIndex) => (
-            <CommentDiv
-              key={commentIndex}
-              post={post}
-              postIndex={index}
-              comment={comment}
-              commentIndex={commentIndex}
-              handleDeleteComment={handleDeleteComment}
-            />
-          ))}
-
-          <CommentInputSection
+      {/*{post.commentsShown && (*/}
+      <div
+        className={`${
+          post.commentsShown ? 'flex' : 'hidden'
+        } flex-col gap-y-1 border-t-2 border-dashed border-neutral-900 px-3 py-2 `}
+      >
+        {post.comments?.map((comment, commentIndex) => (
+          <CommentDiv
+            key={commentIndex}
             post={post}
-            handleCommentInput={handleCommentInput}
-            handleCommentSubmit={handleCommentSubmit}
-            index={index}
+            postIndex={index}
+            comment={comment}
+            commentIndex={commentIndex}
+            handleDeleteComment={handleDeleteComment}
           />
-        </div>
-      )}
+        ))}
+
+        <CommentInputSection
+          post={post}
+          handleCommentInput={handleCommentInput}
+          handleCommentSubmit={handleCommentSubmit}
+          index={index}
+        />
+      </div>
+      {/*)}*/}
     </div>
   );
 };
