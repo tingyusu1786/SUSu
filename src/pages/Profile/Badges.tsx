@@ -3,7 +3,9 @@ import CalendarHeatmap from 'react-calendar-heatmap';
 import 'react-calendar-heatmap/dist/styles.css';
 import '../../index.css';
 import { Tooltip } from 'react-tooltip';
-import { Badge, BadgeBack } from '../../images/star_10';
+// import { Badge, BadgeBack } from '../../images/star_10';
+import { ReactComponent as Badge } from '../../images/badge.svg';
+import 'animate.css';
 
 interface BadgesProps {
   drankBrands: Record<string, { brandName: string; times: number }>;
@@ -40,18 +42,12 @@ const Badges: React.FC<BadgesProps> = ({ drankBrands, drankItems, numPosts, stre
                 goal !== 0 && (
                   <div key={index} className='relative'>
                     <div
-                      className={`relative flex h-24 w-24 items-center justify-center rounded-full drop-shadow ${
+                      className={`relative h-24 w-24 drop-shadow ${
                         category.num >= goal ? 'duration-400 transition-all hover:rotate-12' : 'opacity-60 grayscale'
                       }`}
                     >
-                      <div className=''>
-                        <Badge />
-                      </div>
-                      <div className='absolute'>
-                        <BadgeBack />
-                      </div>
-
-                      <span className='absolute'>{goal}</span>
+                      <Badge className='h-24 w-24' />
+                      <span className='absolute left-[50px] top-7 -translate-x-1/2'>{goal}</span>
                     </div>
                     {category.num > category.goals[index - 1] && category.num < goal && (
                       <div className='absolute -bottom-6 w-full rounded-full bg-gray-200'>
