@@ -43,11 +43,10 @@ function Home() {
   useEffect(() => {
     const options = {
       strings: [
-        'SUSü is a platform where you can...',
-        "Log and share what you've drunk",
-        'Explore all brands people love',
-        'Get inspiration for your next drink',
-        'Make friends with the same taste for drinks!',
+        "log and share what you've drunk^1000",
+        'explore all brands people love^1000',
+        'get inspiration for your next drink^1000',
+        'make friends with the same taste for drinks!',
       ],
       typeSpeed: 50,
       backSpeed: 20,
@@ -65,7 +64,9 @@ function Home() {
 
   return (
     <main className='bg-boxes relative min-h-[calc(100vh-64px)] bg-fixed'>
-      <div className='type-wrap flex h-[calc(100vh-64px)] w-screen items-center justify-center px-36 text-center text-5xl'>
+      <div className='type-wrap h-[calc(100vh-64px)] w-screen flex-col items-center justify-center px-36 text-center text-5xl'>
+        <span>SUSü is a platform where you can...</span>
+        <br />
         <span style={{ whiteSpace: 'pre' }} ref={el} />
       </div>
       HOMEEEEEEE

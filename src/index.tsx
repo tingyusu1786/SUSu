@@ -8,11 +8,10 @@ import App from './App';
 import Profile from './pages/Profile/Profile';
 import Setting from './pages/Setting';
 import Home from './pages/Home';
-import Posts from './pages/Posts/Posts';
+import Feeds from './pages/Feeds/Feeds';
 import Catalogue from './pages/Catalogue/Catalogue';
 import Inspiration from './pages/Inspiration';
 import Search from './pages/Search';
-import Counter from './pages/RenderCounter';
 import 'react-tooltip/dist/react-tooltip.css';
 
 const container = document.getElementById('root')!;
@@ -31,13 +30,10 @@ root.render(
             // action={}
           />
           <Route path='/setting/:settingUserId' element={<Setting />} />
-          <Route path='/posts/:postId?' element={<Posts />} />
-          {/*<Route path='/notifications' element={<Notifications />} />*/}
-          {/*<Route path='/map' element={<Map />} />*/}
+          <Route path='/feeds/:postId?' element={<Feeds />} />
           <Route path='/catalogue/:catalogueBrandId?/:catalogueItemId?' element={<Catalogue />} />
           <Route path='/inspiration' element={<Inspiration />} />
           <Route path='/search' element={<Search />} />
-          <Route path='/counter' element={<Counter />} />
         </Route>
       </Routes>
     </Provider>

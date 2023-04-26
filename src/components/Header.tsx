@@ -177,27 +177,41 @@ function Header() {
   });
 
   const handleSignOut = async () => {
-    try {
-      await authApi.signOut();
-      dispatch(signOutStart());
-      dispatch(signOutSuccess());
-      Toast.fire({
-        icon: 'success',
-        confirmButtonText: 'bye',
-        title: 'signed out. see u next time 👋',
-      });
-    } catch (error: any) {
-      Toast.fire({
-        icon: 'error',
-        title: 'something went wrong...',
-      });
-      dispatch(signOutFail(error));
+    const result = await Swal.fire({
+      title: 'Do you really want to sign out?',
+      showCancelButton: true,
+      confirmButtonText: 'Yes',
+      customClass: {
+        cancelButton: 'order-1 right-gap',
+        confirmButton: 'order-2',
+      },
+      confirmButtonColor: '#4ade80',
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await authApi.signOut();
+        dispatch(signOutStart());
+        dispatch(signOutSuccess());
+        Toast.fire({
+          icon: 'success',
+          confirmButtonText: 'bye',
+          title: 'signed out. see u next time 👋',
+        });
+      } catch (error: any) {
+        Toast.fire({
+          icon: 'error',
+          title: 'something went wrong...',
+        });
+        dispatch(signOutFail(error));
+      }
+    } else {
+      return;
     }
   };
 
   const navLi = [
-    { name: 'DRINK LOGS', to: '/posts' },
-    // { name: 'NOTIFICATIONS', to: '/notifications' },
+    { name: 'DRINK FEEDS', to: '/feeds' },
     { name: 'DRINK CATALOGUE', to: '/catalogue' },
     { name: 'INSPIRATION', to: '/inspiration' },
   ];
@@ -207,13 +221,13 @@ function Header() {
     <header
       className={`sticky top-0 z-40 flex h-11 h-16 w-screen flex-row items-center justify-between gap-5 border-b-4 border-solid border-green-400 bg-gray-100 px-16 `}
     >
-      <ScreenSize />
+      {/*<ScreenSize />*/}
       <NotificationsListener />
       <nav>
         <ul className='flex gap-4'>
           <li>
-            <Link to='/' className='mt-8 block pb-8'>
-              SUSU
+            <Link to='/' className=' mt-8 block pb-8'>
+              SUSü
             </Link>
           </li>
           {navLi.map((li) => (
@@ -262,11 +276,7 @@ function Header() {
 
       {!isSignedIn && (
         <div onClick={() => dispatch(openAuthWindow())} className='group relative cursor-pointer '>
-          <span>sign in</span>
-          <div className='absolute -right-1/2 top-8 hidden w-[200px] rounded-full border-2 border-solid border-neutral-900 bg-[#F5F3EA] p-2 text-center text-sm group-hover:block'>
-            sign in to see your
-            <br /> profile and notifications!
-          </div>
+          <span>sign in to see your profile and notifications!</span>
         </div>
       )}
 
@@ -279,9 +289,6 @@ function Header() {
               alt=''
               className='box-content h-10 min-w-[40px] rounded-full border-2 border-solid border-neutral-900 object-cover transition-all duration-100 hover:border-green-400 '
             />
-            <div className='absolute -right-1/2 top-11 hidden w-[120px] rounded-full border-2 border-solid border-neutral-900 bg-[#F5F3EA] p-2 text-center text-sm group-hover:block'>
-              go to your profile
-            </div>
           </Link>
           <BellIcon
             className='h-5 w-5 cursor-pointer text-neutral-900 transition-all duration-150 hover:scale-110'
@@ -297,17 +304,6 @@ function Header() {
       )}
 
       {isShown && <NotificationPopUp />}
-      {/*<button
-        onClick={() => {
-          Toast.fire({
-            icon: 'success',
-            confirmButtonText: 'bye',
-            title: 'signed out. see u next time 👋',
-          });
-        }}
-      >
-        swal
-      </button>*/}
     </header>
   );
 }
