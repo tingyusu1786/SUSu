@@ -112,11 +112,13 @@ export function NotificationsList() {
             {notification.type === 'follow' ? (
               <span> {` started following you!`}</span>
             ) : (
-              <span>
-                {` ${notification.type}${notification.type === 'like' ? 'd' : 'ed'} on your post! (post id: ${
-                  notification.postId
-                })`}
-              </span>
+              <Link to={`/log/${notification.postId}`}>
+                <span>
+                  {` ${notification.type}${notification.type === 'like' ? 'd' : 'ed'} on your post! (post id: ${
+                    notification.postId
+                  })`}
+                </span>
+              </Link>
             )}
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <span className='text-gray-500'>

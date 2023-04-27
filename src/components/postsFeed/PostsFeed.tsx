@@ -160,7 +160,7 @@ const PostsFeed: React.FC<PostsProps> = ({
 
   useEffect(() => {
     fetchFivePosts(lastKey, hashtagFilter);
-  }, [hashtagFilter]);
+  }, [hashtagFilter, logId]);
 
   // 有新文之後設下一個key
   useEffect(() => {
