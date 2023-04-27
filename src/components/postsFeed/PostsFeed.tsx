@@ -172,6 +172,9 @@ const PostsFeed: React.FC<PostsProps> = ({
   // scroll listener
   // todo: phone, firefox, safari
   useEffect(() => {
+    if (currentPage === 'log') {
+      return;
+    }
     const handleScroll = () => {
       if (isFetching) return;
       const bufferHeight = 15;
@@ -465,6 +468,7 @@ const PostsFeed: React.FC<PostsProps> = ({
         if (!logDoc.exists()) {
           setPosts([]);
           setIsFetching(false);
+          setBottomMessage('Log not found');
           return;
         }
         const logDocData = logDoc.data();

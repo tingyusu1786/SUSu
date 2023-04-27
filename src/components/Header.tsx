@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
 import { openAuthWindow, signOutStart, signOutSuccess, signOutFail } from '../components/auth/authSlice';
 import { showNotification, closeNotification } from '../components/notification/notificationSlice';
-import { NotificationPopUp } from '../components/notification/NotificationPopUp';
+// import { NotificationPopUp } from '../components/notification/NotificationPopUp';
 import { NotificationsList } from '../components/notification/NotificationsList';
 import { SearchBox } from 'react-instantsearch-hooks-web';
 import type { SearchBoxProps } from 'react-instantsearch-hooks-web';
@@ -51,7 +51,6 @@ function NotificationsListener() {
   }, [currentUserId]);
 
   const fireNotification = (notification: Notification) => {
-    console.log('fireNotification');
     const content = {
       authorId: notification.authorId,
       authorName: notification.authorName,
@@ -60,8 +59,39 @@ function NotificationsListener() {
       type: notification.type,
       unread: notification.unread,
     };
-    dispatch(showNotification({ type: 'normal', content }));
-    setTimeout(() => dispatch(closeNotification()), 5000);
+    let html: JSX.Element = <></>;
+    switch (content.type) {
+      case 'follow': {
+        html = (
+          <a href={`/profile/${content.authorId}`} className='group text-neutral-500'>
+            <span className='group-hover:text-green-400 '>{content.authorName}</span> started following you!
+          </a>
+        );
+        break;
+      }
+      case 'like': {
+        html = (
+          <a href={`/log/${content.postId}`} className='group text-neutral-500'>
+            {content.authorName} liked your&nbsp;
+            <span className='group-hover:text-green-400 '>log</span>!
+          </a>
+        );
+        break;
+      }
+      case 'comment': {
+        html = (
+          <a href={`/log/${content.postId}`} className='group text-neutral-500'>
+            {content.authorName} commented <span className='text-neutral-900'>"{content.content}"</span> on your{' '}
+            <span className='group-hover:text-green-400 '>log</span>!
+          </a>
+        );
+        break;
+      }
+    }
+    swal.toast(html);
+
+    // dispatch(showNotification({ type: 'normal', content }));
+    // setTimeout(() => dispatch(closeNotification()), 5000);
   };
 
   const fetchNotifications = async (currentUserRef: DocumentReference<DocumentData> | undefined) => {
@@ -259,7 +289,7 @@ function Header() {
         </div>
       )}
 
-      {isShown && <NotificationPopUp />}
+      {/*{isShown && <NotificationPopUp />}*/}
       <button
         onClick={() => {
           swal.success('Signed up successful!', '', 'cool');

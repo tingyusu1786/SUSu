@@ -138,9 +138,9 @@ const PostCard: React.FC<PostProps> = ({
           <div className='mb-4 flex text-amber-400'>
             {[1, 2, 3, 4, 5].map((num) => {
               return Number(post.rating) >= num ? (
-                <SolidStar className='h-6 drop-shadow-sm' />
+                <SolidStar className='h-6 drop-shadow-sm' key={num} />
               ) : (
-                <LineStar className='h-6 drop-shadow-md' />
+                <LineStar className='h-6 drop-shadow-md' key={num} />
               );
             })}
           </div>

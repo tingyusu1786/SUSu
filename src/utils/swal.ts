@@ -1,20 +1,23 @@
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import { ReactComponent as SmileyWink } from '../../images/SmileyWink.svg';
 const MySwal = withReactContent(Swal);
-const Toast = Swal.mixin({
+
+const Toast = MySwal.mixin({
   toast: true,
+  // html: html,
+  iconColor: '#4ade80',
+  showConfirmButton: false,
   position: 'top-end',
-  // showConfirmButton: true,
-  // confirmButtonColor: '#4ade80',
-  timer: 2500,
+  timer: 7000,
   timerProgressBar: true,
-  customClass: {
-    htmlContainer: 'absolute top-[64px]',
-  },
+  showCloseButton: true,
   showClass: {
-    popup: '',
-    backdrop: 'swal2-backdrop-show',
-    icon: 'swal2-icon-show',
+    popup: 'animate__fast animate__animated animate__slideInRight',
+    icon: 'animate__fast animate__animated animate__tada',
+  },
+  hideClass: {
+    popup: 'animate__animated animate__slideOutRight',
   },
   didOpen: (toast) => {
     toast.addEventListener('mouseenter', Swal.stopTimer);
@@ -43,7 +46,7 @@ const Warning = Swal.mixin({
   },
 });
 
-const Error = Swal.mixin({
+const ErrorSwal = Swal.mixin({
   icon: 'error',
   iconColor: '#ef4444',
   confirmButtonColor: '#4ade80',
@@ -60,13 +63,16 @@ const swal = {
     Success.fire({ title, text, confirmButtonText });
   },
   error(title: string, text: string, confirmButtonText: string) {
-    Error.fire({ title, text, confirmButtonText });
+    ErrorSwal.fire({ title, text, confirmButtonText });
   },
   showLoading() {
     Swal.showLoading();
   },
   hideLoading() {
     Swal.hideLoading();
+  },
+  toast(html: JSX.Element) {
+    Toast.fire({ html });
   },
 };
 
