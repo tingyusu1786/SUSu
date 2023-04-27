@@ -13,7 +13,10 @@ interface BrandProps {
 
 const BrandCard: React.FC<BrandProps> = ({ brand }) => {
   return (
-    <div className='group relative h-56 rounded-xl rounded-tl-[60px] border-2 border-solid border-neutral-900 bg-white shadow-[4px_4px_#171717] transition-all duration-300 even:-translate-y-1/4 hover:-translate-y-3 hover:shadow-[4px_14px_#171717] even:hover:-translate-y-1/3'>
+    <Link
+      to={`/catalogue/${brand.brandId}`}
+      className='group relative h-56 rounded-xl rounded-tl-[60px] border-2 border-solid border-neutral-900 bg-white shadow-[4px_4px_#171717] transition-all duration-300 even:-translate-y-1/4 hover:-translate-y-3 hover:shadow-[4px_14px_#171717] even:hover:-translate-y-1/3'
+    >
       <img
         src={brand.photoURL}
         alt=''
@@ -28,10 +31,9 @@ const BrandCard: React.FC<BrandProps> = ({ brand }) => {
           <span>({brand.numRatings || 0})</span>
         </div>
       </div>
-      <Link to={`/catalogue/${brand.brandId}`} className=''>
-        <ArrowRightIcon className='absolute right-5 top-3 hidden w-6 animate-arrow transition-all duration-150 group-hover:block' />
-      </Link>
-    </div>
+
+      <ArrowRightIcon className='absolute right-5 top-3 hidden w-6 animate-arrow transition-all duration-150 group-hover:block' />
+    </Link>
   );
 };
 
