@@ -59,8 +59,9 @@ const PostsFeed: React.FC<PostsProps> = ({
 
   const [lastKey, setLastKey] = useState<Timestamp>();
   const [bottomMessage, setBottomMessage] = useState('');
+  const [hasMore, setHasMore] = useState(true);
   const initSnap = useRef(true);
-  const [isFetching, setIsFetching] = useState(false);
+  const isFetching = useRef(false);
 
   // add listener for newly added post
   useEffect(() => {
@@ -176,30 +177,33 @@ const PostsFeed: React.FC<PostsProps> = ({
       return;
     }
     const handleScroll = () => {
-      if (isFetching) return;
-      const bufferHeight = 15;
-      const isBottom = window.innerHeight + window.pageYOffset + bufferHeight >= document.body.offsetHeight;
+      const bufferHeight = 200;
+      const isBottom = window.innerHeight + window.scrollY + bufferHeight >= document.body.offsetHeight;
       if (isBottom) {
+        console.log('isBottom', isBottom, 'isFetching.current', isFetching.current);
+        if (isFetching.current) return;
         fetchFivePosts(lastKey, hashtagFilter);
       }
     };
 
     window.addEventListener('scroll', handleScroll);
-    window.addEventListener('touchmove', handleScroll);
+    // window.addEventListener('touchmove', handleScroll);
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('touchmove', handleScroll);
+      // window.removeEventListener('touchmove', handleScroll);
     };
   }, [lastKey, hashtagFilter]);
 
   const fetchFivePosts = async (lastKey: Timestamp | undefined, hashtag: string | undefined) => {
+    isFetching.current = true;
     if (
       onlySeeFollowing &&
       (currentUser.following === undefined || currentUser.following?.length === 0 || !currentUserId)
     ) {
+      isFetching.current = false;
       return;
     }
-    setIsFetching(true);
+
     let q: Query<DocumentData> = query(collection(db, 'posts'));
 
     if (currentPage === 'posts') {
@@ -464,46 +468,34 @@ const PostsFeed: React.FC<PostsProps> = ({
       }
     } else if (currentPage === 'log') {
       if (logId) {
-        const logDoc: DocumentSnapshot<DocumentData> = await getDoc(doc(db, 'posts', logId));
-        if (!logDoc.exists()) {
+        const logDocRef = doc(db, 'posts', logId);
+        const logDoc = await getDoc(logDocRef);
+        if (logDoc.exists()) {
+          const logDocData = logDoc.data();
+          const logWithQueriedInfos = await dbApi.getPostInfo(logDocData);
+          setPosts([{ ...logWithQueriedInfos, postId: logId, commentsShown: false, commentInput: '' }]);
+        } else {
           setPosts([]);
-          setIsFetching(false);
           setBottomMessage('Log not found');
-          return;
         }
-        const logDocData = logDoc.data();
-        const logWithQueriedInfos = {
-          ...(await dbApi.getPostInfo(logDocData)),
-          postId: logId,
-          commentsShown: false,
-          commentInput: '',
-        };
-        setPosts([logWithQueriedInfos]);
-        setIsFetching(false);
-        return;
       } else {
         setPosts([]);
-        setIsFetching(false);
-        return;
       }
+      isFetching.current = false;
+      return;
     }
 
+    console.log('const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);');
     const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);
 
     if (querySnapshot.docs.length === 0) {
-      setTimeout(() => {
-        setIsFetching(false);
-        if (currentPage === 'brand' || currentPage === 'item') {
-          if (posts.length === 0) {
-            setBottomMessage('no logs yet');
-          } else {
-            setBottomMessage('no more logs');
-          }
-        } else {
-          setBottomMessage('no more logs');
-        }
-      }, 800);
-
+      if (posts.length === 0) {
+        setBottomMessage('no logs yet, go explore other pages!');
+      } else {
+        setBottomMessage('no more logs');
+      }
+      isFetching.current = false;
+      setHasMore(false);
       return;
     }
 
@@ -519,11 +511,15 @@ const PostsFeed: React.FC<PostsProps> = ({
     const postsWithQueriedInfos = await Promise.all(postsArray);
     setPosts((posts) => {
       const newPosts = lastKey ? [...posts, ...postsWithQueriedInfos] : postsWithQueriedInfos;
-      // console.log(`set from fetchFivePosts,${currentUserId}`, newPosts);
       return newPosts;
     });
-    setIsFetching(false);
   };
+
+  useEffect(() => {
+    console.log(posts.length);
+    isFetching.current = false;
+    console.log('set to false');
+  }, [posts.length]);
 
   const handleCommentsShown = (index: number) => {
     setPosts((prev) => {
@@ -733,8 +729,9 @@ const PostsFeed: React.FC<PostsProps> = ({
           handleClickHashtag={handleClickHashtag}
         />
       ))}
-      {isFetching && <SmileyWink className='mx-auto mt-20 animate-bounce' />}
+      {hasMore && <SmileyWink className='mx-auto my-10 animate-bounce' />}
       <span>{bottomMessage}</span>
+      <span className=''>({posts.length})</span>
     </div>
   );
 };
