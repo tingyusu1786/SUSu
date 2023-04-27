@@ -29,7 +29,7 @@ function Authentication() {
   const isAuthWindow = useAppSelector((state) => state.auth.isAuthWindow);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
   const [input, setInput] = useState({ name: '', email: '', password: '' });
-  const [haveAccount, setHaveAccount] = useState(false);
+  const [haveAccount, setHaveAccount] = useState(true);
   const [passwordType, setPasswordType] = useState('password');
   const navigate = useNavigate();
   const nameRef = useRef(null);

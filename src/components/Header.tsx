@@ -2,26 +2,18 @@ import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../services/firebase';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
-import {
-  openAuthWindow,
-  closeAuthWindow,
-  signOutStart,
-  signOutSuccess,
-  signOutFail,
-} from '../components/auth/authSlice';
+import { openAuthWindow, signOutStart, signOutSuccess, signOutFail } from '../components/auth/authSlice';
 import { showNotification, closeNotification } from '../components/notification/notificationSlice';
 import { NotificationPopUp } from '../components/notification/NotificationPopUp';
 import { NotificationsList } from '../components/notification/NotificationsList';
 import { SearchBox } from 'react-instantsearch-hooks-web';
-import { Notification } from '../interfaces/interfaces';
 import type { SearchBoxProps } from 'react-instantsearch-hooks-web';
+import { Notification } from '../interfaces/interfaces';
 import { doc, DocumentSnapshot, DocumentReference, DocumentData, onSnapshot } from 'firebase/firestore';
 import dbApi from '../utils/dbApi';
 import authApi from '../utils/authApi';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
-import { BellIcon } from '@heroicons/react/24/solid';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
+import { MagnifyingGlassIcon, BellIcon } from '@heroicons/react/24/solid';
+import swal from '../utils/swal';
 
 function NotificationsListener() {
   const dispatch = useAppDispatch();
@@ -134,75 +126,35 @@ function Header() {
   const dispatch = useAppDispatch();
   const userId = useAppSelector((state) => state.auth.currentUserId);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
-  const loading = useAppSelector((state) => state.auth.isLoading);
-  const error = useAppSelector((state) => state.auth.error);
   const currentUserName = useAppSelector((state) => state.auth.currentUserName);
   const currentUserphotoURL = useAppSelector((state) => state.auth.currentUserPhotoURL);
-  const isAuthWindow = useAppSelector((state) => state.auth.isAuthWindow);
+  // const isAuthWindow = useAppSelector((state) => state.auth.isAuthWindow);
   const isShown = useAppSelector((state) => state.notification.isShown);
   const navigate = useNavigate();
   const [searchShown, setSearchShown] = useState(false);
   const [notificationShown, setNotificationShown] = useState(false);
-  const MySwal = withReactContent(Swal);
 
   function handleRedirect() {
     navigate('/search');
   }
 
-  const queryHook: SearchBoxProps['queryHook'] = (query, search) => {
-    const searchQuery = query.replace(/\s/g, '');
-    if (searchQuery === '') return;
-    search(searchQuery);
-  };
-
-  const Toast = Swal.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: true,
-    confirmButtonColor: '#4ade80',
-    timer: 2500,
-    timerProgressBar: true,
-    customClass: {
-      htmlContainer: 'absolute top-[64px]',
-    },
-    showClass: {
-      popup: '',
-      backdrop: 'swal2-backdrop-show',
-      icon: 'swal2-icon-show',
-    },
-    didOpen: (toast) => {
-      toast.addEventListener('mouseenter', Swal.stopTimer);
-      toast.addEventListener('mouseleave', Swal.resumeTimer);
-    },
-  });
+  // const queryHook: SearchBoxProps['queryHook'] = (query, search) => {
+  //   const searchQuery = query.replace(/\s/g, '');
+  //   if (searchQuery === '') return;
+  //   search(searchQuery);
+  // };
 
   const handleSignOut = async () => {
-    const result = await Swal.fire({
-      title: 'Do you really want to sign out?',
-      showCancelButton: true,
-      confirmButtonText: 'Yes',
-      customClass: {
-        cancelButton: 'order-1 right-gap',
-        confirmButton: 'order-2',
-      },
-      confirmButtonColor: '#4ade80',
-    });
+    const result = await swal.warning('Wanna sign out?', '', 'yes');
 
     if (result.isConfirmed) {
       try {
         await authApi.signOut();
         dispatch(signOutStart());
         dispatch(signOutSuccess());
-        Toast.fire({
-          icon: 'success',
-          confirmButtonText: 'bye',
-          title: 'signed out. see u next time 👋',
-        });
+        swal.success('signed out. come back soon!', '', 'ok');
       } catch (error: any) {
-        Toast.fire({
-          icon: 'error',
-          title: 'something went wrong...',
-        });
+        swal.error('oh no!', 'something went wrong...try again later', 'ok');
         dispatch(signOutFail(error));
       }
     } else {
@@ -221,7 +173,7 @@ function Header() {
     <header
       className={`sticky top-0 z-40 flex h-11 h-16 w-screen flex-row items-center justify-between gap-5 border-b-4 border-solid border-green-400 bg-gray-100 px-16 `}
     >
-      {/*<ScreenSize />*/}
+      {<ScreenSize />}
       <NotificationsListener />
       <nav>
         <ul className='flex gap-4'>
@@ -298,13 +250,23 @@ function Header() {
             }}
           />
           {notificationShown && <NotificationsList />}
-          <div onClick={handleSignOut} className='cursor-pointer scroll-px-2.5 text-gray-500'>
+          <div
+            onClick={handleSignOut}
+            className='cursor-pointer scroll-px-2.5 text-neutral-500 decoration-2 underline-offset-2 hover:underline'
+          >
             sign out
           </div>
         </div>
       )}
 
       {isShown && <NotificationPopUp />}
+      <button
+        onClick={() => {
+          swal.error('oh no!', 'something went wrong...try again later', 'ok');
+        }}
+      >
+        swal
+      </button>
     </header>
   );
 }
