@@ -35,7 +35,7 @@ const CommentDiv: React.FC<CommentsProps> = ({ post, postIndex, comment, comment
           </div>
         </Link>
         <div className=' mb-1 flex items-end'>
-          <span className='mr-2 text-sm'>{`${timeDiff === 'just now' ? timeDiff : timeDiff + ' ago'}`}</span>
+          <span className='mr-2 text-sm'>{timeDiff}</span>
           <span className='text-sm'> ({formattedDateTime})</span>
         </div>
       </div>

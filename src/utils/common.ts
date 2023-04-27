@@ -22,17 +22,17 @@ export const getTimeDiff = (timestamp: Timestamp): string => {
   const mins = Math.floor(diff / minInMs);
 
   if (years > 0) {
-    return `${years} year${years > 1 ? 's' : ''}`;
+    return `${years} year${years > 1 ? 's' : ''} ago`;
   } else if (months > 0) {
-    return `${months} month${months > 1 ? 's' : ''}`;
+    return `${months} month${months > 1 ? 's' : ''} ago`;
   } else if (weeks > 0) {
-    return `${weeks} week${weeks > 1 ? 's' : ''}`;
+    return `${weeks} week${weeks > 1 ? 's' : ''} ago`;
   } else if (days > 0) {
-    return `${days} day${days > 1 ? 's' : ''}`;
+    return `${days} day${days > 1 ? 's' : ''} ago`;
   } else if (hours > 0) {
-    return `${hours} hour${hours > 1 ? 's' : ''}`;
+    return `${hours} hour${hours > 1 ? 's' : ''} ago`;
   } else if (mins > 0) {
-    return `${mins} minute${mins > 1 ? 's' : ''}`;
+    return `${mins} minute${mins > 1 ? 's' : ''} ago`;
   } else {
     return 'just now';
   }
