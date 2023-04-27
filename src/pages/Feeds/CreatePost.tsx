@@ -350,14 +350,15 @@ function CreatePost() {
                 {userName}
               </span>
             </div>
-            <div className='relative flex items-center justify-between'>
+            <div className='flex items-center justify-end gap-x-1'>
               <input
                 type='datetime-local'
                 value={formatDate(date)}
                 onChange={handleChange}
                 max={formatDate(new Date())}
+                className='cursor-pointer bg-transparent outline-0 after:cursor-pointer'
               />
-              <span className='mx-1 '>•</span>
+              <span className=''>•</span>
               {inputs.audience === 'public' ? (
                 <GlobeAsiaAustraliaIcon className=' h-4 w-4 ' title='public' />
               ) : (
@@ -366,7 +367,7 @@ function CreatePost() {
               <select
                 name='audience'
                 id=''
-                className='w-50 rounded '
+                className='w-50 cursor-pointer rounded bg-transparent outline-0'
                 value={inputs.audience}
                 onChange={handleInputChange}
               >
