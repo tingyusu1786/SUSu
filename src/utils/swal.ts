@@ -64,6 +64,12 @@ const swal = {
   error(title: string, text: string, confirmButtonText: string) {
     Error.fire({ title, text, confirmButtonText });
   },
+  showLoading() {
+    Swal.showLoading();
+  },
+  hideLoading() {
+    Swal.hideLoading();
+  },
 };
 
 // Swal.fire({

@@ -1,34 +1,14 @@
-import {
-  doc,
-  getDoc,
-  query,
-  Query,
-  onSnapshot,
-  QuerySnapshot,
-  Timestamp,
-  updateDoc,
-  where,
-  DocumentReference,
-  DocumentData,
-  deleteDoc,
-  startAfter,
-  arrayUnion,
-  arrayRemove,
-  or,
-  and,
-  collection,
-} from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL, deleteObject, getMetadata } from 'firebase/storage';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { updateProfile } from 'firebase/auth';
 import { Link, useParams } from 'react-router-dom';
 import { db, auth, storage } from '../services/firebase';
-import { useState, useEffect, ChangeEvent, KeyboardEvent, useRef } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
 import { User } from '../interfaces/interfaces';
 import { updateUserName, updateUserPhoto } from '../components/auth/authSlice';
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
+import swal from '../utils/swal';
 
 function Setting() {
   const dispatch = useAppDispatch();
@@ -44,7 +24,6 @@ function Setting() {
   });
   const [file, setFile] = useState<File | null>(null);
   const [imgPreview, setImgPreview] = useState<string>();
-  const MySwal = withReactContent(Swal);
 
   useEffect(() => {
     if (currentUserId === null) return;
@@ -53,7 +32,7 @@ function Setting() {
       setProfileUser(profileUser);
     };
     fectchProfileUser();
-  }, []);
+  }, [currentUserId]);
 
   useEffect(() => {
     if (!profileUser) {
@@ -154,28 +133,24 @@ function Setting() {
 
   const handleConfirmAll = async () => {
     try {
-      await updatePhoto();
-      await updateName();
-      await updateStatus();
-      MySwal.fire({ title: <p>Profile updated!</p>, icon: 'success', confirmButtonColor: '#4ade80' });
+      swal.showLoading();
+      await Promise.all([updatePhoto(), updateName(), updateStatus()]);
+      swal.hideLoading();
+      swal.success('Profile updated!', '', 'ok');
     } catch {
-      MySwal.fire({
-        title: <p>Something went wrong ☹ please try again</p>,
-        icon: 'error',
-        confirmButtonColor: '#b91c1c',
-      });
+      swal.hideLoading();
+      swal.error('something went wrong...', 'try again later', 'ok');
     }
   };
 
   if (currentUserId !== settingUserId) {
-    return <div>you don't have access to this page</div>;
+    return (
+      <main className='bg-boxes-diag relative flex min-h-[calc(100vh-64px)] items-center justify-center bg-fixed p-10 text-xl'>
+        you don't have access to this page
+      </main>
+    );
   }
-  if (currentUserId === null) {
-    return <div>please log in</div>;
-  }
-  if (profileUser === undefined) {
-    return <div>loading...</div>;
-  }
+
   return (
     <main className='bg-boxes-diag relative min-h-[calc(100vh-64px)] bg-fixed p-10'>
       <h1 className='mb-6 mt-10 text-center text-3xl'>Edit Profile</h1>
