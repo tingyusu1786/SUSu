@@ -1,12 +1,15 @@
 import { useState, useEffect, ChangeEvent } from 'react';
 import { db } from '../../services/firebase';
 import { collection, doc, getDoc, addDoc, getDocs, updateDoc, Timestamp } from 'firebase/firestore';
-import { useAppSelector } from '../../app/hooks';
+import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import dbApi from '../../utils/dbApi';
 import { StarIcon as SolidStar, TrashIcon, GlobeAsiaAustraliaIcon, UserIcon } from '@heroicons/react/24/solid';
 import { StarIcon as LineStar } from '@heroicons/react/24/outline';
+import { ReactComponent as SmileyWink } from '../../images/SmileyWink.svg';
+import { openAuthWindow } from '../../components/auth/authSlice';
 
 function CreatePost() {
+  const dispatch = useAppDispatch();
   const initialInput = {
     audience: 'public',
     brandId: '',
@@ -48,20 +51,20 @@ function CreatePost() {
   };
 
   const sugarOptions = [
-    '0（無糖）',
-    '1（一分糖）',
-    '2（二分糖）',
-    '3（三分/微糖）',
-    '4（四分糖）',
-    '5（五分/半糖）',
-    '6（六分糖）',
-    '7（七分/少糖）',
-    '8（八分糖）',
-    '9（九分糖）',
-    '10（全糖）',
-    'extra（多加糖）',
+    '無糖',
+    '一分糖',
+    '二分糖',
+    '三分/微糖',
+    '四分糖',
+    '五分/半糖',
+    '六分糖',
+    '七分/少糖',
+    '八分糖',
+    '九分糖',
+    '全糖',
+    '多加糖',
   ];
-  const iceOptions = ['溫/熱', '0（去冰）', '1', '2', '3（微冰）', '4', '5', '6', '7（少冰）', '8', '9', '10（正常）'];
+  const iceOptions = ['溫/熱', '去冰', '微冰', '少冰', '正常'];
 
   // 把所有brand列出來
   useEffect(() => {
@@ -326,241 +329,263 @@ function CreatePost() {
   };
 
   return (
-    <div className='relative mx-auto flex w-full max-w-3xl flex-col rounded-md border-[3px] border-solid border-neutral-900 bg-neutral-100 shadow-[4px_4px_#171717]'>
-      <div className='flex h-12 flex-nowrap items-center justify-between border-b-[3px] border-solid border-neutral-900 px-5'>
-        <div>
-          <img
-            src={userPhotoURL}
-            className='mr-2 inline-block h-9 w-9 rounded-full border-2 border-solid border-neutral-900 object-cover group-hover:border-green-400'
-          />
-          <span className='text-lg group-hover:underline group-hover:decoration-green-400 group-hover:decoration-wavy group-hover:underline-offset-[5px]'>
-            {userName}
-          </span>
-        </div>
-        <div className='relative flex items-center justify-between'>
-          <input type='datetime-local' value={formatDate(date)} onChange={handleChange} max={formatDate(new Date())} />
-          <span className='mx-1 '>•</span>
-          {inputs.audience === 'public' ? (
-            <GlobeAsiaAustraliaIcon className=' h-4 w-4 ' title='public' />
-          ) : (
-            <UserIcon className='h-4 w-4 ' title='private' />
-          )}
-          <select name='audience' id='' className='w-50 rounded ' value={inputs.audience} onChange={handleInputChange}>
-            <option value='public'>public</option>
-            <option value='private'>private</option>
-          </select>
-        </div>
-      </div>
-      <div className='flex flex-col gap-y-2 p-5'>
-        <div className='flex text-2xl'>
-          <span className=''>I drank </span>
-          {/*todo: text top cut*/}
-          <select
-            required
-            name='brandId'
-            className=' grow border-b-2 border-neutral-900 bg-transparent p-0 align-baseline text-2xl text-neutral-500 focus:outline-green-400'
-            value={inputs.brandId}
-            onChange={(e) => {
-              handleInputChange(e);
-            }}
-          >
-            <option value='' disabled className='w-56'>
-              select a brand
-            </option>
-            {brands.length !== 0 &&
-              brands.map((brand) => (
-                <option value={brand[0]} key={brand[0]} className=' align-baseline '>
-                  {brand[1]}
-                </option>
-              ))}
-          </select>
-          <span className=''>'s </span>
-          <select
-            required
-            disabled={itemsOfBrand.length === 0}
-            name='itemId'
-            className='w-1/2 grow border-b-2 border-neutral-900 bg-transparent p-0 align-baseline text-neutral-500 focus:outline-green-400'
-            value={inputs.itemId}
-            onChange={(e) => {
-              handleInputChange(e);
-            }}
-          >
-            <option value='' disabled className='w-68'>
-              select a item
-            </option>
-            {itemsOfBrand.length !== 0 &&
-              categories.length !== 0 &&
-              itemsOfBrand.map((itemsOfCategory, index) => (
-                <optgroup label={categories[index]?.[1]} key={index} className=''>
-                  {itemsOfCategory.length !== 0 &&
-                    itemsOfCategory.map((item) => (
-                      <option value={item[0]} key={item[0]} className='align-baseline '>
-                        {item[1]}
-                      </option>
-                    ))}
-                </optgroup>
-              ))}
-          </select>
-        </div>
-        <div className='flex items-center gap-1'>
-          <select
-            disabled={sizesOfItem.length === 0}
-            required
-            name='size'
-            id='size'
-            className='h-8 w-16 rounded-full border-2 border-solid border-neutral-900 px-1 pt-1 text-sm'
-            value={inputs.size}
-            onChange={handleInputChange}
-          >
-            <option value='' disabled>
-              size
-            </option>
-            {sizesOfItem.map((option) => (
-              <option value={option[0]} key={option[0]}>
-                {option[0]}
-              </option>
-            ))}
-          </select>
-          <span className='before:ml-3 before:content-["$"]'></span>
-          <input
-            required
-            name='price'
-            id='price'
-            type='number'
-            className='h-8 w-16 rounded-full border-2 border-solid border-neutral-900 p-0 px-1 pt-1 text-sm'
-            value={inputs.price}
-            onChange={handleInputChange}
-          />
-        </div>
-        <div className='flex gap-x-3'>
-          <div>
-            <span className='text-neutral-500'>sugar_ </span>
-            <select
-              required
-              name='sugar'
-              id='sugar'
-              className='h-8 w-36 rounded-full border-2 border-solid border-neutral-900 p-0 px-1 pt-1 text-sm focus:outline-green-400'
-              value={inputs.sugar}
-              onChange={handleInputChange}
-            >
-              <option value='' disabled>
-                choose sugar
-              </option>
-              {sugarOptions.map((option) => (
-                <option value={option} key={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
+    <>
+      {!currentUserId ? (
+        <div className='relative mx-auto flex w-full max-w-3xl items-center justify-center rounded-md border-[3px] border-solid border-neutral-900 bg-neutral-100 '>
+          <div className='group hover:cursor-pointer' onClick={() => dispatch(openAuthWindow())}>
+            <span className='decoration-2 group-hover:underline'>sign in</span>
+            &nbsp;to log your drinks
           </div>
-          <div>
-            <span className='text-neutral-500'>ice_ </span>
-            <select
-              required
-              name='ice'
-              id='ice'
-              className='h-8 w-36 rounded-full border-2 border-solid border-neutral-900 p-0 px-1 pt-1 text-sm focus:outline-green-400'
-              value={inputs.ice}
-              onChange={handleInputChange}
-            >
-              <option value='' disabled>
-                choose ice
-              </option>
-              {iceOptions.map((option) => (
-                <option value={option} key={option}>
-                  {option}
-                </option>
-              ))}
-            </select>
-          </div>
+          <SmileyWink className='ml-2' />
         </div>
-
-        <div className='flex text-amber-400'>
-          {['1', '2', '3', '4', '5'].map((num) => (
-            <label key={num} htmlFor={`rating-${num}`}>
-              {inputs.rating >= num ? (
-                <SolidStar className='h-8 transition-all duration-150 hover:scale-125 ' />
-              ) : (
-                <LineStar className='h-8 transition-all duration-150 hover:scale-125 ' />
-              )}
-
-              <input
-                id={`rating-${num}`}
-                className='hidden'
-                type='radio'
-                name='rating'
-                value={num}
-                checked={inputs.rating === num}
-                onChange={handleInputChange}
+      ) : (
+        <div className='relative mx-auto flex w-full max-w-3xl flex-col rounded-md border-[3px] border-solid border-neutral-900 bg-neutral-100 shadow-[4px_4px_#171717]'>
+          <div className='flex h-12 flex-nowrap items-center justify-between border-b-[3px] border-solid border-neutral-900 px-5'>
+            <div>
+              <img
+                src={userPhotoURL}
+                className='mr-2 inline-block h-9 w-9 rounded-full border-2 border-solid border-neutral-900 object-cover group-hover:border-green-400'
               />
-            </label>
-          ))}
-          {inputs.rating && (
-            <div key='x' className='ml-1 text-neutral-500'>
-              <label className='cursor-pointer' htmlFor={`rating-x`}>
-                &times;
-              </label>
+              <span className='text-lg group-hover:underline group-hover:decoration-green-400 group-hover:decoration-wavy group-hover:underline-offset-[5px]'>
+                {userName}
+              </span>
+            </div>
+            <div className='relative flex items-center justify-between'>
               <input
-                id={`rating-x`}
-                className='hidden'
-                type='radio'
-                name='rating'
-                value={undefined}
+                type='datetime-local'
+                value={formatDate(date)}
+                onChange={handleChange}
+                max={formatDate(new Date())}
+              />
+              <span className='mx-1 '>•</span>
+              {inputs.audience === 'public' ? (
+                <GlobeAsiaAustraliaIcon className=' h-4 w-4 ' title='public' />
+              ) : (
+                <UserIcon className='h-4 w-4 ' title='private' />
+              )}
+              <select
+                name='audience'
+                id=''
+                className='w-50 rounded '
+                value={inputs.audience}
+                onChange={handleInputChange}
+              >
+                <option value='public'>public</option>
+                <option value='private'>private</option>
+              </select>
+            </div>
+          </div>
+          <div className='flex flex-col gap-y-2 p-5'>
+            <div className='flex text-2xl'>
+              <span className=''>I drank </span>
+              {/*todo: text top cut*/}
+              <select
+                required
+                name='brandId'
+                className=' grow border-b-2 border-neutral-900 bg-transparent p-0 align-baseline text-2xl text-neutral-500 focus:outline-green-400'
+                value={inputs.brandId}
+                onChange={(e) => {
+                  handleInputChange(e);
+                }}
+              >
+                <option value='' disabled className='w-56'>
+                  select a brand
+                </option>
+                {brands.length !== 0 &&
+                  brands.map((brand) => (
+                    <option value={brand[0]} key={brand[0]} className=' align-baseline '>
+                      {brand[1]}
+                    </option>
+                  ))}
+              </select>
+              <span className=''>'s </span>
+              <select
+                required
+                disabled={itemsOfBrand.length === 0}
+                name='itemId'
+                className='w-1/2 grow border-b-2 border-neutral-900 bg-transparent p-0 align-baseline text-neutral-500 focus:outline-green-400'
+                value={inputs.itemId}
+                onChange={(e) => {
+                  handleInputChange(e);
+                }}
+              >
+                <option value='' disabled className='w-68'>
+                  select a item
+                </option>
+                {itemsOfBrand.length !== 0 &&
+                  categories.length !== 0 &&
+                  itemsOfBrand.map((itemsOfCategory, index) => (
+                    <optgroup label={categories[index]?.[1]} key={index} className=''>
+                      {itemsOfCategory.length !== 0 &&
+                        itemsOfCategory.map((item) => (
+                          <option value={item[0]} key={item[0]} className='align-baseline '>
+                            {item[1]}
+                          </option>
+                        ))}
+                    </optgroup>
+                  ))}
+              </select>
+            </div>
+            <div className='flex items-center gap-1'>
+              <select
+                disabled={sizesOfItem.length === 0}
+                required
+                name='size'
+                id='size'
+                className='h-8 w-16 rounded-full border-2 border-solid border-neutral-900 px-1 pt-1 text-sm'
+                value={inputs.size}
+                onChange={handleInputChange}
+              >
+                <option value='' disabled>
+                  size
+                </option>
+                {sizesOfItem.map((option) => (
+                  <option value={option[0]} key={option[0]}>
+                    {option[0]}
+                  </option>
+                ))}
+              </select>
+              <span className='before:ml-3 before:content-["$"]'></span>
+              <input
+                required
+                name='price'
+                id='price'
+                type='number'
+                className='h-8 w-16 rounded-full border-2 border-solid border-neutral-900 p-0 px-1 pt-1 text-sm'
+                value={inputs.price}
                 onChange={handleInputChange}
               />
             </div>
-          )}
-        </div>
-        <textarea
-          name='selfComment'
-          id='selfComment'
-          className='w-full border-b-2 border-neutral-900 bg-transparent p-2 text-xl focus:outline-green-400'
-          placeholder='say something'
-          value={inputs.selfComment}
-          onChange={handleInputChange}
-        />
+            <div className='flex gap-x-3'>
+              <div>
+                <span className='text-neutral-500'>sugar_ </span>
+                <select
+                  required
+                  name='sugar'
+                  id='sugar'
+                  className='h-8 w-36 rounded-full border-2 border-solid border-neutral-900 p-0 px-1 pt-1 text-sm focus:outline-green-400'
+                  value={inputs.sugar}
+                  onChange={handleInputChange}
+                >
+                  <option value='' disabled>
+                    choose sugar
+                  </option>
+                  {sugarOptions.map((option) => (
+                    <option value={option} key={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <span className='text-neutral-500'>ice_ </span>
+                <select
+                  required
+                  name='ice'
+                  id='ice'
+                  className='h-8 w-36 rounded-full border-2 border-solid border-neutral-900 p-0 px-1 pt-1 text-sm focus:outline-green-400'
+                  value={inputs.ice}
+                  onChange={handleInputChange}
+                >
+                  <option value='' disabled>
+                    choose ice
+                  </option>
+                  {iceOptions.map((option) => (
+                    <option value={option} key={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
 
-        <div>
-          <span>#</span>
-          <input
-            onKeyPress={(e) => handleTagInputKeyPress(e)}
-            onChange={(e) => setCustomTagsInput(e.target.value)}
-            value={customTagsInput}
-            type='text'
-            placeholder='add your hashtags'
-            className='bg-transparent focus:outline-green-400'
-          />
-          <div className='flex flex-wrap gap-x-3'>
-            {autoTags.map(
-              (tag, index) =>
-                tag !== '' && (
-                  <div key={index} className='text-neutral-400 before:mr-px before:content-["#"]'>
-                    {tag}
-                  </div>
-                )
-            )}
-            {customTags.map(
-              (tag, index) =>
-                tag !== '' && (
-                  <div key={index} className=''>
-                    <span className='text-neutral-400 before:mr-px before:content-["#"]'>{tag}</span>
-                    <span
-                      onClick={() => removeTag(index)}
-                      className='ml-1 cursor-pointer text-neutral-500 hover:text-red-500'
-                    >
-                      &times;
-                    </span>
-                  </div>
-                )
-            )}
+            <div className='flex text-amber-400'>
+              {['1', '2', '3', '4', '5'].map((num) => (
+                <label key={num} htmlFor={`rating-${num}`}>
+                  {inputs.rating >= num ? (
+                    <SolidStar className='h-8 transition-all duration-150 hover:scale-125 ' />
+                  ) : (
+                    <LineStar className='h-8 transition-all duration-150 hover:scale-125 ' />
+                  )}
+
+                  <input
+                    id={`rating-${num}`}
+                    className='hidden'
+                    type='radio'
+                    name='rating'
+                    value={num}
+                    checked={inputs.rating === num}
+                    onChange={handleInputChange}
+                  />
+                </label>
+              ))}
+              {inputs.rating && (
+                <div key='x' className='ml-1 text-neutral-500'>
+                  <label className='cursor-pointer' htmlFor={`rating-x`}>
+                    &times;
+                  </label>
+                  <input
+                    id={`rating-x`}
+                    className='hidden'
+                    type='radio'
+                    name='rating'
+                    value={undefined}
+                    onChange={handleInputChange}
+                  />
+                </div>
+              )}
+            </div>
+            <textarea
+              name='selfComment'
+              id='selfComment'
+              className='w-full border-b-2 border-neutral-900 bg-transparent p-2 text-xl focus:outline-green-400'
+              placeholder='say something'
+              value={inputs.selfComment}
+              onChange={handleInputChange}
+            />
+
+            <div>
+              <span>#</span>
+              <input
+                onKeyPress={(e) => handleTagInputKeyPress(e)}
+                onChange={(e) => setCustomTagsInput(e.target.value)}
+                value={customTagsInput}
+                type='text'
+                placeholder='add your hashtags'
+                className='bg-transparent focus:outline-green-400'
+              />
+              <div className='flex flex-wrap gap-x-3'>
+                {autoTags.map(
+                  (tag, index) =>
+                    tag !== '' && (
+                      <div key={index} className='text-neutral-400 before:mr-px before:content-["#"]'>
+                        {tag}
+                      </div>
+                    )
+                )}
+                {customTags.map(
+                  (tag, index) =>
+                    tag !== '' && (
+                      <div key={index} className=''>
+                        <span className='text-neutral-400 before:mr-px before:content-["#"]'>{tag}</span>
+                        <span
+                          onClick={() => removeTag(index)}
+                          className='ml-1 cursor-pointer text-neutral-500 hover:text-red-500'
+                        >
+                          &times;
+                        </span>
+                      </div>
+                    )
+                )}
+              </div>
+            </div>
+            <button onClick={handlePostSubmit} className='button'>
+              submit
+            </button>
           </div>
         </div>
-        <button onClick={handlePostSubmit} className='button'>
-          submit
-        </button>
-      </div>
-      {/*{currentUserId ? <div className='flex flex-col items-start gap-3'></div> : <div>please sign in to post</div>}*/}
-    </div>
+      )}
+    </>
   );
 }
 

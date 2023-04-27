@@ -23,12 +23,14 @@ import {
   or,
   and,
 } from 'firebase/firestore';
+import { openAuthWindow } from '../../components/auth/authSlice';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { Post } from '../../interfaces/interfaces';
 import PostCard from './PostCard';
 import { v4 as uuidv4 } from 'uuid';
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
+import { ReactComponent as SmileyWink } from '../../images/SmileyWink.svg';
 
 interface PostsProps {
   onlySeeFollowing?: boolean;
@@ -657,18 +659,32 @@ const PostsFeed: React.FC<PostsProps> = ({
   };
 
   if (onlySeeFollowing && !currentUserId) {
-    return <div>login to see your follower's posts</div>;
+    return (
+      <div className='relative mx-auto mt-10 flex w-full max-w-3xl items-center justify-center rounded-md border-[3px] border-solid border-neutral-900 bg-neutral-100 '>
+        <div className='group hover:cursor-pointer' onClick={() => dispatch(openAuthWindow())}>
+          <span className='decoration-2 group-hover:underline'>sign in</span>
+          &nbsp;to see logs from people you follow
+        </div>
+        <SmileyWink className='ml-2' />
+      </div>
+    );
   }
 
   if (onlySeeFollowing && (currentUser.following === undefined || currentUser.following?.length === 0)) {
-    return <div>follow users to their posts</div>;
+    return (
+      <div className='relative mx-auto mt-10 flex w-full max-w-3xl items-center justify-center rounded-md border-[3px] border-solid border-neutral-900 bg-neutral-100 '>
+        follow some users to see their posts
+      </div>
+    );
   }
 
   return (
     <div className='justify-top flex flex-col items-center gap-3'>
       {hashtagFilter && (
         <div>
-          <span className='before:content-["#"]'>{hashtagFilter}</span>
+          <div className='mr-2 inline-block bg-gradient-to-l from-sky-500 to-green-500 bg-clip-text text-transparent before:mr-px before:content-["#"]'>
+            {hashtagFilter}
+          </div>
           <button
             onClick={() => {
               setHashtagFilter(undefined);
@@ -695,7 +711,7 @@ const PostsFeed: React.FC<PostsProps> = ({
           handleClickHashtag={handleClickHashtag}
         />
       ))}
-
+      {isFetching && <SmileyWink className='mx-auto mt-20 animate-bounce' />}
       <span>{bottomMessage}</span>
     </div>
   );

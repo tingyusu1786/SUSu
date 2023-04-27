@@ -3,6 +3,7 @@ import { ChangeEvent, KeyboardEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '../../app/hooks';
 import { Post } from '../../interfaces/interfaces';
+import { ReactComponent as SmileyWink } from '../../images/SmileyWink.svg';
 
 interface PostProps {
   post: Post;

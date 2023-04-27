@@ -275,8 +275,9 @@ function Header() {
       </nav>
 
       {!isSignedIn && (
-        <div onClick={() => dispatch(openAuthWindow())} className='group relative cursor-pointer '>
-          <span>sign in to see your profile and notifications!</span>
+        <div className='group relative hover:cursor-pointer ' onClick={() => dispatch(openAuthWindow())}>
+          <span className='decoration-2 group-hover:underline'>sign in</span>
+          <span>&nbsp;to see your profile and notifications!</span>
         </div>
       )}
 

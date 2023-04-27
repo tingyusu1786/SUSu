@@ -150,7 +150,7 @@ const PostCard: React.FC<PostProps> = ({
         <div className='flex flex-wrap gap-x-3'>
           {post.hashtags?.map((hashtag) => (
             <button
-              className=' text-neutral-400 before:mr-px before:content-["#"] hover:bg-gradient-to-l hover:from-sky-500 hover:to-green-500 hover:bg-clip-text hover:text-transparent'
+              className='text-neutral-400 before:mr-px before:content-["#"] hover:bg-gradient-to-l hover:from-sky-500 hover:to-green-500 hover:bg-clip-text hover:text-transparent'
               key={hashtag}
               onClick={() => {
                 handleClickHashtag(hashtag);
