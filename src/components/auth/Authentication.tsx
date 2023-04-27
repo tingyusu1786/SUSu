@@ -364,7 +364,7 @@ function Authentication() {
             }}
             className='button mb-3 h-10 w-full rounded-full bg-white p-0 text-xl transition-all duration-100 hover:bg-green-400'
           >
-            Log in by email
+            Sign in by email
           </button>
         ) : (
           <button
@@ -389,7 +389,7 @@ function Authentication() {
               }}
               aria-label='Create an account'
             >
-              Create one
+              Sign up
             </span>
           </div>
         ) : (
@@ -402,7 +402,7 @@ function Authentication() {
               }}
               aria-label='Log in with email'
             >
-              Log in
+              Sign in
             </span>
           </div>
         )}
