@@ -290,13 +290,13 @@ function Header() {
       )}
 
       {/*{isShown && <NotificationPopUp />}*/}
-      <button
+      {/*<button
         onClick={() => {
           swal.success('Signed up successful!', '', 'cool');
         }}
       >
         swal
-      </button>
+      </button>*/}
     </header>
   );
 }

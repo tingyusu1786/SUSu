@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import { db } from '../../services/firebase';
 import { Link } from 'react-router-dom';
-import { doc, DocumentSnapshot, DocumentReference, DocumentData, onSnapshot } from 'firebase/firestore';
+import { doc, DocumentSnapshot, DocumentReference, DocumentData, onSnapshot, updateDoc } from 'firebase/firestore';
 import dbApi from '../../utils/dbApi';
 import { openAuthWindow } from '../../components/auth/authSlice';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { getTimeDiff } from '../../utils/common';
 import { Notification } from '../../interfaces/interfaces';
+import swal from '../../utils/swal';
 
 export function NotificationsList() {
   const dispatch = useAppDispatch();
@@ -87,44 +88,71 @@ export function NotificationsList() {
     setNotifications(currentUserNotifications);
   };
 
-  if (!isSignedIn) {
-    return (
-      <div className='text-center font-heal text-3xl'>
-        <button className='underline' onClick={() => dispatch(openAuthWindow())}>
-          sign in
-        </button>
-        <span> to see your notification</span>
-      </div>
-    );
-  }
+  const handleClearNotification = async () => {
+    if (!currentUserId) return;
+    const result = await swal.warning('clear all notifications?', 'this cannot be undone!', 'yes');
+
+    if (result.isConfirmed) {
+      // updateDoc
+      const userRef = doc(db, 'users', currentUserId);
+      await updateDoc(userRef, { notifications: [] });
+      // setState
+      setNotifications([]);
+      swal.success('Notifications cleared!', '', 'ok');
+    } else {
+      return;
+    }
+  };
 
   return (
-    <div className='justify-top absolute right-5 top-20 flex max-h-96 w-96 flex-col items-center gap-1 overflow-scroll text-xl'>
+    <div className='justify-top animate__animated animate__bounceInRight absolute right-5 top-20 flex max-h-[100vh-64px] w-96 flex-col items-center gap-2 overflow-scroll rounded-lg border-4 border-neutral-900 bg-neutral-100 p-5 shadow-lg'>
       {notifications.length === 0 && <div>no notification yet</div>}
       {notifications.length > 0 && <div>({notifications?.length})</div>}
+      {notifications.length > 0 && (
+        <button onClick={handleClearNotification} className='outline-0'>
+          clear all
+        </button>
+      )}
       {notifications.map((notification, index) => {
         const timeDiff = getTimeDiff(notification.timeCreated);
+        let html: JSX.Element = <></>;
+        switch (notification.type) {
+          case 'follow': {
+            html = (
+              <a href={`/profile/${notification.authorId}`} className='group text-neutral-500'>
+                <span className='transition-all duration-300 group-hover:text-green-400 '>
+                  {notification.authorName}
+                </span>{' '}
+                started following you!
+              </a>
+            );
+            break;
+          }
+          case 'like': {
+            html = (
+              <a href={`/log/${notification.postId}`} className='group text-neutral-500'>
+                {notification.authorName} liked your&nbsp;
+                <span className='transition-all duration-300 group-hover:text-green-400 '>log</span>!
+              </a>
+            );
+            break;
+          }
+          case 'comment': {
+            html = (
+              <a href={`/log/${notification.postId}`} className='group text-neutral-500'>
+                {notification.authorName} commented <span className='text-neutral-900'>"{notification.content}"</span>{' '}
+                on your <span className='transition-all duration-300 group-hover:text-green-400 '>log</span>!
+              </a>
+            );
+            break;
+          }
+        }
         return (
-          <div className={`${notification.unread ? 'bg-lime-100' : 'bg-gray-100'} w-96 rounded p-2`} key={index}>
-            <Link to={`/profile/${notification.authorId}`} className='hover:font-bold'>
-              {notification.authorName}
-            </Link>
-            {notification.type === 'follow' ? (
-              <span> {` started following you!`}</span>
-            ) : (
-              <Link to={`/log/${notification.postId}`}>
-                <span>
-                  {` ${notification.type}${notification.type === 'like' ? 'd' : 'ed'} on your post! (post id: ${
-                    notification.postId
-                  })`}
-                </span>
-              </Link>
-            )}
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <span className='text-gray-500'>
-              {timeDiff}{' '}
-              <span className='text-xs text-gray-500'>({notification.timeCreated.toDate().toLocaleString()})</span>
-            </span>
+          <div
+            className='group w-full overflow-x-scroll rounded border-2 border-neutral-900 bg-white p-2 text-sm shadow-md transition-all duration-300 hover:-translate-y-1'
+            key={index}
+          >
+            {html}
           </div>
         );
       })}
