@@ -8,9 +8,9 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../services/firebase';
 import { EyeIcon, EyeSlashIcon, HeartIcon } from '@heroicons/react/24/solid';
 import Button from '../../components/Button';
-import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import 'animate.css';
+import swal from '../../utils/swal';
 
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import {
@@ -35,25 +35,6 @@ function Authentication() {
   const nameRef = useRef(null);
   const emailRef = useRef(null);
   const passwordRef = useRef(null);
-  const MySwal = withReactContent(Swal);
-
-  const Toast = Swal.mixin({
-    toast: true,
-    position: 'top-end',
-    showConfirmButton: true,
-    confirmButtonColor: '#4ade80',
-    timer: 2500,
-    timerProgressBar: true,
-    showClass: {
-      popup: '',
-      backdrop: 'swal2-backdrop-show',
-      icon: 'swal2-icon-show',
-    },
-    didOpen: (toast) => {
-      toast.addEventListener('mouseenter', Swal.stopTimer);
-      toast.addEventListener('mouseleave', Swal.resumeTimer);
-    },
-  });
 
   useEffect(() => {
     //todo: any
@@ -96,12 +77,7 @@ function Authentication() {
         photoURL: user.photoURL,
         timeCreated: new Date(),
       });
-      Toast.fire({
-        icon: 'success',
-        title: 'Signed up successful 🫰',
-        confirmButtonText: 'ya',
-      });
-      // alert(`Signed up user: ${user.displayName} (${user.email})`);
+      swal.success('Signed up successful!', '', 'cool');
       dispatch(
         signInSuccess({
           user: {
@@ -117,12 +93,7 @@ function Authentication() {
     } catch (error: any) {
       const errorCode = error.code;
       const errorMessage = error.message;
-      // alert(`error: ${errorMessage}, code: ${errorCode}`);
-      MySwal.fire({
-        title: `☹️ ${errorCode}`,
-        icon: 'error',
-        confirmButtonColor: '#b91c1c',
-      });
+      swal.error(`☹️ ${errorCode}`, 'try again', 'ok');
       dispatch(signInFail(errorMessage));
     }
   };
@@ -154,21 +125,11 @@ function Authentication() {
           signInSuccess({ user: filteredUserData, id: user.uid, name: userData.name, photoURL: userData.photoURL })
         );
       }
-      Toast.fire({
-        icon: 'success',
-        title: `Welcome back ${userData?.name} 🫰`,
-        confirmButtonText: 'hi!',
-      });
-      // alert(`Logged in user: ${userDoc.data()?.name} (${user.email})`);
+      swal.success(`Welcome back ${userData?.name}!`, '', 'hi');
     } catch (error: any) {
       const errorCode = error.code;
       const errorMessage = error.message;
-      // alert(`error: ${errorMessage}, code: ${errorCode}`);
-      MySwal.fire({
-        title: `☹️ ${errorCode}`,
-        icon: 'error',
-        confirmButtonColor: '#b91c1c',
-      });
+      swal.error(`☹️ ${errorCode}`, 'try again', 'ok');
       dispatch(signInFail(errorMessage));
     }
   };
@@ -200,19 +161,9 @@ function Authentication() {
             photoURL: user.photoURL,
             timeCreated: serverTimestamp(),
           });
-          Toast.fire({
-            icon: 'success',
-            title: `Hi ${user.displayName} 🫰`,
-            confirmButtonText: 'hi!',
-          });
-          // alert(`google sign up successful, new user created: ${user.displayName}`);
+          swal.success(`Hi ${user.displayName}!`, '', 'hi~');
         } else {
-          Toast.fire({
-            icon: 'success',
-            title: `Welcome back ${user.displayName} 🫰`,
-            confirmButtonText: 'hi!',
-          });
-          // alert(`google sign in successful, user: ${user.displayName}`);
+          swal.success(`Welcome back ${user.displayName} 🫰`, '', 'hi~');
         }
         const userDoc = await getDoc(doc(db, 'users', user.uid));
 
@@ -232,32 +183,17 @@ function Authentication() {
     } catch (error: any) {
       const errorCode = error.code;
       const errorMessage = error.message;
-      MySwal.fire({
-        title: `☹️ ${errorCode}`,
-        icon: 'error',
-        confirmButtonColor: '#b91c1c',
-      });
-      // alert(`error: ${errorMessage}, code: ${errorCode}`);
+      swal.error(`☹️ ${errorCode}`, 'try again', 'ok');
       dispatch(signInFail(errorMessage));
 
       // The email of the user's account used
       const errEmail = error.customData.email;
-      MySwal.fire({
-        title: `☹️ error: email used (${errEmail})`,
-        icon: 'error',
-        confirmButtonColor: '#b91c1c',
-      });
-      // alert(`error: email used: ${errEmail}`);
+      swal.error(`☹️ error: email used (${errEmail})`, 'try again', 'ok');
 
       // The AuthCredential type that was used
       // const credential = GoogleAuthProvider.credentialFromError(error);
       const errorOAuthCredential = await authApi.getErrorOAuthCredential(error);
-      // alert(`credential error: ${errorOAuthCredential}`);
-      MySwal.fire({
-        title: `☹️ credential error: ${errorOAuthCredential}`,
-        icon: 'error',
-        confirmButtonColor: '#b91c1c',
-      });
+      swal.error(`☹️ credential error: ${errorOAuthCredential}`, 'try again', 'ok');
     }
   };
 
