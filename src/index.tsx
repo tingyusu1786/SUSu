@@ -8,6 +8,7 @@ import App from './App';
 import Profile from './pages/Profile/Profile';
 import Setting from './pages/Setting';
 import Home from './pages/Home';
+import Log from './pages/Log';
 import Feeds from './pages/Feeds/Feeds';
 import Catalogue from './pages/Catalogue/Catalogue';
 import Inspiration from './pages/Inspiration';
@@ -31,6 +32,7 @@ root.render(
           />
           <Route path='/setting/:settingUserId' element={<Setting />} />
           <Route path='/feeds/:postId?' element={<Feeds />} />
+          <Route path='/log/:logId?' element={<Log />} />
           <Route path='/catalogue/:catalogueBrandId?/:catalogueItemId?' element={<Catalogue />} />
           <Route path='/inspiration' element={<Inspiration />} />
           <Route path='/search' element={<Search />} />

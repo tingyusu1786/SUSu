@@ -16,6 +16,8 @@ import {
   updateDoc,
   where,
   DocumentData,
+  DocumentReference,
+  DocumentSnapshot,
   deleteDoc,
   startAfter,
   arrayUnion,
@@ -33,7 +35,8 @@ import { ReactComponent as SmileyWink } from '../../images/SmileyWink.svg';
 
 interface PostsProps {
   onlySeeFollowing?: boolean;
-  currentPage: 'posts' | 'profile' | 'brand' | 'item';
+  currentPage: 'posts' | 'profile' | 'brand' | 'item' | 'log';
+  logId?: string;
   profileUserId?: string;
   catalogueBrandId?: string;
   catalogueItemId?: string;
@@ -42,6 +45,7 @@ interface PostsProps {
 const PostsFeed: React.FC<PostsProps> = ({
   onlySeeFollowing = false,
   currentPage,
+  logId,
   profileUserId,
   catalogueBrandId,
   catalogueItemId,
@@ -64,6 +68,10 @@ const PostsFeed: React.FC<PostsProps> = ({
       onlySeeFollowing &&
       (currentUser.following === undefined || currentUser.following?.length === 0 || !currentUserId)
     ) {
+      return;
+    }
+
+    if (currentPage === 'log') {
       return;
     }
 
@@ -451,6 +459,29 @@ const PostsFeed: React.FC<PostsProps> = ({
           limit(5)
         );
       }
+    } else if (currentPage === 'log') {
+      if (logId) {
+        const logDoc: DocumentSnapshot<DocumentData> = await getDoc(doc(db, 'posts', logId));
+        if (!logDoc.exists()) {
+          setPosts([]);
+          setIsFetching(false);
+          return;
+        }
+        const logDocData = logDoc.data();
+        const logWithQueriedInfos = {
+          ...(await dbApi.getPostInfo(logDocData)),
+          postId: logId,
+          commentsShown: false,
+          commentInput: '',
+        };
+        setPosts([logWithQueriedInfos]);
+        setIsFetching(false);
+        return;
+      } else {
+        setPosts([]);
+        setIsFetching(false);
+        return;
+      }
     }
 
     const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);
@@ -659,6 +690,10 @@ const PostsFeed: React.FC<PostsProps> = ({
         follow some users to see their posts
       </div>
     );
+  }
+
+  if (posts === undefined) {
+    return <div>undefineddd</div>;
   }
 
   return (
