@@ -455,15 +455,24 @@ const PostsFeed: React.FC<PostsProps> = ({
     }
 
     const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);
+
     if (querySnapshot.docs.length === 0) {
-      if (currentPage === 'brand' || currentPage === 'item') {
-        setBottomMessage('');
-      } else {
-        setBottomMessage('no more posts');
-      }
-      // console.log('no more posts');
+      setTimeout(() => {
+        setIsFetching(false);
+        if (currentPage === 'brand' || currentPage === 'item') {
+          if (posts.length === 0) {
+            setBottomMessage('no logs yet');
+          } else {
+            setBottomMessage('no more logs');
+          }
+        } else {
+          setBottomMessage('no more logs');
+        }
+      }, 800);
+
       return;
     }
+
     const postsArray = querySnapshot.docs.map(async (change) => {
       const postData = change.data();
       return {
