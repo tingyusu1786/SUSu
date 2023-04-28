@@ -5,6 +5,9 @@ import { Timestamp } from 'firebase/firestore';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { addAllBrands } from '../../app/infoSlice';
 import dbApi from '../../utils/dbApi';
+import { ReactComponent as Streak } from '../../images/Streak.svg';
+import { ReactComponent as Store } from '../../images/Store.svg';
+import { ReactComponent as Expense } from '../../images/Expense.svg';
 
 interface AllPostsProps {
   profileUserPosts: any[];
@@ -26,12 +29,10 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts }) => {
   const [drankBrands, setDrankBrands] = useState<Record<string, { brandName: string; times: number }>>();
   const [drankItems, setDrankItems] = useState<Record<string, { times: number }>>();
   const [streaks, setStreaks] = useState<{ current: number; longest: number }>({ current: 0, longest: 0 });
+  const [numMonthBefore, setNumMonthBefore] = useState(12);
 
   // for heatmap
   const [values, setValues] = useState<{ date: Date; count: number }[]>();
-  const endDate = new Date();
-  const startDate = new Date(endDate.getTime());
-  startDate.setMonth(startDate.getMonth() - 6);
 
   useEffect(() => {
     if (Object.keys(allBrandsInfo).length > 0) return;
@@ -186,35 +187,94 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts }) => {
 
   return (
     <div className='flex w-full flex-col items-center gap-10'>
-      <div>current streak {streaks.current}天</div>
-      <div>longest streak {streaks.longest}天</div>
-      <div>總共花ㄌ${priceStatistic.overall}</div>
-      <div>今年花ㄌ${priceStatistic.year}</div>
-      <div>這個月花ㄌ${priceStatistic.month}</div>
-      <div>這禮拜花ㄌ${priceStatistic.week}</div>
-      <div>今天花ㄌ${priceStatistic.day}</div>
-      <div>
-        最常喝的是{getMostDrankBrand()?.name} ({getMostDrankBrand()?.times})
+      <div className='grid w-full max-w-[900px] grid-cols-2 items-center gap-x-5 gap-y-5'>
+        <div className='col-span-2 ml-3 text-xl before:mr-2 before:content-["✦"]'>statistics</div>
+        {getMostDrankBrand() && (
+          <div className='col-span-2 grid grid-cols-[50px_1fr] items-center rounded-xl border-2 border-solid border-neutral-900 bg-neutral-100 px-10 py-5 shadow-[3px_3px_#171717] transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[3px_6px_#171717]'>
+            <Store className='row-span-2' />
+            <div className='text-xl'>{getMostDrankBrand()?.name}</div>
+            <div className='text-neutral-500'>most frequently drank</div>
+          </div>
+        )}
+        {Object.entries(streaks).map((streak) => (
+          <div className='grid grid-cols-[50px_1fr] items-center rounded-xl border-2 border-solid border-neutral-900 bg-neutral-100 px-10 py-5 shadow-[3px_3px_#171717] transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[3px_6px_#171717]'>
+            <Streak className='row-span-2' />
+            <div className='text-xl'>{streak[1]}</div>
+            <div className='text-neutral-500'>{streak[0]} streak days</div>
+          </div>
+        ))}
+        <div className='ml-5 flex gap-1 text-neutral-500'>
+          {[
+            ['last year', 12],
+            ['last 6 months', 6],
+            ['last month', 1],
+          ].map((num) => (
+            <button
+              className={`rounded-t-full border-x-2 border-t-2 border-neutral-900 px-3 pt-1 text-sm ${
+                numMonthBefore === num[1] && 'bg-neutral-400 text-white'
+              }`}
+              onClick={() => setNumMonthBefore(num[1] as number)}
+            >
+              {num[0]}
+            </button>
+          ))}
+        </div>
+        {values && (
+          <div className='container col-span-2 -mt-5 max-w-[900px] rounded-xl border-2 border-solid border-neutral-900 bg-neutral-100 px-10 py-5 shadow-[3px_3px_#171717] transition-all transition-all duration-200 duration-200 hover:-translate-y-[3px] hover:shadow-[3px_6px_#171717]'>
+            <CalendarHeatmapComponent values={values} numMonthBefore={numMonthBefore} />
+          </div>
+        )}
       </div>
-      <div>
-        <h3>drank brands</h3>
-        <div className='flex w-[900px] flex-wrap gap-3'>
-          {drankBrands &&
-            Object.entries(drankBrands).map((brand, index) => (
+
+      <div className='grid w-full max-w-[900px] grid-cols-5 items-center gap-x-5 gap-y-5'>
+        <div className='col-span-full ml-3 text-xl before:mr-2 before:content-["✦"]'>expenses</div>
+        {Object.entries(priceStatistic)
+          .reverse()
+          .map((expense) => (
+            <div className='grid grid-cols-[50px_1fr] items-center rounded-xl border-2 border-solid border-neutral-900 bg-neutral-100 px-5 py-3 shadow-[3px_3px_#171717] transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[3px_6px_#171717]'>
+              <Expense className='row-span-2' />
+              <div className='text-xl before:content-["$"]'>{expense[1]}</div>
+              <div className='text-neutral-500'>{expense[0]}</div>
+            </div>
+          ))}
+      </div>
+      <div className='grid w-full max-w-[900px] grid-cols-3 items-stretch gap-x-5 gap-y-5 lg:grid-cols-2 sm:grid-cols-3'>
+        <div className='col-span-full ml-3 text-xl before:mr-2 before:content-["✦"]'>drank brands</div>
+        {drankBrands &&
+          Object.entries(drankBrands).map((brand, index) =>
+            brand[1].times !== 0 ? (
               <div
                 key={brand[0]}
-                className={`h-24 w-24 rounded bg-lime-${brand[1].times === 0 ? '100' : '300'} order-${
-                  brand[1].times
-                } hover:grow`}
+                className='relative flex flex-col items-center rounded-xl border-2 border-solid border-neutral-900 bg-neutral-50 px-5 py-2 shadow-[3px_3px_#171717] transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[3px_6px_#171717]'
               >
-                {<img src={allBrandsInfo[brand[0]]?.photoURL} alt='' />}
-                <span>{brand[1].brandName}</span>
-                {brand[1].times !== 0 && (
-                  <div className='h-6 w-6 rounded-full bg-lime-800 text-center text-white'>{brand[1].times}</div>
-                )}
+                <div className='flex h-3/4 items-center justify-center'>
+                  <img src={allBrandsInfo[brand[0]]?.photoURL} alt='' className='w-20' />
+                </div>
+                {/*<div className=''></div>*/}
+                <div className='mt-auto pt-3'>
+                  <span className='text-lg sm:text-base'>{brand[1].brandName}</span>
+                  <span className='text-neutral-600  sm:hidden'>
+                    &nbsp;x&nbsp;{brand[1].times} {brand[1].times > 1 ? 'times' : 'time'}
+                  </span>
+                </div>
               </div>
-            ))}
-        </div>
+            ) : (
+              <div
+                key={brand[0]}
+                className='relative flex flex-col items-center rounded-xl border-2 border-solid border-neutral-300 bg-gray-50 px-5 py-2'
+              >
+                {brand[1].times !== 0 && (
+                  <div className='absolute h-6 w-6 rounded-full bg-green-400 text-center text-white'>
+                    {brand[1].times}
+                  </div>
+                )}
+                <div className='flex h-3/4 items-center justify-center'>
+                  <img src={allBrandsInfo[brand[0]]?.photoURL} alt='' className='w-20 opacity-30 grayscale' />
+                </div>
+                <div className='mt-auto pt-3 text-neutral-300'>{brand[1].brandName}</div>
+              </div>
+            )
+          )}
       </div>
       <div>
         {drankBrands && drankItems && (
@@ -226,7 +286,6 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts }) => {
           />
         )}
       </div>
-      {values && <CalendarHeatmapComponent startDate={startDate} endDate={endDate} values={values} />}
     </div>
   );
 };
