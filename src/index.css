@@ -18,6 +18,9 @@
   .button {
     @apply rounded border-2 border-solid border-slate-900 pt-1 shadow-[3px_3px_#171717] active:translate-y-0.5 active:shadow-[1px_1px_#171717];
   }
+  .navLi {
+    @apply relative mt-8 block overflow-hidden pb-8 before:absolute before:whitespace-nowrap before:text-transparent before:underline before:underline-offset-8 before:content-[attr(data-text)attr(data-text)] hover:before:animate-wave hover:before:decoration-sky-400 hover:before:decoration-wavy;
+  }
 }
 
 @layer utilities {
