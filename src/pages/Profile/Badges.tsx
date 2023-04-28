@@ -25,29 +25,32 @@ const Badges: React.FC<BadgesProps> = ({ drankBrands, drankItems, numPosts, stre
   const numDrankItems = Object.keys(drankItems).length;
 
   const badgeCategories = [
-    { name: 'number of drink logs', num: numPosts, goals: [0, 10, 50, 100, 500, 1000] },
-    { name: 'number of brands drank', num: numDrankBrands, goals: [0, 3, 5, 10, 25, 50] },
+    { name: 'Drinkaholic: number of drink logs', num: numPosts, goals: [0, 10, 50, 100, 500, 1000] },
+    { name: 'Adventurer: number of brands drank', num: numDrankBrands, goals: [0, 3, 5, 10, 25, 50] },
     { name: 'number of items drank', num: numDrankItems, goals: [0, 10, 25, 50, 100, 200] },
-    { name: 'longest streak drinking', num: streaks.longest, goals: [0, 3, 7, 30, 90, 365] },
+    { name: 'Just-cant-stop: longest streak drinking', num: streaks.longest, goals: [0, 3, 7, 30, 90, 365] },
   ];
-
+  {
+    /*<Badge className='h-24 w-24' />*/
+  }
   return (
     <div className='flex flex-col gap-10'>
       {badgeCategories.map((category, index) => (
         <div key={index}>
-          <h3>{category.name}</h3>
+          <div>{category.name}</div>
           <div className='flex gap-5'>
             {category.goals.map(
               (goal, index) =>
                 goal !== 0 && (
                   <div key={index} className='relative'>
                     <div
-                      className={`relative h-24 w-24 drop-shadow ${
-                        category.num >= goal ? 'duration-400 transition-all hover:rotate-12' : 'opacity-60 grayscale'
+                      className={`textBorder relative text-6xl -tracking-[5px] drop-shadow ${
+                        category.num >= goal
+                          ? 'duration-400 transition-all hover:rotate-12'
+                          : 'text-neutral-500 opacity-60 grayscale'
                       }`}
                     >
-                      <Badge className='h-24 w-24' />
-                      <span className='absolute left-[50px] top-7 -translate-x-1/2'>{goal}</span>
+                      {goal}
                     </div>
                     {category.num > category.goals[index - 1] && category.num < goal && (
                       <div className='absolute -bottom-6 w-full rounded-full bg-gray-200'>

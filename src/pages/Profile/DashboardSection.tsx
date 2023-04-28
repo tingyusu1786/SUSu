@@ -29,7 +29,7 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts }) => {
   const [drankBrands, setDrankBrands] = useState<Record<string, { brandName: string; times: number }>>();
   const [drankItems, setDrankItems] = useState<Record<string, { times: number }>>();
   const [streaks, setStreaks] = useState<{ current: number; longest: number }>({ current: 0, longest: 0 });
-  const [numMonthBefore, setNumMonthBefore] = useState(12);
+  const [numMonthBefore, setNumMonthBefore] = useState(6);
 
   // for heatmap
   const [values, setValues] = useState<{ date: Date; count: number }[]>();
@@ -203,26 +203,29 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts }) => {
             <div className='text-neutral-500'>{streak[0]} streak days</div>
           </div>
         ))}
-        <div className='ml-5 flex gap-1 text-neutral-500'>
-          {[
-            ['last year', 12],
-            ['last 6 months', 6],
-            ['last month', 1],
-          ].map((num) => (
-            <button
-              className={`rounded-t-full border-x-2 border-t-2 border-neutral-900 px-3 pt-1 text-sm ${
-                numMonthBefore === num[1] && 'bg-neutral-400 text-white'
-              }`}
-              onClick={() => setNumMonthBefore(num[1] as number)}
-            >
-              {num[0]}
-            </button>
-          ))}
-        </div>
+
         {values && (
-          <div className='container col-span-2 -mt-5 max-w-[900px] rounded-xl border-2 border-solid border-neutral-900 bg-neutral-100 px-10 py-5 shadow-[3px_3px_#171717] transition-all transition-all duration-200 duration-200 hover:-translate-y-[3px] hover:shadow-[3px_6px_#171717]'>
-            <CalendarHeatmapComponent values={values} numMonthBefore={numMonthBefore} />
-          </div>
+          <>
+            <div className='ml-5 flex gap-1 text-neutral-500'>
+              {[
+                ['last year', 12],
+                ['last 6 months', 6],
+                ['last month', 1],
+              ].map((num) => (
+                <button
+                  className={`rounded-t-full border-x-2 border-t-2 border-neutral-900 px-3 pt-1 text-sm hover:bg-neutral-400 hover:text-white ${
+                    numMonthBefore === num[1] && 'bg-neutral-400 text-white'
+                  }`}
+                  onClick={() => setNumMonthBefore(num[1] as number)}
+                >
+                  {num[0]}
+                </button>
+              ))}
+            </div>
+            <div className='container col-span-2 -mt-5 max-w-[900px] rounded-xl border-2 border-solid border-neutral-900 bg-neutral-100 px-10 py-5 shadow-[3px_3px_#171717] transition-all transition-all duration-200 duration-200 hover:-translate-y-[3px] hover:shadow-[3px_6px_#171717]'>
+              <CalendarHeatmapComponent values={values} numMonthBefore={numMonthBefore} />
+            </div>
+          </>
         )}
       </div>
 
@@ -253,9 +256,7 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts }) => {
                 {/*<div className=''></div>*/}
                 <div className='mt-auto pt-3'>
                   <span className='text-lg sm:text-base'>{brand[1].brandName}</span>
-                  <span className='text-neutral-600  sm:hidden'>
-                    &nbsp;x&nbsp;{brand[1].times} {brand[1].times > 1 ? 'times' : 'time'}
-                  </span>
+                  <span className='text-neutral-600  sm:hidden'>&nbsp;x&nbsp;{brand[1].times}</span>
                 </div>
               </div>
             ) : (
@@ -276,7 +277,8 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts }) => {
             )
           )}
       </div>
-      <div>
+      <div className='grid w-full max-w-[900px] grid-cols-5 items-center gap-x-5 gap-y-5'>
+        <div className='col-span-full ml-3 text-xl before:mr-2 before:content-["✦"]'>achievements</div>
         {drankBrands && drankItems && (
           <Badges
             drankBrands={drankBrands}
@@ -286,6 +288,16 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts }) => {
           />
         )}
       </div>
+      {/*<div>
+        {drankBrands && drankItems && (
+          <Badges
+            drankBrands={drankBrands}
+            drankItems={drankItems}
+            numPosts={profileUserPosts.length}
+            streaks={streaks}
+          />
+        )}
+      </div>*/}
     </div>
   );
 };
