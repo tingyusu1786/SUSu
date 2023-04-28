@@ -482,6 +482,7 @@ const PostsFeed: React.FC<PostsProps> = ({
         setPosts([]);
       }
       isFetching.current = false;
+      setHasMore(false);
       return;
     }
 
