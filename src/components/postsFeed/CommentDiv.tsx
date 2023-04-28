@@ -3,6 +3,7 @@ import { useAppSelector } from '../../app/hooks';
 import { Link } from 'react-router-dom';
 import { Post, Comment } from '../../interfaces/interfaces';
 import { getTimeDiff } from '../../utils/common';
+import { ReactComponent as Trash } from '../../images/trash.svg';
 
 interface CommentsProps {
   post: Post;
@@ -40,19 +41,17 @@ const CommentDiv: React.FC<CommentsProps> = ({ post, postIndex, comment, comment
         </div>
       </div>
       <div className='flex w-full rounded-md bg-neutral-200 shadow-inner'>
-        <div className=' w-full grow overflow-scroll px-3 pb-2 pt-3' style={{ whiteSpace: 'pre-wrap' }}>
+        <div className='max-w-[680px] grow whitespace-pre-wrap break-words px-3 pb-2 pt-3'>
           {comment.content.replace(/<br>/g, '\n')}
         </div>
-        {comment.authorId === currentUserId && (
-          <button
-            className='w-20 self-start px-2 px-2 py-1 py-2 text-sm text-neutral-400'
-            onClick={() => {
-              handleDeleteComment(post, postIndex, commentIndex, comment.commentId);
-            }}
-          >
-            delete
-          </button>
-        )}
+        <div className='ml-auto p-3'>
+          {comment.authorId === currentUserId && (
+            <Trash
+              className='h-5 w-5 cursor-pointer hover:text-red-600'
+              onClick={() => handleDeleteComment(post, postIndex, commentIndex, comment.commentId)}
+            />
+          )}
+        </div>
       </div>
     </div>
   );
