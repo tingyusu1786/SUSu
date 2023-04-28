@@ -50,29 +50,21 @@ function NotificationsListener() {
     return unsubscribe;
   }, [currentUserId]);
 
-  const fireNotification = (notification: Notification) => {
-    const content = {
-      authorId: notification.authorId,
-      authorName: notification.authorName,
-      content: notification.content,
-      postId: notification.postId,
-      type: notification.type,
-      unread: notification.unread,
-    };
+  const fireNotification = ({ authorId, authorName, content, postId, type, unread }: Notification) => {
     let html: JSX.Element = <></>;
-    switch (content.type) {
+    switch (type) {
       case 'follow': {
         html = (
-          <a href={`/profile/${content.authorId}`} className='group text-neutral-500'>
-            <span className='group-hover:text-green-400 '>{content.authorName}</span> started following you!
+          <a href={`/profile/${authorId}`} className='group text-neutral-500'>
+            <span className='group-hover:text-green-400 '>{authorName}</span> started following you!
           </a>
         );
         break;
       }
       case 'like': {
         html = (
-          <a href={`/log/${content.postId}`} className='group text-neutral-500'>
-            {content.authorName} liked your&nbsp;
+          <a href={`/log/${postId}`} className='group text-neutral-500'>
+            {authorName} liked your&nbsp;
             <span className='group-hover:text-green-400 '>log</span>!
           </a>
         );
@@ -80,8 +72,8 @@ function NotificationsListener() {
       }
       case 'comment': {
         html = (
-          <a href={`/log/${content.postId}`} className='group text-neutral-500'>
-            {content.authorName} commented <span className='text-neutral-900'>"{content.content}"</span> on your{' '}
+          <a href={`/log/${postId}`} className='group text-neutral-500'>
+            {authorName} commented <span className='text-neutral-900'>"{content}"</span> <span>on your</span>
             <span className='group-hover:text-green-400 '>log</span>!
           </a>
         );
@@ -89,9 +81,6 @@ function NotificationsListener() {
       }
     }
     swal.toast(html);
-
-    // dispatch(showNotification({ type: 'normal', content }));
-    // setTimeout(() => dispatch(closeNotification()), 5000);
   };
 
   const fetchNotifications = async (currentUserRef: DocumentReference<DocumentData> | undefined) => {
@@ -145,8 +134,7 @@ function ScreenSize() {
   };
 
   return (
-    // <></>
-    <span className='absolute bottom-[-10px] left-[30px]'>
+    <span className='absolute bottom-[-35px] left-[50px]'>
       Screen size: [{getSize()}]: {width}px x {height}px
     </span>
   );
@@ -168,11 +156,18 @@ function Header() {
     navigate('/search');
   }
 
-  // const queryHook: SearchBoxProps['queryHook'] = (query, search) => {
-  //   const searchQuery = query.replace(/\s/g, '');
-  //   if (searchQuery === '') return;
-  //   search(searchQuery);
-  // };
+  useEffect(() => {
+    //todo: any
+    const handleKeyDown = (event: any) => {
+      if (event.key === 'Escape') {
+        setNotificationShown(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   const handleSignOut = async () => {
     const result = await swal.warning('Wanna sign out?', '', 'yes');
@@ -274,7 +269,7 @@ function Header() {
             />
           </Link>
           <BellIcon
-            className='h-6 w-6 cursor-pointer text-neutral-900 transition-all duration-150'
+            className='h-6 w-6 cursor-pointer text-neutral-900 transition-all duration-100 hover:text-green-400'
             onClick={() => {
               setNotificationShown((prev) => !prev);
             }}

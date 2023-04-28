@@ -5,6 +5,7 @@ import dbApi from '../../utils/dbApi';
 import { doc, getDoc, collection, query, where, getDocs, orderBy, QuerySnapshot } from 'firebase/firestore';
 import BrandCard from '../../components/BrandCard';
 import { Brand } from '../../interfaces/interfaces';
+import { ReactComponent as SmileyWink } from '../../images/SmileyWink.svg';
 
 interface Props {
   brands: Brand[];
@@ -12,10 +13,14 @@ interface Props {
 
 const AllCatalogue: React.FC<Props> = ({ brands }) => {
   return (
-    <div className='w-full '>
+    <div className='w-full'>
       <h1 className='mb-10 text-center text-7xl'>Discover peoples' favorites!</h1>
       <h2 className='mb-28 text-center text-3xl'>(almost) all chain hand-shake drink store in Taiwan listed</h2>
-      <div className='grid w-full gap-10 ' style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(15rem, 1fr))' }}>
+      {brands.length === 0 && <SmileyWink className='mx-auto my-10 animate-bounce' />}
+      <div
+        className='grid w-full grid-cols-6 gap-10 transition-all duration-200 xl2:grid-cols-4 lg:grid-cols-2 sm:grid-cols-1 sm:gap-y-14'
+        // style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(15rem, 1fr))' }}
+      >
         {brands.map((brand, index) => (
           <BrandCard brand={brand} key={index} />
         ))}

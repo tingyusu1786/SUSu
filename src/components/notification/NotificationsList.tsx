@@ -109,51 +109,59 @@ export function NotificationsList() {
       {notifications.length === 0 && <div>no notification yet</div>}
       {notifications.length > 0 && <div>({notifications?.length})</div>}
       {notifications.length > 0 && (
-        <button onClick={handleClearNotification} className='outline-0'>
+        <button
+          onClick={handleClearNotification}
+          className='absolute right-6 top-6 text-sm outline-0 hover:text-green-400'
+        >
           clear all
         </button>
       )}
       {notifications.map((notification, index) => {
         const timeDiff = getTimeDiff(notification.timeCreated);
         let html: JSX.Element = <></>;
+        let to: string = '';
         switch (notification.type) {
           case 'follow': {
+            to = `/profile/${notification.authorId}`;
             html = (
-              <a href={`/profile/${notification.authorId}`} className='group text-neutral-500'>
+              <div className='group text-neutral-500'>
                 <span className='transition-all duration-300 group-hover:text-green-400 '>
                   {notification.authorName}
                 </span>{' '}
                 started following you!
-              </a>
+              </div>
             );
             break;
           }
           case 'like': {
+            to = `/log/${notification.postId}`;
             html = (
-              <a href={`/log/${notification.postId}`} className='group text-neutral-500'>
+              <div className='group text-neutral-500'>
                 {notification.authorName} liked your&nbsp;
                 <span className='transition-all duration-300 group-hover:text-green-400 '>log</span>!
-              </a>
+              </div>
             );
             break;
           }
           case 'comment': {
+            to = `/log/${notification.postId}`;
             html = (
-              <a href={`/log/${notification.postId}`} className='group text-neutral-500'>
+              <div className='group text-neutral-500'>
                 {notification.authorName} commented <span className='text-neutral-900'>"{notification.content}"</span>{' '}
                 on your <span className='transition-all duration-300 group-hover:text-green-400 '>log</span>!
-              </a>
+              </div>
             );
             break;
           }
         }
         return (
-          <div
+          <Link
+            to={to}
             className='group w-full overflow-x-scroll rounded border-2 border-neutral-900 bg-white p-2 text-sm shadow-md transition-all duration-300 hover:-translate-y-1'
             key={index}
           >
             {html}
-          </div>
+          </Link>
         );
       })}
     </div>

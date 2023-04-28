@@ -10,6 +10,7 @@ import { Star_10, Line_8, Shine_4, Sun_16 } from '../images/star_10';
 import { StarIcon as SolidStar } from '@heroicons/react/24/solid';
 import { HandRaisedIcon, FaceFrownIcon } from '@heroicons/react/24/outline';
 import { ReactComponent as SmileyWink } from '../images/SmileyWink.svg';
+import { ReactComponent as ShootingStar } from '../images/ShootingStar.svg';
 
 function Inspiration() {
   type RandomItem = {
@@ -201,11 +202,6 @@ function Inspiration() {
             </label>
           ))}
         </div>
-        {/*<button
-          className='mx-auto h-48 w-48 rounded-full bg-gradient-to-r from-green-400 to-sky-300 bg-clip-text px-2 text-3xl text-transparent hover:animate-arrow hover:border-solid hover:border-none hover:bg-clip-border hover:text-white'
-          // style={{ WebkitTextFillColor: 'transparent' }}
-          onClick={() => getRandomItem(selectedBrands, selectedRating)}
-        >*/}
         <div className='flex w-full justify-center'>
           <button
             className='mx-auto h-40 w-40 rounded-full bg-gradient-to-r from-green-400 to-sky-300 px-2 text-2xl  text-white transition-all duration-300 hover:rotate-45 hover:from-violet-500 hover:to-fuchsia-500 '
@@ -215,19 +211,19 @@ function Inspiration() {
           </button>
         </div>
       </div>
-      {/*{isFinding && <div className='mt-20 animate-bounce text-center'>loading...</div>}*/}
       {isFinding && <SmileyWink className='mx-auto mt-20 animate-bounce' />}
       <div className='h-6 w-full bg-[url("https://static.thenounproject.com/png/924541-200.png")]'></div>
       {!isFinding && randomItem && (
         <div className='mt-10 flex flex-col items-center '>
-          <div className='mb-10 flex w-full justify-center'>
-            <HandRaisedIcon className='w-32 rotate-[225deg] ' />
+          <div className='mb-10 flex w-full justify-center gap-10'>
+            <ShootingStar className='' />
             <div
-            // className='flex w-1/3 flex-col items-center justify-center bg-gradient-to-br from-[#8EC5FC] to-[#E0C3FC]'
-            // style={{
-            //   WebkitMask:
-            //     'conic-gradient(from 45deg at left,#0000,#000 1deg 89deg,#0000 90deg) left/51% 84.00px repeat-y, conic-gradient(from -135deg at right,#0000,#000 1deg 89deg,#0000 90deg) right/51% 84.00px repeat-y',
-            // }}
+              // className='flex w-1/3 flex-col items-center justify-center bg-gradient-to-br from-[#8EC5FC] to-[#E0C3FC]'
+              // style={{
+              //   WebkitMask:
+              //     'conic-gradient(from 45deg at left,#0000,#000 1deg 89deg,#0000 90deg) left/51% 84.00px repeat-y, conic-gradient(from -135deg at right,#0000,#000 1deg 89deg,#0000 90deg) right/51% 84.00px repeat-y',
+              // }}
+              className='text-center'
             >
               <span>we picked </span>
               <div className='flex items-end'>
@@ -248,7 +244,7 @@ function Inspiration() {
                 )}
               </div>
               <span> for you!</span>
-              <div className='flex items-center gap-3'>
+              <div className='flex items-center justify-center gap-3'>
                 {randomItem.price &&
                   Object.entries(randomItem.price).map((p) => (
                     <div key={p[0]} className='inline-block flex items-center justify-start gap-1'>
@@ -260,7 +256,7 @@ function Inspiration() {
                   ))}
               </div>
             </div>
-            <HandRaisedIcon className='w-32 rotate-[135deg] -scale-x-100 ' />
+            <ShootingStar className='-scale-x-100' />
           </div>
           <div
             className={`flex h-10 w-full max-w-[960px] items-center justify-between gap-2 rounded-t-md border-4 border-solid border-neutral-900 bg-[#F5F3EA] px-5 ${
@@ -281,7 +277,6 @@ function Inspiration() {
             className={`h-[480px] w-full max-w-[960px] rounded-b-md border-4 border-t-0 border-solid border-neutral-900 ${
               !showMap && 'hidden'
             }`}
-            // style={{ border: 0, marginBottom: 5 }}
             loading='lazy'
             allowFullScreen
             referrerPolicy='no-referrer-when-downgrade'

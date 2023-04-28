@@ -180,7 +180,7 @@ const PostsFeed: React.FC<PostsProps> = ({
       const bufferHeight = 200;
       const isBottom = window.innerHeight + window.scrollY + bufferHeight >= document.body.offsetHeight;
       if (isBottom) {
-        console.log('isBottom', isBottom, 'isFetching.current', isFetching.current);
+        // console.log('isBottom', isBottom, 'isFetching.current', isFetching.current);
         if (isFetching.current) return;
         fetchFivePosts(lastKey, hashtagFilter);
       }
@@ -486,7 +486,7 @@ const PostsFeed: React.FC<PostsProps> = ({
       return;
     }
 
-    console.log('const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);');
+    // console.log('const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);');
     const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);
 
     if (querySnapshot.docs.length === 0) {
@@ -517,9 +517,9 @@ const PostsFeed: React.FC<PostsProps> = ({
   };
 
   useEffect(() => {
-    console.log(posts.length);
+    // console.log(posts.length);
     isFetching.current = false;
-    console.log('set to false');
+    // console.log('set to false');
   }, [posts.length]);
 
   const handleCommentsShown = (index: number) => {
@@ -630,7 +630,7 @@ const PostsFeed: React.FC<PostsProps> = ({
       );
     } else {
       notificationToRemove = originNotifications.find((notification: any) => notification.commentId === commentId);
-      console.log(notificationToRemove);
+      // console.log(notificationToRemove);
     }
 
     await updateDoc(userRef, {
@@ -714,7 +714,7 @@ const PostsFeed: React.FC<PostsProps> = ({
           </button>
         </div>
       )}
-      <span className=''>({posts.length})</span>
+      {/*<span className=''>({posts.length})</span>*/}
       {posts.map((post, index) => (
         <PostCard
           key={post.postId + index}
@@ -732,7 +732,7 @@ const PostsFeed: React.FC<PostsProps> = ({
       ))}
       {hasMore && <SmileyWink className='mx-auto my-10 animate-bounce' />}
       <span>{bottomMessage}</span>
-      <span className=''>({posts.length})</span>
+      {/*<span className=''>({posts.length})</span>*/}
     </div>
   );
 };

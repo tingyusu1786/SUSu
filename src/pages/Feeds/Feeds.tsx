@@ -22,7 +22,7 @@ function Posts() {
     <main className='bg-boxes min-h-[calc(100vh-64px)] bg-fixed p-10'>
       <h1 className='mb-10 text-center text-7xl'>Drink. Log. Repeat.</h1>
       <CreatePost />
-      <div className='mt-10 grid grid-cols-[1fr_48rem_1fr]'>
+      <div className='mb-3 mt-10 grid grid-cols-[1fr_48rem_1fr]'>
         <div className='col-start-2'>
           <span>see logs from </span>
           <select

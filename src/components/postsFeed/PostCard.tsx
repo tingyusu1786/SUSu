@@ -123,7 +123,7 @@ const PostCard: React.FC<PostProps> = ({
           )}
         </div>
         {post.sugar && (
-          <span>
+          <span className='mr-2'>
             <span className='text-neutral-500'>sugar_ </span>
             {post.sugar}
           </span>
@@ -172,14 +172,14 @@ const PostCard: React.FC<PostProps> = ({
       <div className='mb-5 grid grid-cols-[repeat(4,30px)] items-center px-5'>
         {post.likes?.some((like) => like.authorId === currentUserId) ? (
           <img
-            className='cursor-pointer'
+            className='animate__animated animate__rubberBand cursor-pointer'
             src={heartFill}
             alt=''
             onClick={() => currentUserId && handleLike(post, currentUserId, index)}
           />
         ) : (
           <img
-            className='cursor-pointer'
+            className=' cursor-pointer'
             src={heartLine}
             alt=''
             onClick={() => currentUserId && handleLike(post, currentUserId, index)}
@@ -199,11 +199,11 @@ const PostCard: React.FC<PostProps> = ({
         </div>*/}
       </div>
 
-      {/*{post.commentsShown && (*/}
       <div
-        className={`${
+        className={`
+        ${
           post.commentsShown ? 'flex' : 'hidden'
-        } flex-col gap-y-1 border-t-2 border-dashed border-neutral-900 px-3 py-2 `}
+        } flex-col gap-y-1 overflow-hidden border-t-2 border-dashed border-neutral-900 px-3 py-2 transition-all duration-300`}
       >
         {post.comments?.map((comment, commentIndex) => (
           <CommentDiv
@@ -223,7 +223,6 @@ const PostCard: React.FC<PostProps> = ({
           index={index}
         />
       </div>
-      {/*)}*/}
     </div>
   );
 };

@@ -15,12 +15,12 @@ const BrandCard: React.FC<BrandProps> = ({ brand }) => {
   return (
     <Link
       to={`/catalogue/${brand.brandId}`}
-      className='group relative h-56 rounded-xl rounded-tl-[60px] border-2 border-solid border-neutral-900 bg-white shadow-[4px_4px_#171717] transition-all duration-300 even:-translate-y-1/4 hover:-translate-y-3 hover:shadow-[4px_14px_#171717] even:hover:-translate-y-1/3'
+      className='group relative h-56 rounded-xl rounded-tl-[60px] border-2 border-solid border-neutral-900 bg-white shadow-[4px_4px_#171717] transition-all duration-300 even:-translate-y-1/4 hover:-translate-y-3 hover:shadow-[4px_14px_#171717] even:hover:-translate-y-1/3 sm:even:-translate-y-0 sm:even:hover:-translate-y-3'
     >
       <img
         src={brand.photoURL}
         alt=''
-        className=' absolute left-1/2 top-1/3 w-2/5 -translate-x-1/2 -translate-y-1/2 drop-shadow-md duration-1000 '
+        className=' absolute left-1/2 top-1/3 w-2/5 -translate-x-1/2 -translate-y-1/2 drop-shadow-md duration-1000 sm:top-1/4 sm:max-w-3xl'
       />
       <div className='absolute bottom-2 left-1/2 flex w-full -translate-x-1/2 flex-col justify-items-center text-center text-xl'>
         <div>{brand.name}</div>

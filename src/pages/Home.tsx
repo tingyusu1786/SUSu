@@ -42,12 +42,7 @@ function Home() {
 
   useEffect(() => {
     const options = {
-      strings: [
-        "log and share what you've drunk^1000",
-        'explore all brands people love^1000',
-        'get inspiration for your next drink^1000',
-        'make friends with the same taste for drinks!',
-      ],
+      strings: ['log drink^1000', 'share drink^1000', 'explore drink^1000', ':)!'],
       typeSpeed: 50,
       backSpeed: 20,
     };
@@ -63,13 +58,11 @@ function Home() {
   }, []);
 
   return (
-    <main className='bg-boxes relative min-h-[calc(100vh-64px)] bg-fixed'>
-      <div className='type-wrap h-[calc(100vh-64px)] w-screen flex-col items-center justify-center px-36 text-center text-5xl'>
+    <main className='bg-boxes flex min-h-[calc(100vh-64px)] flex-col items-center justify-center bg-fixed px-36'>
+      <div className='type-wrap rotate-12 flex-col items-center justify-start bg-sky-100 text-center text-5xl'>
         <span>SUSü is a platform where you can...</span>
-        <br />
-        <span style={{ whiteSpace: 'pre' }} ref={el} />
+        {<span style={{ whiteSpace: 'pre' }} ref={el} />}
       </div>
-      HOMEEEEEEE
     </main>
   );
 }

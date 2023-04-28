@@ -47,7 +47,7 @@ const CommentDiv: React.FC<CommentsProps> = ({ post, postIndex, comment, comment
         <div className='ml-auto p-3'>
           {comment.authorId === currentUserId && (
             <Trash
-              className='h-5 w-5 cursor-pointer hover:text-red-600'
+              className='h-5 w-5 cursor-pointer'
               onClick={() => handleDeleteComment(post, postIndex, commentIndex, comment.commentId)}
             />
           )}
