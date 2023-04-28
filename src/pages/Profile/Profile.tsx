@@ -250,7 +250,7 @@ function Profile() {
         <h3 className='text-3xl'>{profileUser.name}</h3>
         <div className='-mt-4 text-sm text-gray-400'>{profileUser.email}</div>
         <div>
-          member from{' '}
+          member since{' '}
           {profileUser.timeCreated
             ?.toDate()
             .toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })
