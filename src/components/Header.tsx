@@ -274,7 +274,7 @@ function Header() {
             />
           </Link>
           <BellIcon
-            className='h-5 w-5 cursor-pointer text-neutral-900 transition-all duration-150 hover:scale-110'
+            className='h-6 w-6 cursor-pointer text-neutral-900 transition-all duration-150'
             onClick={() => {
               setNotificationShown((prev) => !prev);
             }}
