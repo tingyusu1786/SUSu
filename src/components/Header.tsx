@@ -4,21 +4,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
 import { showNotification, closeNotification, showSearch, closeSearch } from '../app/popUpSlice';
 import { openAuthWindow, signOutStart, signOutSuccess, signOutFail } from '../components/auth/authSlice';
-import { NotificationsList } from '../components/notification/NotificationsList';
-
-import type { SearchBoxProps } from 'react-instantsearch-hooks-web';
-import { PoweredBy } from 'react-instantsearch-hooks-web';
-import algoliasearch from 'algoliasearch/lite';
-import {
-  InstantSearch,
-  SearchBox,
-  useHits,
-  Hits,
-  Highlight,
-  RefinementList,
-  Index,
-  InfiniteHits,
-} from 'react-instantsearch-hooks-web';
+import NotificationsList from '../components/notification/NotificationsList';
+import SearchModal from '../components/SearchModal';
 
 import { Notification } from '../interfaces/interfaces';
 import { doc, DocumentSnapshot, DocumentReference, DocumentData, onSnapshot } from 'firebase/firestore';
@@ -158,85 +145,12 @@ function Header() {
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
   const currentUserName = useAppSelector((state) => state.auth.currentUserName);
   const currentUserphotoURL = useAppSelector((state) => state.auth.currentUserPhotoURL);
-  // const isAuthWindow = useAppSelector((state) => state.auth.isAuthWindow);
   const isNotificationShown = useAppSelector((state) => state.popUp.isNotificationShown);
   const isSearchShown = useAppSelector((state) => state.popUp.isSearchShown);
   const navigate = useNavigate();
-  // const [searchShown, setSearchShown] = useState(false);
-  // const [notificationShown, setNotificationShown] = useState(false);
 
   function handleRedirect() {
     navigate('/search');
-  }
-
-  function BrandHit({ hit }: any) {
-    return (
-      <Link
-        to={`/catalogue/${hit.objectID}`}
-        className='mb-2 flex w-full flex-col rounded border-2 border-neutral-900 bg-white p-2 shadow-md transition-all duration-300 hover:-translate-y-1'
-        onClick={() => dispatch(closeSearch())}
-      >
-        {hit.photoURL && <img src={hit.photoURL} alt={hit.photoURL} />}
-        <Highlight attribute='name' hit={hit} className='' />
-        <Highlight attribute='story' hit={hit} className='text-sm text-neutral-500' />
-        <div className='text-sm'>
-          <span>總部：</span>
-          <Highlight attribute='headquarter' hit={hit} className='text-sm text-neutral-500' />
-        </div>
-      </Link>
-    );
-  }
-
-  function UserHit({ hit }: any) {
-    return (
-      <Link
-        to={`/profile/${hit.objectID}`}
-        className='mb-2 flex w-full flex-col rounded border-2 border-neutral-900 bg-white p-2 shadow-md transition-all duration-300 hover:-translate-y-1'
-        onClick={() => dispatch(closeSearch())}
-      >
-        {hit.photoURL && <img src={hit.photoURL} alt={hit.photoURL} />}
-        <Highlight attribute='name' hit={hit} className='' />
-        {hit.email && (
-          <div className='text-sm text-neutral-500'>
-            <Highlight attribute='email' hit={hit} className='text-sm' />
-          </div>
-        )}
-        {hit.status && (
-          <div className='text-sm'>
-            <span>🎙️</span>
-            <Highlight attribute='status' hit={hit} className='text-sm' />
-          </div>
-        )}
-      </Link>
-    );
-  }
-
-  // 直接render出post?
-  function PostHit({ hit }: any) {
-    return (
-      <article className='my-5 text-center'>
-        {/*<button className='hover:font-bold hover:text-lime-700'>
-        <Link to={`/profile/${hit.objectID}`}>
-          <Highlight attribute='name' hit={hit} className='my-0 rounded' />
-        </Link>
-      </button>*/}
-        {hit.brandId && (
-          <div className='text-sm text-gray-400'>
-            <Highlight attribute='brandId' hit={hit} className='rounded text-sm' />
-          </div>
-        )}
-        {hit.itemId && (
-          <div className='text-sm text-gray-400'>
-            <Highlight attribute='itemId' hit={hit} className='rounded text-sm' />
-          </div>
-        )}
-        {hit.hashtags && (
-          <div className='text-sm text-gray-400'>
-            <Highlight attribute='hashtags' hit={hit} className='rounded text-sm' />
-          </div>
-        )}
-      </article>
-    );
   }
 
   useEffect(() => {
@@ -315,61 +229,10 @@ function Header() {
         </ul>
       </nav>
 
-      {isSearchShown && (
-        <div className='fixed left-1/2 top-20 grid h-[80vh] w-3/4 max-w-[700px] -translate-x-1/2 grid-rows-[auto_1fr_2rem] rounded-md border-4 border-neutral-900 bg-neutral-100 p-5 shadow-lg'>
-          <div className='border-b-2 border-dashed border-neutral-900'>
-            <SearchBox
-              // queryHook={queryHook}
-              // onSubmit={handleRedirect}
-              autoFocus
-              placeholder='Search anything'
-              searchAsYouType={true}
-              submitIconComponent={({ classNames }) => <span className={classNames.submitIcon}></span>}
-              resetIconComponent={({ classNames }) => <span className={classNames.resetIcon}></span>}
-              loadingIconComponent={() => <span></span>}
-              classNames={{
-                // root: 'MyCustomSearchBox',
-                form: 'pb-5',
-                input:
-                  'h-10 rounded-full border-2 border-solid border-gray-400 p-3 focus:border-green-400 focus:outline-green-400 w-full',
-                submitIcon: 'hidden',
-                resetIcon: 'bg-red-700 hidden',
-                loadingIcon: 'hidden',
-              }}
-            />
-          </div>
-
-          <div className=' flex w-full flex-col items-stretch gap-3 overflow-y-scroll py-3'>
-            <Index indexName='brands'>
-              <div className='text-xl'>brands</div>
-              <Hits hitComponent={BrandHit} className='' />
-            </Index>
-            <Index indexName='users'>
-              <h1>users</h1>
-              <Hits hitComponent={UserHit} className='' />
-            </Index>
-
-            <Index indexName='posts'>
-              <h1>posts</h1>
-              <Hits
-                hitComponent={PostHit}
-                className='  flex flex-col items-center bg-green-100'
-                // showPrevious={false}
-              />
-            </Index>
-          </div>
-
-          <PoweredBy
-            classNames={{
-              root: 'MyCustomPoweredBy',
-              link: 'MyCustomPoweredByLink MyCustomPoweredByLink--subclass',
-            }}
-          />
-        </div>
-      )}
+      {isSearchShown && <SearchModal />}
 
       {!isSignedIn && (
-        <div className='group relative hover:cursor-pointer ' onClick={() => dispatch(openAuthWindow())}>
+        <div className='group relative cursor-pointer ' onClick={() => dispatch(openAuthWindow())}>
           <span className='decoration-2 group-hover:underline'>sign in</span>
           <span>&nbsp;to see your profile and notifications!</span>
         </div>

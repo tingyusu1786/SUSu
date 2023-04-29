@@ -10,7 +10,7 @@ import { getTimeDiff } from '../../utils/common';
 import { Notification } from '../../interfaces/interfaces';
 import swal from '../../utils/swal';
 
-export function NotificationsList() {
+function NotificationsList() {
   const dispatch = useAppDispatch();
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
@@ -104,9 +104,9 @@ export function NotificationsList() {
       return;
     }
   };
-
+  // animate__animated animate__bounceInRight
   return (
-    <div className='justify-top animate__animated animate__bounceInRight absolute right-5 top-20 flex max-h-[100vh-64px] w-96 flex-col items-center gap-2 overflow-scroll rounded-lg border-4 border-neutral-900 bg-neutral-100 p-5 shadow-lg'>
+    <div className='justify-top  absolute right-5 top-20 flex max-h-[100vh-64px] w-96 flex-col items-center gap-2 overflow-scroll rounded-lg border-4 border-neutral-900 bg-neutral-100 p-5 shadow-lg'>
       {notifications.length === 0 && <div>no notification yet</div>}
       {notifications.length > 0 && <div>({notifications?.length})</div>}
       {notifications.length > 0 && (
@@ -169,3 +169,4 @@ export function NotificationsList() {
     </div>
   );
 }
+export default NotificationsList;
