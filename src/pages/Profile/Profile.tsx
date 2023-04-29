@@ -39,12 +39,9 @@ function Profile() {
   const [usersFollowers, setUsersFollowers] = useState<{ id: string; name: string; photoURL: string }[]>([]);
   const [profileUserPosts, setProfileUserPosts] = useState<any[]>([]);
   const { profileUserId } = useParams<{ profileUserId: string }>();
-  const [tab, setTab] = useState<'LOGS' | 'DASHBOARD' | 'FOLLOWING' | 'FOLLOWERS'>('FOLLOWING');
+  const [tab, setTab] = useState<'DASHBOARD' | 'LOGS' | 'FOLLOWING' | 'FOLLOWERS'>('DASHBOARD');
 
-  // set default tab = dashboard
-  // useEffect(() => {
-  //   setTab('DASHBOARD');
-  // }, [profileUserId]);
+  useEffect(() => setTab('DASHBOARD'), [profileUserId]);
 
   useEffect(() => {
     if (!profileUserId) return;
@@ -255,7 +252,7 @@ function Profile() {
         )}
       </div>
       <div className='my-10 grid h-10 w-full grid-flow-col justify-stretch'>
-        {['LOGS', 'DASHBOARD', 'FOLLOWING', 'FOLLOWERS'].map((tabName) => (
+        {['DASHBOARD', 'LOGS', 'FOLLOWING', 'FOLLOWERS'].map((tabName) => (
           <button
             key={tabName}
             onClick={() => {

@@ -241,7 +241,18 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts }) => {
             </div>
           ))}
       </div>
-      <div className='grid w-full max-w-[900px] grid-cols-3 items-stretch gap-x-5 gap-y-5 lg:grid-cols-2 sm:grid-cols-3'>
+      <div className='grid w-full max-w-[900px] grid-cols-5 items-center gap-x-5 gap-y-5'>
+        <div className='col-span-full ml-3 text-xl before:mr-2 before:content-["✦"]'>achievements</div>
+        {drankBrands && drankItems && (
+          <Badges
+            drankBrands={drankBrands}
+            drankItems={drankItems}
+            numPosts={profileUserPosts.length}
+            streaks={streaks}
+          />
+        )}
+      </div>
+      <div className='grid w-full max-w-[900px] grid-cols-4 items-stretch gap-x-5 gap-y-5 lg:grid-cols-3 sm:grid-cols-2'>
         <div className='col-span-full ml-3 text-xl before:mr-2 before:content-["✦"]'>drank brands</div>
         {drankBrands &&
           Object.entries(drankBrands).map((brand, index) =>
@@ -277,27 +288,6 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts }) => {
             )
           )}
       </div>
-      <div className='grid w-full max-w-[900px] grid-cols-5 items-center gap-x-5 gap-y-5'>
-        <div className='col-span-full ml-3 text-xl before:mr-2 before:content-["✦"]'>achievements</div>
-        {drankBrands && drankItems && (
-          <Badges
-            drankBrands={drankBrands}
-            drankItems={drankItems}
-            numPosts={profileUserPosts.length}
-            streaks={streaks}
-          />
-        )}
-      </div>
-      {/*<div>
-        {drankBrands && drankItems && (
-          <Badges
-            drankBrands={drankBrands}
-            drankItems={drankItems}
-            numPosts={profileUserPosts.length}
-            streaks={streaks}
-          />
-        )}
-      </div>*/}
     </div>
   );
 };

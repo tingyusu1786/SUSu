@@ -26,9 +26,9 @@ const Badges: React.FC<BadgesProps> = ({ drankBrands, drankItems, numPosts, stre
 
   const badgeCategories = [
     { name: 'Drinkaholic: number of drink logs', num: numPosts, goals: [0, 10, 50, 100, 500, 1000] },
-    { name: 'Adventurer: number of brands drank', num: numDrankBrands, goals: [0, 3, 5, 10, 25, 50] },
-    { name: 'number of items drank', num: numDrankItems, goals: [0, 10, 25, 50, 100, 200] },
-    { name: 'Just-cant-stop: longest streak drinking', num: streaks.longest, goals: [0, 3, 7, 30, 90, 365] },
+    { name: 'Brand-Hunter: number of brands drank', num: numDrankBrands, goals: [0, 3, 5, 10, 25, 50] },
+    { name: 'Adventurer: number of items drank', num: numDrankItems, goals: [0, 10, 25, 50, 100, 200] },
+    { name: 'Cant-stop-drinking: longest streak drinking', num: streaks.longest, goals: [0, 3, 7, 30, 90, 365] },
   ];
   {
     /*<Badge className='h-24 w-24' />*/
@@ -44,7 +44,7 @@ const Badges: React.FC<BadgesProps> = ({ drankBrands, drankItems, numPosts, stre
                 goal !== 0 && (
                   <div key={index} className='relative'>
                     <div
-                      className={`textBorder relative text-6xl -tracking-[5px] drop-shadow ${
+                      className={`textBorder relative w-32 bg-sky-100 text-6xl -tracking-[5px] drop-shadow ${
                         category.num >= goal
                           ? 'duration-400 transition-all hover:rotate-12'
                           : 'text-neutral-500 opacity-60 grayscale'
