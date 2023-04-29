@@ -8,21 +8,23 @@ import { ReactComponent as Badge } from '../../images/badge.svg';
 import 'animate.css';
 
 interface BadgesProps {
-  drankBrands: Record<string, { brandName: string; times: number }>;
-  drankItems: Record<string, { times: number }>;
+  drankBrands: Record<string, { brandName: string; times: number }> | undefined;
+  drankItems: Record<string, { times: number }> | undefined;
   numPosts: number;
   streaks: { longest: number; current: number };
 }
 
 const Badges: React.FC<BadgesProps> = ({ drankBrands, drankItems, numPosts, streaks }) => {
-  const numDrankBrands = Object.entries(drankBrands).reduce((a, c) => {
-    if (c[1].times > 0) {
-      a += 1;
-    }
-    return a;
-  }, 0);
+  const numDrankBrands = drankBrands
+    ? Object.entries(drankBrands).reduce((a, c) => {
+        if (c[1].times > 0) {
+          a += 1;
+        }
+        return a;
+      }, 0)
+    : 0;
 
-  const numDrankItems = Object.keys(drankItems).length;
+  const numDrankItems = drankItems ? Object.keys(drankItems).length : 0;
 
   const badgeCategories = [
     { name: 'Drinkaholic: number of drink logs', num: numPosts, goals: [0, 10, 50, 100, 500, 1000] },

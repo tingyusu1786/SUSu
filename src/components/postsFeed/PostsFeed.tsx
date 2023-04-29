@@ -491,7 +491,9 @@ const PostsFeed: React.FC<PostsProps> = ({
 
     if (querySnapshot.docs.length === 0) {
       if (posts.length === 0) {
-        setBottomMessage('no logs yet, go explore other pages!');
+        currentPage === 'profile'
+          ? setBottomMessage('no logs yet!')
+          : setBottomMessage('no logs yet, go explore other pages!');
       } else {
         setBottomMessage('no more logs');
       }

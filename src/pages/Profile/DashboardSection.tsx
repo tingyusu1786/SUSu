@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import CalendarHeatmapComponent from './CalendarHeatmapComponent';
 import Badges from './Badges';
+import { useParams } from 'react-router-dom';
 import { Timestamp } from 'firebase/firestore';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { addAllBrands } from '../../app/infoSlice';
@@ -25,6 +26,7 @@ interface PriceStatistic {
 const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts }) => {
   const dispatch = useAppDispatch();
   const allBrandsInfo = useAppSelector((state) => state.info.brands);
+  const { profileUserId } = useParams<{ profileUserId: string }>();
   const [priceStatistic, setPriceStatistic] = useState({ overall: 0, year: 0, month: 0, week: 0, day: 0 });
   const [drankBrands, setDrankBrands] = useState<Record<string, { brandName: string; times: number }>>();
   const [drankItems, setDrankItems] = useState<Record<string, { times: number }>>();
@@ -48,7 +50,6 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts }) => {
     const { drankBrandsStatistic, drankItemsStatistic, drankDatesValues, priceStatistic, streaks, prevDate } =
       reversedProfileUserPosts.reduce(
         (accumulator, post) => {
-          // console.log('author:', post.authorId);
           // drank brands
           const { drankBrandsStatistic } = accumulator;
           drankBrandsStatistic[post.brandId]
@@ -161,8 +162,6 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts }) => {
     setStreaks(streaks);
   }, [profileUserPosts, allBrandsInfo]);
 
-  useEffect(() => {}, [values]);
-
   const fetchAllBrandsInfo = async () => {
     const allBrands = await dbApi.getAllBrandsInfo();
     dispatch(addAllBrands({ allBrands }));
@@ -204,7 +203,7 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts }) => {
           </div>
         ))}
 
-        {values && (
+        {
           <>
             <div className='ml-5 flex gap-1 text-neutral-500'>
               {[
@@ -223,10 +222,10 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts }) => {
               ))}
             </div>
             <div className='container col-span-2 -mt-5 max-w-[900px] rounded-xl border-2 border-solid border-neutral-900 bg-neutral-100 px-10 py-5 shadow-[3px_3px_#171717] transition-all transition-all duration-200 duration-200 hover:-translate-y-[3px] hover:shadow-[3px_6px_#171717]'>
-              <CalendarHeatmapComponent values={values} numMonthBefore={numMonthBefore} />
+              <CalendarHeatmapComponent values={values || []} numMonthBefore={numMonthBefore} />
             </div>
           </>
-        )}
+        }
       </div>
 
       <div className='grid w-full max-w-[900px] grid-cols-5 items-center gap-x-5 gap-y-5'>
@@ -243,50 +242,54 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts }) => {
       </div>
       <div className='grid w-full max-w-[900px] grid-cols-5 items-center gap-x-5 gap-y-5'>
         <div className='col-span-full ml-3 text-xl before:mr-2 before:content-["✦"]'>achievements</div>
-        {drankBrands && drankItems && (
-          <Badges
-            drankBrands={drankBrands}
-            drankItems={drankItems}
-            numPosts={profileUserPosts.length}
-            streaks={streaks}
-          />
-        )}
+        <Badges
+          drankBrands={drankBrands}
+          drankItems={drankItems}
+          numPosts={profileUserPosts.length}
+          streaks={streaks}
+        />
       </div>
       <div className='grid w-full max-w-[900px] grid-cols-4 items-stretch gap-x-5 gap-y-5 lg:grid-cols-3 sm:grid-cols-2'>
         <div className='col-span-full ml-3 text-xl before:mr-2 before:content-["✦"]'>drank brands</div>
-        {drankBrands &&
-          Object.entries(drankBrands).map((brand, index) =>
-            brand[1].times !== 0 ? (
-              <div
-                key={brand[0]}
-                className='relative flex flex-col items-center rounded-xl border-2 border-solid border-neutral-900 bg-neutral-50 px-5 py-2 shadow-[3px_3px_#171717] transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[3px_6px_#171717]'
-              >
-                <div className='flex h-3/4 items-center justify-center'>
-                  <img src={allBrandsInfo[brand[0]]?.photoURL} alt='' className='w-20' />
+        {drankBrands
+          ? Object.entries(drankBrands).map((brand, index) =>
+              brand[1].times !== 0 ? (
+                <div
+                  key={brand[0]}
+                  className='relative flex flex-col items-center rounded-xl border-2 border-solid border-neutral-900 bg-neutral-50 px-5 py-2 shadow-[3px_3px_#171717] transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[3px_6px_#171717]'
+                >
+                  <div className='flex h-3/4 items-center justify-center'>
+                    <img src={allBrandsInfo[brand[0]]?.photoURL} alt='' className='w-20' />
+                  </div>
+                  {/*<div className=''></div>*/}
+                  <div className='mt-auto pt-3'>
+                    <span className='text-lg sm:text-base'>{brand[1].brandName}</span>
+                    <span className='text-neutral-600  sm:hidden'>&nbsp;x&nbsp;{brand[1].times}</span>
+                  </div>
                 </div>
-                {/*<div className=''></div>*/}
-                <div className='mt-auto pt-3'>
-                  <span className='text-lg sm:text-base'>{brand[1].brandName}</span>
-                  <span className='text-neutral-600  sm:hidden'>&nbsp;x&nbsp;{brand[1].times}</span>
+              ) : (
+                <div
+                  key={brand[0]}
+                  className='relative flex flex-col items-center rounded-xl border-2 border-solid border-neutral-300 bg-gray-50 px-5 py-2'
+                >
+                  <div className='flex h-3/4 items-center justify-center'>
+                    <img src={allBrandsInfo[brand[0]]?.photoURL} alt='' className='w-20 opacity-30 grayscale' />
+                  </div>
+                  <div className='mt-auto pt-3 text-neutral-300'>{brand[1].brandName}</div>
                 </div>
-              </div>
-            ) : (
+              )
+            )
+          : Object.entries(allBrandsInfo).map((brand, index) => (
               <div
-                key={brand[0]}
+                key={brand[1].name}
                 className='relative flex flex-col items-center rounded-xl border-2 border-solid border-neutral-300 bg-gray-50 px-5 py-2'
               >
-                {brand[1].times !== 0 && (
-                  <div className='absolute h-6 w-6 rounded-full bg-green-400 text-center text-white'>
-                    {brand[1].times}
-                  </div>
-                )}
                 <div className='flex h-3/4 items-center justify-center'>
-                  <img src={allBrandsInfo[brand[0]]?.photoURL} alt='' className='w-20 opacity-30 grayscale' />
+                  <img src={brand[1].photoURL} alt='' className='w-20 opacity-30 grayscale' />
                 </div>
-                <div className='mt-auto pt-3 text-neutral-300'>{brand[1].brandName}</div>
+                <div className='mt-auto pt-3 text-neutral-300'>{brand[1].name}</div>
               </div>
-            )
-          )}
+            ))}
       </div>
     </div>
   );

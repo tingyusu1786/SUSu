@@ -26,10 +26,10 @@ const CalendarHeatmapComponent: React.FC<CalendarHeatmapProps> = ({ values, numM
         // onMouseOver={(event, value) => console.log(value?.date, value?.count, value)}
         titleForValue={(value) =>
           value?.date
-            ? `${value?.date
+            ? `${value?.count} drink on ${value?.date
                 .toLocaleDateString('chinese', { year: 'numeric', month: 'numeric', day: 'numeric' })
-                .replace(/\//g, '/')} 喝了 ${value?.count}杯`
-            : '這天沒有喝'
+                .replace(/\//g, '/')}`
+            : "didn't drink on this day"
         }
         classForValue={(value) => {
           if (!value) {
