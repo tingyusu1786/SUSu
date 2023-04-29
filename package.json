@@ -3,8 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@algolia/autocomplete-js": "^1.9.2",
-    "@algolia/autocomplete-theme-classic": "^1.9.2",
     "@heroicons/react": "^2.0.17",
     "@reduxjs/toolkit": "^1.9.3",
     "@testing-library/jest-dom": "^5.16.5",
@@ -14,7 +12,6 @@
     "@types/node": "^17.0.45",
     "@types/react": "^18.0.31",
     "@types/react-dom": "^18.0.11",
-    "algoliasearch": "^4.17.0",
     "animate.css": "^4.1.1",
     "firebase": "^9.18.0",
     "react": "^18.2.0",
