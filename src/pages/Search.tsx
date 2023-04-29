@@ -2,7 +2,6 @@ import React, { useState, useEffect, ChangeEvent, useRef } from 'react';
 import { db } from '../services/firebase';
 import { doc, DocumentSnapshot, DocumentReference, DocumentData, onSnapshot, Timestamp } from 'firebase/firestore';
 import dbApi from '../utils/dbApi';
-import { openAuthWindow } from '../components/auth/authSlice';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
 import { showSearch, closeSearch } from '../app/popUpSlice';
 import { Link } from 'react-router-dom';

@@ -3,7 +3,6 @@ import { db } from '../../services/firebase';
 import { Link } from 'react-router-dom';
 import { doc, DocumentSnapshot, DocumentReference, DocumentData, onSnapshot, updateDoc } from 'firebase/firestore';
 import dbApi from '../../utils/dbApi';
-import { openAuthWindow } from '../../components/auth/authSlice';
 import { closeNotification } from '../../app/popUpSlice';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { getTimeDiff } from '../../utils/common';

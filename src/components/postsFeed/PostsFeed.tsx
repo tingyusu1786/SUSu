@@ -25,7 +25,7 @@ import {
   or,
   and,
 } from 'firebase/firestore';
-import { openAuthWindow } from '../../components/auth/authSlice';
+import { showAuth } from '../../app/popUpSlice';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { Post } from '../../interfaces/interfaces';
 import PostCard from './PostCard';
@@ -676,7 +676,7 @@ const PostsFeed: React.FC<PostsProps> = ({
   if (onlySeeFollowing && !currentUserId) {
     return (
       <div className='relative mx-auto mt-10 flex w-full max-w-3xl items-center justify-center rounded-md border-[3px] border-solid border-neutral-900 bg-neutral-100 '>
-        <div className='group hover:cursor-pointer' onClick={() => dispatch(openAuthWindow())}>
+        <div className='group hover:cursor-pointer' onClick={() => dispatch(showAuth())}>
           <span className='decoration-2 group-hover:underline'>sign in</span>
           &nbsp;to see logs from people you follow
         </div>

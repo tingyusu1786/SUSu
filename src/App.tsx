@@ -11,9 +11,10 @@ import {
   signOutStart,
   signOutSuccess,
   signOutFail,
-  openAuthWindow,
-  closeAuthWindow,
+  // openAuthWindow,
+  // closeAuthWindow,
 } from './components/auth/authSlice';
+import { showAuth, closeAuth } from './app/popUpSlice';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './services/firebase';
 import { db } from './services/firebase';
@@ -34,7 +35,8 @@ function App() {
   const location = useLocation();
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
   const isLoading = useAppSelector((state) => state.auth.isLoading);
-  const isAuthWindow = useAppSelector((state) => state.auth.isAuthWindow);
+  // const isAuthWindow = useAppSelector((state) => state.auth.isAuthWindow);
+  const isAuthShown = useAppSelector((state) => state.popUp.isAuthShown);
   const userId = useAppSelector((state) => state.auth.currentUserId);
 
   useEffect(() => {
@@ -53,6 +55,7 @@ function App() {
                 return acc;
               }, {});
             dispatch(signInSuccess({ user: filteredUserData, id: user.uid, name: userName, photoURL: userPhotoURL }));
+            dispatch(closeAuth());
           }
         };
         getUser();
@@ -80,7 +83,7 @@ function App() {
         }}
       >
         <Header />
-        {isAuthWindow && <Authentication />}
+        {isAuthShown && <Authentication />}
         <Outlet />
       </InstantSearch>
     </>

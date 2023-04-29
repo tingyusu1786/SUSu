@@ -6,7 +6,7 @@ import dbApi from '../../utils/dbApi';
 import { StarIcon as SolidStar, TrashIcon, GlobeAsiaAustraliaIcon, UserIcon } from '@heroicons/react/24/solid';
 import { StarIcon as LineStar } from '@heroicons/react/24/outline';
 import { ReactComponent as SmileyWink } from '../../images/SmileyWink.svg';
-import { openAuthWindow } from '../../components/auth/authSlice';
+import { showAuth } from '../../app/popUpSlice';
 
 function CreatePost() {
   const dispatch = useAppDispatch();
@@ -332,7 +332,7 @@ function CreatePost() {
     <>
       {!currentUserId ? (
         <div className='relative mx-auto flex w-full max-w-3xl items-center justify-center rounded-md border-[3px] border-solid border-neutral-900 bg-neutral-100 '>
-          <div className='group hover:cursor-pointer' onClick={() => dispatch(openAuthWindow())}>
+          <div className='group hover:cursor-pointer' onClick={() => dispatch(showAuth())}>
             <span className='decoration-2 group-hover:underline'>sign in</span>
             &nbsp;to log your drinks
           </div>

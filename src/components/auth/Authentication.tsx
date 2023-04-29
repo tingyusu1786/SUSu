@@ -20,13 +20,15 @@ import {
   signOutStart,
   signOutSuccess,
   signOutFail,
-  openAuthWindow,
-  closeAuthWindow,
+  // openAuthWindow,
+  // closeAuthWindow,
 } from './authSlice';
+import { showAuth, closeAuth } from '../../app/popUpSlice';
 
 function Authentication() {
   const dispatch = useAppDispatch();
-  const isAuthWindow = useAppSelector((state) => state.auth.isAuthWindow);
+  const isAuthShown = useAppSelector((state) => state.popUp.isAuthShown);
+  // const isAuthWindow = useAppSelector((state) => state.auth.isAuthWindow);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
   const [input, setInput] = useState({ name: '', email: '', password: '' });
   const [haveAccount, setHaveAccount] = useState(true);
@@ -40,7 +42,7 @@ function Authentication() {
     //todo: any
     const handleKeyDown = (event: any) => {
       if (event.key === 'Escape') {
-        dispatch(closeAuthWindow());
+        dispatch(closeAuth());
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -90,11 +92,13 @@ function Authentication() {
           photoURL: user.photoURL,
         })
       );
+      dispatch(closeAuth());
     } catch (error: any) {
       const errorCode = error.code;
       const errorMessage = error.message;
       swal.error(`☹️ ${errorCode}`, 'try again', 'ok');
       dispatch(signInFail(errorMessage));
+      dispatch(closeAuth());
     }
   };
 
@@ -124,6 +128,7 @@ function Authentication() {
         dispatch(
           signInSuccess({ user: filteredUserData, id: user.uid, name: userData.name, photoURL: userData.photoURL })
         );
+        dispatch(closeAuth());
       }
       swal.success(`Welcome back ${userData?.name}!`, '', 'hi');
     } catch (error: any) {
@@ -131,6 +136,7 @@ function Authentication() {
       const errorMessage = error.message;
       swal.error(`☹️ ${errorCode}`, 'try again', 'ok');
       dispatch(signInFail(errorMessage));
+      dispatch(closeAuth());
     }
   };
 
@@ -178,6 +184,7 @@ function Authentication() {
           dispatch(
             signInSuccess({ user: filteredUserData, id: user.uid, name: user.displayName, photoURL: user.photoURL })
           );
+          dispatch(closeAuth());
         }
       }
     } catch (error: any) {
@@ -185,6 +192,7 @@ function Authentication() {
       const errorMessage = error.message;
       swal.error(`☹️ ${errorCode}`, 'try again', 'ok');
       dispatch(signInFail(errorMessage));
+      dispatch(closeAuth());
 
       // The email of the user's account used
       const errEmail = error.customData.email;
@@ -343,10 +351,7 @@ function Authentication() {
           </div>
         )}
       </form>
-      <div
-        className='absolute top-0 h-full w-full bg-white opacity-80'
-        onClick={() => dispatch(closeAuthWindow())}
-      ></div>
+      <div className='absolute top-0 h-full w-full bg-white opacity-80' onClick={() => dispatch(closeAuth())}></div>
     </div>
   );
 }

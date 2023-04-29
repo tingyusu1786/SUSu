@@ -10,7 +10,7 @@ export interface AuthState {
   currentUserId: string | null;
   currentUserName: string | null;
   currentUserPhotoURL: string;
-  isAuthWindow: boolean;
+  // isAuthWindow: boolean;
 }
 
 const initialState: AuthState = {
@@ -21,7 +21,7 @@ const initialState: AuthState = {
   currentUserId: null,
   currentUserName: null,
   currentUserPhotoURL: nullPhoto,
-  isAuthWindow: false,
+  // isAuthWindow: false,
 };
 
 export const authSlice = createSlice({
@@ -35,7 +35,7 @@ export const authSlice = createSlice({
     signInSuccess: (state, action) => {
       state.isLoading = false;
       state.isSignedIn = true;
-      state.isAuthWindow = false;
+      // state.isAuthWindow = false;
       state.currentUser = action.payload.user;
       state.currentUserId = action.payload.id;
       state.currentUserName = action.payload.name;
@@ -53,7 +53,6 @@ export const authSlice = createSlice({
     signOutSuccess: (state) => {
       state.isLoading = false;
       state.isSignedIn = false;
-      state.isAuthWindow = false;
       state.currentUser = {};
       state.currentUserId = null;
       state.currentUserName = null;
@@ -64,12 +63,12 @@ export const authSlice = createSlice({
       state.isSignedIn = true;
       state.error = action.payload;
     },
-    openAuthWindow: (state) => {
-      state.isAuthWindow = true;
-    },
-    closeAuthWindow: (state) => {
-      state.isAuthWindow = false;
-    },
+    // openAuthWindow: (state) => {
+    //   state.isAuthWindow = true;
+    // },
+    // closeAuthWindow: (state) => {
+    //   state.isAuthWindow = false;
+    // },
     updateUserName: (state, action) => {
       state.currentUser.name = action.payload.name;
       state.currentUserName = action.payload.name;
@@ -91,8 +90,8 @@ export const {
   signOutStart,
   signOutSuccess,
   signOutFail,
-  openAuthWindow,
-  closeAuthWindow,
+  // openAuthWindow,
+  // closeAuthWindow,
   updateUserName,
   updateUserPhoto,
   updateUserFeedSource,

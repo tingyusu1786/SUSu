@@ -4,31 +4,39 @@ import { RootState, AppThunk } from './store';
 export interface infoState {
   isNotificationShown: boolean;
   isSearchShown: boolean;
+  isAuthShown: boolean;
 }
 
 const initialState: infoState = {
   isNotificationShown: false,
   isSearchShown: false,
+  isAuthShown: false,
 };
 
 export const popUpSlice = createSlice({
   name: 'notification',
   initialState,
   reducers: {
-    closeNotification: (state) => {
-      state.isNotificationShown = false;
-    },
     showNotification: (state) => {
       state.isNotificationShown = true;
     },
-    closeSearch: (state) => {
-      state.isSearchShown = false;
+    closeNotification: (state) => {
+      state.isNotificationShown = false;
     },
     showSearch: (state) => {
       state.isSearchShown = true;
     },
+    closeSearch: (state) => {
+      state.isSearchShown = false;
+    },
+    showAuth: (state) => {
+      state.isAuthShown = true;
+    },
+    closeAuth: (state) => {
+      state.isAuthShown = false;
+    },
   },
 });
 
-export const { closeNotification, showNotification, closeSearch, showSearch } = popUpSlice.actions;
+export const { showNotification, closeNotification, showSearch, closeSearch, showAuth, closeAuth } = popUpSlice.actions;
 export default popUpSlice.reducer;

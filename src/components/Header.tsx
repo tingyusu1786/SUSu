@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../services/firebase';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
-import { showNotification, closeNotification, showSearch, closeSearch } from '../app/popUpSlice';
-import { openAuthWindow, signOutStart, signOutSuccess, signOutFail } from '../components/auth/authSlice';
+import { showNotification, closeNotification, showSearch, closeSearch, showAuth } from '../app/popUpSlice';
+import { signOutStart, signOutSuccess, signOutFail } from '../components/auth/authSlice';
 import NotificationsList from '../components/notification/NotificationsList';
 import SearchModal from '../components/SearchModal';
 
@@ -147,6 +147,7 @@ function Header() {
   const currentUserphotoURL = useAppSelector((state) => state.auth.currentUserPhotoURL);
   const isNotificationShown = useAppSelector((state) => state.popUp.isNotificationShown);
   const isSearchShown = useAppSelector((state) => state.popUp.isSearchShown);
+  const isAuthShown = useAppSelector((state) => state.popUp.isAuthShown);
   const navigate = useNavigate();
 
   function handleRedirect() {
@@ -232,8 +233,8 @@ function Header() {
       {isSearchShown && <SearchModal />}
 
       {!isSignedIn && (
-        <div className='group relative cursor-pointer ' onClick={() => dispatch(openAuthWindow())}>
-          <span className='decoration-2 group-hover:underline'>sign in</span>
+        <div className='group relative cursor-pointer ' onClick={() => dispatch(showAuth())}>
+          <span className='decoration-2 underline-offset-2 group-hover:underline'>sign in</span>
           <span>&nbsp;to see your profile and notifications!</span>
         </div>
       )}

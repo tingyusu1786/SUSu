@@ -19,7 +19,7 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { openAuthWindow } from '../../components/auth/authSlice';
+import { showAuth } from '../../app/popUpSlice';
 import { User } from '../../interfaces/interfaces';
 import { Notification } from '../../interfaces/interfaces';
 import NameCard from '../../components/NameCard';
@@ -199,30 +199,17 @@ function Profile() {
     return false;
   };
 
-  if (isLoading) {
-    return <div>loading</div>;
-  }
-
-  // todo: redirect if null
-  if (profileUserId === 'null') {
+  if (profileUser === undefined) {
     return (
-      <div className='text-center font-heal text-3xl'>
-        <button className='underline' onClick={() => dispatch(openAuthWindow())}>
-          sign in
-        </button>
-        &nbsp;to see your profile 🤗
-      </div>
+      <main className='bg-boxes-diag relative flex min-h-[calc(100vh-64px)] items-center justify-center bg-fixed p-10'>
+        user not found ☹&nbsp;
+        <Link to='/feeds' className='decoration-2 underline-offset-2 hover:underline'>
+          go to feeds
+        </Link>
+        &nbsp;to explore other users
+      </main>
     );
   }
-
-  if (profileUser === undefined) {
-    return <div>user not found ~~~ see these users to follow:</div>;
-  }
-
-  // const date = post.timeCreated?.toDate();
-  // const formattedTime = date?.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
-  // const formattedDate = date?.toLocaleDateString('en-US');
-  // const formattedDateTime = `${formattedDate} ${formattedTime}`;
 
   return (
     <main className='bg-boxes-diag relative min-h-[calc(100vh-64px)] bg-fixed p-10'>
