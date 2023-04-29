@@ -67,7 +67,11 @@ function App() {
   }, []);
 
   if (isLoading) {
-    return <div>loading...</div>;
+    return (
+      <main className='bg-boxes flex h-screen w-screen animate-bounce items-center justify-center bg-fixed text-3xl'>
+        SUSü
+      </main>
+    );
   }
 
   return (
