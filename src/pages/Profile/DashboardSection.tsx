@@ -43,7 +43,6 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts, profileUs
   const reversedProfileUserPosts = profileUserPosts.reverse();
 
   useEffect(() => {
-    alert('effect');
     if (profileUserPosts.length === 0) {
       return;
     }
@@ -121,10 +120,10 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts, profileUs
               }
               const postDate = new Date(post.timeCreated.seconds * 1000);
               if (postDate >= startDate && postDate <= currentDate) {
-                priceStatistic[label] += post.price;
+                priceStatistic[label] += Number(post.price);
               }
             });
-            priceStatistic.overall += post.price;
+            priceStatistic.overall += Number(post.price);
           }
 
           return accumulator;
@@ -196,7 +195,10 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts, profileUs
           </div>
         )}
         {Object.entries(streaks).map((streak) => (
-          <div className='grid grid-cols-[50px_1fr] items-center rounded-xl border-2 border-solid border-neutral-900 bg-neutral-100 px-10 py-5 shadow-[3px_3px_#171717] transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[3px_6px_#171717]'>
+          <div
+            className='grid grid-cols-[50px_1fr] items-center rounded-xl border-2 border-solid border-neutral-900 bg-neutral-100 px-10 py-5 shadow-[3px_3px_#171717] transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[3px_6px_#171717]'
+            key={streak[0]}
+          >
             <Streak className='row-span-2' />
             <div className='text-xl'>{streak[1]}</div>
             <div className='text-neutral-500'>{streak[0]} streak days</div>
@@ -210,12 +212,13 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts, profileUs
                 ['last year', 12],
                 ['last 6 months', 6],
                 ['last month', 1],
-              ].map((num) => (
+              ].map((num, index) => (
                 <button
                   className={`rounded-t-full border-x-2 border-t-2 border-neutral-900 px-3 pt-1 text-sm hover:bg-neutral-400 hover:text-white ${
                     numMonthBefore === num[1] && 'bg-neutral-400 text-white'
                   }`}
                   onClick={() => setNumMonthBefore(num[1] as number)}
+                  key={index}
                 >
                   {num[0]}
                 </button>
@@ -233,7 +236,10 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts, profileUs
         {Object.entries(priceStatistic)
           .reverse()
           .map((expense) => (
-            <div className='grid grid-cols-[50px_1fr] items-center rounded-xl border-2 border-solid border-neutral-900 bg-neutral-100 px-5 py-3 shadow-[3px_3px_#171717] transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[3px_6px_#171717]'>
+            <div
+              className='grid grid-cols-[50px_1fr] items-center rounded-xl border-2 border-solid border-neutral-900 bg-neutral-100 px-5 py-3 shadow-[3px_3px_#171717] transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[3px_6px_#171717]'
+              key={expense[0]}
+            >
               <Expense className='row-span-2' />
               <div className='text-xl before:content-["$"]'>{expense[1]}</div>
               <div className='text-neutral-500'>{expense[0]}</div>
