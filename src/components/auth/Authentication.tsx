@@ -218,7 +218,7 @@ function Authentication() {
 
   return (
     <div className='fixed top-0 z-50 flex h-screen w-screen items-center justify-center'>
-      <form className='animate__faster animate__animated animate__bounceIn z-30  flex w-96 flex-col items-center justify-start gap-3 rounded-md border-[3px] border-solid border-neutral-900 bg-[#F5F3EA] px-4 py-5 shadow-[4px_4px_#10172A]'>
+      <form className='animate__faster animate__animated animate__zoomIn z-30  flex w-96 flex-col items-center justify-start gap-3 rounded-md border-[3px] border-solid border-neutral-900 bg-[#F5F3EA] bg-neutral-100 px-4 py-5 shadow-[4px_4px_#171717]'>
         <div className='text-2xl'>SUSü</div>
 
         <div className='mb-3 text-center text-lg font-bold'>
@@ -308,7 +308,7 @@ function Authentication() {
             }}
             className='button mb-3 h-10 w-full rounded-full bg-white p-0 text-xl transition-all duration-100 hover:bg-green-400'
           >
-            Sign in by email
+            Sign in
           </button>
         ) : (
           <button
