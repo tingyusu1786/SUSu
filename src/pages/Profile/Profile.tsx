@@ -20,7 +20,6 @@ import {
 } from 'firebase/firestore';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { openAuthWindow } from '../../components/auth/authSlice';
-import { showNotification } from '../../components/notification/notificationSlice';
 import { User } from '../../interfaces/interfaces';
 import { Notification } from '../../interfaces/interfaces';
 import NameCard from '../../components/NameCard';

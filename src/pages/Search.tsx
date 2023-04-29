@@ -4,7 +4,7 @@ import { doc, DocumentSnapshot, DocumentReference, DocumentData, onSnapshot, Tim
 import dbApi from '../utils/dbApi';
 import { openAuthWindow } from '../components/auth/authSlice';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
-import { showNotification } from '../components/notification/notificationSlice';
+import { showSearch, closeSearch } from '../app/popUpSlice';
 import { Link } from 'react-router-dom';
 
 import algoliasearch from 'algoliasearch/lite';

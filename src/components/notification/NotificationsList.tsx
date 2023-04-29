@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { doc, DocumentSnapshot, DocumentReference, DocumentData, onSnapshot, updateDoc } from 'firebase/firestore';
 import dbApi from '../../utils/dbApi';
 import { openAuthWindow } from '../../components/auth/authSlice';
+import { closeNotification } from '../../app/popUpSlice';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { getTimeDiff } from '../../utils/common';
 import { Notification } from '../../interfaces/interfaces';
@@ -159,6 +160,7 @@ export function NotificationsList() {
             to={to}
             className='group w-full overflow-x-scroll rounded border-2 border-neutral-900 bg-white p-2 text-sm shadow-md transition-all duration-300 hover:-translate-y-1'
             key={index}
+            onClick={() => dispatch(closeNotification())}
           >
             {html}
           </Link>

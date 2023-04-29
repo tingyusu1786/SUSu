@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { db } from '../services/firebase';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
+import { showNotification, closeNotification, showSearch, closeSearch } from '../app/popUpSlice';
 import { openAuthWindow, signOutStart, signOutSuccess, signOutFail } from '../components/auth/authSlice';
-import { showNotification, closeNotification } from '../components/notification/notificationSlice';
 import { NotificationsList } from '../components/notification/NotificationsList';
 
 import type { SearchBoxProps } from 'react-instantsearch-hooks-web';
@@ -159,10 +159,11 @@ function Header() {
   const currentUserName = useAppSelector((state) => state.auth.currentUserName);
   const currentUserphotoURL = useAppSelector((state) => state.auth.currentUserPhotoURL);
   // const isAuthWindow = useAppSelector((state) => state.auth.isAuthWindow);
-  const isShown = useAppSelector((state) => state.notification.isShown);
+  const isNotificationShown = useAppSelector((state) => state.popUp.isNotificationShown);
+  const isSearchShown = useAppSelector((state) => state.popUp.isSearchShown);
   const navigate = useNavigate();
-  const [searchShown, setSearchShown] = useState(false);
-  const [notificationShown, setNotificationShown] = useState(false);
+  // const [searchShown, setSearchShown] = useState(false);
+  // const [notificationShown, setNotificationShown] = useState(false);
 
   function handleRedirect() {
     navigate('/search');
@@ -173,7 +174,7 @@ function Header() {
       <Link
         to={`/catalogue/${hit.objectID}`}
         className='mb-2 flex w-full flex-col rounded border-2 border-neutral-900 bg-white p-2 shadow-md transition-all duration-300 hover:-translate-y-1'
-        onClick={() => setSearchShown(false)}
+        onClick={() => dispatch(closeSearch())}
       >
         {hit.photoURL && <img src={hit.photoURL} alt={hit.photoURL} />}
         <Highlight attribute='name' hit={hit} className='' />
@@ -191,7 +192,7 @@ function Header() {
       <Link
         to={`/profile/${hit.objectID}`}
         className='mb-2 flex w-full flex-col rounded border-2 border-neutral-900 bg-white p-2 shadow-md transition-all duration-300 hover:-translate-y-1'
-        onClick={() => setSearchShown(false)}
+        onClick={() => dispatch(closeSearch())}
       >
         {hit.photoURL && <img src={hit.photoURL} alt={hit.photoURL} />}
         <Highlight attribute='name' hit={hit} className='' />
@@ -242,7 +243,8 @@ function Header() {
     //todo: any
     const handleKeyDown = (event: any) => {
       if (event.key === 'Escape') {
-        setNotificationShown(false);
+        dispatch(closeSearch());
+        dispatch(closeNotification());
       }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -306,14 +308,14 @@ function Header() {
             <MagnifyingGlassIcon
               className='mt-8 h-5 w-5 cursor-pointer text-neutral-900 transition-all duration-150 hover:scale-125'
               onClick={() => {
-                setSearchShown((prev) => !prev);
+                isSearchShown ? dispatch(closeSearch()) : dispatch(showSearch());
               }}
             />
           </li>
         </ul>
       </nav>
 
-      {searchShown && (
+      {isSearchShown && (
         <div className='fixed left-1/2 top-20 grid h-[80vh] w-3/4 max-w-[700px] -translate-x-1/2 grid-rows-[auto_1fr_2rem] rounded-md border-4 border-neutral-900 bg-neutral-100 p-5 shadow-lg'>
           <div className='border-b-2 border-dashed border-neutral-900'>
             <SearchBox
@@ -386,10 +388,10 @@ function Header() {
           <BellIcon
             className='h-6 w-6 cursor-pointer text-neutral-900 transition-all duration-100 hover:text-green-400'
             onClick={() => {
-              setNotificationShown((prev) => !prev);
+              isNotificationShown ? dispatch(closeNotification()) : dispatch(showNotification());
             }}
           />
-          {notificationShown && <NotificationsList />}
+          {isNotificationShown && <NotificationsList />}
           <div
             onClick={handleSignOut}
             className='cursor-pointer scroll-px-2.5 text-neutral-500 decoration-2 underline-offset-2 hover:underline'
