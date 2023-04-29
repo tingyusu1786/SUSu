@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import CalendarHeatmapComponent from './CalendarHeatmapComponent';
 import Badges from './Badges';
-import { useParams } from 'react-router-dom';
 import { Timestamp } from 'firebase/firestore';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { addAllBrands } from '../../app/infoSlice';
@@ -12,6 +11,7 @@ import { ReactComponent as Expense } from '../../images/Expense.svg';
 
 interface AllPostsProps {
   profileUserPosts: any[];
+  profileUserId: string | undefined;
 }
 
 interface PriceStatistic {
@@ -23,10 +23,9 @@ interface PriceStatistic {
   [key: string]: number; // add index signature
 }
 
-const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts }) => {
+const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts, profileUserId }) => {
   const dispatch = useAppDispatch();
   const allBrandsInfo = useAppSelector((state) => state.info.brands);
-  const { profileUserId } = useParams<{ profileUserId: string }>();
   const [priceStatistic, setPriceStatistic] = useState({ overall: 0, year: 0, month: 0, week: 0, day: 0 });
   const [drankBrands, setDrankBrands] = useState<Record<string, { brandName: string; times: number }>>();
   const [drankItems, setDrankItems] = useState<Record<string, { times: number }>>();
@@ -44,6 +43,7 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts }) => {
   const reversedProfileUserPosts = profileUserPosts.reverse();
 
   useEffect(() => {
+    alert('effect');
     if (profileUserPosts.length === 0) {
       return;
     }

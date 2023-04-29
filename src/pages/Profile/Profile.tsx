@@ -31,7 +31,6 @@ function Profile() {
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
   const currentUserName = useAppSelector((state) => state.auth.currentUserName);
-  const isLoading = useAppSelector((state) => state.auth.isLoading);
   const dispatch = useAppDispatch();
   const [profileUser, setProfileUser] = useState<User>();
   const [isFollowing, setIsFollowing] = useState(false);
@@ -283,7 +282,7 @@ function Profile() {
         {tab === 'LOGS' && profileUserId && (
           <PostsSection profileUserPosts={profileUserPosts} profileUserId={profileUserId} />
         )}
-        {tab === 'DASHBOARD' && <DashboardSection profileUserPosts={profileUserPosts} />}
+        {tab === 'DASHBOARD' && <DashboardSection profileUserPosts={profileUserPosts} profileUserId={profileUserId} />}
         {tab === 'FOLLOWING' && (
           <div className='flex flex-col flex-nowrap items-center gap-5'>
             {profileUser?.following?.map((followingId) => (
