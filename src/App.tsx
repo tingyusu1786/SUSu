@@ -68,8 +68,8 @@ function App() {
 
   if (isLoading) {
     return (
-      <main className='bg-boxes flex h-screen w-screen animate-bounce items-center justify-center bg-fixed text-3xl'>
-        SUSü
+      <main className='bg-boxes flex h-screen w-screen items-center justify-center bg-fixed text-3xl'>
+        <p className='animate-bounce '>SUSü</p>
       </main>
     );
   }
@@ -79,12 +79,12 @@ function App() {
       <InstantSearch
         searchClient={searchClient}
         indexName='brands'
-        initialUiState={{
-          SearchBox: {
-            query: 'phone',
-            page: 0,
-          },
-        }}
+        // initialUiState={{
+        //   SearchBox: {
+        //     query: 'phone',
+        //     page: 0,
+        //   },
+        // }}
       >
         <Header />
         {isAuthShown && <Authentication />}

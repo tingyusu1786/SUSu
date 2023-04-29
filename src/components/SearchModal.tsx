@@ -141,8 +141,8 @@ const SearchModal: React.FC = () => {
   }
 
   return (
-    <div className='fixed top-0 z-50 flex h-screen w-screen items-center justify-center'>
-      <div className='animate__faster animate__zoomIn animate__animated z-30 grid max-h-[50vh] w-3/4 max-w-[700px]  grid-rows-[60px_1fr] rounded-md border-4 border-neutral-900 bg-neutral-100 p-5 shadow-lg '>
+    <div className='fixed top-0 z-50 flex h-screen w-screen items-center justify-center '>
+      <div className='animate__faster animate__zoomIn animate__animated absolute top-1/4 z-30 grid max-h-[50vh] w-3/4 max-w-[700px] grid-rows-[60px_1fr] rounded-md border-4 border-neutral-900 bg-neutral-100 p-5 shadow-lg '>
         <div className='relative'>
           <SearchBox
             // queryHook={queryHook}
@@ -164,8 +164,8 @@ const SearchModal: React.FC = () => {
           />
           <PoweredBy
             classNames={{
-              root: 'MyCustomPoweredBy w-32 absolute right-3 top-12',
-              link: 'MyCustomPoweredByLink MyCustomPoweredByLink--subclass',
+              root: ' w-32 absolute right-3 top-12',
+              link: '',
             }}
           />
         </div>
