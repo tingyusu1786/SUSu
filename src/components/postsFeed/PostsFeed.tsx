@@ -473,7 +473,7 @@ const PostsFeed: React.FC<PostsProps> = ({
         if (logDoc.exists()) {
           const logDocData = logDoc.data();
           const logWithQueriedInfos = await dbApi.getPostInfo(logDocData);
-          setPosts([{ ...logWithQueriedInfos, postId: logId, commentsShown: false, commentInput: '' }]);
+          setPosts([{ ...logWithQueriedInfos, postId: logId, commentsShown: true, commentInput: '' }]);
         } else {
           setPosts([]);
           setBottomMessage('Log not found');
