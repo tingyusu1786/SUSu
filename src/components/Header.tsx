@@ -40,9 +40,12 @@ function NotificationsListener() {
 
       !initSnap.current && setNotifications(newNotifications);
       !initSnap.current &&
+        newNotifications &&
         newNotifications.length > notificationsLength.current &&
         fireNotification(newNotifications[0]);
-      notificationsLength.current = newNotifications.length;
+      if (newNotifications) {
+        notificationsLength.current = newNotifications.length;
+      }
       initSnap.current = false;
     });
 
