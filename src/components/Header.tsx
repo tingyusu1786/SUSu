@@ -5,7 +5,7 @@ import { useAppSelector, useAppDispatch } from '../app/hooks';
 import { showNotification, closeNotification, showSearch, closeSearch, showAuth } from '../app/popUpSlice';
 import { signOutStart, signOutSuccess, signOutFail } from '../components/auth/authSlice';
 import NotificationsList from '../components/notification/NotificationsList';
-import SearchModal from '../components/SearchModal';
+// import SearchModal from '../components/SearchModal';
 
 import { Notification } from '../interfaces/interfaces';
 import { doc, DocumentSnapshot, DocumentReference, DocumentData, onSnapshot } from 'firebase/firestore';
@@ -230,7 +230,7 @@ function Header() {
         </ul>
       </nav>
 
-      {isSearchShown && <SearchModal />}
+      {/*{isSearchShown && <SearchModal />}*/}
 
       {!isSignedIn && (
         <div className='group relative cursor-pointer ' onClick={() => dispatch(showAuth())}>

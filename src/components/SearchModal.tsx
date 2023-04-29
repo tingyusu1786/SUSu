@@ -15,6 +15,7 @@ import {
   RefinementList,
   Index,
   InfiniteHits,
+  useInstantSearch,
 } from 'react-instantsearch-hooks-web';
 
 interface Props {
@@ -95,55 +96,100 @@ const SearchModal: React.FC = () => {
     );
   }
 
+  interface EmptyProps {
+    children: any;
+    fallback: any;
+  }
+
+  const EmptyQueryBoundary: React.FC<EmptyProps> = ({ children, fallback }) => {
+    const { indexUiState } = useInstantSearch();
+
+    if (!indexUiState.query) {
+      return fallback;
+    }
+
+    return children;
+  };
+
+  const NoResultsBoundary: React.FC<EmptyProps> = ({ children, fallback }) => {
+    const { results } = useInstantSearch();
+
+    // The `__isArtificial` flag makes sure not to display the No Results message
+    // when no hits have been returned yet.
+    if (!results.__isArtificial && results.nbHits === 0) {
+      return (
+        <>
+          {fallback}
+          <div hidden>{children}</div>
+        </>
+      );
+    }
+
+    return children;
+  };
+
+  function NoResults() {
+    const { indexUiState } = useInstantSearch();
+
+    return (
+      <div>
+        <p>
+          No results for <q>{indexUiState.query}</q> ☹ try searching another keyword
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <div className='fixed left-1/2 top-1/4 grid max-h-[50vh] w-3/4 max-w-[700px] -translate-x-1/2  grid-rows-[auto_1fr] rounded-md border-4 border-neutral-900 bg-neutral-100 p-5 shadow-lg'>
-      <div className='relative'>
-        <SearchBox
-          // queryHook={queryHook}
-          // onSubmit={handleRedirect}
-          autoFocus
-          placeholder='Search anything'
-          searchAsYouType={true}
-          submitIconComponent={({ classNames }) => <span className={classNames.submitIcon}></span>}
-          resetIconComponent={({ classNames }) => <span className={classNames.resetIcon}></span>}
-          loadingIconComponent={() => <span></span>}
-          classNames={{
-            // root: 'MyCustomSearchBox',
-            form: 'pb-5',
-            input:
-              'h-10 rounded-full border-2 border-solid border-gray-400 p-3 focus:border-green-400 focus:outline-green-400 w-full',
-            submitIcon: 'hidden',
-            resetIcon: 'hidden',
-            loadingIcon: 'hidden',
-          }}
-        />
-        <PoweredBy
-          classNames={{
-            root: 'MyCustomPoweredBy w-32 absolute right-3 top-12',
-            link: 'MyCustomPoweredByLink MyCustomPoweredByLink--subclass',
-          }}
-        />
-      </div>
-
-      <div className='mt-4 flex w-full flex-col items-stretch gap-3 overflow-y-scroll border-t-2 border-dashed border-neutral-900 py-3'>
-        <Index indexName='brands'>
-          <div className='text-xl'>brands</div>
-          <Hits hitComponent={BrandHit} className='' />
-        </Index>
-        <Index indexName='users'>
-          <h1>users</h1>
-          <Hits hitComponent={UserHit} className='' />
-        </Index>
-
-        <Index indexName='posts'>
-          <h1>posts</h1>
-          <Hits
-            hitComponent={PostHit}
-            className='  flex flex-col items-center bg-green-100'
-            // showPrevious={false}
+    <div className='fixed top-0 z-50 flex h-screen w-screen items-center justify-center'>
+      <div className='animate__faster animate__zoomIn animate__animated z-30 grid max-h-[50vh] w-3/4 max-w-[700px]  grid-rows-[60px_1fr] rounded-md border-4 border-neutral-900 bg-neutral-100 p-5 shadow-lg '>
+        <div className='relative'>
+          <SearchBox
+            // queryHook={queryHook}
+            // onSubmit={handleRedirect}
+            autoFocus
+            placeholder='Search anything'
+            searchAsYouType={true}
+            submitIconComponent={({ classNames }) => <span className={classNames.submitIcon}></span>}
+            resetIconComponent={({ classNames }) => <span className={classNames.resetIcon}></span>}
+            loadingIconComponent={() => <span></span>}
+            classNames={{
+              // root: 'MyCustomSearchBox',
+              form: '',
+              input: 'h-10 rounded-full border-2 border-solid border-gray-400 p-3  outline-0 w-full',
+              submitIcon: 'hidden',
+              resetIcon: 'hidden',
+              loadingIcon: 'hidden',
+            }}
           />
-        </Index>
+          <PoweredBy
+            classNames={{
+              root: 'MyCustomPoweredBy w-32 absolute right-3 top-12',
+              link: 'MyCustomPoweredByLink MyCustomPoweredByLink--subclass',
+            }}
+          />
+        </div>
+
+        <div className='mt-4 flex w-full flex-col items-stretch gap-3 overflow-y-scroll border-dashed border-neutral-900'>
+          <EmptyQueryBoundary fallback={null}>
+            <NoResultsBoundary fallback={<NoResults />}>
+              <Index indexName='brands'>
+                <div className='text-xl'>brands</div>
+                <Hits hitComponent={BrandHit} className='' />
+              </Index>
+              <Index indexName='users'>
+                <h1>users</h1>
+                <Hits hitComponent={UserHit} className='' />
+              </Index>
+              <Index indexName='posts'>
+                <h1>posts</h1>
+                <Hits hitComponent={PostHit} className='  flex flex-col items-center bg-green-100' />
+              </Index>
+            </NoResultsBoundary>
+          </EmptyQueryBoundary>
+        </div>
       </div>
+      <div className='absolute top-0 h-full w-full bg-white opacity-80' onClick={() => dispatch(closeSearch())}></div>
     </div>
   );
 };

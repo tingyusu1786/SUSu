@@ -3,6 +3,7 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 
 import Header from './components/Header';
 import Authentication from './components/auth/Authentication';
+import SearchModal from './components/SearchModal';
 import { useAppSelector, useAppDispatch } from './app/hooks';
 import {
   signInStart,
@@ -22,7 +23,6 @@ import { doc, setDoc, getDoc, collection, serverTimestamp } from 'firebase/fires
 
 import algoliasearch from 'algoliasearch/lite';
 import { InstantSearch, SearchBox } from 'react-instantsearch-hooks-web';
-import '@algolia/autocomplete-theme-classic';
 import dbApi from './utils/dbApi';
 
 const searchClient = algoliasearch('CQCQ45KM4I', '343b0909e26f2653041deba6e5b7b442'); //the public API key to use in your frontend code. This key is only usable for search queries and sending data to the Insights API.
@@ -35,8 +35,8 @@ function App() {
   const location = useLocation();
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
   const isLoading = useAppSelector((state) => state.auth.isLoading);
-  // const isAuthWindow = useAppSelector((state) => state.auth.isAuthWindow);
   const isAuthShown = useAppSelector((state) => state.popUp.isAuthShown);
+  const isSearchShown = useAppSelector((state) => state.popUp.isSearchShown);
   const userId = useAppSelector((state) => state.auth.currentUserId);
 
   useEffect(() => {
@@ -80,7 +80,7 @@ function App() {
         searchClient={searchClient}
         indexName='brands'
         initialUiState={{
-          indexName: {
+          SearchBox: {
             query: 'phone',
             page: 0,
           },
@@ -88,6 +88,7 @@ function App() {
       >
         <Header />
         {isAuthShown && <Authentication />}
+        {isSearchShown && <SearchModal />}
         <Outlet />
       </InstantSearch>
     </>
