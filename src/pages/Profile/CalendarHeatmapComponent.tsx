@@ -15,7 +15,7 @@ const CalendarHeatmapComponent: React.FC<CalendarHeatmapProps> = ({ values, numM
   startDate.setMonth(startDate.getMonth() - numMonthBefore);
 
   return (
-    <>
+    <div className={`${numMonthBefore === 3 && 'mx-auto w-[400px]'}`}>
       <CalendarHeatmap
         startDate={startDate}
         endDate={endDate}
@@ -49,7 +49,7 @@ const CalendarHeatmapComponent: React.FC<CalendarHeatmapProps> = ({ values, numM
         }}
       />
       {/*{<Tooltip id='data-tip' />}*/}
-    </>
+    </div>
   );
 };
 

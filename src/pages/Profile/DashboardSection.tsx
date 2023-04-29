@@ -211,7 +211,7 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts, profileUs
               {[
                 ['last year', 12],
                 ['last 6 months', 6],
-                ['last month', 1],
+                ['last 3 months', 3],
               ].map((num, index) => (
                 <button
                   className={`rounded-t-full border-x-2 border-t-2 border-neutral-900 px-3 pt-1 text-sm hover:bg-neutral-400 hover:text-white ${
