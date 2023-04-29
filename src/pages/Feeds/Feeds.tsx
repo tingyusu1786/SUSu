@@ -1,5 +1,5 @@
 import { useState, ChangeEvent } from 'react';
-import CreatePost from './CreatePost';
+import CreatePost from './CreateLog';
 import PostsFeed from '../../components/postsFeed/PostsFeed';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { db } from '../../services/firebase';

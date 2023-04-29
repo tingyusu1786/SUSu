@@ -3,6 +3,7 @@ import { db } from '../../services/firebase';
 import { collection, doc, getDoc, addDoc, getDocs, updateDoc, Timestamp } from 'firebase/firestore';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import dbApi from '../../utils/dbApi';
+import swal from '../../utils/swal';
 import { StarIcon as SolidStar, TrashIcon, GlobeAsiaAustraliaIcon, UserIcon } from '@heroicons/react/24/solid';
 import { StarIcon as LineStar } from '@heroicons/react/24/outline';
 import { ReactComponent as SmileyWink } from '../../images/SmileyWink.svg';
@@ -149,8 +150,8 @@ function CreatePost() {
   };
 
   const handlePostSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    if ([inputs.brandId, inputs.itemId].some((input) => input === '')) {
-      alert('please specify your drink');
+    if ([inputs.brandId, inputs.itemId, inputs.rating].some((input) => input === '')) {
+      swal.warning('please fill in all required fields', '(brand, item, rating)', 'ok');
       return;
     }
     const postInputs = Object.assign({}, inputs, {
@@ -352,6 +353,7 @@ function CreatePost() {
             </div>
             <div className='flex items-center justify-end gap-x-1'>
               <input
+                required
                 type='datetime-local'
                 value={formatDate(date)}
                 onChange={handleChange}
