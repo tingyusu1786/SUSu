@@ -35,9 +35,11 @@ function CreatePost() {
   const [sizesOfItem, setSizesOfItem] = useState<string[][]>([]);
   const [inputs, setInputs] = useState(initialInput);
   const [showDate, setShowDate] = useState(false);
-  const [date, setDate] = useState<Date>(new Date());
+  const [date, setDate] = useState<Date>(new Date(Date.now() - new Date().getTimezoneOffset() * 60000));
+  // const [date, setDate] = useState<Date>(new Date());
 
-  const formatDate = (date: Date): string => {
+  const formatDate = (date: Date): string | undefined => {
+    console.log('date.toISOString()', date.toISOString());
     return date.toISOString().slice(0, 16);
   };
 
@@ -47,7 +49,8 @@ function CreatePost() {
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
-    const newDate = new Date(value);
+    console.log('value', value);
+    let newDate = new Date(new Date(value).getTime() - new Date().getTimezoneOffset() * 60000);
     setDate(newDate);
   };
 
@@ -157,7 +160,7 @@ function CreatePost() {
     const postInputs = Object.assign({}, inputs, {
       authorId: currentUserId,
       hashtags: customTags.concat(autoTags),
-      timeCreated: date, //serverTimestamp()會lag
+      timeCreated: new Date(date.getTime() + new Date().getTimezoneOffset() * 60000), //serverTimestamp()會lag
       likes: [],
       comments: [],
     });
@@ -357,7 +360,7 @@ function CreatePost() {
                 type='datetime-local'
                 value={formatDate(date)}
                 onChange={handleChange}
-                max={formatDate(new Date())}
+                max={formatDate(new Date(Date.now() - new Date().getTimezoneOffset() * 60000))}
                 className='w-52 cursor-pointer bg-transparent outline-0 after:cursor-pointer'
               />
               <span className=''>•</span>
