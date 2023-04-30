@@ -60,7 +60,7 @@ const Badges: React.FC<BadgesProps> = ({ drankBrands, drankItems, numPosts, stre
                       </span>
                     </div>
                     {category.num > category.goals[index - 1] && category.num < goal && (
-                      <div className='absolute -bottom-6 w-32 rounded-sm border border-neutral-900 bg-neutral-200'>
+                      <div className='absolute -bottom-6 w-24 rounded-sm border border-neutral-900 bg-neutral-200'>
                         <div
                           className={` border-r border-neutral-900 bg-yellow-200 p-0.5 text-right text-xs leading-none`}
                           style={{ width: (category.num / goal) * 100 }}
