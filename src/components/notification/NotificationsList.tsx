@@ -148,8 +148,8 @@ function NotificationsList() {
               to = `/log/${notification.postId}`;
               html = (
                 <div className='group text-neutral-500'>
-                  {notification.authorName} commented <span className='text-neutral-900'>"{notification.content}"</span>{' '}
-                  on your <span className='transition-all duration-300 group-hover:text-green-400 '>log</span>!
+                  {notification.authorName} commented <q className='text-neutral-900'>{notification.content}</q> on your{' '}
+                  <span className='transition-all duration-300 group-hover:text-green-400 '>log</span>!
                 </div>
               );
               break;

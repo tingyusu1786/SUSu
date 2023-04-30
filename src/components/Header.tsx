@@ -225,7 +225,7 @@ function Header() {
           ))}
           <li>
             <MagnifyingGlassIcon
-              className='mt-8 h-5 w-5 cursor-pointer text-neutral-900 transition-all duration-150 hover:scale-125'
+              className='mt-8 h-5 w-5 cursor-pointer text-neutral-900 transition-all duration-150 hover:text-green-400'
               onClick={() => {
                 isSearchShown ? dispatch(closeSearch()) : dispatch(showSearch());
               }}

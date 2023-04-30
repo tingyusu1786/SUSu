@@ -42,9 +42,11 @@ function Home() {
 
   useEffect(() => {
     const options = {
-      strings: ['log drink^1000', 'share drink^1000', 'explore drink^1000', ':)!'],
-      typeSpeed: 50,
-      backSpeed: 20,
+      strings: ['Drink.^600 Log.^600 Repeat.^200 '],
+      stringss: ['npm install^1000\n `installing components...` ^1000\n `Fetching from source...`'],
+      typeSpeed: 40,
+      backSpeed: 30,
+      loop: true,
     };
 
     // elRef refers to the <span> rendered below
@@ -59,8 +61,8 @@ function Home() {
 
   return (
     <main className='bg-boxes flex min-h-[calc(100vh-64px)] flex-col items-center justify-center bg-fixed px-36'>
-      <div className='type-wrap rotate-12 flex-col items-center justify-start bg-sky-100 text-center text-5xl'>
-        <span>SUSü is a platform where you can...</span>
+      <div className='type-wrap flex-col items-center justify-start text-center text-9xl'>
+        {/*<span>SUSü is a platform where you can...</span>*/}
         {<span style={{ whiteSpace: 'pre' }} ref={el} />}
       </div>
     </main>

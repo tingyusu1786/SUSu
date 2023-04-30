@@ -142,7 +142,7 @@ function Inspiration() {
 
   return (
     <main className='bg-boxes relative z-0 min-h-[calc(100vh-64px)] bg-fixed p-10'>
-      <h1 className='mb-10 text-center text-7xl'>In the mood for something new?</h1>
+      <h1 className='mb-10 text-center text-7xl'>Can't decide? Leave it to us!</h1>
       <div className='mx-auto max-w-[960px]'>
         <span className='mb-3 mr-3 inline-block before:mr-2 before:content-["✦"]'>filter some brands if you want</span>
         <span
@@ -215,7 +215,7 @@ function Inspiration() {
       <div className='h-6 w-full bg-[url("https://static.thenounproject.com/png/924541-200.png")]'></div>
       {!isFinding && randomItem && (
         <div className='mt-10 flex flex-col items-center '>
-          <div className='mb-10 flex w-full justify-center gap-10'>
+          <div className='mb-10 flex w-full items-center justify-center gap-10'>
             <ShootingStar className='' />
             <div
               // className='flex w-1/3 flex-col items-center justify-center bg-gradient-to-br from-[#8EC5FC] to-[#E0C3FC]'
@@ -225,25 +225,24 @@ function Inspiration() {
               // }}
               className='text-center'
             >
-              <span>we picked </span>
-              <div className='flex items-end'>
+              <div className='mb-3 text-lg'>↓ we picked this for you! ↓</div>
+              <div className='flex items-end text-4xl'>
                 <Link to={`/catalogue/${randomItem.brandId}`}>
-                  <span className='text-2xl'>{randomItem.brand}</span>
+                  <div className=' transition-all duration-200 hover:-translate-y-1'>{randomItem.brand}</div>
                 </Link>
-                <span className='mr-2 text-2xl'>'s</span>
+                <span className='mr-2 '>'s</span>
                 <Link to={`/catalogue/${randomItem.brandId}/${randomItem.itemId}`}>
-                  <span className='mr-1 text-2xl'>{randomItem.name}</span>
+                  <div className='ransition-all mr-1  duration-200 hover:-translate-y-1'>{randomItem.name}</div>
                 </Link>
-                {randomItem.averageRating && (
-                  <div className='flex items-center'>
-                    <SolidStar className='mb-1 w-5 text-amber-400' />
-                    <span className=''>
-                      &nbsp;{randomItem.averageRating} ({randomItem.numRatings})
-                    </span>
-                  </div>
-                )}
               </div>
-              <span> for you!</span>
+              {randomItem.averageRating && (
+                <div className='flex items-center justify-center'>
+                  <SolidStar className='mb-1 w-5 text-amber-400' />
+                  <span className=''>
+                    &nbsp;{randomItem.averageRating} ({randomItem.numRatings})
+                  </span>
+                </div>
+              )}
               <div className='flex items-center justify-center gap-3'>
                 {randomItem.price &&
                   Object.entries(randomItem.price).map((p) => (
@@ -285,7 +284,7 @@ function Inspiration() {
               currentLocation?.longitude
             )}&zoom=13`}
           ></iframe>
-          <div className='absolute bottom-[200px] left-40 -z-10'>
+          {/*<div className='absolute bottom-[200px] left-40 -z-10'>
             <Line_8 />
           </div>
           <div className='absolute bottom-[500px] right-60 -z-10'>
@@ -293,14 +292,10 @@ function Inspiration() {
           </div>
           <div className='absolute left-80 top-[200px] -z-10'>
             <Sun_16 />
-          </div>
+          </div>*/}
         </div>
       )}
       {!isFinding && noItemMessage && <div className='mt-10 w-full text-center text-lg'>{noItemMessage}</div>}
-
-      {/*<Star_10 />
-      <Line_8 />
-      <Shine_4 />*/}
     </main>
   );
 }

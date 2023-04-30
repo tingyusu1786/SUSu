@@ -181,10 +181,10 @@ const SearchModal: React.FC = () => {
                 <h1>users</h1>
                 <Hits hitComponent={UserHit} className='' />
               </Index>
-              <Index indexName='posts'>
+              {/*<Index indexName='posts'>
                 <h1>posts</h1>
                 <Hits hitComponent={PostHit} className='  flex flex-col items-center bg-green-100' />
-              </Index>
+              </Index>*/}
             </NoResultsBoundary>
           </EmptyQueryBoundary>
         </div>
