@@ -36,28 +36,33 @@ const Badges: React.FC<BadgesProps> = ({ drankBrands, drankItems, numPosts, stre
     /*<Badge className='h-24 w-24' />*/
   }
   return (
-    <div className='flex flex-col gap-10'>
+    <>
+      {/*<div className='flex flex-col gap-10'>*/}
       {badgeCategories.map((category, index) => (
-        <div key={index}>
-          <div>{category.name}</div>
-          <div className='flex gap-5'>
+        <div key={index} className='col-span-full mb-10 w-full'>
+          <div className='mb-5'>{category.name}</div>
+          <div className='grid w-full grid-cols-5 items-center justify-center'>
             {category.goals.map(
               (goal, index) =>
                 goal !== 0 && (
                   <div key={index} className='relative'>
                     <div
-                      className={`textBorder relative w-32 bg-sky-100 text-6xl -tracking-[5px] drop-shadow ${
-                        category.num >= goal
-                          ? 'duration-400 transition-all hover:rotate-12'
-                          : 'text-neutral-500 opacity-60 grayscale'
+                      className={`group mb-2 flex h-24 w-24 items-center justify-center rounded-full border-2 border-neutral-900 bg-neutral-100 -tracking-[2px] outline outline-4 outline-offset-2 outline-yellow-200 ring-4 ring-neutral-900 ring-offset-4 ${
+                        category.num >= goal ? 'duration-400 transition-all ' : 'text-neutral-500 opacity-60 grayscale'
                       }`}
                     >
-                      {goal}
+                      <span
+                        className={`${
+                          category.num >= goal ? 'group-hover:rotate-0 group-hover:scale-125' : 'textBorder'
+                        } rotate-12 pt-2 text-4xl transition-all duration-200 `}
+                      >
+                        {goal}
+                      </span>
                     </div>
                     {category.num > category.goals[index - 1] && category.num < goal && (
-                      <div className='absolute -bottom-6 w-full rounded-full bg-gray-200'>
+                      <div className='absolute -bottom-6 w-32 rounded-sm border border-neutral-900 bg-neutral-200'>
                         <div
-                          className={`rounded-full bg-green-400 p-0.5 text-right text-xs leading-none text-white`}
+                          className={` border-r border-neutral-900 bg-yellow-200 p-0.5 text-right text-xs leading-none`}
                           style={{ width: (category.num / goal) * 100 }}
                         >
                           {category.num}
@@ -70,7 +75,8 @@ const Badges: React.FC<BadgesProps> = ({ drankBrands, drankItems, numPosts, stre
           </div>
         </div>
       ))}
-    </div>
+      {/*</div>*/}
+    </>
   );
 };
 

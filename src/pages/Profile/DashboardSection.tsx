@@ -246,8 +246,8 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts, profileUs
             </div>
           ))}
       </div>
-      <div className='grid w-full max-w-[900px] grid-cols-5 items-center gap-x-5 gap-y-5'>
-        <div className='col-span-full ml-3 text-xl before:mr-2 before:content-["✦"]'>achievements</div>
+      <div className='flex w-full max-w-[900px] flex-col items-start'>
+        <div className='mb-3 ml-3 text-xl before:mr-2 before:content-["✦"]'>achievements</div>
         <Badges
           drankBrands={drankBrands}
           drankItems={drankItems}
