@@ -358,7 +358,7 @@ function CreatePost() {
                 value={formatDate(date)}
                 onChange={handleChange}
                 max={formatDate(new Date())}
-                className='cursor-pointer bg-transparent outline-0 after:cursor-pointer'
+                className='w-52 cursor-pointer bg-transparent outline-0 after:cursor-pointer'
               />
               <span className=''>•</span>
               {inputs.audience === 'public' ? (
@@ -379,13 +379,13 @@ function CreatePost() {
             </div>
           </div>
           <div className='flex flex-col gap-y-2 p-5'>
-            <div className='flex text-2xl'>
+            <div className='flex items-center gap-x-2 text-xl'>
               <span className=''>I drank </span>
               {/*todo: text top cut*/}
               <select
                 required
                 name='brandId'
-                className=' grow border-b-2 border-neutral-900 bg-transparent p-0 align-baseline text-2xl text-neutral-500 focus:outline-green-400'
+                className='h-10 w-16 grow rounded-full border-2 border-solid border-neutral-900 p-0 px-2 pt-1 text-base focus:outline-green-400'
                 value={inputs.brandId}
                 onChange={(e) => {
                   handleInputChange(e);
@@ -396,7 +396,7 @@ function CreatePost() {
                 </option>
                 {brands.length !== 0 &&
                   brands.map((brand) => (
-                    <option value={brand[0]} key={brand[0]} className=' align-baseline '>
+                    <option value={brand[0]} key={brand[0]} className=' '>
                       {brand[1]}
                     </option>
                   ))}
@@ -406,7 +406,7 @@ function CreatePost() {
                 required
                 disabled={itemsOfBrand.length === 0}
                 name='itemId'
-                className='w-1/2 grow border-b-2 border-neutral-900 bg-transparent p-0 align-baseline text-neutral-500 focus:outline-green-400'
+                className='h-10 w-16 grow rounded-full border-2 border-solid border-neutral-900 p-0 px-2 pt-1 text-base focus:outline-green-400'
                 value={inputs.itemId}
                 onChange={(e) => {
                   handleInputChange(e);
@@ -435,7 +435,7 @@ function CreatePost() {
                 required
                 name='size'
                 id='size'
-                className='h-8 w-16 rounded-full border-2 border-solid border-neutral-900 px-1 pt-1 text-sm'
+                className='h-8 w-16 rounded-full border-2 border-solid border-neutral-900 pl-2 pt-1 text-sm focus:outline-green-400 '
                 value={inputs.size}
                 onChange={handleInputChange}
               >
@@ -454,7 +454,7 @@ function CreatePost() {
                 name='price'
                 id='price'
                 type='number'
-                className='h-8 w-16 rounded-full border-2 border-solid border-neutral-900 p-0 px-1 pt-1 text-sm'
+                className='h-8 w-16 rounded-full border-2 border-solid border-neutral-900 p-0 px-2 pt-1 text-sm focus:outline-green-400 '
                 value={inputs.price}
                 onChange={handleInputChange}
               />
@@ -541,48 +541,45 @@ function CreatePost() {
             <textarea
               name='selfComment'
               id='selfComment'
-              className='w-full border-b-2 border-neutral-900 bg-transparent p-2 text-xl focus:outline-green-400'
+              className='w-full rounded-lg border-2 border-neutral-900 p-2 placeholder:text-neutral-400 focus:outline-green-400'
               placeholder='say something'
               value={inputs.selfComment}
               onChange={handleInputChange}
             />
 
             <div>
-              <span>#</span>
-              <input
-                onKeyPress={(e) => handleTagInputKeyPress(e)}
-                onChange={(e) => setCustomTagsInput(e.target.value)}
-                value={customTagsInput}
-                type='text'
-                placeholder='add your hashtags'
-                className='bg-transparent focus:outline-green-400'
-              />
-              <div className='flex flex-wrap gap-x-3'>
-                {autoTags.map(
-                  (tag, index) =>
-                    tag !== '' && (
-                      <div key={index} className='text-neutral-400 before:mr-px before:content-["#"]'>
-                        {tag}
-                      </div>
-                    )
-                )}
+              <div className='flex flex-wrap items-center gap-x-3 gap-y-2'>
+                <span className='text-neutral-600'>#</span>
+                <input
+                  onKeyPress={(e) => handleTagInputKeyPress(e)}
+                  onChange={(e) => setCustomTagsInput(e.target.value)}
+                  value={customTagsInput}
+                  type='text'
+                  placeholder='add your hashtags'
+                  className='-ml-2 inline-block h-6 rounded-lg border-2 border-solid border-neutral-900 p-0 px-1 text-neutral-600 placeholder:text-sm placeholder:text-neutral-400 focus:outline-green-400'
+                />
                 {customTags.map(
                   (tag, index) =>
                     tag !== '' && (
                       <div key={index} className=''>
-                        <span className='text-neutral-400 before:mr-px before:content-["#"]'>{tag}</span>
-                        <span
-                          onClick={() => removeTag(index)}
-                          className='ml-1 cursor-pointer text-neutral-500 hover:text-red-500'
-                        >
+                        <span className='text-neutral-600 before:mr-px before:content-["#"]'>{tag}</span>
+                        <span onClick={() => removeTag(index)} className='ml-1 cursor-pointer text-neutral-500'>
                           &times;
                         </span>
                       </div>
                     )
                 )}
+                {autoTags.map(
+                  (tag, index) =>
+                    tag !== '' && (
+                      <div key={index} className='text-neutral-600 before:mr-px before:content-["#"]'>
+                        {tag}
+                      </div>
+                    )
+                )}
               </div>
             </div>
-            <button onClick={handlePostSubmit} className='button'>
+            <button onClick={handlePostSubmit} className='button mt-2 h-10 rounded-full hover:bg-green-400'>
               submit
             </button>
           </div>

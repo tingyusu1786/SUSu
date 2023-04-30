@@ -12,8 +12,6 @@ import {
   signOutStart,
   signOutSuccess,
   signOutFail,
-  // openAuthWindow,
-  // closeAuthWindow,
 } from './components/auth/authSlice';
 import { showAuth, closeAuth } from './app/popUpSlice';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -68,24 +66,15 @@ function App() {
 
   if (isLoading) {
     return (
-      <main className='bg-boxes flex h-screen w-screen items-center justify-center bg-fixed text-3xl'>
-        <p className='animate-bounce '>SUSü</p>
+      <main className='bg-boxes flex h-screen w-screen items-center justify-center bg-fixed text-6xl'>
+        <p className='animate__animated animate__swing'>SUSü</p>
       </main>
     );
   }
 
   return (
     <>
-      <InstantSearch
-        searchClient={searchClient}
-        indexName='brands'
-        // initialUiState={{
-        //   SearchBox: {
-        //     query: 'phone',
-        //     page: 0,
-        //   },
-        // }}
-      >
+      <InstantSearch searchClient={searchClient} indexName='brands'>
         <Header />
         {isAuthShown && <Authentication />}
         {isSearchShown && <SearchModal />}

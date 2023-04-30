@@ -105,9 +105,9 @@ function NotificationsList() {
   };
   // animate__animated animate__bounceInRight
   return (
-    <div className='justify-top  absolute right-5 top-20 flex max-h-[100vh-64px] w-96 flex-col items-center gap-2 overflow-scroll rounded-lg border-4 border-neutral-900 bg-neutral-100 p-5 shadow-lg'>
+    <div className='justify-top absolute right-5 top-20 flex max-h-[80vh] w-96 flex-col items-center gap-2 overflow-y-scroll rounded-lg border-4 border-neutral-900 bg-neutral-100 p-5 shadow-lg'>
       {notifications.length === 0 && <div>no notification yet</div>}
-      {notifications.length > 0 && <div>({notifications?.length})</div>}
+      {notifications.length > 0 && <div>({notifications.length})</div>}
       {notifications.length > 0 && (
         <button
           onClick={handleClearNotification}
@@ -116,55 +116,57 @@ function NotificationsList() {
           clear all
         </button>
       )}
-      {notifications.map((notification, index) => {
-        const timeDiff = getTimeDiff(notification.timeCreated);
-        let html: JSX.Element = <></>;
-        let to: string = '';
-        switch (notification.type) {
-          case 'follow': {
-            to = `/profile/${notification.authorId}`;
-            html = (
-              <div className='group text-neutral-500'>
-                <span className='transition-all duration-300 group-hover:text-green-400 '>
-                  {notification.authorName}
-                </span>{' '}
-                started following you!
-              </div>
-            );
-            break;
+      <div className='flex h-4/5 w-full flex-col items-center gap-2 '>
+        {notifications.map((notification, index) => {
+          const timeDiff = getTimeDiff(notification.timeCreated);
+          let html: JSX.Element = <></>;
+          let to: string = '';
+          switch (notification.type) {
+            case 'follow': {
+              to = `/profile/${notification.authorId}`;
+              html = (
+                <div className='group text-neutral-500'>
+                  <span className='transition-all duration-300 group-hover:text-green-400 '>
+                    {notification.authorName}
+                  </span>{' '}
+                  started following you!
+                </div>
+              );
+              break;
+            }
+            case 'like': {
+              to = `/log/${notification.postId}`;
+              html = (
+                <div className='group text-neutral-500'>
+                  {notification.authorName} liked your&nbsp;
+                  <span className='transition-all duration-300 group-hover:text-green-400 '>log</span>!
+                </div>
+              );
+              break;
+            }
+            case 'comment': {
+              to = `/log/${notification.postId}`;
+              html = (
+                <div className='group text-neutral-500'>
+                  {notification.authorName} commented <span className='text-neutral-900'>"{notification.content}"</span>{' '}
+                  on your <span className='transition-all duration-300 group-hover:text-green-400 '>log</span>!
+                </div>
+              );
+              break;
+            }
           }
-          case 'like': {
-            to = `/log/${notification.postId}`;
-            html = (
-              <div className='group text-neutral-500'>
-                {notification.authorName} liked your&nbsp;
-                <span className='transition-all duration-300 group-hover:text-green-400 '>log</span>!
-              </div>
-            );
-            break;
-          }
-          case 'comment': {
-            to = `/log/${notification.postId}`;
-            html = (
-              <div className='group text-neutral-500'>
-                {notification.authorName} commented <span className='text-neutral-900'>"{notification.content}"</span>{' '}
-                on your <span className='transition-all duration-300 group-hover:text-green-400 '>log</span>!
-              </div>
-            );
-            break;
-          }
-        }
-        return (
-          <Link
-            to={to}
-            className='group w-full overflow-x-scroll rounded border-2 border-neutral-900 bg-white p-2 text-sm shadow-md transition-all duration-300 hover:-translate-y-1'
-            key={index}
-            onClick={() => dispatch(closeNotification())}
-          >
-            {html}
-          </Link>
-        );
-      })}
+          return (
+            <Link
+              to={to}
+              className='group h-max w-full overflow-x-scroll rounded border-2 border-neutral-900 bg-white p-2 text-sm shadow-md transition-all duration-300 hover:-translate-y-1'
+              key={index}
+              onClick={() => dispatch(closeNotification())}
+            >
+              {html}
+            </Link>
+          );
+        })}
+      </div>
     </div>
   );
 }

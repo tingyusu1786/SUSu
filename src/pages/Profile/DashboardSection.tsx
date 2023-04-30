@@ -237,10 +237,10 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts, profileUs
           .reverse()
           .map((expense) => (
             <div
-              className='grid grid-cols-[50px_1fr] items-center rounded-xl border-2 border-solid border-neutral-900 bg-neutral-100 px-5 py-3 shadow-[3px_3px_#171717] transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[3px_6px_#171717]'
+              className='grid grid-cols-[50px_1fr] items-center rounded-xl border-2 border-solid border-neutral-900 bg-neutral-100 px-5 py-3 shadow-[3px_3px_#171717] transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[3px_6px_#171717] md:grid-cols-1'
               key={expense[0]}
             >
-              <Expense className='row-span-2' />
+              <Expense className='row-span-2 md:mb-3' />
               <div className='text-xl before:content-["$"]'>{expense[1]}</div>
               <div className='text-neutral-500'>{expense[0]}</div>
             </div>

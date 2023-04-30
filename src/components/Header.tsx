@@ -11,7 +11,8 @@ import { Notification } from '../interfaces/interfaces';
 import { doc, DocumentSnapshot, DocumentReference, DocumentData, onSnapshot } from 'firebase/firestore';
 import dbApi from '../utils/dbApi';
 import authApi from '../utils/authApi';
-import { MagnifyingGlassIcon, BellIcon } from '@heroicons/react/24/solid';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
+import { BellIcon } from '@heroicons/react/24/outline';
 import swal from '../utils/swal';
 
 function NotificationsListener() {
@@ -190,17 +191,17 @@ function Header() {
   };
 
   const navLi = [
-    { name: 'DRINK FEEDS', to: '/feeds' },
-    { name: 'DRINK CATALOGUE', to: '/catalogue' },
+    { name: 'FEEDS', to: '/feeds' },
+    { name: 'CATALOGUE', to: '/catalogue' },
     { name: 'INSPIRATION', to: '/inspiration' },
   ];
   const location = useLocation();
 
   return (
     <header
-      className={`sticky top-0 z-40 flex h-11 h-16 w-screen flex-row items-center justify-between gap-5 border-b-4 border-solid border-green-400 bg-gray-100 px-16 `}
+      className={`sticky top-0 z-40 flex h-11 h-16 w-screen flex-row items-center justify-between gap-5 border-b-4 border-solid border-green-400 bg-gray-100 px-16 md:px-8`}
     >
-      {<ScreenSize />}
+      <ScreenSize />
       <NotificationsListener />
       <nav>
         <ul className='flex gap-4'>
@@ -238,22 +239,22 @@ function Header() {
       {!isSignedIn && (
         <div className='group relative cursor-pointer ' onClick={() => dispatch(showAuth())}>
           <span className='decoration-2 underline-offset-2 group-hover:underline'>sign in</span>
-          <span>&nbsp;to see your profile and notifications!</span>
+          <span className='md:hidden'>&nbsp;to see your profile and notifications!</span>
         </div>
       )}
 
       {isSignedIn && (
         <div className='flex items-center gap-3'>
-          <div className='text-center'>{`Hi ${currentUserName}`}</div>
+          <div className='text-center md:hidden'>{`Hi ${currentUserName}`}</div>
           <Link to={`/profile/${userId}`} className='group relative'>
             <img
               src={currentUserphotoURL}
               alt=''
-              className='box-content h-10 min-w-[40px] rounded-full border-2 border-solid border-neutral-900 object-cover transition-all duration-100 hover:border-green-400 '
+              className='box-content h-10 w-10 min-w-[40px] rounded-full border-2 border-solid border-neutral-900 object-cover transition-all duration-100 hover:border-green-400 '
             />
           </Link>
           <BellIcon
-            className='h-6 w-6 cursor-pointer text-neutral-900 transition-all duration-100 hover:text-green-400'
+            className='h-5 w-5 cursor-pointer text-neutral-900 transition-all duration-100 hover:text-green-400'
             onClick={() => {
               isNotificationShown ? dispatch(closeNotification()) : dispatch(showNotification());
             }}

@@ -123,14 +123,14 @@ const PostCard: React.FC<PostProps> = ({
           )}
         </div>
         {post.sugar && (
-          <span className='mr-2'>
-            <span className='text-neutral-500'>sugar_ </span>
+          <span className='mr-2 text-neutral-400'>
+            {/*<span className='text-neutral-500'>sugar_ </span>*/}
             {post.sugar}
           </span>
         )}
         {post.ice && (
-          <span>
-            <span className='text-neutral-500'>ice_ </span>
+          <span className='mr-2 text-neutral-400'>
+            {/*<span className='text-neutral-500'>ice_ </span>*/}
             {post.ice}
           </span>
         )}
