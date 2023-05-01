@@ -167,6 +167,9 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts, profileUs
   };
 
   function timestampToDate(timestamp: Timestamp) {
+    if (typeof timestamp === 'number') {
+      timestamp = Timestamp.fromMillis(timestamp);
+    }
     const dateObj = timestamp.toDate();
     const year = dateObj.getFullYear();
     const month = ('0' + (dateObj.getMonth() + 1)).slice(-2);
