@@ -28,14 +28,14 @@ const BreadcrumbNav: React.FC<BreadcrumProps> = ({
     <nav aria-label='breadcrumb' className=' absolute left-10 top-10 '>
       <ol className='breadcrumb flex'>
         <li className='breadcrumb-item'>
-          <Link to='/catalogue' className='text-gray-500 hover:text-gray-700'>
+          <Link to='/drinkipedia' className='text-gray-500 hover:text-gray-700'>
             All Brands
           </Link>
         </li>
         {catalogueBrandId && (
           <li className='breadcrumb-item'>
             <ArrowRightIcon className='mx-1 -mt-1 inline-block h-5 text-gray-500' />
-            <Link to={`/catalogue/${catalogueBrandId}`} className='text-gray-500 hover:text-gray-700'>
+            <Link to={`/drinkipedia/${catalogueBrandId}`} className='text-gray-500 hover:text-gray-700'>
               {catalogueBrandName}
             </Link>
           </li>

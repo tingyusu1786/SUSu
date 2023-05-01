@@ -24,7 +24,7 @@ function BrandHit({ hit }: any) {
       {hit.photoURL && <img src={hit.photoURL} alt={hit.photoURL} />}
       {/*{<h1>{hit.name}</h1>}*/}
       <button className='hover:font-bold hover:text-lime-700'>
-        <Link to={`/catalogue/${hit.objectID}`}>
+        <Link to={`/drinkipedia/${hit.objectID}`}>
           <Highlight attribute='name' hit={hit} className='my-0 rounded' />
         </Link>
       </button>
