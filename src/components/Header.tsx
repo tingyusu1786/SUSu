@@ -180,7 +180,7 @@ function Header() {
         await authApi.signOut();
         dispatch(signOutStart());
         dispatch(signOutSuccess());
-        swal.success('signed out.', 'come back soon!', 'ok');
+        swal.success('signed out', 'come back soon!', 'ok');
       } catch (error: any) {
         swal.error('oh no!', 'something went wrong...try again later', 'ok');
         dispatch(signOutFail(error));
@@ -192,7 +192,7 @@ function Header() {
 
   const navLi = [
     { name: 'FEEDS', to: '/feeds' },
-    { name: 'CATALOGUE', to: '/catalogue' },
+    { name: 'DRINKIPEDIA', to: '/drinkipedia' },
     { name: 'INSPIRATION', to: '/inspiration' },
   ];
   const location = useLocation();
@@ -201,7 +201,7 @@ function Header() {
     <header
       className={`sticky top-0 z-40 flex h-11 h-16 w-screen flex-row items-center justify-between gap-5 border-b-4 border-solid border-green-400 bg-gray-100 px-16 md:px-8`}
     >
-      <ScreenSize />
+      {/*{<ScreenSize />}*/}
       <NotificationsListener />
       <nav>
         <ul className='flex gap-4'>

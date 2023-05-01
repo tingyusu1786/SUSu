@@ -29,7 +29,7 @@ const SearchModal: React.FC = () => {
   function BrandHit({ hit }: any) {
     return (
       <Link
-        to={`/catalogue/${hit.objectID}`}
+        to={`/drinkipedia/${hit.objectID}`}
         className='mb-2 flex w-full flex-col rounded border-2 border-neutral-900 bg-white p-2 shadow-md transition-all duration-300 hover:-translate-y-1'
         onClick={() => dispatch(closeSearch())}
       >
@@ -178,7 +178,7 @@ const SearchModal: React.FC = () => {
                 <Hits hitComponent={BrandHit} className='' />
               </Index>
               <Index indexName='users'>
-                <h1>users</h1>
+                <div className='text-xl'>users</div>
                 <Hits hitComponent={UserHit} className='' />
               </Index>
               {/*<Index indexName='posts'>

@@ -95,13 +95,13 @@ const PostCard: React.FC<PostProps> = ({
         <div className='flex items-center gap-3'>
           <span className='text-2xl'>
             <span>I drank </span>
-            <Link to={`/catalogue/${post.brandId}`}>
+            <Link to={`/drinkipedia/${post.brandId}`}>
               <span className='inline-block transition-all duration-150 ease-out hover:-translate-y-1'>
                 {post.brandName}
               </span>
             </Link>
             <span>'s </span>
-            <Link to={`/catalogue/${post.brandId}/${post.itemId}`} className='hover:translate-y-1'>
+            <Link to={`/drinkipedia/${post.brandId}/${post.itemId}`} className='hover:translate-y-1'>
               <span className='inline-block transition-all duration-150 ease-out hover:-translate-y-1'>
                 {post.itemName}
               </span>

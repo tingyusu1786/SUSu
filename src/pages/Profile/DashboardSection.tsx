@@ -272,8 +272,8 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts, profileUs
                   </div>
                   {/*<div className=''></div>*/}
                   <div className='mt-auto pt-3'>
-                    <span className='text-lg sm:text-base'>{brand[1].brandName}</span>
-                    <span className='text-neutral-600  sm:hidden'>&nbsp;x&nbsp;{brand[1].times}</span>
+                    <span className='text-sm sm:text-base'>{brand[1].brandName}</span>
+                    <span className='text-sm text-neutral-600 sm:hidden'>&nbsp;x&nbsp;{brand[1].times}</span>
                   </div>
                 </div>
               ) : (
@@ -284,7 +284,7 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts, profileUs
                   <div className='flex h-3/4 items-center justify-center'>
                     <img src={allBrandsInfo[brand[0]]?.photoURL} alt='' className='w-20 opacity-30 grayscale' />
                   </div>
-                  <div className='mt-auto pt-3 text-neutral-300'>{brand[1].brandName}</div>
+                  <div className='mt-auto pt-3 text-sm text-neutral-300'>{brand[1].brandName}</div>
                 </div>
               )
             )
@@ -296,7 +296,7 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts, profileUs
                 <div className='flex h-3/4 items-center justify-center'>
                   <img src={brand[1].photoURL} alt='' className='w-20 opacity-30 grayscale' />
                 </div>
-                <div className='mt-auto pt-3 text-neutral-300'>{brand[1].name}</div>
+                <div className='mt-auto pt-3 text-sm text-neutral-300'>{brand[1].name}</div>
               </div>
             ))}
       </div>

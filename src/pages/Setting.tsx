@@ -195,7 +195,7 @@ function Setting() {
           onChange={handleInputChange}
         />
         <button
-          className='button col-span-2 h-10 justify-self-stretch rounded-full bg-green-300 px-3 hover:bg-green-400'
+          className='button col-span-2 h-10 justify-self-stretch rounded-full bg-green-300 px-3 hover:bg-green-400 focus:outline-green-400'
           onClick={handleConfirmAll}
         >
           CONFIRM

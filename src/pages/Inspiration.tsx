@@ -227,11 +227,11 @@ function Inspiration() {
             >
               <div className='mb-3 text-lg'>↓ we picked this for you! ↓</div>
               <div className='flex items-end text-4xl'>
-                <Link to={`/catalogue/${randomItem.brandId}`}>
+                <Link to={`/drinkipedia/${randomItem.brandId}`}>
                   <div className=' transition-all duration-200 hover:-translate-y-1'>{randomItem.brand}</div>
                 </Link>
                 <span className='mr-2 '>'s</span>
-                <Link to={`/catalogue/${randomItem.brandId}/${randomItem.itemId}`}>
+                <Link to={`/drinkipedia/${randomItem.brandId}/${randomItem.itemId}`}>
                   <div className='ransition-all mr-1  duration-200 hover:-translate-y-1'>{randomItem.name}</div>
                 </Link>
               </div>

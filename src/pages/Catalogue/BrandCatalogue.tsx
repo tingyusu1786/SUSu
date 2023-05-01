@@ -55,7 +55,7 @@ const BrandCatalogue: React.FC<CatalogueProps> = ({
               <div className='flex flex-wrap content-start gap-3'>
                 {itemsOfCategory.length !== 0 &&
                   itemsOfCategory.map((item: any) => (
-                    <Link to={`/catalogue/${catalogueBrandId}/${item[0]}`}>
+                    <Link to={`/drinkipedia/${catalogueBrandId}/${item[0]}`}>
                       <div
                         key={item[0]}
                         className='flex h-16 min-w-min items-center justify-center rounded-md border-2 border-solid border-neutral-900 bg-gray-100 px-3 shadow-[4px_4px_#171717] transition-all duration-200 hover:-translate-y-1 hover:shadow-[4px_8px_#171717]'

@@ -27,10 +27,42 @@ const Badges: React.FC<BadgesProps> = ({ drankBrands, drankItems, numPosts, stre
   const numDrankItems = drankItems ? Object.keys(drankItems).length : 0;
 
   const badgeCategories = [
-    { name: 'Drinkaholic: number of drink logs', num: numPosts, goals: [0, 10, 50, 100, 500, 1000] },
-    { name: 'Brand-Hunter: number of brands drank', num: numDrankBrands, goals: [0, 3, 5, 10, 25, 50] },
-    { name: 'Adventurer: number of items drank', num: numDrankItems, goals: [0, 10, 25, 50, 100, 200] },
-    { name: 'Cant-stop-drinking: longest streak drinking', num: streaks.longest, goals: [0, 3, 7, 30, 90, 365] },
+    {
+      name: (
+        <span>
+          ✧ Drinkaholic <span className='text-sm text-neutral-500'>(number of drink logs)</span>
+        </span>
+      ),
+      num: numPosts,
+      goals: [0, 10, 50, 100, 500, 1000],
+    },
+    {
+      name: (
+        <span>
+          ✧ Brand-Hunter <span className='text-sm text-neutral-500'>(number of brands drank)</span>
+        </span>
+      ),
+      num: numDrankBrands,
+      goals: [0, 3, 5, 10, 25, 50],
+    },
+    {
+      name: (
+        <span>
+          ✧ Adventurer <span className='text-sm text-neutral-500'>(number of items drank)</span>
+        </span>
+      ),
+      num: numDrankItems,
+      goals: [0, 10, 25, 50, 100, 200],
+    },
+    {
+      name: (
+        <span>
+          ✧ Cant-stop-drinking <span className='text-sm text-neutral-500'>(longest streak drinking)</span>
+        </span>
+      ),
+      num: streaks.longest,
+      goals: [0, 3, 7, 30, 90, 365],
+    },
   ];
   {
     /*<Badge className='h-24 w-24' />*/
@@ -40,15 +72,17 @@ const Badges: React.FC<BadgesProps> = ({ drankBrands, drankItems, numPosts, stre
       {/*<div className='flex flex-col gap-10'>*/}
       {badgeCategories.map((category, index) => (
         <div key={index} className='col-span-full mb-10 w-full'>
-          <div className='mb-5'>{category.name}</div>
-          <div className='grid w-full grid-cols-5 items-center justify-center'>
+          <div className='mb-5 ml-7'>{category.name}</div>
+          <div className='grid w-full grid-cols-5 items-center justify-items-center'>
             {category.goals.map(
               (goal, index) =>
                 goal !== 0 && (
                   <div key={index} className='relative'>
                     <div
                       className={`group mb-2 flex h-24 w-24 items-center justify-center rounded-full border-2 border-neutral-900 bg-neutral-100 -tracking-[2px] outline outline-4 outline-offset-2 outline-yellow-200 ring-4 ring-neutral-900 ring-offset-4 ${
-                        category.num >= goal ? 'duration-400 transition-all ' : 'text-neutral-500 opacity-60 grayscale'
+                        category.num >= goal
+                          ? 'duration-400 transition-all '
+                          : 'border-neutral-400 text-neutral-500 opacity-40 ring-neutral-500 grayscale'
                       }`}
                     >
                       <span

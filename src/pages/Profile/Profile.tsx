@@ -208,7 +208,7 @@ function Profile() {
   }
 
   return (
-    <main className='bg-boxes-diag relative min-h-[calc(100vh-64px)] bg-fixed p-10'>
+    <main className='bg-boxes-diag relative min-h-[calc(100vh-64px)] scroll-smooth bg-fixed p-10'>
       {currentUserId === profileUserId && (
         <Link
           to={`/setting/${currentUserId}`}

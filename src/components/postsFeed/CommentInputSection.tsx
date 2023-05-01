@@ -48,7 +48,7 @@ const CommentInputSection: React.FC<PostProps> = ({ post, handleCommentInput, ha
               : 'be the first to comment!'
             : 'sign in to comment ヽ(^_−)ﾉ'
         }
-        className='block w-full break-all rounded-md bg-neutral-300 p-2 shadow-inner placeholder:text-neutral-400'
+        className='block w-full break-all rounded-md bg-neutral-300 p-2 shadow-inner placeholder:text-neutral-400 focus:outline-green-400'
         disabled={!isSignedIn}
         value={post.commentInput}
         onChange={(e) => handleCommentInput(e, index)}

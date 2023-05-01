@@ -14,7 +14,7 @@ interface BrandProps {
 const BrandCard: React.FC<BrandProps> = ({ brand }) => {
   return (
     <Link
-      to={`/catalogue/${brand.brandId}`}
+      to={`/drinkipedia/${brand.brandId}`}
       className='group relative h-56 rounded-xl rounded-tl-[60px] border-2 border-solid border-neutral-900 bg-white shadow-[4px_4px_#171717] transition-all duration-300 even:-translate-y-1/4 hover:-translate-y-3 hover:shadow-[4px_14px_#171717] even:hover:-translate-y-1/3 sm:even:-translate-y-0 sm:even:hover:-translate-y-3'
     >
       <img
