@@ -36,20 +36,16 @@ function CreatePost() {
   const [inputs, setInputs] = useState(initialInput);
   const [showDate, setShowDate] = useState(false);
   const [date, setDate] = useState<Date>(new Date(Date.now() - new Date().getTimezoneOffset() * 60000));
-  // const [date, setDate] = useState<Date>(new Date());
 
-  const formatDate = (date: Date): string | undefined => {
-    console.log('date.toISOString()', date.toISOString());
+  const formatDate = (date: Date): string => {
     return date.toISOString().slice(0, 16);
   };
 
-  // const handleDateChange = (newDate: Date) => {
-  //   setDate(newDate);
-  // };
-
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
-    console.log('value', value);
+    if (value === '') {
+      return;
+    }
     let newDate = new Date(new Date(value).getTime() - new Date().getTimezoneOffset() * 60000);
     setDate(newDate);
   };
