@@ -138,6 +138,16 @@ function CreatePost() {
     return;
   };
 
+  const handleTagInputBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+    const noSpacecustomTagsInput = customTagsInput.replace(/\s/g, '');
+    if (noSpacecustomTagsInput !== '') {
+      const newTags = [...customTags, noSpacecustomTagsInput];
+      const uniqueNewTags = Array.from(new Set(newTags));
+      setCustomTags(uniqueNewTags);
+      setCustomTagsInput('');
+    }
+  };
+
   const handleAutoTag = (itemId: string) => {
     if (itemId !== '') {
       const idArray = itemId.split('-');
@@ -358,7 +368,7 @@ function CreatePost() {
                 value={formatDate(date)}
                 onChange={handleChange}
                 max={formatDate(new Date(Date.now() - new Date().getTimezoneOffset() * 60000))}
-                className='w-52 cursor-pointer bg-transparent outline-0 after:cursor-pointer'
+                className='w-full cursor-pointer bg-transparent outline-0 after:cursor-pointer'
               />
               <span className=''>•</span>
               {inputs.audience === 'public' ? (
@@ -385,7 +395,7 @@ function CreatePost() {
               <select
                 required
                 name='brandId'
-                className='h-10 w-16 grow rounded-full border-2 border-solid border-neutral-900 p-0 px-2 pt-1 text-base focus:outline-green-400'
+                className='h-10 w-16 grow rounded-full border-2 border-solid border-neutral-900 bg-white p-0 px-2 pt-1 text-base focus:outline focus:outline-green-400'
                 value={inputs.brandId}
                 onChange={(e) => {
                   handleInputChange(e);
@@ -406,7 +416,9 @@ function CreatePost() {
                 required
                 disabled={itemsOfBrand.length === 0}
                 name='itemId'
-                className='h-10 w-16 grow rounded-full border-2 border-solid border-neutral-900 p-0 px-2 pt-1 text-base focus:outline-green-400'
+                className={`h-10 w-16 grow rounded-full border-2 border-solid border-neutral-900 bg-white p-0 px-2 pt-1 text-base focus:outline focus:outline-green-400 ${
+                  itemsOfBrand.length === 0 && 'cursor-not-allowed'
+                }`}
                 value={inputs.itemId}
                 onChange={(e) => {
                   handleInputChange(e);
@@ -432,10 +444,11 @@ function CreatePost() {
             <div className='flex items-center gap-1'>
               <select
                 disabled={sizesOfItem.length === 0}
-                required
                 name='size'
                 id='size'
-                className='h-8 w-16 rounded-full border-2 border-solid border-neutral-900 pl-2 pt-1 text-sm focus:outline-green-400 '
+                className={`h-8 w-16 rounded-full border-2 border-solid border-neutral-900 bg-white pl-2 pt-1 text-sm focus:outline focus:outline-green-400 ${
+                  sizesOfItem.length === 0 && 'cursor-not-allowed'
+                }`}
                 value={inputs.size}
                 onChange={handleInputChange}
               >
@@ -450,23 +463,24 @@ function CreatePost() {
               </select>
               <span className='before:ml-3 before:content-["$"]'></span>
               <input
-                required
+                disabled={sizesOfItem.length === 0}
                 name='price'
                 id='price'
                 type='number'
-                className='h-8 w-16 rounded-full border-2 border-solid border-neutral-900 p-0 px-2 pt-1 text-sm focus:outline-green-400 '
+                className={`h-8 w-16 rounded-full border-2 border-solid border-neutral-900 bg-white px-2 pb-0 pt-1 text-sm focus:outline focus:outline-green-400 ${
+                  sizesOfItem.length === 0 && 'cursor-not-allowed border-[#595959]'
+                }`}
                 value={inputs.price}
                 onChange={handleInputChange}
               />
             </div>
             <div className='flex gap-x-3'>
               <div>
-                <span className='text-neutral-500'>sugar_ </span>
+                <span className='text-neutral-500'>sugar </span>
                 <select
-                  required
                   name='sugar'
                   id='sugar'
-                  className='h-8 w-36 rounded-full border-2 border-solid border-neutral-900 p-0 px-1 pt-1 text-sm focus:outline-green-400'
+                  className='h-8 w-36 rounded-full border-2 border-solid border-neutral-900 bg-white px-2 pb-0 pt-1 text-sm focus:outline focus:outline-green-400'
                   value={inputs.sugar}
                   onChange={handleInputChange}
                 >
@@ -481,12 +495,11 @@ function CreatePost() {
                 </select>
               </div>
               <div>
-                <span className='text-neutral-500'>ice_ </span>
+                <span className='text-neutral-500'>ice </span>
                 <select
-                  required
                   name='ice'
                   id='ice'
-                  className='h-8 w-36 rounded-full border-2 border-solid border-neutral-900 p-0 px-1 pt-1 text-sm focus:outline-green-400'
+                  className='h-8 w-36 rounded-full border-2 border-solid border-neutral-900 bg-white px-2 pb-0 pt-1 text-sm focus:outline focus:outline-green-400'
                   value={inputs.ice}
                   onChange={handleInputChange}
                 >
@@ -541,7 +554,7 @@ function CreatePost() {
             <textarea
               name='selfComment'
               id='selfComment'
-              className='w-full rounded-lg border-2 border-neutral-900 p-2 placeholder:text-neutral-400 focus:outline-green-400'
+              className='w-full rounded-lg border-2 border-neutral-900 p-2 placeholder:text-neutral-400 focus:outline focus:outline-green-400'
               placeholder='say something'
               value={inputs.selfComment}
               onChange={handleInputChange}
@@ -551,12 +564,13 @@ function CreatePost() {
               <div className='flex flex-wrap items-center gap-x-3 gap-y-2'>
                 <span className='text-neutral-600'>#</span>
                 <input
+                  onBlur={(e) => handleTagInputBlur(e)}
                   onKeyPress={(e) => handleTagInputKeyPress(e)}
                   onChange={(e) => setCustomTagsInput(e.target.value)}
                   value={customTagsInput}
                   type='text'
                   placeholder='add your hashtags'
-                  className='-ml-2 inline-block h-6 rounded-lg border-2 border-solid border-neutral-900 p-0 px-1 text-neutral-600 placeholder:text-sm placeholder:text-neutral-400 focus:outline-green-400'
+                  className='-ml-2 inline-block h-6 rounded-lg border-2 border-solid border-neutral-900 p-0 px-1 text-neutral-600 placeholder:text-sm placeholder:text-neutral-400 focus:outline focus:outline-green-400'
                 />
                 {customTags.map(
                   (tag, index) =>
@@ -579,7 +593,10 @@ function CreatePost() {
                 )}
               </div>
             </div>
-            <button onClick={handlePostSubmit} className='button mt-2 h-10 rounded-full hover:bg-green-400'>
+            <button
+              onClick={handlePostSubmit}
+              className='button mt-2 h-10 rounded-full bg-green-300 hover:bg-green-400 focus:outline focus:outline-green-400'
+            >
               submit
             </button>
           </div>
