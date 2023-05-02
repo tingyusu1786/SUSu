@@ -43,9 +43,10 @@ function CreatePost() {
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = event.target;
-    if (value === '') {
+    if (value === '' || parseInt(value.split('-')[0]) > 9999) {
       return;
     }
+
     let newDate = new Date(new Date(value).getTime() - new Date().getTimezoneOffset() * 60000);
     setDate(newDate);
   };
