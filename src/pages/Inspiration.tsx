@@ -217,16 +217,9 @@ function Inspiration() {
         <div className='mt-10 flex flex-col items-center '>
           <div className='mb-10 flex w-full items-center justify-center gap-10'>
             <ShootingStar className='' />
-            <div
-              // className='flex w-1/3 flex-col items-center justify-center bg-gradient-to-br from-[#8EC5FC] to-[#E0C3FC]'
-              // style={{
-              //   WebkitMask:
-              //     'conic-gradient(from 45deg at left,#0000,#000 1deg 89deg,#0000 90deg) left/51% 84.00px repeat-y, conic-gradient(from -135deg at right,#0000,#000 1deg 89deg,#0000 90deg) right/51% 84.00px repeat-y',
-              // }}
-              className='text-center'
-            >
+            <div className='text-center'>
               <div className='mb-3 text-lg'>↓ we picked this for you! ↓</div>
-              <div className='flex items-end text-4xl'>
+              <div className='flex items-end text-5xl'>
                 <Link to={`/drinkipedia/${randomItem.brandId}`}>
                   <div className=' transition-all duration-200 hover:-translate-y-1'>{randomItem.brand}</div>
                 </Link>
