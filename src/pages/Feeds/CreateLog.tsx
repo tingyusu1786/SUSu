@@ -4,7 +4,7 @@ import { collection, doc, getDoc, addDoc, getDocs, updateDoc, Timestamp } from '
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import dbApi from '../../utils/dbApi';
 import swal from '../../utils/swal';
-import { StarIcon as SolidStar, TrashIcon, GlobeAsiaAustraliaIcon, UserIcon } from '@heroicons/react/24/solid';
+import { StarIcon as SolidStar, GlobeAsiaAustraliaIcon, UserIcon } from '@heroicons/react/24/solid';
 import { StarIcon as LineStar } from '@heroicons/react/24/outline';
 import { ReactComponent as SmileyWink } from '../../images/SmileyWink.svg';
 import { showAuth } from '../../app/popUpSlice';
@@ -34,7 +34,6 @@ function CreatePost() {
   const [itemsOfBrand, setItemsOfBrand] = useState<string[][][]>([]);
   const [sizesOfItem, setSizesOfItem] = useState<string[][]>([]);
   const [inputs, setInputs] = useState(initialInput);
-  const [showDate, setShowDate] = useState(false);
   const [date, setDate] = useState<Date>(new Date(Date.now() - new Date().getTimezoneOffset() * 60000));
 
   const formatDate = (date: Date): string => {
@@ -65,13 +64,13 @@ function CreatePost() {
     '全糖',
     '多加糖',
   ];
-  const iceOptions = ['溫/熱', '去冰', '微冰', '少冰', '正常'];
+  const iceOptions = ['溫/熱', '去冰', '微冰', '少冰', '正常冰'];
 
   // 把所有brand列出來
   useEffect(() => {
     const fetchBrands = async () => {
       const brandInfos = await getBrandsIdAndName();
-      setBrands(brandInfos);
+      brandInfos && setBrands(brandInfos);
     };
     fetchBrands();
   }, []);
@@ -80,7 +79,7 @@ function CreatePost() {
   useEffect(() => {
     const fetchCategories = async () => {
       const categoryInfos = await getCategoriesIdAndName(inputs.brandId);
-      setCategories(categoryInfos);
+      categoryInfos && setCategories(categoryInfos);
     };
     if (inputs.brandId !== '') {
       fetchCategories();
@@ -93,7 +92,7 @@ function CreatePost() {
   useEffect(() => {
     const fetchItems = async (categoryId: string) => {
       const itemInfos = await getItemsIdAndName(inputs.brandId, categoryId);
-      setItemsOfBrand((itemsOfBrand) => itemsOfBrand.concat([itemInfos]));
+      itemInfos && setItemsOfBrand((itemsOfBrand) => itemsOfBrand.concat([itemInfos]));
     };
 
     if (categories.length !== 0) {
@@ -109,7 +108,7 @@ function CreatePost() {
 
     const fetchSizes = async (itemId: string) => {
       const priceInfos = await getItemPrice(itemId);
-      setSizesOfItem(Object.entries(priceInfos));
+      priceInfos && setSizesOfItem(Object.entries(priceInfos));
     };
 
     if (inputs.itemId !== '') {
@@ -160,80 +159,89 @@ function CreatePost() {
   };
 
   const handlePostSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
-    if ([inputs.brandId, inputs.itemId, inputs.rating].some((input) => input === '')) {
-      swal.warning('please fill in all required fields', '(brand, item, rating)', 'ok');
-      return;
+    try {
+      if ([inputs.brandId, inputs.itemId, inputs.rating].some((input) => input === '')) {
+        swal.warning('please fill in all required fields', '(brand, item, rating)', 'ok');
+        return;
+      }
+      const postInputs = Object.assign({}, inputs, {
+        authorId: currentUserId,
+        hashtags: customTags.concat(autoTags),
+        timeCreated: new Date(date.getTime() + new Date().getTimezoneOffset() * 60000), //serverTimestamp()會lag
+        likes: [],
+        comments: [],
+      });
+
+      await addDoc(collection(db, 'posts'), postInputs);
+
+      setInputs(initialInput);
+      setCustomTags([]);
+      inputs.rating !== '' && updateRatings(inputs.brandId, inputs.itemId);
+      swal.success('log successfully!', '', 'ok');
+    } catch {
+      swal.error('something went wrong', '', 'ok');
     }
-    const postInputs = Object.assign({}, inputs, {
-      authorId: currentUserId,
-      hashtags: customTags.concat(autoTags),
-      timeCreated: new Date(date.getTime() + new Date().getTimezoneOffset() * 60000), //serverTimestamp()會lag
-      likes: [],
-      comments: [],
-    });
-
-    await addDoc(collection(db, 'posts'), postInputs);
-
-    setInputs(initialInput);
-    setCustomTags([]);
-    inputs.rating !== '' && updateRatings(inputs.brandId, inputs.itemId);
   };
 
   const updateRatings = async (brandId: string, itemId: string) => {
-    // brand
-    const brandRef = doc(db, 'brands', brandId);
-    const brandDoc = await getDoc(brandRef);
-    const prevBrandAverageRating: number | undefined = brandDoc.data()?.averageRating;
-    const prevBrandNumRatings: number | undefined = brandDoc.data()?.numRatings;
-    let updatedBrandAverageRating;
-    let updatedBrandNumRatings;
-    if (prevBrandAverageRating && prevBrandNumRatings) {
-      updatedBrandNumRatings = prevBrandNumRatings + 1;
-      updatedBrandAverageRating =
-        Math.round(
-          ((prevBrandAverageRating * prevBrandNumRatings + Number(inputs.rating)) / updatedBrandNumRatings) * 10
-        ) / 10;
-    } else {
-      updatedBrandNumRatings = 1;
-      updatedBrandAverageRating = Number(inputs.rating);
+    try {
+      // brand
+      const brandRef = doc(db, 'brands', brandId);
+      const brandDoc = await getDoc(brandRef);
+      const prevBrandAverageRating: number | undefined = brandDoc.data()?.averageRating;
+      const prevBrandNumRatings: number | undefined = brandDoc.data()?.numRatings;
+      let updatedBrandAverageRating;
+      let updatedBrandNumRatings;
+      if (prevBrandAverageRating && prevBrandNumRatings) {
+        updatedBrandNumRatings = prevBrandNumRatings + 1;
+        updatedBrandAverageRating =
+          Math.round(
+            ((prevBrandAverageRating * prevBrandNumRatings + Number(inputs.rating)) / updatedBrandNumRatings) * 10
+          ) / 10;
+      } else {
+        updatedBrandNumRatings = 1;
+        updatedBrandAverageRating = Number(inputs.rating);
+      }
+
+      await updateDoc(brandRef, {
+        numRatings: updatedBrandNumRatings,
+        averageRating: updatedBrandAverageRating,
+      });
+
+      //item
+      const itemIdArray = itemId.split('-');
+      const itemRef = doc(
+        db,
+        'brands',
+        itemIdArray[0],
+        'categories',
+        itemIdArray[0] + '-' + itemIdArray[1],
+        'items',
+        itemId
+      );
+      const itemDoc = await getDoc(itemRef);
+      const prevItemAverageRating: number | undefined = itemDoc.data()?.averageRating;
+      const prevItemNumRatings: number | undefined = itemDoc.data()?.numRatings;
+      let updatedItemAverageRating;
+      let updatedItemNumRatings;
+      if (prevItemAverageRating && prevItemNumRatings) {
+        updatedItemNumRatings = prevItemNumRatings + 1;
+        updatedItemAverageRating =
+          Math.round(
+            ((prevItemAverageRating * prevItemNumRatings + Number(inputs.rating)) / updatedItemNumRatings) * 10
+          ) / 10;
+      } else {
+        updatedItemNumRatings = 1;
+        updatedItemAverageRating = Number(inputs.rating);
+      }
+
+      await updateDoc(itemRef, {
+        numRatings: updatedItemNumRatings,
+        averageRating: updatedItemAverageRating,
+      });
+    } catch {
+      swal.error('something went wrong', '', 'ok');
     }
-
-    await updateDoc(brandRef, {
-      numRatings: updatedBrandNumRatings,
-      averageRating: updatedBrandAverageRating,
-    });
-
-    //item
-    const itemIdArray = itemId.split('-');
-    const itemRef = doc(
-      db,
-      'brands',
-      itemIdArray[0],
-      'categories',
-      itemIdArray[0] + '-' + itemIdArray[1],
-      'items',
-      itemId
-    );
-    const itemDoc = await getDoc(itemRef);
-    const prevItemAverageRating: number | undefined = itemDoc.data()?.averageRating;
-    const prevItemNumRatings: number | undefined = itemDoc.data()?.numRatings;
-    let updatedItemAverageRating;
-    let updatedItemNumRatings;
-    if (prevItemAverageRating && prevItemNumRatings) {
-      updatedItemNumRatings = prevItemNumRatings + 1;
-      updatedItemAverageRating =
-        Math.round(
-          ((prevItemAverageRating * prevItemNumRatings + Number(inputs.rating)) / updatedItemNumRatings) * 10
-        ) / 10;
-    } else {
-      updatedItemNumRatings = 1;
-      updatedItemAverageRating = Number(inputs.rating);
-    }
-
-    await updateDoc(itemRef, {
-      numRatings: updatedItemNumRatings,
-      averageRating: updatedItemAverageRating,
-    });
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -263,53 +271,69 @@ function CreatePost() {
     setCustomTags(newTags);
   };
 
-  const getBrandsIdAndName = async (): Promise<string[][]> => {
-    const querySnapshot = await getDocs(collection(db, 'brands'));
-    const documents: string[][] = [];
-    querySnapshot.forEach((doc) => {
-      const docInfo = [];
-      docInfo.push(doc.id);
-      if (doc.data() && doc.data().name) {
-        docInfo.push(doc.data().name);
-      }
-      documents.push(docInfo);
-    });
-    return documents;
+  const getBrandsIdAndName = async (): Promise<string[][] | undefined> => {
+    try {
+      const querySnapshot = await getDocs(collection(db, 'brands'));
+      const documents: string[][] = [];
+      querySnapshot.forEach((doc) => {
+        const docInfo = [];
+        docInfo.push(doc.id);
+        if (doc.data() && doc.data().name) {
+          docInfo.push(doc.data().name);
+        }
+        documents.push(docInfo);
+      });
+      return documents;
+    } catch {
+      swal.error('something went wrong', '', 'ok');
+    }
   };
 
-  const getCategoriesIdAndName = async (brandId: string): Promise<string[][]> => {
-    const querySnapshot = await getDocs(collection(db, 'brands', brandId, 'categories'));
-    const documents: string[][] = [];
-    querySnapshot.forEach((doc) => {
-      const docInfo = [];
-      docInfo.push(doc.id);
-      if (doc.data() && doc.data().name) {
-        docInfo.push(doc.data().name);
-      }
-      documents.push(docInfo);
-    });
-    return documents;
+  const getCategoriesIdAndName = async (brandId: string): Promise<string[][] | undefined> => {
+    try {
+      const querySnapshot = await getDocs(collection(db, 'brands', brandId, 'categories'));
+      const documents: string[][] = [];
+      querySnapshot.forEach((doc) => {
+        const docInfo = [];
+        docInfo.push(doc.id);
+        if (doc.data() && doc.data().name) {
+          docInfo.push(doc.data().name);
+        }
+        documents.push(docInfo);
+      });
+      return documents;
+    } catch {
+      swal.error('something went wrong', '', 'ok');
+    }
   };
 
-  const getItemsIdAndName = async (brandId: string, categoryId: string): Promise<string[][]> => {
-    const querySnapshot = await getDocs(collection(db, 'brands', brandId, 'categories', categoryId, 'items'));
-    const documents: string[][] = [];
-    querySnapshot.forEach((doc) => {
-      const docInfo = [];
-      docInfo.push(doc.id);
-      if (doc.data() && doc.data().name) {
-        docInfo.push(doc.data().name);
-      }
-      documents.push(docInfo);
-    });
-    return documents;
+  const getItemsIdAndName = async (brandId: string, categoryId: string): Promise<string[][] | undefined> => {
+    try {
+      const querySnapshot = await getDocs(collection(db, 'brands', brandId, 'categories', categoryId, 'items'));
+      const documents: string[][] = [];
+      querySnapshot.forEach((doc) => {
+        const docInfo = [];
+        docInfo.push(doc.id);
+        if (doc.data() && doc.data().name) {
+          docInfo.push(doc.data().name);
+        }
+        documents.push(docInfo);
+      });
+      return documents;
+    } catch {
+      swal.error('something went wrong', '', 'ok');
+    }
   };
 
-  const getItemPrice = async (itemId: string) => {
-    const idArray = itemId.split('-');
-    const itemDocRef = doc(db, 'brands', idArray[0], 'categories', idArray[0] + '-' + idArray[1], 'items', itemId);
-    const itemPrice = await dbApi.getDocField(itemDocRef, 'price');
-    return itemPrice;
+  const getItemPrice = async (itemId: string): Promise<Record<string, string> | undefined> => {
+    try {
+      const idArray = itemId.split('-');
+      const itemDocRef = doc(db, 'brands', idArray[0], 'categories', idArray[0] + '-' + idArray[1], 'items', itemId);
+      const itemPrice = await dbApi.getDocField(itemDocRef, 'price');
+      return itemPrice;
+    } catch {
+      swal.error('something went wrong', '', 'ok');
+    }
   };
 
   const removeTag = (index: number) => {
@@ -332,6 +356,7 @@ function CreatePost() {
             <div>
               <img
                 src={userPhotoURL}
+                alt={userName || 'user'}
                 className='mr-2 inline-block h-9 w-9 rounded-full border-2 border-solid border-neutral-900 object-cover group-hover:border-green-400'
               />
               <span className='text-lg group-hover:underline group-hover:decoration-green-400 group-hover:decoration-wavy group-hover:underline-offset-[5px]'>
