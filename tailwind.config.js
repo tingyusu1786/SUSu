@@ -20,11 +20,11 @@ module.exports = {
         shrinkSpin: {
           from: {
             transform: 'rotate(45deg)',
-            // transform: 'scale(1)'
+            // transform: 'scale(1)',
           },
           to: {
-            transform: 'rotate(1844deg)',
-            // transform: 'scale(0.1)'
+            transform: 'rotate(7244deg)',
+            // transform: 'scale(0.1)',
           },
         },
         wave: {

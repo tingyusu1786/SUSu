@@ -218,7 +218,7 @@ function Inspiration() {
       {/*{isFinding && <SmileyWink className='mx-auto mt-20 animate-bounce' />}*/}
       <div className='h-6 w-full bg-[url("https://static.thenounproject.com/png/924541-200.png")]'></div>
       {!isFinding && randomItem && (
-        <div className='animate__backInUp animate__animated mt-10 flex flex-col items-center'>
+        <div className='animate__zoomInDown animate__animated mt-10 flex flex-col items-center'>
           <div className=' mb-10 flex w-full items-center justify-center gap-10'>
             <ShootingStar className='' />
             <div className='text-center'>
