@@ -30,7 +30,7 @@ function Inspiration() {
   const [noItemMessage, setNoItemMessage] = useState<string>();
   const [isFinding, setIsFinding] = useState(false);
   const [currentLocation, setCurrentLocation] = useState<{ latitude: number; longitude: number }>();
-  const [showMap, setShowMap] = useState(true);
+  const [showMap, setShowMap] = useState(false);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position) => {
@@ -131,18 +131,20 @@ function Inspiration() {
           brandId: randomBrandId,
         };
         setRandomItem(randomItemFromDb as RandomItem);
-        setIsFinding(false);
+        setTimeout(() => setIsFinding(false), 2500);
+        // setIsFinding(false);
         foundItem = true;
         break brandLoop;
       }
     }
+    setTimeout(() => setIsFinding(false), 2500);
+    // setIsFinding(false);
     !foundItem && setNoItemMessage('no item ☹ try another brand or lower the rating');
-    setIsFinding(false);
   };
 
   return (
     <main className='bg-boxes relative z-0 min-h-[calc(100vh-64px)] bg-fixed p-10'>
-      <h1 className='mb-10 text-center text-7xl'>Can't decide? Leave it to us!</h1>
+      <h1 className='mb-5 text-center text-7xl'>Can't decide? Leave it to us!</h1>
       <div className='mx-auto max-w-[960px]'>
         <span className='mb-3 mr-3 inline-block before:mr-2 before:content-["✦"]'>filter some brands if you want</span>
         <span
@@ -179,7 +181,7 @@ function Inspiration() {
         >
           clear rating
         </span>
-        <div className={`mb-4 flex gap-3 `}>
+        <div className={`mb-2 flex gap-3 `}>
           {[1, 2, 3, 4].map((num) => (
             <label
               key={num}
@@ -204,18 +206,20 @@ function Inspiration() {
         </div>
         <div className='flex w-full justify-center'>
           <button
-            className='mx-auto h-40 w-40 rounded-full bg-gradient-to-r from-green-400 to-sky-300 px-2 text-2xl  text-white transition-all duration-300 hover:rotate-45 hover:from-violet-500 hover:to-fuchsia-500 '
+            className={`mx-auto h-40 w-40 rounded-full bg-gradient-to-r from-green-400 to-sky-300 px-2 text-2xl  text-white transition-all duration-300 hover:rotate-45 hover:from-violet-500 hover:to-fuchsia-500 ${
+              isFinding && 'animate-shrinkSpin'
+            }`}
             onClick={() => getRandomItem(selectedBrands, selectedRating)}
           >
             I'm feeling lucky :)
           </button>
         </div>
       </div>
-      {isFinding && <SmileyWink className='mx-auto mt-20 animate-bounce' />}
+      {/*{isFinding && <SmileyWink className='mx-auto mt-20 animate-bounce' />}*/}
       <div className='h-6 w-full bg-[url("https://static.thenounproject.com/png/924541-200.png")]'></div>
       {!isFinding && randomItem && (
-        <div className='mt-10 flex flex-col items-center '>
-          <div className='mb-10 flex w-full items-center justify-center gap-10'>
+        <div className='animate__backInUp animate__animated mt-10 flex flex-col items-center'>
+          <div className=' mb-10 flex w-full items-center justify-center gap-10'>
             <ShootingStar className='' />
             <div className='text-center'>
               <div className='mb-3 text-lg'>↓ we picked this for you! ↓</div>
@@ -277,15 +281,6 @@ function Inspiration() {
               currentLocation?.longitude
             )}&zoom=13`}
           ></iframe>
-          {/*<div className='absolute bottom-[200px] left-40 -z-10'>
-            <Line_8 />
-          </div>
-          <div className='absolute bottom-[500px] right-60 -z-10'>
-            <Shine_4 />
-          </div>
-          <div className='absolute left-80 top-[200px] -z-10'>
-            <Sun_16 />
-          </div>*/}
         </div>
       )}
       {!isFinding && noItemMessage && <div className='mt-10 w-full text-center text-lg'>{noItemMessage}</div>}
