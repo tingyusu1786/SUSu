@@ -201,7 +201,7 @@ function Header() {
     <header
       className={`sticky top-0 z-40 flex h-11 h-16 w-screen flex-row items-center justify-between gap-5 border-b-4 border-solid border-green-400 bg-gray-100 px-16 md:px-8`}
     >
-      {/*{<ScreenSize />}*/}
+      <ScreenSize />
       <NotificationsListener />
       <nav>
         <ul className='flex gap-4'>

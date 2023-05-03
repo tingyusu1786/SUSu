@@ -98,29 +98,9 @@
   fill: #eeeeee;
 }
 
-.react-calendar-heatmap .color-filled {
-  fill: #8cc665;
-}
-
 /*
  * Github color scale
  */
-
-.react-calendar-heatmap .color-github-0 {
-  fill: #eeeeee;
-}
-.react-calendar-heatmap .color-github-1 {
-  fill: #d6e685;
-}
-.react-calendar-heatmap .color-github-2 {
-  fill: #8cc665;
-}
-.react-calendar-heatmap .color-github-3 {
-  fill: #44a340;
-}
-.react-calendar-heatmap .color-github-4 {
-  fill: #1e6823;
-}
 
 .react-calendar-heatmap .color-gitlab-0 {
   fill: #ededed;
@@ -139,4 +119,72 @@
 }
 .react-calendar-heatmap .color-gitlab-4 {
   fill: #254e77;
+}
+
+.bg-red-1 {
+  @apply bg-red-100;
+}
+.bg-red-2 {
+  @apply bg-red-200;
+}
+.bg-red-3 {
+  @apply bg-red-300;
+}
+.bg-red-4 {
+  @apply bg-red-400;
+}
+.bg-red-5 {
+  @apply bg-red-500;
+}
+.bg-red-6 {
+  @apply bg-red-600;
+}
+.bg-lime-1 {
+  @apply bg-lime-100;
+}
+
+.bg-lime-2 {
+  @apply bg-lime-200;
+}
+.bg-lime-3 {
+  @apply bg-lime-300;
+}
+.bg-lime-4 {
+  @apply bg-lime-400;
+}
+.bg-lime-5 {
+  @apply bg-lime-500;
+}
+
+.bg-yellow-1 {
+  @apply bg-yellow-100;
+}
+.bg-yellow-2 {
+  @apply bg-yellow-200;
+}
+.bg-yellow-3 {
+  @apply bg-yellow-300;
+}
+.bg-yellow-4 {
+  @apply bg-yellow-400;
+}
+.bg-yellow-5 {
+  @apply bg-yellow-500;
+}
+
+.bg-indigo-1 {
+  @apply bg-indigo-100;
+}
+
+.bg-indigo-2 {
+  @apply bg-indigo-200;
+}
+.bg-indigo-3 {
+  @apply bg-indigo-300;
+}
+.bg-indigo-4 {
+  @apply bg-indigo-400;
+}
+.bg-indigo-5 {
+  @apply bg-indigo-500;
 }

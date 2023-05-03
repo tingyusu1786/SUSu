@@ -210,14 +210,20 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts, profileUs
 
         {
           <>
-            <div className='ml-5 flex gap-1 text-neutral-500'>
+            {/*<div className='ml-5'>✧ drink-contributions</div>*/}
+            <div className=' col-span-full row-start-4 flex gap-1 text-neutral-500'>
+              <div
+                className={`z-10 flex h-10 w-72 items-center justify-center rounded-t-xl border-x-2 border-t-2 border-neutral-900 border-b-neutral-100 bg-neutral-100 px-3 pt-1`}
+              >
+                drink-contributions
+              </div>
               {[
                 ['last year', 12],
                 ['last 6 months', 6],
                 ['last 3 months', 3],
               ].map((num, index) => (
                 <button
-                  className={`rounded-t-full border-x-2 border-t-2 border-neutral-900 px-3 pt-1 text-sm hover:bg-neutral-400 hover:text-white ${
+                  className={`mt-2 h-8 w-36 rounded-t-3xl border-x-2 border-t-2 border-neutral-900 px-3 pt-1 text-sm transition-all duration-200 hover:mt-1 hover:h-9 ${
                     numMonthBefore === num[1] && 'bg-neutral-400 text-white'
                   }`}
                   onClick={() => setNumMonthBefore(num[1] as number)}
@@ -227,7 +233,7 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts, profileUs
                 </button>
               ))}
             </div>
-            <div className='container col-span-2 -mt-5 max-w-[900px] rounded-xl border-2 border-solid border-neutral-900 bg-neutral-100 px-10 py-5 shadow-[3px_3px_#171717] transition-all transition-all duration-200 duration-200 hover:-translate-y-[3px] hover:shadow-[3px_6px_#171717]'>
+            <div className='container col-span-2 -mt-[22px] max-w-[900px] rounded-xl rounded-tl-none border-2 border-solid border-neutral-900 bg-neutral-100 px-10 py-5 shadow-[3px_3px_#171717] transition-all transition-all duration-200 duration-200 '>
               <CalendarHeatmapComponent values={values || []} numMonthBefore={numMonthBefore} />
             </div>
           </>
@@ -249,14 +255,19 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts, profileUs
             </div>
           ))}
       </div>
-      <div className='flex w-full max-w-[900px] flex-col items-start'>
-        <div className='mb-3 ml-3 text-xl before:mr-2 before:content-["✦"]'>achievements</div>
-        <Badges
-          drankBrands={drankBrands}
-          drankItems={drankItems}
-          numPosts={profileUserPosts.length}
-          streaks={streaks}
-        />
+      <div className='flex w-full max-w-[900px] flex-col items-start '>
+        <div className='mb-3 ml-3 text-xl before:mr-2 before:content-["✦"]'>badges</div>
+        <div
+          className='flex w-full flex-wrap justify-center gap-8 rounded-xl border-2 border-neutral-900 bg-neutral-100 p-7 shadow-[3px_3px_#171717]'
+          // style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(6rem, 1fr))' }}
+        >
+          <Badges
+            drankBrands={drankBrands}
+            drankItems={drankItems}
+            numPosts={profileUserPosts.length}
+            streaks={streaks}
+          />
+        </div>
       </div>
       <div className='grid w-full max-w-[900px] grid-cols-4 items-stretch gap-x-5 gap-y-5 lg:grid-cols-3 sm:grid-cols-2'>
         <div className='col-span-full ml-3 text-xl before:mr-2 before:content-["✦"]'>drank brands</div>
@@ -270,7 +281,6 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts, profileUs
                   <div className='flex h-3/4 items-center justify-center'>
                     <img src={allBrandsInfo[brand[0]]?.photoURL} alt='' className='w-20' />
                   </div>
-                  {/*<div className=''></div>*/}
                   <div className='mt-auto pt-3'>
                     <span className='text-sm sm:text-base'>{brand[1].brandName}</span>
                     <span className='text-sm text-neutral-600 sm:hidden'>&nbsp;x&nbsp;{brand[1].times}</span>
