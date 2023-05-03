@@ -561,21 +561,21 @@ function CreatePost() {
             />
 
             <div>
+              <span className='mr-1 text-neutral-600'>#</span>
+              <input
+                onBlur={(e) => handleTagInputBlur(e)}
+                onKeyPress={(e) => handleTagInputKeyPress(e)}
+                onChange={(e) => setCustomTagsInput(e.target.value)}
+                value={customTagsInput}
+                type='text'
+                placeholder='add your own hashtags'
+                className='inline-block h-7 rounded-lg border-2 border-solid border-neutral-900 p-0 px-1 text-neutral-600 placeholder:text-sm placeholder:text-neutral-400 focus:outline focus:outline-green-400'
+              />
               <div className='flex flex-wrap items-center gap-x-3 gap-y-2'>
-                <span className='text-neutral-600'>#</span>
-                <input
-                  onBlur={(e) => handleTagInputBlur(e)}
-                  onKeyPress={(e) => handleTagInputKeyPress(e)}
-                  onChange={(e) => setCustomTagsInput(e.target.value)}
-                  value={customTagsInput}
-                  type='text'
-                  placeholder='add your hashtags'
-                  className='-ml-2 inline-block h-6 rounded-lg border-2 border-solid border-neutral-900 p-0 px-1 text-neutral-600 placeholder:text-sm placeholder:text-neutral-400 focus:outline focus:outline-green-400'
-                />
                 {customTags.map(
                   (tag, index) =>
                     tag !== '' && (
-                      <div key={index} className=''>
+                      <div key={index} className='mt-2'>
                         <span className='text-neutral-600 before:mr-px before:content-["#"]'>{tag}</span>
                         <span onClick={() => removeTag(index)} className='ml-1 cursor-pointer text-neutral-500'>
                           &times;
@@ -586,7 +586,7 @@ function CreatePost() {
                 {autoTags.map(
                   (tag, index) =>
                     tag !== '' && (
-                      <div key={index} className='text-neutral-600 before:mr-px before:content-["#"]'>
+                      <div key={index} className='mt-2 text-neutral-600 before:mr-px before:content-["#"]'>
                         {tag}
                       </div>
                     )
