@@ -13,6 +13,7 @@ import Feeds from './pages/Feeds/Feeds';
 import Catalogue from './pages/Catalogue/Catalogue';
 import Inspiration from './pages/Inspiration';
 import Search from './pages/Search';
+import PageNotFound from './pages/PageNotFound';
 import 'react-tooltip/dist/react-tooltip.css';
 
 const container = document.getElementById('root')!;
@@ -36,6 +37,7 @@ root.render(
           <Route path='/drinkipedia/:catalogueBrandId?/:catalogueItemId?' element={<Catalogue />} />
           <Route path='/inspiration' element={<Inspiration />} />
           <Route path='/search' element={<Search />} />
+          <Route path='*' element={<PageNotFound />} />
         </Route>
       </Routes>
     </Provider>
