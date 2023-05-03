@@ -238,48 +238,25 @@ function CreatePost() {
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const key = e.target.name;
-    switch (key) {
-      case 'brandId': {
-        setInputs((prev) => {
-          const newInput = { ...prev, [key]: e.target.value, itemId: '', size: '', price: '' };
-          return newInput;
-        });
-        break;
-      }
-      case 'itemId': {
-        setInputs((prev) => {
-          const newInput = { ...prev, [key]: e.target.value, size: '', price: '' };
-          return newInput;
-        });
-        break;
-      }
-      case 'size': {
-        setInputs((prev) => {
-          const newInput = {
-            ...prev,
-            [key]: e.target.value,
-            price: sizesOfItem[sizesOfItem.findIndex((i) => i[0] === e.target.value)]?.[1],
-          };
-          return newInput;
-        });
-        break;
-      }
-      default: {
-        setInputs((prev) => {
-          const newInput = { ...prev, [key]: e.target.value };
-          return newInput;
-        });
-      }
+
+    interface UpdateFunctions {
+      [key: string]: () => { [key: string]: string | undefined };
+      default: () => { [key: string]: string };
     }
-    key === 'brandId'
-      ? setInputs((prev) => {
-          const newInput = { ...prev, [key]: e.target.value, itemId: '' };
-          return newInput;
-        })
-      : setInputs((prev) => {
-          const newInput = { ...prev, [key]: e.target.value };
-          return newInput;
-        });
+
+    const updateFunctions: UpdateFunctions = {
+      brandId: () => ({ brandId: e.target.value, itemId: '', size: '', price: '' }),
+      itemId: () => ({ itemId: e.target.value, size: '', price: '' }),
+      size: () => {
+        const price = sizesOfItem.find((i) => i[0] === e.target.value)?.[1];
+        return { size: e.target.value, price };
+      },
+      price: () => ({ price: parseInt(e.target.value) < 0 ? '0' : e.target.value }),
+      default: () => ({ [key]: e.target.value }),
+    };
+
+    const updateInputs = updateFunctions[key] || updateFunctions.default;
+    setInputs((prev) => ({ ...prev, ...updateInputs() }));
   };
 
   const handleTagsChange = (newTags: string[]) => {
