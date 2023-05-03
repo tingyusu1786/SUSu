@@ -62,6 +62,7 @@ const PostsFeed: React.FC<PostsProps> = ({
   const [hasMore, setHasMore] = useState(true);
   const initSnap = useRef(true);
   const isFetching = useRef(false);
+  const hashtagRef = useRef<null | HTMLDivElement>(null);
 
   // add listener for newly added post
   useEffect(() => {
@@ -670,7 +671,12 @@ const PostsFeed: React.FC<PostsProps> = ({
     }
   };
 
+  const scrollToHashtag = () => {
+    hashtagRef!.current!.scrollIntoView({ block: 'start', behavior: 'smooth' });
+  };
+
   const handleClickHashtag = (hashtag: string) => {
+    scrollToHashtag();
     setHashtagFilter(hashtag);
     setLastKey(undefined);
   };
@@ -700,7 +706,7 @@ const PostsFeed: React.FC<PostsProps> = ({
   }
 
   return (
-    <div className='justify-top flex flex-col items-center gap-3'>
+    <div className='justify-top flex scroll-mt-36 flex-col items-center gap-3' ref={hashtagRef}>
       {hashtagFilter && (
         <div>
           <div className='mr-2 inline-block bg-gradient-to-l from-sky-500 to-green-500 bg-clip-text text-transparent before:mr-px before:content-["#"]'>
@@ -710,6 +716,7 @@ const PostsFeed: React.FC<PostsProps> = ({
             onClick={() => {
               setHashtagFilter(undefined);
               setLastKey(undefined);
+              isFetching.current = false;
             }}
           >
             &nbsp;&times;
