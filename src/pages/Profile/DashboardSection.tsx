@@ -257,9 +257,13 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts, profileUs
       </div>
       <div className='flex w-full max-w-[900px] flex-col items-start '>
         <div className='mb-3 ml-3 text-xl before:mr-2 before:content-["✦"]'>badges</div>
-        <div
+        {/*<div
           className='flex w-full flex-wrap justify-center gap-8 rounded-xl border-2 border-neutral-900 bg-neutral-100 p-7 shadow-[3px_3px_#171717]'
-          // style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(6rem, 1fr))' }}
+          style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(6rem, 1fr))' }}
+        >*/}
+        <div
+          className='grid w-full justify-center justify-items-center gap-8 rounded-xl border-2 border-neutral-900 bg-neutral-100 p-10 shadow-[3px_3px_#171717]'
+          style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(6rem, 1fr))' }}
         >
           <Badges
             drankBrands={drankBrands}
