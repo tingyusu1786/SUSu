@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
 import { Link } from 'react-router-dom';
-import dbApi from '../utils/dbApi';
-import { showNotification, closeNotification, showSearch, closeSearch } from '../app/popUpSlice';
+import { closeSearch } from '../app/popUpSlice';
 import type { SearchBoxProps } from 'react-instantsearch-hooks-web';
 import { PoweredBy } from 'react-instantsearch-hooks-web';
 import algoliasearch from 'algoliasearch/lite';
@@ -12,9 +11,7 @@ import {
   useHits,
   Hits,
   Highlight,
-  RefinementList,
   Index,
-  InfiniteHits,
   useInstantSearch,
 } from 'react-instantsearch-hooks-web';
 
@@ -23,8 +20,6 @@ interface Props {
 }
 const SearchModal: React.FC = () => {
   const dispatch = useAppDispatch();
-  const [user, setUser] = useState<Record<string, string>>();
-  const currentUserId = useAppSelector((state) => state.auth.currentUserId);
 
   function BrandHit({ hit }: any) {
     return (
@@ -156,7 +151,8 @@ const SearchModal: React.FC = () => {
             classNames={{
               // root: 'MyCustomSearchBox',
               form: '',
-              input: 'h-10 rounded-full border-2 border-solid border-gray-400 p-3  outline-0 w-full',
+              input:
+                'h-10 rounded-full border-2 border-solid border-gray-400 p-3 focus:outline focus:outline-green-400 outline-green-400 w-full',
               submitIcon: 'hidden',
               resetIcon: 'hidden',
               loadingIcon: 'hidden',
@@ -164,7 +160,7 @@ const SearchModal: React.FC = () => {
           />
           <PoweredBy
             classNames={{
-              root: ' w-32 absolute right-3 top-12',
+              root: 'w-36 absolute right-3 top-12',
               link: '',
             }}
           />

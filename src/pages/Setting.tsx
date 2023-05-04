@@ -180,7 +180,7 @@ function Setting() {
           type='text'
           maxLength={20}
           placeholder='max 20 characters'
-          className='h-10 w-full rounded-full border-2 border-solid border-gray-400 p-3 focus:outline-green-400'
+          className='h-10 w-full rounded-full border-2 border-solid border-gray-400 p-3 focus:outline focus:outline-green-400'
           value={inputs.name}
           onChange={handleInputChange}
         />
@@ -190,12 +190,12 @@ function Setting() {
           type='text'
           maxLength={30}
           placeholder='max 30 characters'
-          className='h-10 w-full rounded-full border-2 border-solid border-gray-400 p-3 focus:outline-green-400'
+          className='h-10 w-full rounded-full border-2 border-solid border-gray-400 p-3 focus:outline focus:outline-green-400'
           value={inputs.status}
           onChange={handleInputChange}
         />
         <button
-          className='button col-span-2 h-10 justify-self-stretch rounded-full bg-green-300 px-3 hover:bg-green-400 focus:outline-green-400'
+          className='button col-span-2 h-10 justify-self-stretch rounded-full bg-green-300 px-3 hover:bg-green-400 focus:outline focus:outline-green-400'
           onClick={handleConfirmAll}
         >
           CONFIRM

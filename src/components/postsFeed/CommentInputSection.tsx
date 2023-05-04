@@ -3,7 +3,6 @@ import { ChangeEvent, KeyboardEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '../../app/hooks';
 import { Post } from '../../interfaces/interfaces';
-import { ReactComponent as SmileyWink } from '../../images/SmileyWink.svg';
 
 interface PostProps {
   post: Post;
@@ -40,15 +39,14 @@ const CommentInputSection: React.FC<PostProps> = ({ post, handleCommentInput, ha
         </div>
       )}
       <textarea
-        // type='text'
         placeholder={
           isSignedIn
             ? post.comments && post.comments.length > 0
               ? 'write a comment'
               : 'be the first to comment!'
-            : 'sign in to comment ヽ(^_−)ﾉ'
+            : 'sign in to comment ☺'
         }
-        className='block w-full break-all rounded-md bg-neutral-300 p-2 shadow-inner placeholder:text-neutral-400 focus:outline-green-400'
+        className='block w-full break-all rounded-md bg-neutral-300 p-2 shadow-inner placeholder:text-neutral-400 focus:outline focus:outline-green-400'
         disabled={!isSignedIn}
         value={post.commentInput}
         onChange={(e) => handleCommentInput(e, index)}
