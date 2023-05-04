@@ -8,6 +8,10 @@ import { StarIcon as SolidStar, GlobeAsiaAustraliaIcon, UserIcon } from '@heroic
 import { StarIcon as LineStar } from '@heroicons/react/24/outline';
 import { ReactComponent as SmileyWink } from '../../images/SmileyWink.svg';
 import { showAuth } from '../../app/popUpSlice';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { DateTimeField } from '@mui/x-date-pickers/DateTimeField';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import dayjs from 'dayjs';
 
 function useComponentVisible(initialIsVisible: boolean) {
   const [isComponentVisible, setIsComponentVisible] = useState(initialIsVisible);
@@ -63,21 +67,34 @@ function CreatePost() {
   const [itemsOfBrand, setItemsOfBrand] = useState<string[][][]>([]);
   const [sizesOfItem, setSizesOfItem] = useState<string[][]>([]);
   const [inputs, setInputs] = useState(initialInput);
-  const [date, setDate] = useState<Date>(new Date(Date.now() - new Date().getTimezoneOffset() * 60000));
+  // const [date, setDate] = useState<Date>(new Date(Date.now() - new Date().getTimezoneOffset() * 60000));
+  const [date, setDate] = useState<dayjs.Dayjs | null>(dayjs());
+
   const [dropdownShown, setDropdownShown] = useState(initialDropdownShown);
 
   const formatDate = (date: Date): string => {
     return date.toISOString().slice(0, 16);
   };
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //   const { value } = event.target;
+  //   if (value === '' || parseInt(value.split('-')[0]) > 9999) {
+  //     return;
+  //   }
+
+  //   let newDate = new Date(new Date(value).getTime() - new Date().getTimezoneOffset() * 60000);
+  //   setDate(newDate);
+  // };
+
+  const handleChange = (event: any) => {
     const { value } = event.target;
+    console.log(value);
     if (value === '' || parseInt(value.split('-')[0]) > 9999) {
       return;
     }
 
-    let newDate = new Date(new Date(value).getTime() - new Date().getTimezoneOffset() * 60000);
-    setDate(newDate);
+    // let newDate = new Date(new Date(value).getTime() - new Date().getTimezoneOffset() * 60000);
+    // setDate(newDate);
   };
 
   const sugarOptions = [
@@ -194,10 +211,12 @@ function CreatePost() {
         swal.warning('please fill in all required fields', '(brand, item, rating)', 'ok');
         return;
       }
+      // todo: invalid date
       const postInputs = Object.assign({}, inputs, {
         authorId: currentUserId,
         hashtags: customTags.concat(autoTags),
-        timeCreated: new Date(date.getTime() + new Date().getTimezoneOffset() * 60000), //serverTimestamp()會lag
+        // timeCreated: new Date(date.getTime() + new Date().getTimezoneOffset() * 60000), //serverTimestamp()會lag
+        timeCreated: new Date(date!.unix() * 1000),
         likes: [],
         comments: [],
       });
@@ -295,30 +314,6 @@ function CreatePost() {
 
     const updateInputs = updateFunctions[key] || updateFunctions.default;
     setInputs((prev) => ({ ...prev, ...updateInputs() }));
-  };
-
-  const handleSelectButtonClick = (e: MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    const key = e.currentTarget.id;
-    alert(key);
-    // interface UpdateFunctions {
-    //   [key: string]: () => { [key: string]: string | undefined };
-    //   default: () => { [key: string]: string };
-    // }
-
-    // const updateFunctions: UpdateFunctions = {
-    //   brandId: () => ({ brandId: e.target.value, itemId: '', size: '', price: '' }),
-    //   itemId: () => ({ itemId: e.target.value, size: '', price: '' }),
-    //   size: () => {
-    //     const price = sizesOfItem.find((i) => i[0] === e.target.value)?.[1];
-    //     return { size: e.target.value, price };
-    //   },
-    //   price: () => ({ price: parseInt(e.target.value) < 0 ? '0' : e.target.value }),
-    //   default: () => ({ [key]: e.target.value }),
-    // };
-
-    // const updateInputs = updateFunctions[key] || updateFunctions.default;
-    // setInputs((prev) => ({ ...prev, ...updateInputs() }));
   };
 
   const handleTagsChange = (newTags: string[]) => {
@@ -426,14 +421,25 @@ function CreatePost() {
               </span>
             </div>
             <div className='flex items-center justify-end gap-x-1'>
-              <input
+              <DateTimePicker
+                value={dayjs(date)}
+                maxDateTime={dayjs()}
+                onChange={(newValue) =>
+                  setDate((prev) => {
+                    console.log(date);
+                    return newValue;
+                  })
+                }
+              />
+
+              {/*<input
                 required
                 type='datetime-local'
                 value={formatDate(date)}
                 onChange={handleChange}
                 max={formatDate(new Date(Date.now() - new Date().getTimezoneOffset() * 60000))}
                 className='w-full cursor-pointer bg-transparent outline-0 after:cursor-pointer'
-              />
+              />*/}
               <span className=''>•</span>
               {inputs.audience === 'public' ? (
                 <GlobeAsiaAustraliaIcon className=' h-4 w-4 ' title='public' />
