@@ -3,9 +3,9 @@ import { Link, useParams } from 'react-router-dom';
 import { db } from '../../services/firebase';
 import dbApi from '../../utils/dbApi';
 import { doc, getDoc, collection, query, where, getDocs, orderBy, QuerySnapshot, setDoc } from 'firebase/firestore';
-import AllCatalogue from './AllCatalogue';
-import BrandCatalogue from './BrandCatalogue';
-import ItemCatalogue from './ItemCatalogue';
+import AllBrands from './AllBrands';
+import SingleBrand from './SingleBrand';
+import SingleItem from './SingleItem';
 import PostsFeed from '../../components/postsFeed/PostsFeed';
 import BrandCard from '../../components/BrandCard';
 import { Brand } from '../../interfaces/interfaces';
@@ -194,16 +194,15 @@ function Catalogue() {
 
   return (
     <main className='bg-boxes relative min-h-[calc(100vh-64px)] bg-fixed px-10 py-20'>
-      {/*<main className=' bg-fixed px-10 py-20 sm:px-0'>*/}
       <BreadcrumbNav
         catalogueBrandId={catalogueBrandId}
         catalogueItemId={catalogueItemId}
         catalogueBrandName={catalogueBrandName}
         catalogueItemName={catalogueItemName}
       />
-      {!catalogueBrandId && !catalogueItemId && <AllCatalogue brands={brands} />}
+      {!catalogueBrandId && !catalogueItemId && <AllBrands brands={brands} />}
       {catalogueBrandId && !catalogueItemId && (
-        <BrandCatalogue
+        <SingleBrand
           catalogueBrandObj={catalogueBrandObj}
           categories={categories}
           itemsOfBrand={itemsOfBrand}
@@ -211,7 +210,7 @@ function Catalogue() {
         />
       )}
       {catalogueBrandId && catalogueItemId && (
-        <ItemCatalogue
+        <SingleItem
           catalogueBrandId={catalogueBrandId}
           catalogueItemId={catalogueItemId}
           catalogueItemName={catalogueItemName}

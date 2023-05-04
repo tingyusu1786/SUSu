@@ -10,7 +10,7 @@ import Setting from './pages/Setting';
 import Home from './pages/Home';
 import Log from './pages/Log';
 import Feeds from './pages/Feeds/Feeds';
-import Catalogue from './pages/Catalogue/Catalogue';
+import Catalogue from './pages/Drinkipedia/Drinkipedia';
 import Inspiration from './pages/Inspiration';
 import Search from './pages/Search';
 import PageNotFound from './pages/PageNotFound';
