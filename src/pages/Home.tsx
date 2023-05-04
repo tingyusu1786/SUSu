@@ -61,7 +61,7 @@ function Home() {
 
   return (
     <main className='bg-boxes flex min-h-[calc(100vh-64px)] flex-col items-center justify-center bg-fixed px-36'>
-      <div className='type-wrap flex-col items-center justify-start text-center text-9xl'>
+      <div className='type-wrap flex-col items-center justify-start text-center text-9xl selection:bg-green-400'>
         {/*<span>SUSü is a platform where you can...</span>*/}
         {<span style={{ whiteSpace: 'pre' }} ref={el} />}
       </div>

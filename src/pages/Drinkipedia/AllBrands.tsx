@@ -13,8 +13,8 @@ interface Props {
 
 const AllCatalogue: React.FC<Props> = ({ brands }) => {
   return (
-    <div className='w-full'>
-      <h1 className='mb-10 text-center text-7xl'>Discover peoples' favorites!</h1>
+    <div className='w-full '>
+      <h1 className='mb-10 text-center text-7xl selection:bg-green-400'>Discover peoples' favorites!</h1>
       <h2 className='mb-28 text-center text-3xl'>(almost) all chain hand-shake drink store in Taiwan listed</h2>
       {brands.length === 0 && <SmileyWink className='mx-auto my-10 animate-bounce' />}
       <div

@@ -229,7 +229,7 @@ function Profile() {
             {profileUser.status}
           </span>
         )}
-        <h3 className='text-3xl'>{profileUser.name}</h3>
+        <h3 className='text-3xl selection:bg-green-400'>{profileUser.name}</h3>
         <div className='-mt-4 text-sm text-gray-400'>{profileUser.email}</div>
         <div>
           member since{' '}

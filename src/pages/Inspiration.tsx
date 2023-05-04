@@ -141,7 +141,7 @@ function Inspiration() {
 
   return (
     <main className='bg-boxes relative z-0 min-h-[calc(100vh-64px)] bg-fixed p-10'>
-      <h1 className='mb-5 text-center text-7xl'>Can't decide? Leave it to us!</h1>
+      <h1 className='mb-5 text-center text-7xl selection:bg-green-400'>Can't decide? Leave it to us!</h1>
       <div className='mx-auto max-w-[960px]'>
         <span className='mb-3 mr-3 inline-block before:mr-2 before:content-["✦"]'>filter some brands if you want</span>
         <span

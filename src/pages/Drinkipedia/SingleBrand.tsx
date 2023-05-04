@@ -22,7 +22,7 @@ const BrandCatalogue: React.FC<CatalogueProps> = ({
   return (
     <div className='mx-auto mt-5 max-w-[960px] '>
       <div className='flex items-center gap-5'>
-        <h1 className='inline-block text-6xl'>{catalogueBrandObj?.name}</h1>
+        <h1 className='inline-block text-6xl selection:bg-green-400'>{catalogueBrandObj?.name}</h1>
         <img src={catalogueBrandObj?.photoURL} alt='' className='-mt-3 inline-block h-20' />
       </div>
       <div className='mb-5 flex items-center justify-start gap-1 text-lg'>
