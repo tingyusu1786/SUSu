@@ -208,9 +208,8 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts, profileUs
           </div>
         ))}
 
-        {
+        {getMostDrankBrand() && (
           <>
-            {/*<div className='ml-5'>✧ drink-contributions</div>*/}
             <div className=' col-span-full row-start-4 flex gap-1 text-neutral-500'>
               <div
                 className={`z-10 flex h-10 w-72 items-center justify-center rounded-t-xl border-x-2 border-t-2 border-neutral-900 border-b-neutral-100 bg-neutral-100 px-3 pt-1`}
@@ -237,7 +236,7 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts, profileUs
               <CalendarHeatmapComponent values={values || []} numMonthBefore={numMonthBefore} />
             </div>
           </>
-        }
+        )}
       </div>
 
       <div className='grid w-full max-w-[900px] grid-cols-5 items-center gap-x-5 gap-y-5'>

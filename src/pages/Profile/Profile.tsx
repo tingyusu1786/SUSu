@@ -250,7 +250,7 @@ function Profile() {
           </button>
         )}
       </div>
-      <div className='my-10 grid h-10 w-full grid-flow-col justify-stretch'>
+      <div className='my-10 grid h-10 w-full grid-cols-4 justify-stretch'>
         {['DASHBOARD', 'LOGS', 'FOLLOWING', 'FOLLOWERS'].map((tabName) => (
           <button
             key={tabName}

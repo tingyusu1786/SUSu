@@ -87,8 +87,7 @@ const Badges: React.FC<BadgesProps> = ({ drankBrands, drankItems, numPosts, stre
               } group relative flex h-24 w-24 cursor-default items-center justify-center gap-x-2 rounded-full  border-2  border-neutral-900 ring-2 ring-neutral-900 ring-offset-2 transition-all duration-100`}
             >
               <div className=''>{category.icon}</div>
-              <div className='absolute hidden h-full w-full items-center justify-center rounded-full bg-white text-center text-sm group-hover:flex'>{`${category.desc[0]} ${goal} 
-              ${category.desc[1]}`}</div>
+              <div className='delay-50 absolute flex h-full w-full items-center justify-center rounded-full bg-white text-center text-sm opacity-0 transition-all duration-200 group-hover:opacity-100'>{`${category.desc[0]} ${goal} ${category.desc[1]}`}</div>
               {category.num > category.goals[index - 1] && category.num < goal && (
                 <div className='absolute bottom-0 h-3 w-full rounded-sm border border-neutral-900 bg-neutral-200 opacity-100'>
                   <div
