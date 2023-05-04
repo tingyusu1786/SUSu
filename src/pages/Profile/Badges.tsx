@@ -1,15 +1,5 @@
 import 'animate.css';
-import {
-  Spinner,
-  Trophy,
-  Browsers,
-  Shapes,
-  DropHalf,
-  Shuffle,
-  RocketLaunch,
-  Eyeglasses,
-  Storefront,
-} from '@phosphor-icons/react';
+import { Spinner, Trophy, Browsers, Shapes, RocketLaunch, Storefront } from '@phosphor-icons/react';
 
 interface BadgesProps {
   drankBrands: Record<string, { brandName: string; times: number }> | undefined;
@@ -29,21 +19,7 @@ const Badges: React.FC<BadgesProps> = ({ drankBrands, drankItems, numPosts, stre
     : 0;
 
   const numDrankItems = drankItems ? Object.keys(drankItems).length : 0;
-  // <Eyeglasses size={44} color="#273c51" weight="light" />
-  // <Pentagram size={44} color="#273c51" weight="light" />
-  // <Planet size={44} color="#273c51" weight="light" />
-  // <Plant size={44} color="#273c51" weight="light" />
-  // <RocketLaunch size={44} color="#273c51" weight="light" />
-  // <Shapes size={44} color="#273c51" weight="light" />
-  // <Shuffle size={44} color="#273c51" weight="light" />
-  // <SketchLogo size={44} color="#273c51" weight="light" />
-  // <Spinner size={44} color="#273c51" weight="light" />
-  // <Storefront size={44} color="#273c51" weight="light" />
-  // <Target size={44} color="#273c51" weight="light" />
-  // <User size={44} color="#273c51" weight="light" />
-  // <Users size={44} color="#273c51" weight="light" />
-  // <UsersThree size={44} color="#273c51" weight="light" />
-  // <UsersFour size={44} color="#273c51" weight="light" />
+
   const iconColor = '#171717';
   const badgeLog = {
     num: numPosts,
