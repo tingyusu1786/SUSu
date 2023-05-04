@@ -5,12 +5,9 @@ import { useAppSelector, useAppDispatch } from '../app/hooks';
 import { addAllBrands } from '../app/infoSlice';
 import { db } from '../services/firebase';
 import { collection, doc, getDoc, getDocs, query, where, DocumentData } from 'firebase/firestore';
-import Button from '../components/Button';
-import { Star_10, Line_8, Shine_4, Sun_16 } from '../images/star_10';
 import { StarIcon as SolidStar } from '@heroicons/react/24/solid';
-import { HandRaisedIcon, FaceFrownIcon } from '@heroicons/react/24/outline';
-import { ReactComponent as SmileyWink } from '../images/SmileyWink.svg';
 import { ReactComponent as ShootingStar } from '../images/ShootingStar.svg';
+import { MapTrifold } from '@phosphor-icons/react';
 
 function Inspiration() {
   type RandomItem = {
@@ -153,7 +150,7 @@ function Inspiration() {
         >
           clear all brands
         </span>
-        <div className='mb-10 flex flex-wrap items-center justify-start gap-3'>
+        <div className='mb-6 flex flex-wrap items-center justify-start gap-3'>
           {Object.keys(allBrandsInfo).map((key) => (
             <label
               key={key}
@@ -206,7 +203,7 @@ function Inspiration() {
         </div>
         <div className='flex w-full justify-center'>
           <button
-            className={`mx-auto h-40 w-40 rounded-full bg-gradient-to-r from-green-400 to-sky-300 px-2 text-2xl  text-white transition-all duration-300 hover:rotate-45 hover:from-violet-500 hover:to-fuchsia-500 ${
+            className={`mx-auto h-40 w-40 rounded-full bg-gradient-to-r from-green-400 to-sky-300 px-2 text-2xl text-white transition-all duration-300 hover:rotate-45 hover:from-violet-500 hover:to-fuchsia-500 ${
               isFinding && 'animate-shrinkSpin'
             }`}
             onClick={() => getRandomItem(selectedBrands, selectedRating)}
@@ -215,8 +212,6 @@ function Inspiration() {
           </button>
         </div>
       </div>
-      {/*{isFinding && <SmileyWink className='mx-auto mt-20 animate-bounce' />}*/}
-      <div className='h-6 w-full bg-[url("https://static.thenounproject.com/png/924541-200.png")]'></div>
       {!isFinding && randomItem && (
         <div className='animate__zoomInDown animate__animated mt-10 flex flex-col items-center'>
           <div className=' mb-10 flex w-full items-center justify-center gap-10'>
@@ -255,31 +250,36 @@ function Inspiration() {
             <ShootingStar className='-scale-x-100' />
           </div>
           <div
-            className={`flex h-10 w-full max-w-[960px] items-center justify-between gap-2 rounded-t-md border-4 border-solid border-neutral-900 bg-[#F5F3EA] px-5 ${
+            className={`flex h-10 w-full max-w-[960px] cursor-pointer items-center justify-between gap-2 rounded-t-md border-4 border-solid border-neutral-900 bg-[#F5F3EA] px-5 ${
               !showMap && 'rounded-b-md'
             }`}
+            onClick={() => {
+              setShowMap((prev) => !prev);
+            }}
           >
             <div className=''>Check out the stores near you</div>
-            <span
-              onClick={() => {
-                setShowMap((prev) => !prev);
-              }}
-              className={`cursor-pointer ${showMap && 'rotate-180'} transition-all duration-200`}
-            >
-              ▲
-            </span>
+            <MapTrifold
+              size={26}
+              color='#171717'
+              weight='light'
+              className={`${showMap && 'rotate-180'} transition-all duration-500`}
+            />
           </div>
           <iframe
-            className={`h-[480px] w-full max-w-[960px] rounded-b-md border-4 border-t-0 border-solid border-neutral-900 ${
-              !showMap && 'hidden'
-            }`}
+            className={`h-[480px] w-full max-w-[960px] rounded-b-md border-4 border-t-0 border-solid border-neutral-900 transition-[height] duration-500
+          ${!showMap && 'h-0 border-0'}
+            `}
             loading='lazy'
+            title='Stores Nearby'
             allowFullScreen
             referrerPolicy='no-referrer-when-downgrade'
-            src={`https://www.google.com/maps/embed/v1/search?key=AIzaSyAyK3jgOTFT1B6-Vt85wxc_2aaGLUlU738
+            src={
+              currentLocation &&
+              `https://www.google.com/maps/embed/v1/search?key=AIzaSyAyK3jgOTFT1B6-Vt85wxc_2aaGLUlU738
                 &q=${randomItem.brand}+nearby&language=en&center=${Number(currentLocation?.latitude)},${Number(
-              currentLocation?.longitude
-            )}&zoom=13`}
+                currentLocation?.longitude
+              )}&zoom=13`
+            }
           ></iframe>
         </div>
       )}
