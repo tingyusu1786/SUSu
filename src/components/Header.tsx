@@ -5,8 +5,6 @@ import { useAppSelector, useAppDispatch } from '../app/hooks';
 import { showNotification, closeNotification, showSearch, closeSearch, showAuth } from '../app/popUpSlice';
 import { signOutStart, signOutSuccess, signOutFail } from '../components/auth/authSlice';
 import NotificationsList from '../components/notification/NotificationsList';
-// import SearchModal from '../components/SearchModal';
-
 import { Notification } from '../interfaces/interfaces';
 import { doc, DocumentSnapshot, DocumentReference, DocumentData, onSnapshot } from 'firebase/firestore';
 import dbApi from '../utils/dbApi';
@@ -16,7 +14,6 @@ import { BellIcon } from '@heroicons/react/24/outline';
 import swal from '../utils/swal';
 
 function NotificationsListener() {
-  const dispatch = useAppDispatch();
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const initSnap = useRef(true);
@@ -151,16 +148,9 @@ function Header() {
   const currentUserphotoURL = useAppSelector((state) => state.auth.currentUserPhotoURL);
   const isNotificationShown = useAppSelector((state) => state.popUp.isNotificationShown);
   const isSearchShown = useAppSelector((state) => state.popUp.isSearchShown);
-  const isAuthShown = useAppSelector((state) => state.popUp.isAuthShown);
-  const navigate = useNavigate();
-
-  function handleRedirect() {
-    navigate('/search');
-  }
 
   useEffect(() => {
-    //todo: any
-    const handleKeyDown = (event: any) => {
+    const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         dispatch(closeSearch());
         dispatch(closeNotification());
@@ -215,7 +205,7 @@ function Header() {
               <Link
                 to={li.to}
                 className={`navLi ${
-                  location.pathname === li.to ? 'before:decoration-sky-400 before:decoration-wavy' : ''
+                  location.pathname.includes(li.to) ? 'before:decoration-sky-400 before:decoration-wavy' : ''
                 }`}
                 data-text={li.name}
               >
@@ -233,8 +223,6 @@ function Header() {
           </li>
         </ul>
       </nav>
-
-      {/*{isSearchShown && <SearchModal />}*/}
 
       {!isSignedIn && (
         <div className='group relative cursor-pointer ' onClick={() => dispatch(showAuth())}>
