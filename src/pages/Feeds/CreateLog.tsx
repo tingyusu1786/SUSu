@@ -1,4 +1,4 @@
-import { useState, useEffect, ChangeEvent } from 'react';
+import { useState, useRef, useEffect, ChangeEvent, MouseEvent } from 'react';
 import { db } from '../../services/firebase';
 import { collection, doc, getDoc, addDoc, getDocs, updateDoc, Timestamp } from 'firebase/firestore';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
@@ -9,7 +9,28 @@ import { StarIcon as LineStar } from '@heroicons/react/24/outline';
 import { ReactComponent as SmileyWink } from '../../images/SmileyWink.svg';
 import { showAuth } from '../../app/popUpSlice';
 
+function useComponentVisible(initialIsVisible: boolean) {
+  const [isComponentVisible, setIsComponentVisible] = useState(initialIsVisible);
+  const ref = useRef<HTMLDivElement>(null);
+
+  const handleClickOutside = (event: any) => {
+    if (ref.current && !ref.current.contains(event.target)) {
+      setIsComponentVisible(false);
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('click', handleClickOutside, true);
+    return () => {
+      document.removeEventListener('click', handleClickOutside, true);
+    };
+  }, []);
+
+  return { ref, isComponentVisible, setIsComponentVisible };
+}
+
 function CreatePost() {
+  const { ref, isComponentVisible, setIsComponentVisible } = useComponentVisible(true);
   const dispatch = useAppDispatch();
   const initialInput = {
     audience: 'public',
@@ -23,6 +44,14 @@ function CreatePost() {
     rating: '',
     selfComment: '',
   };
+  const initialDropdownShown = {
+    audience: false,
+    brand: false,
+    item: false,
+    size: false,
+    sugar: false,
+    ice: false,
+  };
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
   const userName = useAppSelector((state) => state.auth.currentUserName);
   const userPhotoURL = useAppSelector((state) => state.auth.currentUserPhotoURL);
@@ -35,6 +64,7 @@ function CreatePost() {
   const [sizesOfItem, setSizesOfItem] = useState<string[][]>([]);
   const [inputs, setInputs] = useState(initialInput);
   const [date, setDate] = useState<Date>(new Date(Date.now() - new Date().getTimezoneOffset() * 60000));
+  const [dropdownShown, setDropdownShown] = useState(initialDropdownShown);
 
   const formatDate = (date: Date): string => {
     return date.toISOString().slice(0, 16);
@@ -267,6 +297,30 @@ function CreatePost() {
     setInputs((prev) => ({ ...prev, ...updateInputs() }));
   };
 
+  const handleSelectButtonClick = (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    const key = e.currentTarget.id;
+    alert(key);
+    // interface UpdateFunctions {
+    //   [key: string]: () => { [key: string]: string | undefined };
+    //   default: () => { [key: string]: string };
+    // }
+
+    // const updateFunctions: UpdateFunctions = {
+    //   brandId: () => ({ brandId: e.target.value, itemId: '', size: '', price: '' }),
+    //   itemId: () => ({ itemId: e.target.value, size: '', price: '' }),
+    //   size: () => {
+    //     const price = sizesOfItem.find((i) => i[0] === e.target.value)?.[1];
+    //     return { size: e.target.value, price };
+    //   },
+    //   price: () => ({ price: parseInt(e.target.value) < 0 ? '0' : e.target.value }),
+    //   default: () => ({ [key]: e.target.value }),
+    // };
+
+    // const updateInputs = updateFunctions[key] || updateFunctions.default;
+    // setInputs((prev) => ({ ...prev, ...updateInputs() }));
+  };
+
   const handleTagsChange = (newTags: string[]) => {
     setCustomTags(newTags);
   };
@@ -351,7 +405,15 @@ function CreatePost() {
           <SmileyWink className='ml-2' />
         </div>
       ) : (
-        <div className='relative mx-auto flex w-full max-w-3xl flex-col rounded-md border-[3px] border-solid border-neutral-900 bg-neutral-100 shadow-[4px_4px_#171717]'>
+        <div
+          className='relative mx-auto flex w-full max-w-3xl flex-col rounded-md border-[3px] border-solid border-neutral-900 bg-neutral-100 shadow-[4px_4px_#171717]'
+          onClick={() => {
+            if (Object.values(dropdownShown).some((show) => show === true)) {
+              console.log('div on click');
+              setDropdownShown(initialDropdownShown);
+            }
+          }}
+        >
           <div className='flex h-12 flex-nowrap items-center justify-between border-b-[3px] border-solid border-neutral-900 px-5'>
             <div>
               <img
@@ -378,142 +440,277 @@ function CreatePost() {
               ) : (
                 <UserIcon className='h-4 w-4 ' title='private' />
               )}
-              <select
-                name='audience'
-                id=''
-                className='w-50 cursor-pointer rounded bg-transparent outline-0'
-                value={inputs.audience}
-                onChange={handleInputChange}
-              >
-                <option value='public'>public</option>
-                <option value='private'>private</option>
-              </select>
+              <div className='w-50 cursor-pointer '>
+                <button
+                  onClick={() =>
+                    setDropdownShown((prev) => {
+                      const newShown = { ...prev };
+                      newShown.audience = !newShown.audience;
+                      return newShown;
+                    })
+                  }
+                  className=''
+                >
+                  {inputs.audience}
+                </button>
+                <div
+                  className={`flex ${
+                    !dropdownShown.audience && 'hidden'
+                  } absolute z-10 w-24 flex-col overflow-y-scroll rounded-lg border border-neutral-900 bg-white py-1 shadow-lg`}
+                >
+                  <label className='cursor-pointer px-1 pt-1 text-center text-base hover:bg-neutral-100'>
+                    public
+                    <input
+                      type='radio'
+                      name='audience'
+                      value='public'
+                      className='hidden'
+                      onChange={(e) => {
+                        handleInputChange(e);
+                      }}
+                    ></input>
+                  </label>
+                  <label className='cursor-pointer px-3 pt-1 text-center text-base hover:bg-neutral-100'>
+                    private
+                    <input
+                      type='radio'
+                      name='audience'
+                      value='private'
+                      className='hidden'
+                      onChange={(e) => {
+                        handleInputChange(e);
+                      }}
+                    ></input>
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
           <div className='flex flex-col gap-y-2 p-5'>
             <div className='flex items-center gap-x-2 text-xl'>
               <span className=''>I drank </span>
-              {/*todo: text top cut*/}
-              <select
-                required
-                name='brandId'
-                className='h-10 w-16 grow rounded-full border-2 border-solid border-neutral-900 bg-white p-0 px-2 pt-1 text-base focus:outline focus:outline-green-400'
-                value={inputs.brandId}
-                onChange={(e) => {
-                  handleInputChange(e);
-                }}
-              >
-                <option value='' disabled className='w-56'>
-                  select a brand
-                </option>
-                {brands.length !== 0 &&
-                  brands.map((brand) => (
-                    <option value={brand[0]} key={brand[0]} className=' '>
-                      {brand[1]}
-                    </option>
-                  ))}
-              </select>
+              <div className='relative w-56'>
+                <button
+                  onClick={() =>
+                    setDropdownShown((prev) => {
+                      const newShown = { ...prev };
+                      newShown.brand = !newShown.brand;
+                      return newShown;
+                    })
+                  }
+                  className='h-10 w-full grow rounded-full border-2 border-solid border-neutral-900 bg-white p-0 px-2 pt-1 text-base focus:outline focus:outline-green-400'
+                >
+                  {inputs.brandId ? brands.find((brand) => brand[0] === inputs.brandId)![1] : 'select a brand'}
+                </button>
+                <div
+                  className={`flex gap-y-1 ${
+                    !dropdownShown.brand && 'hidden'
+                  } absolute z-10 max-h-[305px] w-full flex-col overflow-y-scroll rounded-lg border border-neutral-900 bg-white py-2 shadow-lg`}
+                >
+                  {brands.length !== 0 &&
+                    brands.map((brand) => (
+                      <label className='cursor-pointer px-3 pt-1 text-center text-base hover:bg-neutral-100'>
+                        {brand[1]}
+                        <input
+                          type='radio'
+                          name='brandId'
+                          value={brand[0]}
+                          key={brand[0]}
+                          className='hidden'
+                          onChange={(e) => {
+                            console.log('onChange');
+                            handleInputChange(e);
+                          }}
+                        ></input>
+                      </label>
+                    ))}
+                </div>
+              </div>
+
               <span className=''>'s </span>
-              <select
-                required
-                disabled={itemsOfBrand.length === 0}
-                name='itemId'
-                className={`h-10 w-16 grow rounded-full border-2 border-solid border-neutral-900 bg-white p-0 px-2 pt-1 text-base focus:outline focus:outline-green-400 ${
-                  itemsOfBrand.length === 0 && 'cursor-not-allowed'
-                }`}
-                value={inputs.itemId}
-                onChange={(e) => {
-                  handleInputChange(e);
-                }}
-              >
-                <option value='' disabled className='w-68'>
-                  select a item
-                </option>
-                {itemsOfBrand.length !== 0 &&
-                  categories.length !== 0 &&
-                  itemsOfBrand.map((itemsOfCategory, index) => (
-                    <optgroup label={categories[index]?.[1]} key={index} className=''>
-                      {itemsOfCategory.length !== 0 &&
-                        itemsOfCategory.map((item) => (
-                          <option value={item[0]} key={item[0]} className='align-baseline '>
-                            {item[1]}
-                          </option>
-                        ))}
-                    </optgroup>
-                  ))}
-              </select>
+
+              <div className='relative w-60'>
+                <button
+                  disabled={itemsOfBrand.length === 0}
+                  onClick={() =>
+                    setDropdownShown((prev) => {
+                      const newShown = { ...prev };
+                      newShown.item = !newShown.item;
+                      return newShown;
+                    })
+                  }
+                  className={`h-10 w-full grow rounded-full border-2 border-solid border-neutral-900 bg-white p-0 px-2 pt-1 text-base focus:outline focus:outline-green-400 ${
+                    itemsOfBrand.length === 0 && 'cursor-not-allowed opacity-60'
+                  }`}
+                >
+                  {inputs.itemId ? itemsOfBrand.flat().find((item) => item[0] === inputs.itemId)![1] : 'select an item'}
+                </button>
+                <div
+                  className={`flex gap-y-1 ${
+                    !dropdownShown.item && 'hidden'
+                  } absolute z-10 max-h-[305px] w-full flex-col overflow-y-scroll rounded-lg border border-neutral-900 bg-white py-2 shadow-lg`}
+                >
+                  {itemsOfBrand.length !== 0 &&
+                    categories.length !== 0 &&
+                    itemsOfBrand.map((itemsOfCategory, index) => (
+                      <div className='flex flex-col'>
+                        <div className='flex w-full items-center justify-around gap-3 px-6'>
+                          <div className='grow border-b border-dashed border-neutral-500'></div>
+                          <div className='mt-1 text-center text-base text-neutral-500'>{categories[index]?.[1]}</div>
+                          <div className='grow border-b border-dashed border-neutral-500'></div>
+                        </div>
+                        {itemsOfCategory.length !== 0 &&
+                          itemsOfCategory.map((item) => (
+                            <label className='cursor-pointer px-3 pt-1 text-center text-base hover:bg-neutral-100'>
+                              {item[1]}
+                              <input
+                                type='radio'
+                                name='itemId'
+                                value={item[0]}
+                                key={item[0]}
+                                className='hidden'
+                                onChange={(e) => {
+                                  console.log('onChange');
+                                  handleInputChange(e);
+                                }}
+                              />
+                            </label>
+                          ))}
+                      </div>
+                    ))}
+                </div>
+              </div>
             </div>
             <div className='flex items-center gap-1'>
-              <select
-                disabled={sizesOfItem.length === 0}
-                name='size'
-                id='size'
-                className={`h-8 w-16 rounded-full border-2 border-solid border-neutral-900 bg-white pl-2 pt-1 text-sm focus:outline focus:outline-green-400 ${
-                  sizesOfItem.length === 0 && 'cursor-not-allowed'
-                }`}
-                value={inputs.size}
-                onChange={handleInputChange}
-              >
-                <option value='' disabled>
-                  size
-                </option>
-                {sizesOfItem.map((option) => (
-                  <option value={option[0]} key={option[0]}>
-                    {option[0]}
-                  </option>
-                ))}
-              </select>
+              <div className='relative h-8 w-16'>
+                <button
+                  disabled={sizesOfItem.length === 0}
+                  onClick={() =>
+                    setDropdownShown((prev) => {
+                      const newShown = { ...prev };
+                      newShown.size = !newShown.size;
+                      return newShown;
+                    })
+                  }
+                  className={`h-full w-full grow rounded-full border-2 border-solid border-neutral-900 bg-white p-0 px-2 pt-1 text-base text-sm focus:outline focus:outline-green-400 ${
+                    sizesOfItem.length === 0 && 'cursor-not-allowed opacity-60'
+                  }`}
+                >
+                  {inputs.size || 'size'}
+                </button>
+                <div
+                  className={`flex gap-y-1 ${
+                    !dropdownShown.size && 'hidden'
+                  } absolute z-10 w-full flex-col overflow-y-scroll rounded-lg border border-neutral-900 bg-white py-2 shadow-lg`}
+                >
+                  {sizesOfItem.length !== 0 &&
+                    sizesOfItem.map((size) => (
+                      <label className='cursor-pointer px-3 pt-1 text-center text-sm hover:bg-neutral-100'>
+                        {size[0]}
+                        <input
+                          type='radio'
+                          name='size'
+                          value={size[0]}
+                          key={size[0]}
+                          className='hidden'
+                          onChange={(e) => {
+                            handleInputChange(e);
+                          }}
+                        ></input>
+                      </label>
+                    ))}
+                </div>
+              </div>
+
               <span className='before:ml-3 before:content-["$"]'></span>
               <input
                 disabled={sizesOfItem.length === 0}
                 name='price'
                 id='price'
                 type='number'
-                className={`h-8 w-16 rounded-full border-2 border-solid border-neutral-900 bg-white px-2 pb-0 pt-1 text-sm focus:outline focus:outline-green-400 ${
-                  sizesOfItem.length === 0 && 'cursor-not-allowed border-[#595959]'
+                className={`h-8 w-16 rounded-full border-2 border-solid border-neutral-900 bg-white px-2 pb-0 pt-1 text-center text-sm focus:outline focus:outline-green-400 ${
+                  sizesOfItem.length === 0 && 'cursor-not-allowed opacity-60'
                 }`}
                 value={inputs.price}
                 onChange={handleInputChange}
               />
             </div>
             <div className='flex gap-x-3'>
-              <div>
+              <div className='flex items-center gap-1'>
                 <span className='text-neutral-500'>sugar </span>
-                <select
-                  name='sugar'
-                  id='sugar'
-                  className='h-8 w-36 rounded-full border-2 border-solid border-neutral-900 bg-white px-2 pb-0 pt-1 text-sm focus:outline focus:outline-green-400'
-                  value={inputs.sugar}
-                  onChange={handleInputChange}
-                >
-                  <option value='' disabled>
-                    choose sugar
-                  </option>
-                  {sugarOptions.map((option) => (
-                    <option value={option} key={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
+                <div className='relative h-8 w-36'>
+                  <button
+                    className={`h-full w-full rounded-full border-2 border-solid border-neutral-900 bg-white p-0 px-2 pt-1 text-base text-sm focus:outline focus:outline-green-400`}
+                    onClick={() =>
+                      setDropdownShown((prev) => {
+                        const newShown = { ...prev };
+                        newShown.sugar = !newShown.sugar;
+                        return newShown;
+                      })
+                    }
+                  >
+                    {inputs.sugar || 'choose sugar'}
+                  </button>
+                  <div
+                    className={`flex gap-y-1 ${
+                      !dropdownShown.sugar && 'hidden'
+                    } absolute z-10 w-full flex-col overflow-y-scroll rounded-lg border border-neutral-900 bg-white py-2 shadow-lg`}
+                  >
+                    {sugarOptions.map((option) => (
+                      <label className='cursor-pointer px-3 pt-1 text-center text-sm hover:bg-neutral-100'>
+                        {option}
+                        <input
+                          type='radio'
+                          name='sugar'
+                          value={option}
+                          key={option}
+                          className='hidden'
+                          onChange={(e) => {
+                            handleInputChange(e);
+                          }}
+                        ></input>
+                      </label>
+                    ))}
+                  </div>
+                </div>
               </div>
-              <div>
+              <div className='flex items-center gap-1'>
                 <span className='text-neutral-500'>ice </span>
-                <select
-                  name='ice'
-                  id='ice'
-                  className='h-8 w-36 rounded-full border-2 border-solid border-neutral-900 bg-white px-2 pb-0 pt-1 text-sm focus:outline focus:outline-green-400'
-                  value={inputs.ice}
-                  onChange={handleInputChange}
-                >
-                  <option value='' disabled>
-                    choose ice
-                  </option>
-                  {iceOptions.map((option) => (
-                    <option value={option} key={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
+                <div className='relative h-8 w-36'>
+                  <button
+                    className={`h-full w-full rounded-full border-2 border-solid border-neutral-900 bg-white p-0 px-2 pt-1 text-base text-sm focus:outline focus:outline-green-400`}
+                    onClick={() =>
+                      setDropdownShown((prev) => {
+                        const newShown = { ...prev };
+                        newShown.ice = !newShown.ice;
+                        return newShown;
+                      })
+                    }
+                  >
+                    {inputs.ice || 'choose ice'}
+                  </button>
+                  <div
+                    className={`flex gap-y-1 ${
+                      !dropdownShown.ice && 'hidden'
+                    } absolute z-10 w-full flex-col overflow-y-scroll rounded-lg border border-neutral-900 bg-white py-2 shadow-lg`}
+                  >
+                    {iceOptions.map((option) => (
+                      <label className='cursor-pointer px-3 pt-1 text-center text-sm hover:bg-neutral-100'>
+                        {option}
+                        <input
+                          type='radio'
+                          name='ice'
+                          value={option}
+                          key={option}
+                          className='hidden'
+                          onChange={(e) => {
+                            handleInputChange(e);
+                          }}
+                        ></input>
+                      </label>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -597,7 +794,7 @@ function CreatePost() {
             </div>
             <button
               onClick={handlePostSubmit}
-              className='button mt-2 h-10 rounded-full bg-green-300 hover:bg-green-400 focus:outline focus:outline-green-400'
+              className='button mt-2 h-10 rounded-full bg-green-300 hover:bg-green-400 focus:outline-none'
             >
               submit
             </button>
