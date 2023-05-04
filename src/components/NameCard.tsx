@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useAppSelector, useAppDispatch } from '../app/hooks';
+import { useAppSelector } from '../app/hooks';
 import { Link } from 'react-router-dom';
 import { db } from '../services/firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
@@ -44,9 +44,9 @@ const NameCard: React.FC<Props> = ({ userId, handleFollow }) => {
         <Link to={`/profile/${userId}`}>
           <span className=' text-xl'>{user.name}</span>
         </Link>
-        <div className='text-sm text-gray-400'>{user.email}</div>
+        <div className='mb-px text-sm text-gray-400'>{user.email}</div>
         <div
-          className={`bg-gradient-to-r from-violet-500 to-fuchsia-500 bg-clip-text text-transparent ${
+          className={`bg-gradient-to-r from-violet-500 to-fuchsia-500 bg-clip-text leading-5 text-transparent ${
             user?.status && user?.status?.trim() !== '' && 'before:mr-1 before:content-["-"]'
           }`}
         >
