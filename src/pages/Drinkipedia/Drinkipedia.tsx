@@ -2,12 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { db } from '../../services/firebase';
 import dbApi from '../../utils/dbApi';
-import { doc, getDoc, collection, query, where, getDocs, orderBy, QuerySnapshot, setDoc } from 'firebase/firestore';
+import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
 import AllBrands from './AllBrands';
 import SingleBrand from './SingleBrand';
 import SingleItem from './SingleItem';
-import PostsFeed from '../../components/postsFeed/PostsFeed';
-import BrandCard from '../../components/BrandCard';
 import { Brand } from '../../interfaces/interfaces';
 import { ArrowRightIcon } from '@heroicons/react/24/solid';
 

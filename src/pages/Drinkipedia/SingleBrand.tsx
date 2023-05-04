@@ -1,9 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { db } from '../../services/firebase';
-import dbApi from '../../utils/dbApi';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import PostsFeed from '../../components/postsFeed/PostsFeed';
-import { doc, getDoc, collection, query, where, getDocs, orderBy, QuerySnapshot } from 'firebase/firestore';
 import { StarIcon, BuildingStorefrontIcon } from '@heroicons/react/24/solid';
 
 interface CatalogueProps {
