@@ -570,7 +570,7 @@ const PostsFeed: React.FC<PostsProps> = ({
       });
       // unnotify
       post.authorId && unnotifyOtherUser(post.postId, post.authorId, 'comment', commentId);
-      swal.success('Comment deleted!', '', 'ok');
+      // swal.success('Comment deleted!', '', 'ok');
     } else {
       return;
     }
