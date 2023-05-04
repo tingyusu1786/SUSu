@@ -166,7 +166,7 @@ function Setting() {
             alt={currentUserName || ''}
           />
           <div className='absolute bottom-1 left-24 w-40 rounded-full border-2 border-solid border-gray-400 bg-white pt-1 text-center'>
-            {file ? 'cancel' : 'Upload new pic'}
+            {file ? 'Choose another' : 'Upload new pic'}
           </div>
           <input
             type='file'
