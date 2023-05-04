@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    font-family: 'sayger', 'tp-bold';
+    font-family: 'sayger', 'tp-bold', 'sans-serif';
     color: #171717;
     box-sizing: border-box;
   }
