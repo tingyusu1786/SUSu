@@ -23,28 +23,28 @@ const Badges: React.FC<BadgesProps> = ({ drankBrands, drankItems, numPosts, stre
   const iconColor = '#171717';
   const badgeLog = {
     num: numPosts,
-    goals: [3, 10, 50, 100, 500, 1000],
+    goals: [0, 3, 10, 50, 100, 500, 1000],
     icon: <Browsers size={44} color={iconColor} weight='light' />,
     bg: 'red',
     desc: ['log', 'times'],
   };
   const badgeBrand = {
     num: numDrankBrands,
-    goals: [3, 5, 10, 25, 50],
+    goals: [0, 3, 5, 10, 25, 50],
     icon: <Storefront size={44} color={iconColor} weight='light' />,
     bg: 'lime',
     desc: ['visit', 'brands'],
   };
   const badgeItem = {
     num: numDrankItems,
-    goals: [10, 25, 50, 100, 200],
+    goals: [0, 10, 25, 50, 100, 200],
     icon: <Shapes size={44} color={iconColor} weight='light' />,
     bg: 'yellow',
     desc: ['try', 'items'],
   };
   const badgeStreak = {
     num: streaks.longest,
-    goals: [3, 7, 30, 90, 365],
+    goals: [0, 3, 7, 30, 90, 365],
     icon: <RocketLaunch size={44} color={iconColor} weight='light' />,
     bg: 'indigo',
     desc: ['log consecutive', 'days'],
@@ -56,6 +56,9 @@ const Badges: React.FC<BadgesProps> = ({ drankBrands, drankItems, numPosts, stre
     <>
       {badgeCategories.map((category) =>
         category.goals.map((goal, index) => {
+          if (goal === 0) {
+            return;
+          }
           return (
             <div
               className={`${
