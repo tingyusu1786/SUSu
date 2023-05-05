@@ -1,13 +1,13 @@
 import dbApi from '../utils/dbApi';
 import { Link } from 'react-router-dom';
-import { useState, useEffect, ChangeEvent } from 'react';
+import { useState, useEffect, useRef, ChangeEvent } from 'react';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
 import { addAllBrands } from '../app/infoSlice';
 import { db } from '../services/firebase';
 import { collection, doc, getDoc, getDocs, query, where, DocumentData } from 'firebase/firestore';
 import { StarIcon as SolidStar } from '@heroicons/react/24/solid';
 import { ReactComponent as ShootingStar } from '../images/ShootingStar.svg';
-import { MapTrifold } from '@phosphor-icons/react';
+import { MapTrifold, ArrowDown } from '@phosphor-icons/react';
 
 function Inspiration() {
   type RandomItem = {
@@ -28,6 +28,7 @@ function Inspiration() {
   const [isFinding, setIsFinding] = useState(false);
   const [currentLocation, setCurrentLocation] = useState<{ latitude: number; longitude: number }>();
   const [showMap, setShowMap] = useState(false);
+  const mapRef = useRef<HTMLIFrameElement | null>(null);
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition((position) => {
@@ -58,6 +59,15 @@ function Inspiration() {
 
   const handleRatingChange = (e: ChangeEvent<HTMLInputElement>) => {
     setSelectedRating(+e.target.value);
+  };
+
+  const scrollToMapEnd = () => {
+    mapRef!.current!.scrollIntoView({ block: 'end', behavior: 'smooth' });
+  };
+
+  const handleClickMapBar = () => {
+    setShowMap((prev) => !prev);
+    setTimeout(() => scrollToMapEnd(), 200);
   };
 
   const getRandomItem = async (selectedBrands: string[], selectedRating: number | undefined) => {
@@ -128,13 +138,13 @@ function Inspiration() {
           brandId: randomBrandId,
         };
         setRandomItem(randomItemFromDb as RandomItem);
-        setTimeout(() => setIsFinding(false), 2500);
+        setTimeout(() => setIsFinding(false), 1500);
         // setIsFinding(false);
         foundItem = true;
         break brandLoop;
       }
     }
-    setTimeout(() => setIsFinding(false), 2500);
+    setTimeout(() => setIsFinding(false), 1500);
     // setIsFinding(false);
     !foundItem && setNoItemMessage('no item ☹ try another brand or lower the rating');
   };
@@ -213,7 +223,7 @@ function Inspiration() {
         </div>
       </div>
       {!isFinding && randomItem && (
-        <div className='animate__zoomInDown animate__animated mt-10 flex flex-col items-center'>
+        <div className='animate__zoomInDown animate__animated mt-8 flex flex-col items-center'>
           <div className=' mb-10 flex w-full items-center justify-center gap-10'>
             <ShootingStar className='' />
             <div className='text-center'>
@@ -250,37 +260,43 @@ function Inspiration() {
             <ShootingStar className='-scale-x-100' />
           </div>
           <div
-            className={`flex h-10 w-full max-w-[960px] cursor-pointer items-center justify-between gap-2 rounded-t-md border-4 border-solid border-neutral-900 bg-[#F5F3EA] px-5 ${
-              !showMap && 'rounded-b-md'
+            className={`flex w-full max-w-[960px] flex-col items-center justify-center rounded-md border-4 border-neutral-900 ${
+              showMap && 'mb-20'
             }`}
-            onClick={() => {
-              setShowMap((prev) => !prev);
-            }}
           >
-            <div className=''>Check out the stores near you</div>
-            <MapTrifold
-              size={26}
-              color='#171717'
-              weight='light'
-              className={`${showMap && 'rotate-180'} transition-all duration-500`}
+            <div
+              className={`flex h-10 w-full max-w-[960px] cursor-pointer items-center justify-center gap-3 rounded-t-md bg-[#F5F3EA] px-5 ${
+                showMap ? '' : 'rounded-b-md'
+              }`}
+              onClick={handleClickMapBar}
+            >
+              <MapTrifold
+                size={26}
+                color='#171717'
+                weight='light'
+                className={`${showMap && '-rotate-180'}  transition-all duration-500`}
+              />
+              <div className=''>Check out the stores nearby</div>
+            </div>
+            <iframe
+              ref={mapRef}
+              className={`h-0 w-full max-w-[960px] scroll-mb-20 transition-[height] duration-200 ${
+                showMap && 'h-[480px] rounded-b-md border-t-4 border-neutral-900'
+              }
+            `}
+              loading='lazy'
+              title='Stores Nearby'
+              allowFullScreen
+              referrerPolicy='no-referrer-when-downgrade'
+              src={
+                currentLocation &&
+                `https://www.google.com/maps/embed/v1/search?key=AIzaSyAyK3jgOTFT1B6-Vt85wxc_2aaGLUlU738
+                &q=${randomItem.brand}+nearby&language=en&center=${Number(currentLocation?.latitude)},${Number(
+                  currentLocation?.longitude
+                )}&zoom=13`
+              }
             />
           </div>
-          <iframe
-            className={`h-[480px] w-full max-w-[960px] rounded-b-md border-4 border-t-0 border-solid border-neutral-900 transition-[height] duration-500
-          ${!showMap && 'h-0 border-0'}
-            `}
-            loading='lazy'
-            title='Stores Nearby'
-            allowFullScreen
-            referrerPolicy='no-referrer-when-downgrade'
-            src={
-              currentLocation &&
-              `https://www.google.com/maps/embed/v1/search?key=AIzaSyAyK3jgOTFT1B6-Vt85wxc_2aaGLUlU738
-                &q=${randomItem.brand}+nearby&language=en&center=${Number(currentLocation?.latitude)},${Number(
-                currentLocation?.longitude
-              )}&zoom=13`
-            }
-          ></iframe>
         </div>
       )}
       {!isFinding && noItemMessage && <div className='mt-10 w-full text-center text-lg'>{noItemMessage}</div>}

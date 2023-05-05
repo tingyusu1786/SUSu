@@ -23,7 +23,7 @@ module.exports = {
             // transform: 'scale(1)',
           },
           to: {
-            transform: 'rotate(7244deg)',
+            transform: 'rotate(10844deg)',
             // transform: 'scale(0.1)',
           },
         },
