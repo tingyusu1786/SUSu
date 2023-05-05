@@ -25,7 +25,7 @@ const AllCatalogue: React.FC<Props> = ({ brands }) => {
           <BrandCard brand={brand} key={index} />
         ))}
       </div>
-      <div className='mt-10 text-center text-3xl'>...and more to come!</div>
+      {brands.length !== 0 && <div className='mt-10 text-center text-3xl'>...and more to come!</div>}
     </div>
   );
 };
