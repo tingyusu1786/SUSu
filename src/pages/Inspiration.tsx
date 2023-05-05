@@ -28,15 +28,27 @@ function Inspiration() {
   const [isFinding, setIsFinding] = useState(false);
   const [currentLocation, setCurrentLocation] = useState<{ latitude: number; longitude: number }>();
   const [showMap, setShowMap] = useState(false);
+  const [locationErrorMessage, setLocationErrorMessage] = useState<string>();
   const mapRef = useRef<HTMLIFrameElement | null>(null);
 
-  useEffect(() => {
-    navigator.geolocation.getCurrentPosition((position) => {
-      const { latitude, longitude } = position.coords;
-      // console.log('latitude', latitude, 'longitude', longitude);
-      setCurrentLocation({ latitude, longitude });
-    });
-  }, []);
+  const getUserPosition = () => {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setCurrentLocation({ latitude, longitude });
+      },
+      (error) => {
+        console.log('Error occurred. Error code: ' + error.code);
+        const errorMessage: { [key: string]: string } = {
+          '0': 'Unknown error occured, try again later',
+          '1': 'User location permission denied. Please go to browser setting to grant permission  to see stores near you.',
+          '2': 'User position unavailable (error response from location provider), try again later',
+          '3': 'Timed out, try again later',
+        };
+        setLocationErrorMessage(errorMessage[error.code]);
+      }
+    );
+  };
 
   useEffect(() => {
     if (Object.keys(allBrandsInfo).length > 0) return;
@@ -216,7 +228,10 @@ function Inspiration() {
             className={`mx-auto h-40 w-40 rounded-full bg-gradient-to-r from-green-400 to-sky-300 px-2 text-2xl text-white transition-all duration-300 hover:rotate-45 hover:from-violet-500 hover:to-fuchsia-500 ${
               isFinding && 'animate-shrinkSpin'
             }`}
-            onClick={() => getRandomItem(selectedBrands, selectedRating)}
+            onClick={() => {
+              getRandomItem(selectedBrands, selectedRating);
+              getUserPosition();
+            }}
           >
             I'm feeling lucky :)
           </button>
@@ -278,12 +293,18 @@ function Inspiration() {
               />
               <div className=''>Check out the stores nearby</div>
             </div>
+            <div
+              className={`absolute w-1/3 px-5 text-[0px] transition-all duration-500 ${
+                showMap && locationErrorMessage && ' text-[20px]'
+              }`}
+            >
+              <div className='text-center'>{locationErrorMessage}</div>
+            </div>
             <iframe
               ref={mapRef}
               className={`h-0 w-full max-w-[960px] scroll-mb-20 transition-[height] duration-200 ${
                 showMap && 'h-[480px] rounded-b-md border-t-4 border-neutral-900'
-              }
-            `}
+              }`}
               loading='lazy'
               title='Stores Nearby'
               allowFullScreen
@@ -291,9 +312,9 @@ function Inspiration() {
               src={
                 currentLocation &&
                 `https://www.google.com/maps/embed/v1/search?key=AIzaSyAyK3jgOTFT1B6-Vt85wxc_2aaGLUlU738
-                &q=${randomItem.brand}+nearby&language=en&center=${Number(currentLocation?.latitude)},${Number(
-                  currentLocation?.longitude
-                )}&zoom=13`
+                            &q=${randomItem.brand}+nearby&language=en&center=${Number(
+                  currentLocation.latitude
+                )},${Number(currentLocation.longitude)}&zoom=13`
               }
             />
           </div>
