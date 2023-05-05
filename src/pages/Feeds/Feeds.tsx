@@ -42,7 +42,7 @@ function Posts() {
                   return newShown;
                 })
               }
-              className='h-8 w-full grow rounded-xl border border-solid border-neutral-900 bg-white p-0 px-2 pt-1 text-base  focus:outline focus:outline-green-400'
+              className='h-8 w-full grow rounded-full border border-solid border-neutral-900 bg-transparent p-0 px-2 pt-1 text-base  focus:outline focus:outline-green-400'
             >
               {feedSource === 'all' ? 'all over the world' : 'people you follow'}
             </button>
