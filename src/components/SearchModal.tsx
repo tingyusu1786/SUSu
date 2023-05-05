@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
 import { Link } from 'react-router-dom';
 import { closeSearch } from '../app/popUpSlice';
 import type { SearchBoxProps } from 'react-instantsearch-hooks-web';
 import { PoweredBy } from 'react-instantsearch-hooks-web';
 import algoliasearch from 'algoliasearch/lite';
+import dbApi from '../utils/dbApi';
 import {
   InstantSearch,
   SearchBox,
@@ -63,31 +64,32 @@ const SearchModal: React.FC = () => {
     );
   }
 
-  // 直接render出post?
   function PostHit({ hit }: any) {
+    const [name, setName] = useState('user');
+    dbApi.getUserField(hit.authorId, 'name').then((data) => {
+      setName(data);
+    });
     return (
-      <article className='my-5 text-center'>
-        {/*<button className='hover:font-bold hover:text-lime-700'>
-        <Link to={`/profile/${hit.objectID}`}>
-          <Highlight attribute='name' hit={hit} className='my-0 rounded' />
-        </Link>
-      </button>*/}
-        {hit.brandId && (
-          <div className='text-sm text-gray-400'>
-            <Highlight attribute='brandId' hit={hit} className='rounded text-sm' />
-          </div>
-        )}
-        {hit.itemId && (
-          <div className='text-sm text-gray-400'>
-            <Highlight attribute='itemId' hit={hit} className='rounded text-sm' />
+      <Link
+        to={`/log/${hit.objectID}`}
+        className='mb-2 flex w-full flex-col rounded border-2 border-neutral-900 bg-white p-2 shadow-md transition-all duration-300 hover:-translate-y-1'
+        onClick={() => dispatch(closeSearch())}
+      >
+        <div className='text-base '>
+          {/*<Highlight attribute='authorId' hit={hit} className='text-sm' />*/}
+          {name}
+        </div>
+        {hit.selfComment && (
+          <div className=''>
+            <Highlight attribute='selfComment' hit={hit} className='text-base' />
           </div>
         )}
         {hit.hashtags && (
-          <div className='text-sm text-gray-400'>
+          <div className='text-sm text-neutral-500'>
             <Highlight attribute='hashtags' hit={hit} className='rounded text-sm' />
           </div>
         )}
-      </article>
+      </Link>
     );
   }
 
@@ -137,7 +139,7 @@ const SearchModal: React.FC = () => {
 
   return (
     <div className='fixed top-0 z-50 flex h-screen w-screen items-center justify-center '>
-      <div className='animate__faster animate__zoomIn animate__animated absolute top-1/4 z-30 grid max-h-[50vh] w-3/4 max-w-[700px] grid-rows-[60px_1fr] rounded-md border-4 border-neutral-900 bg-neutral-100 p-5 shadow-lg '>
+      <div className='animate__faster animate__zoomIn animate__animated absolute top-[15%] z-30 grid max-h-[70vh] w-3/4 max-w-[700px] grid-rows-[60px_1fr] rounded-md border-4 border-neutral-900 bg-neutral-100 p-5 shadow-lg '>
         <div className='relative'>
           <SearchBox
             // queryHook={queryHook}
@@ -177,10 +179,10 @@ const SearchModal: React.FC = () => {
                 <div className='text-xl'>users</div>
                 <Hits hitComponent={UserHit} className='' />
               </Index>
-              {/*<Index indexName='posts'>
-                <h1>posts</h1>
-                <Hits hitComponent={PostHit} className='  flex flex-col items-center bg-green-100' />
-              </Index>*/}
+              <Index indexName='posts'>
+                <div className='text-xl'>posts</div>
+                <Hits hitComponent={PostHit} className='' />
+              </Index>
             </NoResultsBoundary>
           </EmptyQueryBoundary>
         </div>
