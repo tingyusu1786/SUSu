@@ -8,14 +8,14 @@ import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { getTimeDiff } from '../../utils/common';
 import { Notification } from '../../interfaces/interfaces';
 import swal from '../../utils/swal';
+import { SmileyWink } from '@phosphor-icons/react';
 
 function NotificationsList() {
   const dispatch = useAppDispatch();
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>();
   const initSnap = useRef(true);
-  // const notificationsLength = useRef(0);
 
   let currentUserRef: DocumentReference<DocumentData> | undefined;
 
@@ -28,8 +28,7 @@ function NotificationsList() {
       return;
     }
 
-    fetchNotifications(currentUserRef);
-    // changeRead();
+    setTimeout(() => fetchNotifications(currentUserRef), 800);
 
     const unsubscribe = onSnapshot(currentUserRef, async (docSnapshot: DocumentSnapshot) => {
       const newNotifications = docSnapshot
@@ -55,19 +54,6 @@ function NotificationsList() {
     return authorData[field];
   };
 
-  // todo
-  const changeRead = () => {
-    setTimeout(async () => {
-      setNotifications((prev) => {
-        const newNotifications = prev.map((n) => {
-          n.unread = false;
-          return n;
-        });
-        return newNotifications;
-      });
-    }, 3000);
-  };
-
   const fetchNotifications = async (currentUserRef: DocumentReference<DocumentData> | undefined) => {
     if (!currentUserRef) {
       return;
@@ -80,10 +66,6 @@ function NotificationsList() {
     const currentUserData = currentUserDoc.data();
     const currentUserNotifications =
       currentUserData?.notifications?.reverse().filter((notif: any) => notif.authorId !== currentUserId) || [];
-    // if (!currentUserNotifications) {
-    //   alert('no 通知 yet');
-    //   return;
-    // }
 
     setNotifications(currentUserNotifications);
   };
@@ -104,6 +86,15 @@ function NotificationsList() {
     }
   };
   // animate__animated animate__bounceInRight
+
+  if (!notifications) {
+    return (
+      <div className='justify-top absolute right-5 top-20 flex max-h-[80vh] w-96 flex-col items-center gap-2 overflow-y-scroll rounded-lg border-4 border-neutral-900 bg-neutral-100 p-5 shadow-lg'>
+        <SmileyWink size={28} color='#171717' weight='light' className='mt-6 animate-bounce' />
+      </div>
+    );
+  }
+
   return (
     <div className='justify-top absolute right-5 top-20 flex max-h-[80vh] w-96 flex-col items-center gap-2 overflow-y-scroll rounded-lg border-4 border-neutral-900 bg-neutral-100 p-5 shadow-lg'>
       {notifications.length === 0 && <div>no notification yet</div>}
