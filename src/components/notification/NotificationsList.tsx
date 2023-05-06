@@ -96,7 +96,7 @@ function NotificationsList() {
   }
 
   return (
-    <div className='justify-top absolute right-5 top-20 flex max-h-[80vh] w-96 flex-col items-center gap-2 overflow-y-scroll rounded-lg border-4 border-neutral-900 bg-neutral-100 p-5 shadow-lg'>
+    <div className='justify-top absolute right-5 top-20 flex max-h-[80vh] w-96 flex-col items-center gap-2 overflow-y-scroll rounded-lg border-4 border-neutral-900 bg-neutral-100 p-5 shadow-lg lg:max-h-[85vh]'>
       {notifications.length === 0 && <div>no notification yet</div>}
       {notifications.length > 0 && <div>({notifications.length})</div>}
       {notifications.length > 0 && (
@@ -121,6 +121,8 @@ function NotificationsList() {
                     {notification.authorName}
                   </span>{' '}
                   started following you!
+                  <br />
+                  <div className='text-right text-sm text-neutral-900'>{timeDiff}</div>
                 </div>
               );
               break;
@@ -131,6 +133,8 @@ function NotificationsList() {
                 <div className='group text-neutral-500'>
                   {notification.authorName} liked your&nbsp;
                   <span className='transition-all duration-300 group-hover:text-green-400 '>log</span>!
+                  <br />
+                  <div className='text-right text-sm text-neutral-900'>{timeDiff}</div>
                 </div>
               );
               break;
@@ -141,6 +145,8 @@ function NotificationsList() {
                 <div className='group text-neutral-500'>
                   {notification.authorName} commented <q className='text-neutral-900'>{notification.content}</q> on your{' '}
                   <span className='transition-all duration-300 group-hover:text-green-400 '>log</span>!
+                  <br />
+                  <div className='text-right text-sm text-neutral-900'>{timeDiff}</div>
                 </div>
               );
               break;
@@ -149,7 +155,7 @@ function NotificationsList() {
           return (
             <Link
               to={to}
-              className='group h-max w-full overflow-x-scroll rounded border-2 border-neutral-900 bg-white p-2 text-sm shadow-md transition-all duration-300 hover:-translate-y-1'
+              className='group h-max w-full overflow-x-scroll rounded border-2 border-neutral-900 bg-white p-2  shadow-md transition-all duration-300 hover:-translate-y-1'
               key={index}
               onClick={() => dispatch(closeNotification())}
             >

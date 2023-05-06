@@ -73,7 +73,7 @@ function NotificationsListener() {
       case 'comment': {
         html = (
           <a href={`/log/${postId}`} className='group text-neutral-500'>
-            {authorName} commented <span className='text-neutral-900'>"{content}"</span> <span>on your</span>
+            {authorName} commented <q className='text-neutral-900'>{content}</q> <span>on your&nbsp;</span>
             <span className='group-hover:text-green-400 '>log</span>!
           </a>
         );
