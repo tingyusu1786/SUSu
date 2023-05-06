@@ -1,6 +1,9 @@
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import { ReactComponent as SmileyWink } from '../../images/SmileyWink.svg';
+import { BellIcon } from '@heroicons/react/24/outline';
+import { SmileyWink } from '@phosphor-icons/react';
+// import SmileyWink from '../images/SmileyWink.svg';
+import Meet from '../images/Meet.gif';
 const MySwal = withReactContent(Swal);
 
 const Toast = MySwal.mixin({
@@ -26,15 +29,48 @@ const Toast = MySwal.mixin({
 });
 
 const Success = Swal.mixin({
-  icon: 'success',
+  iconHtml: 'ü',
   iconColor: '#4ade80',
+  confirmButtonColor: '#4ade80',
+  color: '#171717',
+  background: '#f5f5f5',
+  customClass: {
+    icon: 'pt-2 px-1',
+    popup: 'rotate-6',
+  },
+  showClass: {
+    popup: 'animate__animated animate__faster animate__zoomIn',
+    icon: 'animate__animated animate__rubberBand animate__repeat-2',
+  },
+  hideClass: {
+    popup: 'animate__animated animate__faster animate__zoomOut',
+  },
+});
+
+const Test = Swal.mixin({
+  // icon: 'success',
+  iconColor: '#4ade80',
+  iconHtml: 'ü',
+  backdrop: '',
+  customClass: {
+    icon: 'pt-2 px-1',
+    popup: 'rotate-6',
+    // container: 'bg-white bg-opacity-40', //大的
+  },
+  showClass: {
+    popup: 'animate__animated animate__faster animate__zoomIn',
+    icon: 'animate__animated animate__rubberBand animate__repeat-2',
+  },
+  hideClass: {
+    popup: 'animate__animated animate__faster animate__zoomOut',
+  },
   confirmButtonColor: '#4ade80',
   color: '#171717',
   background: '#f5f5f5',
 });
 
 const Warning = Swal.mixin({
-  icon: 'warning',
+  iconHtml: 'ö',
   iconColor: '#fbbf24',
   confirmButtonColor: '#4ade80',
   color: '#171717',
@@ -43,15 +79,35 @@ const Warning = Swal.mixin({
   customClass: {
     cancelButton: 'order-1 right-gap',
     confirmButton: 'order-2',
+    icon: 'pt-2 px-1',
+    popup: 'rotate-6',
+  },
+  showClass: {
+    popup: 'animate__animated animate__faster animate__zoomIn',
+    icon: 'animate__animated animate__rubberBand animate__repeat-2',
+  },
+  hideClass: {
+    popup: 'animate__animated animate__faster animate__zoomOut',
   },
 });
 
 const ErrorSwal = Swal.mixin({
-  icon: 'error',
+  iconHtml: '✖︎',
   iconColor: '#ef4444',
   confirmButtonColor: '#4ade80',
   color: '#171717',
   background: '#f5f5f5',
+  customClass: {
+    icon: 'pt-3 px-1',
+    popup: 'rotate-6',
+  },
+  showClass: {
+    popup: 'animate__animated animate__faster animate__zoomIn',
+    icon: 'animate__animated animate__rubberBand animate__repeat-2',
+  },
+  hideClass: {
+    popup: 'animate__animated animate__faster animate__zoomOut',
+  },
 });
 
 const swal = {
@@ -73,6 +129,9 @@ const swal = {
   },
   toast(html: JSX.Element) {
     Toast.fire({ html });
+  },
+  test(title: string, text: string, confirmButtonText: string) {
+    Test.fire({ title, text, confirmButtonText });
   },
 };
 
