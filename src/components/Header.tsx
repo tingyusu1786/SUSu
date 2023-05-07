@@ -12,6 +12,7 @@ import authApi from '../utils/authApi';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { BellIcon } from '@heroicons/react/24/outline';
 import swal from '../utils/swal';
+import { CaretCircleRight, CaretCircleUpDown } from '@phosphor-icons/react';
 
 function NotificationsListener() {
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
@@ -134,8 +135,8 @@ function ScreenSize() {
   };
 
   return (
-    <span className='absolute bottom-[-35px] left-[50px]'>
-      Screen size: [{getSize()}]: {width}px x {height}px
+    <span className='absolute left-0 top-0'>
+      &nbsp;&nbsp;[{getSize()}]: {width}px x {height}px
     </span>
   );
 }
@@ -148,6 +149,7 @@ function Header() {
   const currentUserphotoURL = useAppSelector((state) => state.auth.currentUserPhotoURL);
   const isNotificationShown = useAppSelector((state) => state.popUp.isNotificationShown);
   const isSearchShown = useAppSelector((state) => state.popUp.isSearchShown);
+  const [dropdownShown, setDropdownShown] = useState({ profile: false, navLi: false });
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -189,11 +191,52 @@ function Header() {
 
   return (
     <header
-      className={`sticky top-0 z-40 flex h-11 h-16 w-screen flex-row items-center justify-between gap-5 border-b-4 border-solid border-green-400 bg-gray-100 px-16 md:px-8`}
+      className={`sticky top-0 z-40 flex h-16 w-screen items-center justify-between border-b-4 border-green-400 bg-neutral-100 px-16 transition-[padding] duration-300 md:px-8 sm:px-5`}
+      onClick={() => {
+        Object.values(dropdownShown).some((dropdown) => dropdown === true) &&
+          setDropdownShown({ profile: false, navLi: false });
+        isNotificationShown && dispatch(closeNotification());
+      }}
     >
       <ScreenSize />
       <NotificationsListener />
-      <nav>
+      <div className={`hidden sm:block`}>
+        <CaretCircleRight
+          size={44}
+          color='#171717'
+          weight='thin'
+          className={`cursor-pointer ${dropdownShown.navLi && 'rotate-90'} transition-all duration-300`}
+          onClick={() => {
+            !isNotificationShown &&
+              setDropdownShown((prev) => {
+                const newShown = { ...prev };
+                newShown.navLi = !newShown.navLi;
+                newShown.profile = false;
+                return newShown;
+              });
+          }}
+        />
+        <div
+          className={`absolute left-0 top-[64px] grid w-screen cursor-pointer grid-rows-4 items-center overflow-hidden whitespace-nowrap bg-white text-center transition-[height] duration-300 ${
+            dropdownShown.navLi ? 'h-[40vh] shadow-lg' : 'h-0 shadow-none'
+          }`}
+        >
+          {navLi.map((li) => (
+            <Link
+              to={li.to}
+              className={`flex h-full items-center justify-center hover:bg-neutral-100`}
+              data-text={li.name}
+            >
+              {li.name}
+            </Link>
+          ))}
+          <div className={`flex h-full items-center justify-center hover:bg-neutral-100`}>SEARCH</div>
+        </div>
+      </div>
+      <Link to='/' className='mt-1 hidden transition-all hover:text-green-400 sm:block sm:text-3xl'>
+        SUSü
+      </Link>
+      <nav className='sm:hidden'>
         <ul className='flex gap-4'>
           <li>
             <Link to='/' className=' mt-8 block pb-8'>
@@ -233,16 +276,59 @@ function Header() {
 
       {isSignedIn && (
         <div className='flex items-center gap-3'>
-          <div className='text-center md:hidden'>{`Hi ${currentUserName}`}</div>
-          <Link to={`/profile/${userId}`} className='group relative'>
+          <div className='overflow-hidden text-ellipsis whitespace-nowrap text-center lg:max-w-[calc(100vw-128px-390px-180px)] md:hidden'>
+            Hi {currentUserName}
+          </div>
+          <Link to={`/profile/${userId}`} className='group relative sm:hidden'>
             <img
               src={currentUserphotoURL}
               alt=''
               className='box-content h-10 w-10 min-w-[40px] rounded-full border-2 border-solid border-neutral-900 object-cover transition-all duration-100 hover:border-green-400 '
             />
           </Link>
+          <div
+            className='group hidden cursor-pointer sm:block'
+            onClick={() => {
+              !isNotificationShown &&
+                setDropdownShown((prev) => {
+                  const newShown = { ...prev };
+                  newShown.profile = !newShown.profile;
+                  newShown.navLi = false;
+                  return newShown;
+                });
+            }}
+          >
+            <img
+              src={currentUserphotoURL}
+              alt=''
+              className='box-content h-10 w-10 min-w-[40px] rounded-full border-2 border-solid border-neutral-900 object-cover transition-all duration-100 hover:border-green-400 '
+            />
+            <div
+              className={`absolute left-0 top-[64px] grid w-screen cursor-pointer grid-rows-3 items-center overflow-hidden whitespace-nowrap bg-white text-center transition-[height] duration-300 ${
+                dropdownShown.profile ? 'h-[30vh] shadow-lg' : 'h-0 shadow-none'
+              }`}
+            >
+              <Link to={`/profile/${userId}`} className='flex h-full items-center justify-center hover:bg-neutral-100'>
+                profile
+              </Link>
+              <div
+                className='flex h-full items-center justify-center hover:bg-neutral-100'
+                onClick={() => {
+                  isNotificationShown ? dispatch(closeNotification()) : dispatch(showNotification());
+                }}
+              >
+                notifications
+              </div>
+              <div
+                className={`flex h-full items-center justify-center text-neutral-500 hover:bg-neutral-100`}
+                onClick={handleSignOut}
+              >
+                sign out
+              </div>
+            </div>
+          </div>
           <BellIcon
-            className='h-5 w-5 cursor-pointer text-neutral-900 transition-all duration-100 hover:text-green-400'
+            className='h-5 w-5 cursor-pointer text-neutral-900 transition-all duration-100 hover:text-green-400 sm:hidden'
             onClick={() => {
               isNotificationShown ? dispatch(closeNotification()) : dispatch(showNotification());
             }}
@@ -250,7 +336,7 @@ function Header() {
           {isNotificationShown && <NotificationsList />}
           <div
             onClick={handleSignOut}
-            className='cursor-pointer scroll-px-2.5 text-neutral-500 decoration-2 underline-offset-2 hover:underline'
+            className='cursor-pointer scroll-px-2.5 text-neutral-500 decoration-2 underline-offset-2 hover:underline sm:hidden'
           >
             sign out
           </div>

@@ -90,7 +90,12 @@ function NotificationsList() {
   if (!notifications) {
     return (
       <div className='justify-top absolute right-5 top-20 flex max-h-[80vh] w-96 flex-col items-center gap-2 overflow-y-scroll rounded-lg border-4 border-neutral-900 bg-neutral-100 p-5 shadow-lg'>
-        <SmileyWink size={28} color='#171717' weight='light' className='mt-6 animate-bounce' />
+        <SmileyWink
+          size={28}
+          color='#171717'
+          weight='light'
+          className='animate__animated animate__bounce animate__infinite animate__fast mt-6'
+        />
       </div>
     );
   }

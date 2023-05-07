@@ -18,7 +18,7 @@ const AllCatalogue: React.FC<Props> = ({ brands }) => {
       <h2 className='mb-28 text-center text-3xl'>(almost) all chain hand-shake drink store in Taiwan listed</h2>
       {brands.length === 0 && <SmileyWink className='mx-auto my-10 animate-bounce' />}
       <div
-        className='grid w-full grid-cols-6 gap-10 transition-all duration-200 xl2:grid-cols-4 lg:grid-cols-2 sm:grid-cols-1 sm:gap-y-14'
+        className='grid w-full grid-cols-6 gap-10 px-12 transition-all duration-200 xl2:grid-cols-4 xl2:px-0 lg:grid-cols-2 sm:grid-cols-1 sm:gap-y-14'
         // style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(15rem, 1fr))' }}
       >
         {brands.map((brand, index) => (
