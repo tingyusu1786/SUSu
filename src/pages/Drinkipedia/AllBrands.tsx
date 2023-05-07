@@ -14,9 +14,7 @@ interface Props {
 const AllCatalogue: React.FC<Props> = ({ brands }) => {
   return (
     <div className='w-full '>
-      <h1 className='mb-10 text-center text-7xl transition-all duration-1000 selection:bg-green-400 md:mt-2 sm:my-5 sm:text-5xl'>
-        Discover peoples' favorites!
-      </h1>
+      <h1 className='pageTitle mb-10 md:mt-2 sm:my-5 '>Discover peoples' favorites!</h1>
       <h2 className='mb-28 text-center text-3xl transition-all duration-1000 sm:mb-20 sm:text-xl'>
         (almost) all chain hand-shake drink store in Taiwan listed
       </h2>

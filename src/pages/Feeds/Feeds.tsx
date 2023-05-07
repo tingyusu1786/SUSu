@@ -28,7 +28,7 @@ function Posts() {
         }
       }}
     >
-      <h1 className='mb-10 text-center text-7xl selection:bg-green-400'>Log your drinks</h1>
+      <h1 className='pageTitle mb-10 '>Log your drinks</h1>
       <CreatePost />
       <div className='mb-3 mt-10 grid grid-cols-[1fr_48rem_1fr]'>
         <div className='col-start-2'>
