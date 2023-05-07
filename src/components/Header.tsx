@@ -226,11 +226,19 @@ function Header() {
               to={li.to}
               className={`flex h-full items-center justify-center hover:bg-neutral-100`}
               data-text={li.name}
+              key={li.name}
             >
               {li.name}
             </Link>
           ))}
-          <div className={`flex h-full items-center justify-center hover:bg-neutral-100`}>SEARCH</div>
+          <div
+            className={`flex h-full items-center justify-center hover:bg-neutral-100`}
+            onClick={() => {
+              dispatch(showSearch());
+            }}
+          >
+            SEARCH
+          </div>
         </div>
       </div>
       <Link to='/' className='mt-1 hidden transition-all hover:text-green-400 sm:block sm:text-3xl'>

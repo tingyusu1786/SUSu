@@ -15,8 +15,8 @@ interface CatalogueProps {
 const ItemCatalogue: React.FC<CatalogueProps> = ({ catalogueItemId, catalogueItemObj, catalogueItemName }) => {
   return (
     <div className='mx-auto mt-5 max-w-[960px]'>
-      <div className='flex items-baseline gap-5'>
-        <h1 className='mb-3 inline-block text-6xl selection:bg-green-400'>{catalogueItemName}</h1>
+      <div className='flex items-baseline gap-5 sm:flex-col sm:gap-0'>
+        <h1 className='mb-3 inline-block text-6xl selection:bg-green-400 sm:text-5xl'>{catalogueItemName}</h1>
         <div className='mb-4 inline-block flex items-center justify-start gap-6 text-lg'>
           {catalogueItemObj?.price &&
             Object.entries(catalogueItemObj?.price).map((p) => (
