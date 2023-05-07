@@ -152,12 +152,15 @@ function Setting() {
   }
 
   return (
-    <main className='bg-boxes-diag relative min-h-[calc(100vh-64px)] bg-fixed p-10'>
-      <h1 className='mb-6 mt-10 text-center text-3xl'>Edit Profile</h1>
-      <Link to={`/profile/${currentUserId}`} className='group absolute left-10 top-10 flex items-start gap-2 text-lg '>
-        <ArrowLeftIcon className='w-6 group-hover:animate-arrowLeft' />
+    <main className='bg-boxes-diag relative min-h-[calc(100vh-64px)] bg-fixed p-10 sm:p-5 sm:pr-10'>
+      <Link
+        to={`/profile/${currentUserId}`}
+        className='group left-10 top-10 flex items-start gap-2 text-lg text-neutral-500 hover:text-neutral-900'
+      >
+        <ArrowLeftIcon className='w-6 text-neutral-500 group-hover:animate-arrowLeft' />
         back to profile
       </Link>
+      <h1 className='mb-6 mt-5 text-center text-3xl sm:my-3'>Edit Profile</h1>
       <div className='mx-auto grid max-w-[960px] grid-cols-[30%_70%] grid-rows-[auto_1fr_1fr_2fr] items-center gap-4'>
         <label className='group relative col-span-2 cursor-pointer justify-self-center'>
           <img

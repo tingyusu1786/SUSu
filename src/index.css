@@ -9,8 +9,8 @@
     box-sizing: border-box;
   }
 
-  h1 {
-    @apply text-2xl;
+  .pageTitle {
+    @apply text-center text-7xl transition-all duration-1000 selection:bg-green-400 sm:text-5xl;
   }
 
   /* to hide number input spinner */

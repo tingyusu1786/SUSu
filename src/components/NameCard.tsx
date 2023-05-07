@@ -32,7 +32,7 @@ const NameCard: React.FC<Props> = ({ userId, handleFollow }) => {
   }
 
   return (
-    <div className=' grid w-full max-w-3xl grid-cols-[80px_1fr_128px] items-center gap-5 rounded-xl border-2 border-solid border-neutral-900 bg-neutral-100 px-8 py-3 shadow-[3px_3px_#000] md:px-3 sm:grid-cols-[80px_1fr] sm:gap-3 sm:p-3'>
+    <div className='grid w-full max-w-3xl grid-cols-[80px_1fr_128px] items-center gap-5 rounded-xl border-2 border-solid border-neutral-900 bg-neutral-100 px-8 py-3 shadow-[3px_3px_#000] md:px-3 sm:grid-cols-[80px_calc(100%-96px)] sm:gap-3 sm:p-3'>
       <Link to={`/profile/${userId}`} className='focus:outline-none'>
         <img
           src={user.photoURL}
@@ -42,9 +42,9 @@ const NameCard: React.FC<Props> = ({ userId, handleFollow }) => {
       </Link>
       <div className=''>
         <Link to={`/profile/${userId}`} className='focus:outline-none'>
-          <span className=' text-xl'>{user.name}</span>
+          <span className='text-xl'>{user.name}</span>
         </Link>
-        <div className='mb-px text-sm text-gray-400'>{user.email}</div>
+        <div className='mb-px truncate text-sm text-neutral-400'>{user.email}</div>
         <div
           className={`bg-gradient-to-r from-violet-500 to-fuchsia-500 bg-clip-text leading-5 text-transparent ${
             user?.status && user?.status?.trim() !== '' && 'before:mr-1 before:content-["-"]'
@@ -57,7 +57,7 @@ const NameCard: React.FC<Props> = ({ userId, handleFollow }) => {
       {currentUserId && isSignedIn && userId !== currentUserId && (
         <button
           className={`button ml-auto w-32 rounded-full border-2 border-solid border-neutral-900 px-2 hover:bg-green-300 focus:outline-none ${
-            currentUserId && user?.followers?.includes(currentUserId) ? ' bg-gray-100 ' : 'bg-green-400 '
+            currentUserId && user?.followers?.includes(currentUserId) ? ' bg-neutral-100 ' : 'bg-green-400 '
           }`}
           onClick={() => handleFollow(userId, user?.followers?.includes(currentUserId))}
         >

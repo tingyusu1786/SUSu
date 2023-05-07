@@ -188,7 +188,7 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts, profileUs
 
   return (
     <div className='flex w-full flex-col items-center gap-10'>
-      <div className='grid w-full max-w-[900px] grid-cols-2 items-center gap-x-5 gap-y-5'>
+      <div className='grid w-full max-w-[900px] grid-cols-2 items-center items-stretch gap-x-5 gap-y-5'>
         <div className='col-span-2 ml-3 text-xl before:mr-2 before:content-["✦"]'>statistics</div>
         {getMostDrankBrand() && (
           <div className='col-span-2 grid grid-cols-[50px_1fr] items-center rounded-xl border-2 border-solid border-neutral-900 bg-neutral-100 px-10 py-5 shadow-[3px_3px_#171717] transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[3px_6px_#171717]'>
@@ -199,27 +199,27 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts, profileUs
         )}
         {Object.entries(streaks).map((streak) => (
           <div
-            className='grid grid-cols-[50px_1fr] items-center rounded-xl border-2 border-solid border-neutral-900 bg-neutral-100 px-10 py-5 shadow-[3px_3px_#171717] transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[3px_6px_#171717]'
+            className='grid grid-cols-[50px_1fr] items-center rounded-xl border-2 border-solid border-neutral-900 bg-neutral-100 px-10 py-5 shadow-[3px_3px_#171717] transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[3px_6px_#171717] sm:grid-cols-[38px_auto] sm:justify-evenly sm:px-3'
             key={streak[0]}
           >
             <Streak className='row-span-2' />
-            <div className='text-xl'>{streak[1]}</div>
-            <div className='text-neutral-500'>{streak[0]} streak days</div>
+            <div className='text-xl sm:pl-2'>{streak[1]}</div>
+            <div className='text-neutral-500 sm:pl-2'>{streak[0]} streak days</div>
           </div>
         ))}
 
         {getMostDrankBrand() && (
           <>
-            <div className=' col-span-full row-start-4 flex gap-1 text-neutral-500'>
+            <div className=' col-span-full row-start-4 flex gap-1 text-neutral-500 lg:pr-2'>
               <div
-                className={`z-10 flex h-10 w-72 items-center justify-center rounded-t-xl border-x-2 border-t-2 border-neutral-900 border-b-neutral-100 bg-neutral-100 px-3 pt-1`}
+                className={`z-10 flex h-10 w-72 items-center justify-center rounded-t-xl border-x-2 border-t-2 border-neutral-900 border-b-neutral-100 bg-neutral-100 px-3 pt-1 sm:min-w-[148px] sm:px-1 sm:text-sm`}
               >
                 drink-contributions
               </div>
               {[
-                ['last year', 12],
-                ['last 6 months', 6],
-                ['last 3 months', 3],
+                ['full year', 12],
+                ['6 months', 6],
+                ['3 months', 3],
               ].map((num, index) => (
                 <button
                   className={`mt-2 h-8 w-36 rounded-t-3xl border-x-2 border-t-2 border-neutral-900 px-3 pt-1 text-sm transition-all duration-200 hover:mt-1 hover:h-9 ${
@@ -228,24 +228,25 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts, profileUs
                   onClick={() => setNumMonthBefore(num[1] as number)}
                   key={index}
                 >
-                  {num[0]}
+                  <span className='sm:hidden'>{num[0]}</span>
+                  <span className='hidden sm:inline-block'>{num[1]}</span>
                 </button>
               ))}
             </div>
-            <div className='container col-span-2 -mt-[22px] max-w-[900px] rounded-xl rounded-tl-none border-2 border-solid border-neutral-900 bg-neutral-100 px-10 py-5 shadow-[3px_3px_#171717] transition-all transition-all duration-200 duration-200 '>
+            <div className='container col-span-2 -mt-[22px] max-w-[900px] rounded-xl rounded-tl-none border-2 border-solid border-neutral-900 bg-neutral-100 px-10 py-5 shadow-[3px_3px_#171717] transition-all transition-all duration-200 duration-200 sm:p-2'>
               <CalendarHeatmapComponent values={values || []} numMonthBefore={numMonthBefore} />
             </div>
           </>
         )}
       </div>
 
-      <div className='grid w-full max-w-[900px] grid-cols-5 items-center gap-x-5 gap-y-5'>
+      <div className='grid w-full max-w-[900px] grid-cols-5 items-center gap-x-5 gap-y-5 sm:grid-cols-3'>
         <div className='col-span-full ml-3 text-xl before:mr-2 before:content-["✦"]'>expenses</div>
         {Object.entries(priceStatistic)
           .reverse()
           .map((expense) => (
             <div
-              className='grid grid-cols-[50px_1fr] items-center rounded-xl border-2 border-solid border-neutral-900 bg-neutral-100 px-5 py-3 shadow-[3px_3px_#171717] transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[3px_6px_#171717] md:grid-cols-1'
+              className='grid grid-cols-[50px_1fr] items-center rounded-xl border-2 border-solid border-neutral-900 bg-neutral-100 px-5 py-3 shadow-[3px_3px_#171717] transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[3px_6px_#171717] lg:grid-cols-[40px_1fr] md:grid-cols-1 md:justify-items-center'
               key={expense[0]}
             >
               <Expense className='row-span-2 md:mb-3' />
@@ -256,12 +257,8 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts, profileUs
       </div>
       <div className='flex w-full max-w-[900px] flex-col items-start '>
         <div className='mb-3 ml-3 text-xl before:mr-2 before:content-["✦"]'>badges</div>
-        {/*<div
-          className='flex w-full flex-wrap justify-center gap-8 rounded-xl border-2 border-neutral-900 bg-neutral-100 p-7 shadow-[3px_3px_#171717]'
-          style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(6rem, 1fr))' }}
-        >*/}
         <div
-          className='grid w-full justify-center justify-items-center gap-8 rounded-xl border-2 border-neutral-900 bg-neutral-100 p-10 shadow-[3px_3px_#171717]'
+          className='grid w-full justify-center justify-items-center gap-8 rounded-xl border-2 border-neutral-900 bg-neutral-100 p-10 shadow-[3px_3px_#171717] sm:gap-5 sm:p-5'
           style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(6rem, 1fr))' }}
         >
           <Badges
