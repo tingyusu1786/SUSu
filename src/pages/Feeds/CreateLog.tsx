@@ -315,7 +315,9 @@ function CreatePost() {
         const price = sizesOfItem.find((i) => i[0] === e.target.value)?.[1];
         return { size: e.target.value, price };
       },
-      price: () => ({ price: parseInt(e.target.value) < 0 ? '0' : e.target.value }),
+      price: () => ({
+        price: parseInt(e.target.value) < 0 || e.target.value === '' ? '0' : String(parseInt(e.target.value)),
+      }),
       default: () => ({ [key]: e.target.value }),
     };
 
