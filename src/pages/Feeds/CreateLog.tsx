@@ -219,6 +219,8 @@ function CreatePost() {
         return;
       }
       // todo: invalid date
+      swal.showLoading();
+
       const postInputs = Object.assign({}, inputs, {
         authorId: currentUserId,
         hashtags: customTags.concat(autoTags),
@@ -232,8 +234,14 @@ function CreatePost() {
 
       setInputs(initialInput);
       setCustomTags([]);
+      setCategories([]);
+      setItemsOfBrand([]);
+      setSizesOfItem([]);
       inputs.rating !== '' && updateRatings(inputs.brandId, inputs.itemId);
-      swal.success('log successfully!', '', 'ok');
+      setTimeout(() => {
+        swal.hideLoading();
+        swal.success('logged!', '', 'cool');
+      }, 500);
     } catch {
       swal.error('something went wrong', '', 'ok');
     }
