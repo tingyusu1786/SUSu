@@ -15,6 +15,8 @@ module.exports = {
         wave: 'wave 1.5s linear infinite',
         arrow: 'arrow 1s ease-out infinite',
         arrowLeft: 'arrowLeft 1s ease-out infinite',
+        upDown: 'upDown 2s linear infinite',
+        upDownOp: 'upDownOp 2s linear infinite',
       },
       keyframes: {
         shrinkSpin: {
@@ -55,6 +57,40 @@ module.exports = {
           },
           '100%': {
             transform: 'translateX(0px)',
+          },
+        },
+        upDown: {
+          '0%': {
+            transform: 'translateY(0px)',
+          },
+          '25%': {
+            transform: 'translateY(-5px) ',
+          },
+          '50%': {
+            transform: 'translateY(0px) ',
+          },
+          '75%': {
+            transform: 'translateY(5px) ',
+          },
+          '100%': {
+            transform: 'translateY(0px)',
+          },
+        },
+        upDownOp: {
+          '0%': {
+            transform: 'translateY(0px) scaleX(-1)',
+          },
+          '25%': {
+            transform: 'translateY(-5px) scaleX(-1)',
+          },
+          '50%': {
+            transform: 'translateY(0px) scaleX(-1)',
+          },
+          '75%': {
+            transform: 'translateY(5px) scaleX(-1)',
+          },
+          '100%': {
+            transform: 'translateY(0px) scaleX(-1)',
           },
         },
       },

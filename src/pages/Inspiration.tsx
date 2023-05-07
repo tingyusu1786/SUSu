@@ -162,10 +162,10 @@ function Inspiration() {
   };
 
   return (
-    <main className='bg-boxes relative z-0 min-h-[calc(100vh-64px)] bg-fixed p-10'>
-      <h1 className='mb-5 text-center text-7xl selection:bg-green-400'>Can't decide? Leave it to us!</h1>
+    <main className='bg-boxes relative z-0 min-h-[calc(100vh-64px)] bg-fixed p-10 sm:p-5'>
+      <h1 className='pageTitle mb-5'>Can't decide? Leave it to us!</h1>
       <div className='mx-auto max-w-[960px]'>
-        <span className='mb-3 mr-3 inline-block before:mr-2 before:content-["✦"]'>filter some brands if you want</span>
+        <span className='mb-3 mr-3 inline-block before:mr-2 before:content-["✦"]'>filter some brands</span>
         <span
           className={`cursor-pointer text-sm text-gray-400 ${selectedBrands.length > 0 ? 'inline-block' : 'hidden'}`}
           onClick={() => setSelectedBrands([])}
@@ -191,16 +191,14 @@ function Inspiration() {
             </label>
           ))}
         </div>
-        <span className='mb-3 mr-3 inline-block before:mr-2 before:content-["✦"]'>
-          set the rating lower bound if you wish
-        </span>
+        <span className='mb-3 mr-3 inline-block before:mr-2 before:content-["✦"]'>set the rating lower bound</span>
         <span
           className={`cursor-pointer text-sm text-gray-400 ${selectedRating ? 'inline-block' : 'hidden'}`}
           onClick={() => setSelectedRating(undefined)}
         >
           clear rating
         </span>
-        <div className={`mb-2 flex gap-3 `}>
+        <div className={`mb-2 flex gap-3 md:mb-10`}>
           {[1, 2, 3, 4].map((num) => (
             <label
               key={num}
@@ -239,17 +237,17 @@ function Inspiration() {
       </div>
       {!isFinding && randomItem && (
         <div className='animate__zoomInDown animate__animated mt-8 flex flex-col items-center'>
-          <div className=' mb-10 flex w-full items-center justify-center gap-10'>
-            <ShootingStar className='' />
+          <div className='mb-10 flex w-full items-center justify-center gap-10 transition-all duration-1000 md:gap-3'>
+            <ShootingStar className='w-20 animate-upDown' />
             <div className='text-center'>
               <div className='mb-3 text-lg'>↓ we picked this for you! ↓</div>
-              <div className='flex items-end text-5xl'>
+              <div className='flex flex-col items-center gap-2 '>
                 <Link to={`/drinkipedia/${randomItem.brandId}`}>
-                  <div className=' transition-all duration-200 hover:-translate-y-1'>{randomItem.brand}</div>
+                  <div className=' text-4xl transition-all duration-200 hover:-translate-y-1'>{randomItem.brand}</div>
                 </Link>
-                <span className='mr-2 '>'s</span>
+                {/*<span className='mr-2 lg:hidden'>'s</span>*/}
                 <Link to={`/drinkipedia/${randomItem.brandId}/${randomItem.itemId}`}>
-                  <div className='ransition-all mr-1  duration-200 hover:-translate-y-1'>{randomItem.name}</div>
+                  <div className='ransition-all mr-1 text-5xl duration-200 hover:-translate-y-1'>{randomItem.name}</div>
                 </Link>
               </div>
               {randomItem.averageRating && (
@@ -272,11 +270,11 @@ function Inspiration() {
                   ))}
               </div>
             </div>
-            <ShootingStar className='-scale-x-100' />
+            <ShootingStar className='w-20 -scale-x-100 animate-upDownOp' />
           </div>
           <div
             className={`flex w-full max-w-[960px] flex-col items-center justify-center rounded-md border-4 border-neutral-900 ${
-              showMap && 'mb-20'
+              showMap && 'mb-20 sm:mb-10'
             }`}
           >
             <div
@@ -303,7 +301,7 @@ function Inspiration() {
             <iframe
               ref={mapRef}
               className={`h-0 w-full max-w-[960px] scroll-mb-20 transition-[height] duration-200 ${
-                showMap && 'h-[480px] rounded-b-md border-t-4 border-neutral-900'
+                showMap && 'h-[480px] rounded-b-md border-t-4 border-neutral-900 sm:scroll-mb-10'
               }`}
               loading='lazy'
               title='Stores Nearby'
