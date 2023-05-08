@@ -606,6 +606,7 @@ function CreatePost() {
                                 name='itemId'
                                 value={item[0]}
                                 key={item[0]}
+                                checked={item[0] === inputs.itemId}
                                 className='hidden'
                                 onChange={(e) => {
                                   console.log('onChange');
@@ -650,6 +651,7 @@ function CreatePost() {
                           name='size'
                           value={size[0]}
                           key={size[0]}
+                          checked={size[0] === inputs.size}
                           className='hidden'
                           onChange={(e) => {
                             handleInputChange(e);
@@ -702,6 +704,7 @@ function CreatePost() {
                           name='sugar'
                           value={option}
                           key={option}
+                          checked={option === inputs.sugar}
                           className='hidden'
                           onChange={(e) => {
                             handleInputChange(e);
@@ -740,6 +743,7 @@ function CreatePost() {
                           name='ice'
                           value={option}
                           key={option}
+                          checked={option === inputs.ice}
                           className='hidden'
                           onChange={(e) => {
                             handleInputChange(e);
