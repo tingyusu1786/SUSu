@@ -76,7 +76,6 @@ function CreatePost() {
   const [inputs, setInputs] = useState(initialInput);
   // const [date, setDate] = useState<Date>(new Date(Date.now() - new Date().getTimezoneOffset() * 60000));
   const [date, setDate] = useState<dayjs.Dayjs | null>(dayjs());
-
   const [dropdownShown, setDropdownShown] = useState(initialDropdownShown);
 
   const formatDate = (date: Date): string => {
@@ -224,7 +223,6 @@ function CreatePost() {
       const postInputs = Object.assign({}, inputs, {
         authorId: currentUserId,
         hashtags: customTags.concat(autoTags),
-        // timeCreated: new Date(date.getTime() + new Date().getTimezoneOffset() * 60000), //serverTimestamp()會lag
         timeCreated: new Date(date!.unix() * 1000),
         likes: [],
         comments: [],
@@ -245,6 +243,32 @@ function CreatePost() {
     } catch {
       swal.error('something went wrong', '', 'ok');
     }
+  };
+
+  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const key = e.target.name;
+    console.log(e.target.value);
+
+    interface UpdateFunctions {
+      [key: string]: () => { [key: string]: string | undefined };
+      default: () => { [key: string]: string };
+    }
+
+    const updateFunctions: UpdateFunctions = {
+      brandId: () => ({ brandId: e.target.value, itemId: '', size: '', price: '' }),
+      itemId: () => ({ itemId: e.target.value, size: '', price: '' }),
+      size: () => {
+        const price = sizesOfItem.find((i) => i[0] === e.target.value)?.[1];
+        return { size: e.target.value, price };
+      },
+      price: () => ({
+        price: parseInt(e.target.value) < 0 || e.target.value === '' ? '0' : String(parseInt(e.target.value)),
+      }),
+      default: () => ({ [key]: e.target.value }),
+    };
+
+    const updateInputs = updateFunctions[key] || updateFunctions.default;
+    setInputs((prev) => ({ ...prev, ...updateInputs() }));
   };
 
   const updateRatings = async (brandId: string, itemId: string) => {
@@ -306,31 +330,6 @@ function CreatePost() {
     } catch {
       swal.error('something went wrong', '', 'ok');
     }
-  };
-
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const key = e.target.name;
-
-    interface UpdateFunctions {
-      [key: string]: () => { [key: string]: string | undefined };
-      default: () => { [key: string]: string };
-    }
-
-    const updateFunctions: UpdateFunctions = {
-      brandId: () => ({ brandId: e.target.value, itemId: '', size: '', price: '' }),
-      itemId: () => ({ itemId: e.target.value, size: '', price: '' }),
-      size: () => {
-        const price = sizesOfItem.find((i) => i[0] === e.target.value)?.[1];
-        return { size: e.target.value, price };
-      },
-      price: () => ({
-        price: parseInt(e.target.value) < 0 || e.target.value === '' ? '0' : String(parseInt(e.target.value)),
-      }),
-      default: () => ({ [key]: e.target.value }),
-    };
-
-    const updateInputs = updateFunctions[key] || updateFunctions.default;
-    setInputs((prev) => ({ ...prev, ...updateInputs() }));
   };
 
   const handleTagsChange = (newTags: string[]) => {
@@ -555,6 +554,7 @@ function CreatePost() {
                           value={brand[0]}
                           key={brand[0]}
                           className='hidden'
+                          checked={brand[0] === inputs.brandId}
                           onChange={(e) => {
                             console.log('onChange');
                             handleInputChange(e);
