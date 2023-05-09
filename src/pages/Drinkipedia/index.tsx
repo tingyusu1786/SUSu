@@ -1,53 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
 import { db } from '../../services/firebase';
 import dbApi from '../../utils/dbApi';
-import { doc, getDoc, collection, getDocs } from 'firebase/firestore';
 import AllBrands from './AllBrands';
 import SingleBrand from './SingleBrand';
 import SingleItem from './SingleItem';
+import BreadcrumbNav from './BreadcrumbNav';
 import { Brand } from '../../interfaces/interfaces';
-import { ArrowRightIcon } from '@heroicons/react/24/solid';
-
-interface BreadcrumProps {
-  catalogueBrandId: string | undefined;
-  catalogueItemId: string | undefined;
-  catalogueBrandName: string | undefined;
-  catalogueItemName: string | undefined;
-}
-
-const BreadcrumbNav: React.FC<BreadcrumProps> = ({
-  catalogueBrandId,
-  catalogueItemId,
-  catalogueBrandName,
-  catalogueItemName,
-}) => {
-  return (
-    <nav className=''>
-      <ol className='flex sm:flex-wrap'>
-        <li className=''>
-          <Link to='/drinkipedia' className='text-gray-500 hover:text-gray-700'>
-            All Brands
-          </Link>
-        </li>
-        {catalogueBrandId && (
-          <li className=''>
-            <ArrowRightIcon className='mx-1 -mt-1 inline-block h-5 text-gray-500' />
-            <Link to={`/drinkipedia/${catalogueBrandId}`} className='text-gray-500 hover:text-gray-700'>
-              {catalogueBrandName}
-            </Link>
-          </li>
-        )}
-        {catalogueItemId && (
-          <li className=''>
-            <ArrowRightIcon className='mx-1 -mt-1 inline-block h-5 text-gray-500' />
-            <span className='text-gray-500'>{catalogueItemName}</span>
-          </li>
-        )}
-      </ol>
-    </nav>
-  );
-};
 
 function Catalogue() {
   const { catalogueBrandId } = useParams<{ catalogueBrandId: string }>();
