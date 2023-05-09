@@ -31,7 +31,7 @@ import { Post } from '../../interfaces/interfaces';
 import PostCard from './PostCard';
 import { v4 as uuidv4 } from 'uuid';
 import swal from '../../utils/swal';
-import { ReactComponent as SmileyWink } from '../../images/SmileyWink.svg';
+import { ReactComponent as SmileyWink } from '../../assets/SmileyWink.svg';
 
 interface PostsProps {
   onlySeeFollowing?: boolean;

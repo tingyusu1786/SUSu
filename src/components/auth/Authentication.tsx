@@ -7,28 +7,17 @@ import { doc, setDoc, getDoc, collection, serverTimestamp } from 'firebase/fires
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../services/firebase';
 import { EyeIcon, EyeSlashIcon, HeartIcon } from '@heroicons/react/24/solid';
-import Button from '../../components/Button';
 import withReactContent from 'sweetalert2-react-content';
 import 'animate.css';
 import swal from '../../utils/swal';
 
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import {
-  signInStart,
-  signInSuccess,
-  signInFail,
-  signOutStart,
-  signOutSuccess,
-  signOutFail,
-  // openAuthWindow,
-  // closeAuthWindow,
-} from './authSlice';
+import { signInStart, signInSuccess, signInFail, signOutStart, signOutSuccess, signOutFail } from './authSlice';
 import { showAuth, closeAuth } from '../../app/popUpSlice';
 
 function Authentication() {
   const dispatch = useAppDispatch();
   const isAuthShown = useAppSelector((state) => state.popUp.isAuthShown);
-  // const isAuthWindow = useAppSelector((state) => state.auth.isAuthWindow);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
   const [input, setInput] = useState({ name: '', email: '', password: '' });
   const [haveAccount, setHaveAccount] = useState(false);
@@ -53,7 +42,6 @@ function Authentication() {
 
   const handleNativeSignUp = async (name: string, email: string, password: string) => {
     if ([name, email, password].some((input) => input === '')) {
-      // alert(`please fill in all input field`);
       return;
     }
     try {

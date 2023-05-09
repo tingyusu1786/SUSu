@@ -3,7 +3,7 @@ import { useAppSelector } from '../../app/hooks';
 import { Link } from 'react-router-dom';
 import { Post, Comment } from '../../interfaces/interfaces';
 import { getTimeDiff } from '../../utils/common';
-import { ReactComponent as Trash } from '../../images/trash.svg';
+import { Trash } from '@phosphor-icons/react';
 
 interface CommentsProps {
   post: Post;
@@ -47,7 +47,10 @@ const CommentDiv: React.FC<CommentsProps> = ({ post, postIndex, comment, comment
         <div className='ml-auto p-3'>
           {comment.authorId === currentUserId && (
             <Trash
-              className='h-5 w-5 cursor-pointer'
+              size={20}
+              color='#737373'
+              className='cursor-pointer'
+              weight='regular'
               onClick={() => handleDeleteComment(post, postIndex, commentIndex, comment.commentId)}
             />
           )}

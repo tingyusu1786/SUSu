@@ -4,26 +4,11 @@ import { useAppSelector } from '../../app/hooks';
 import { Post } from '../../interfaces/interfaces';
 import CommentInputSection from './CommentInputSection';
 import CommentDiv from './CommentDiv';
-import Button from '../../components/Button';
-import {
-  TrashIcon,
-  GlobeAsiaAustraliaIcon,
-  UserIcon,
-  HeartIcon as SolidHeart,
-  StarIcon as SolidStar,
-} from '@heroicons/react/24/solid';
-import {
-  HeartIcon as LineHeart,
-  StarIcon as LineStar,
-  ChatBubbleOvalLeftIcon,
-  ChatBubbleOvalLeftEllipsisIcon,
-} from '@heroicons/react/24/outline';
-import heartFill from '../../images/heartFill.png';
-import heartLine from '../../images/heartLine.png';
-import comment from '../../images/comment.png';
-import { ReactComponent as Trash } from '../../images/trash.svg';
-
-import { Random_0, Random_1, Random_2 } from '../../images/star_10';
+import { StarIcon as SolidStar } from '@heroicons/react/24/solid';
+import { StarIcon as LineStar } from '@heroicons/react/24/outline';
+import heartFill from '../../assets/heartFill.png';
+import heartLine from '../../assets/heartLine.png';
+import { Trash, ChatCircleDots, GlobeHemisphereEast, UserCircle } from '@phosphor-icons/react';
 
 interface PostProps {
   post: Post;
@@ -84,14 +69,17 @@ const PostCard: React.FC<PostProps> = ({
         <div className=' flex items-center justify-between'>
           <span className='mt-1 after:mx-1 after:content-["•"]'>{formattedDateTime}</span>
           {post.audience === 'public' ? (
-            <GlobeAsiaAustraliaIcon className=' h-4 w-4 ' title='public' />
+            <GlobeHemisphereEast className='' size={18} color='#171717' weight='bold' />
           ) : (
-            <UserIcon className='h-4 w-4 ' title='private' />
+            <UserCircle size={18} color='#171717' weight='bold' />
           )}
         </div>
         {post.authorId === currentUserId && (
           <Trash
-            className='absolute right-2 top-[10px] mb-px ml-auto hidden h-4 w-4 cursor-pointer sm:block'
+            size={20}
+            color='#737373'
+            weight='regular'
+            className='absolute right-2 top-[10px] hidden cursor-pointer sm:block'
             onClick={() => handleDeletePost(post, index)}
           />
         )}
@@ -123,6 +111,9 @@ const PostCard: React.FC<PostProps> = ({
           )}
           {post.authorId === currentUserId && (
             <Trash
+              size={16}
+              color='#737373'
+              weight='regular'
               className='mb-px ml-auto h-5 w-5 cursor-pointer sm:hidden'
               onClick={() => handleDeletePost(post, index)}
             />
@@ -167,25 +158,17 @@ const PostCard: React.FC<PostProps> = ({
           ))}
         </div>
       </div>
-      {/*<SolidHeart
-            className='w-8 cursor-pointer'
-            onClick={() => currentUserId && handleLike(post, currentUserId, index)}
-          />*/}
-      {/*<LineHeart
-        className='w-8 cursor-pointer'
-        onClick={() => currentUserId && handleLike(post, currentUserId, index)}
-      />*/}
       <div className='mb-5 grid grid-cols-[repeat(4,30px)] items-center px-5'>
         {post.likes?.some((like) => like.authorId === currentUserId) ? (
           <img
-            className='animate__animated animate__rubberBand cursor-pointer'
+            className='animate__animated animate__rubberBand w-7 cursor-pointer'
             src={heartFill}
             alt=''
             onClick={() => currentUserId && handleLike(post, currentUserId, index)}
           />
         ) : (
           <img
-            className=' cursor-pointer'
+            className=' w-7 cursor-pointer'
             src={heartLine}
             alt=''
             onClick={() => currentUserId && handleLike(post, currentUserId, index)}
@@ -194,15 +177,15 @@ const PostCard: React.FC<PostProps> = ({
         {/*todo: signin to like*/}
         <div className='mt-1 text-center'>{post.likes?.length || ''}</div>
 
-        {/*<ChatBubbleOvalLeftIcon className='mb-1 w-8 cursor-pointer' onClick={() => handleCommentsShown(index)} />*/}
-        <img className='mb-px w-7 cursor-pointer' src={comment} alt='' onClick={() => handleCommentsShown(index)} />
+        <ChatCircleDots
+          size={28}
+          color='#171717'
+          weight='bold'
+          onClick={() => handleCommentsShown(index)}
+          className='mb-px w-7 cursor-pointer'
+        />
 
         <div className='mt-1 text-center'>{post.comments?.length || ''}</div>
-        {/*<div className='absolute right-6 top-10 hover:rotate-90'>
-          {randomNum === 0 && <Random_0 />}
-          {randomNum === 1 && <Random_1 />}
-          {randomNum === 2 && <Random_2 />}
-        </div>*/}
       </div>
 
       <div

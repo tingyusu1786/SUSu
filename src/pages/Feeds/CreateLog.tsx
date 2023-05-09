@@ -4,9 +4,10 @@ import { collection, doc, getDoc, addDoc, getDocs, updateDoc, Timestamp } from '
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import dbApi from '../../utils/dbApi';
 import swal from '../../utils/swal';
-import { StarIcon as SolidStar, GlobeAsiaAustraliaIcon, UserIcon } from '@heroicons/react/24/solid';
+import { GlobeHemisphereEast, UserCircle } from '@phosphor-icons/react';
+import { StarIcon as SolidStar } from '@heroicons/react/24/solid';
 import { StarIcon as LineStar } from '@heroicons/react/24/outline';
-import { ReactComponent as SmileyWink } from '../../images/SmileyWink.svg';
+import { ReactComponent as SmileyWink } from '../../assets/SmileyWink.svg';
 import { showAuth } from '../../app/popUpSlice';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DateTimeField } from '@mui/x-date-pickers/DateTimeField';
@@ -448,9 +449,9 @@ function CreatePost() {
               </ThemeProvider>
               <span className=''>•</span>
               {inputs.audience === 'public' ? (
-                <GlobeAsiaAustraliaIcon className=' h-4 w-4 ' title='public' />
+                <GlobeHemisphereEast className='' size={18} color='#171717' weight='bold' />
               ) : (
-                <UserIcon className='h-4 w-4 ' title='private' />
+                <UserCircle size={18} color='#171717' weight='bold' />
               )}
               <div className='w-50 cursor-pointer '>
                 <button
@@ -476,6 +477,7 @@ function CreatePost() {
                       type='radio'
                       name='audience'
                       value='public'
+                      checked={inputs.audience === 'public'}
                       className='hidden'
                       onChange={(e) => {
                         handleInputChange(e);
@@ -488,6 +490,7 @@ function CreatePost() {
                       type='radio'
                       name='audience'
                       value='private'
+                      checked={inputs.audience === 'private'}
                       className='hidden'
                       onChange={(e) => {
                         handleInputChange(e);

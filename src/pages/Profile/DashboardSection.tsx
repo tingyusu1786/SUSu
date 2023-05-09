@@ -5,9 +5,9 @@ import { Timestamp } from 'firebase/firestore';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { addAllBrands } from '../../app/infoSlice';
 import dbApi from '../../utils/dbApi';
-import { ReactComponent as Streak } from '../../images/Streak.svg';
-import { ReactComponent as Store } from '../../images/Store.svg';
-import { ReactComponent as Expense } from '../../images/Expense.svg';
+import { ReactComponent as Streak } from '../../assets/Streak.svg';
+import { ReactComponent as Store } from '../../assets/Store.svg';
+import { ReactComponent as Expense } from '../../assets/Expense.svg';
 
 interface AllPostsProps {
   profileUserPosts: any[];

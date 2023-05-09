@@ -5,7 +5,7 @@ import dbApi from '../../utils/dbApi';
 import { doc, getDoc, collection, query, where, getDocs, orderBy, QuerySnapshot } from 'firebase/firestore';
 import BrandCard from '../../components/BrandCard';
 import { Brand } from '../../interfaces/interfaces';
-import { ReactComponent as SmileyWink } from '../../images/SmileyWink.svg';
+import { ReactComponent as SmileyWink } from '../../assets/SmileyWink.svg';
 
 interface Props {
   brands: Brand[];
