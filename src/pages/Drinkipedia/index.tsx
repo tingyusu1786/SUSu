@@ -29,6 +29,7 @@ function Catalogue() {
   }, []);
 
   useEffect(() => {
+    // setCatalogueBrandName(undefined); // to clear out the last state
     const currentBrand = brands?.find((brand) => brand.brandId === catalogueBrandId);
     const currentBrandName = currentBrand && currentBrand.name;
     setCatalogueBrandName(currentBrandName);
@@ -64,6 +65,7 @@ function Catalogue() {
   }, [categories]);
 
   useEffect(() => {
+    setCatalogueItemName(undefined); // to clear out the last state
     const fetchCatalogueItemName = async () => {
       const itemName = await getCatalogueItemName(catalogueItemId);
       setCatalogueItemName(itemName);
@@ -150,16 +152,20 @@ function Catalogue() {
     }
   };
 
+  const shouldRenderAll = !catalogueBrandId && !catalogueItemId;
+  const shouldRenderSingleBrand = catalogueBrandId && !catalogueItemId;
+  const shouldRenderSingleItem = catalogueBrandId && catalogueItemId;
+
   return (
-    <main className='bg-boxes relative min-h-[calc(100vh-64px)] bg-fixed px-10 py-10 sm:p-5'>
+    <main className='bg-boxes relative min-h-[calc(100vh-64px)] bg-fixed p-10 sm:p-5'>
       <BreadcrumbNav
         catalogueBrandId={catalogueBrandId}
         catalogueItemId={catalogueItemId}
         catalogueBrandName={catalogueBrandName}
         catalogueItemName={catalogueItemName}
       />
-      {!catalogueBrandId && !catalogueItemId && <AllBrands brands={brands} />}
-      {catalogueBrandId && !catalogueItemId && (
+      {shouldRenderAll && <AllBrands brands={brands} />}
+      {shouldRenderSingleBrand && (
         <SingleBrand
           catalogueBrandObj={catalogueBrandObj}
           categories={categories}
@@ -167,7 +173,7 @@ function Catalogue() {
           catalogueBrandId={catalogueBrandId}
         />
       )}
-      {catalogueBrandId && catalogueItemId && (
+      {shouldRenderSingleItem && (
         <SingleItem
           catalogueBrandId={catalogueBrandId}
           catalogueItemId={catalogueItemId}
