@@ -70,14 +70,14 @@ const PostCard: React.FC<PostProps> = ({
       className='relative w-full max-w-3xl rounded-md border-[3px] border-solid border-neutral-900 bg-neutral-100 shadow-[4px_4px_#171717]'
       key={index}
     >
-      <div className='flex h-12 flex-nowrap items-center justify-between border-b-[3px] border-solid border-neutral-900 px-5'>
-        <Link to={`/profile/${post.authorId}`} className='group flex items-center'>
+      <div className='flex h-12 flex-nowrap items-center justify-between border-b-[3px] border-solid border-neutral-900 px-5 sm:h-20 sm:flex-col-reverse sm:items-start sm:justify-end sm:px-3 sm:pt-1'>
+        <Link to={`/profile/${post.authorId}`} className='group flex items-center xs:pr-1'>
           <img
             src={post.authorPhoto}
             alt={post.authorName}
             className='mr-2 inline-block h-9 w-9 rounded-full border-2 border-solid border-neutral-900 object-cover group-hover:border-green-400'
           />
-          <span className='text-lg group-hover:underline group-hover:decoration-green-400 group-hover:decoration-wavy group-hover:underline-offset-[5px]'>
+          <span className='text-lg group-hover:underline group-hover:decoration-green-400 group-hover:decoration-wavy group-hover:underline-offset-[5px] sm:mt-2 xs:truncate xs:text-base xs:group-hover:underline-offset-[2px]'>
             {post.authorName}
           </span>
         </Link>
@@ -89,24 +89,30 @@ const PostCard: React.FC<PostProps> = ({
             <UserIcon className='h-4 w-4 ' title='private' />
           )}
         </div>
+        {post.authorId === currentUserId && (
+          <Trash
+            className='absolute right-2 top-[10px] mb-px ml-auto hidden h-4 w-4 cursor-pointer sm:block'
+            onClick={() => handleDeletePost(post, index)}
+          />
+        )}
       </div>
 
-      <div className=' p-5'>
-        <div className='flex items-center gap-3'>
-          <span className='text-2xl'>
+      <div className='p-5'>
+        <div className='flex items-center gap-3 xs:flex-col xs:items-start xs:gap-0 xs:pb-2'>
+          <div className='text-2xl sm:text-xl xs:flex xs:flex-col'>
             <span>I drank </span>
             <Link to={`/drinkipedia/${post.brandId}`}>
-              <span className='inline-block transition-all duration-150 ease-out hover:-translate-y-1'>
+              <span className="xs:after:content-[''s'] inline-block transition-all duration-150 ease-out hover:-translate-y-1">
                 {post.brandName}
               </span>
             </Link>
-            <span>'s </span>
+            <span className='xs:hidden'>'s </span>
             <Link to={`/drinkipedia/${post.brandId}/${post.itemId}`} className='hover:translate-y-1'>
               <span className='inline-block transition-all duration-150 ease-out hover:-translate-y-1'>
                 {post.itemName}
               </span>
             </Link>
-          </span>
+          </div>
           {post.size && (
             <span className='flex items-baseline gap-1'>
               <span className='flex h-6 w-8 items-center justify-center rounded-full border-2 border-solid border-neutral-900 pt-1 text-sm'>
@@ -117,7 +123,7 @@ const PostCard: React.FC<PostProps> = ({
           )}
           {post.authorId === currentUserId && (
             <Trash
-              className='mb-px ml-auto h-5 w-5 cursor-pointer hover:text-red-600'
+              className='mb-px ml-auto h-5 w-5 cursor-pointer sm:hidden'
               onClick={() => handleDeletePost(post, index)}
             />
           )}
