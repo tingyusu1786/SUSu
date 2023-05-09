@@ -309,7 +309,7 @@ function Inspiration() {
               referrerPolicy='no-referrer-when-downgrade'
               src={
                 currentLocation &&
-                `https://www.google.com/maps/embed/v1/search?key=AIzaSyAyK3jgOTFT1B6-Vt85wxc_2aaGLUlU738
+                `https://www.google.com/maps/embed/v1/search?key=${process.env.REACT_APP_GOOGLEMAPS_KEY}
                             &q=${randomItem.brand}+nearby&language=en&center=${Number(
                   currentLocation.latitude
                 )},${Number(currentLocation.longitude)}&zoom=13`
