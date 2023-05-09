@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useAppSelector, useAppDispatch } from '../app/hooks';
 import { Link } from 'react-router-dom';
-import dbApi from '../utils/dbApi';
+import { useAppSelector, useAppDispatch } from '../../app/hooks';
+import dbApi from '../../utils/dbApi';
 
 interface Props {
   userId: string;

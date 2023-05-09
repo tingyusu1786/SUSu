@@ -1,17 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { db } from '../services/firebase';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { useAppSelector, useAppDispatch } from '../app/hooks';
-import { showNotification, closeNotification, showSearch, closeSearch, showAuth } from '../app/popUpSlice';
-import { signOutStart, signOutSuccess, signOutFail } from '../app/authSlice';
-import NotificationsList from '../components/NotificationsModal/';
-import { Notification } from '../interfaces/interfaces';
+import { db } from '../../services/firebase';
+import { useAppSelector, useAppDispatch } from '../../app/hooks';
+import { showNotification, closeNotification, showSearch, closeSearch, showAuth } from '../../app/popUpSlice';
+import { signOutStart, signOutSuccess, signOutFail } from '../../app/authSlice';
+import NotificationsList from '../../components/NotificationsModal/';
+import { Notification } from '../../interfaces/interfaces';
 import { doc, DocumentSnapshot, DocumentReference, DocumentData, onSnapshot } from 'firebase/firestore';
-import dbApi from '../utils/dbApi';
-import authApi from '../utils/authApi';
+import dbApi from '../../utils/dbApi';
+import authApi from '../../utils/authApi';
 import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
 import { BellIcon } from '@heroicons/react/24/outline';
-import swal from '../utils/swal';
+import swal from '../../utils/swal';
 import { CaretCircleRight, CaretCircleUpDown } from '@phosphor-icons/react';
 
 function NotificationsListener() {

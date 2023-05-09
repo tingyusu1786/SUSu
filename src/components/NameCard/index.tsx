@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useAppSelector } from '../app/hooks';
-import { Link } from 'react-router-dom';
-import { db } from '../services/firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
-import { User } from '../interfaces/interfaces';
+import { useAppSelector } from '../../app/hooks';
+import { Link } from 'react-router-dom';
+import { db } from '../../services/firebase';
+import { User } from '../../interfaces/interfaces';
 interface UserCard extends Omit<User, 'notifications' | 'timeCreated' | 'following'> {}
 
 interface Props {
