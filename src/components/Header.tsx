@@ -200,7 +200,7 @@ function Header() {
         isNotificationShown && dispatch(closeNotification());
       }}
     >
-      {<ScreenSize />}
+      {/*{<ScreenSize />}*/}
       <NotificationsListener />
       <div className={`hidden sm:block`}>
         <CaretCircleRight

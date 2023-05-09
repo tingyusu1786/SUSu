@@ -2,13 +2,13 @@ import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { updateProfile } from 'firebase/auth';
 import { Link, useParams } from 'react-router-dom';
-import { db, auth, storage } from '../services/firebase';
+import { db, auth, storage } from '../../services/firebase';
 import { useState, useEffect, ChangeEvent } from 'react';
-import { useAppSelector, useAppDispatch } from '../app/hooks';
-import { User } from '../interfaces/interfaces';
-import { updateUserName, updateUserPhoto } from '../components/auth/authSlice';
+import { useAppSelector, useAppDispatch } from '../../app/hooks';
+import { User } from '../../interfaces/interfaces';
+import { updateUserName, updateUserPhoto } from '../../components/auth/authSlice';
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
-import swal from '../utils/swal';
+import swal from '../../utils/swal';
 
 function Setting() {
   const dispatch = useAppDispatch();

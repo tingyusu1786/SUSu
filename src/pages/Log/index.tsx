@@ -1,8 +1,5 @@
 import { useParams } from 'react-router-dom';
-// import { auth } from '../services/firebase';
-// import { useState, useEffect } from 'react';
-// import { useAppSelector, useAppDispatch } from '../app/hooks';
-import PostsFeed from '../components/postsFeed/PostsFeed';
+import PostsFeed from '../../components/postsFeed/PostsFeed';
 
 function Log() {
   const { logId } = useParams<{ logId: string }>();

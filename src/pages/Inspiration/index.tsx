@@ -1,12 +1,12 @@
-import dbApi from '../utils/dbApi';
+import dbApi from '../../utils/dbApi';
 import { Link } from 'react-router-dom';
 import { useState, useEffect, useRef, ChangeEvent } from 'react';
-import { useAppSelector, useAppDispatch } from '../app/hooks';
-import { addAllBrands } from '../app/infoSlice';
-import { db } from '../services/firebase';
+import { useAppSelector, useAppDispatch } from '../../app/hooks';
+import { addAllBrands } from '../../app/infoSlice';
+import { db } from '../../services/firebase';
 import { collection, doc, getDoc, getDocs, query, where, DocumentData } from 'firebase/firestore';
 import { StarIcon as SolidStar } from '@heroicons/react/24/solid';
-import { ReactComponent as ShootingStar } from '../assets/ShootingStar.svg';
+import { ReactComponent as ShootingStar } from '../../assets/ShootingStar.svg';
 import { MapTrifold, ArrowDown } from '@phosphor-icons/react';
 
 function Inspiration() {
