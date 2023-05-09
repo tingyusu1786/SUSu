@@ -119,16 +119,18 @@ function ScreenSize() {
     let size: string;
     if (width >= 1536) {
       size = 'over 2xl';
-    } else if (width >= 1279) {
+    } else if (width > 1279) {
       size = '2xl';
-    } else if (width >= 1023) {
+    } else if (width > 1023) {
       size = 'xl';
-    } else if (width >= 767) {
+    } else if (width > 767) {
       size = 'lg';
-    } else if (width >= 639) {
+    } else if (width > 639) {
       size = 'md';
-    } else {
+    } else if (width > 399) {
       size = 'sm';
+    } else {
+      size = 'xs';
     }
 
     return size;
@@ -198,7 +200,7 @@ function Header() {
         isNotificationShown && dispatch(closeNotification());
       }}
     >
-      <ScreenSize />
+      {<ScreenSize />}
       <NotificationsListener />
       <div className={`hidden sm:block`}>
         <CaretCircleRight
@@ -247,7 +249,7 @@ function Header() {
       <nav className='sm:hidden'>
         <ul className='flex gap-4'>
           <li>
-            <Link to='/' className=' mt-8 block pb-8'>
+            <Link to='/' className=' mt-8 block pb-8 transition-all hover:text-green-400'>
               SUSü
             </Link>
           </li>
