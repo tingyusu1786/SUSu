@@ -36,7 +36,7 @@ const Success = Swal.mixin({
   background: '#f5f5f5',
   customClass: {
     icon: 'pt-2 px-1',
-    popup: 'rotate-6',
+    popup: '',
   },
   showClass: {
     popup: 'animate__animated animate__faster animate__zoomIn',
@@ -80,7 +80,7 @@ const Warning = Swal.mixin({
     cancelButton: 'order-1 right-gap',
     confirmButton: 'order-2',
     icon: 'pt-2 px-1',
-    popup: 'rotate-6',
+    popup: '',
   },
   showClass: {
     popup: 'animate__animated animate__faster animate__zoomIn',
@@ -99,7 +99,7 @@ const ErrorSwal = Swal.mixin({
   background: '#f5f5f5',
   customClass: {
     icon: 'pt-3 px-1',
-    popup: 'rotate-6',
+    popup: '',
   },
   showClass: {
     popup: 'animate__animated animate__faster animate__zoomIn',
