@@ -24,6 +24,8 @@ yarn-error.log*
 
 # firebase
 .firebase
+storage.rules
+firestore.rules
 
 # firebase service account key
 su-drink-429f60ad0297.json
