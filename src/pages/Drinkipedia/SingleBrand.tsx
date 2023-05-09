@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import PostsFeed from '../../components/postsFeed/PostsFeed';
+import PostsFeed from '../../components/PostsFeed/';
 import { StarIcon, BuildingStorefrontIcon } from '@heroicons/react/24/solid';
 
 interface CatalogueProps {

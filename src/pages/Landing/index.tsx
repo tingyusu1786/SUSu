@@ -25,7 +25,7 @@ import { db, auth, storage } from '../../services/firebase';
 import { useState, useEffect, ChangeEvent, KeyboardEvent, useRef } from 'react';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { User } from '../../interfaces/interfaces';
-import { updateUserName, updateUserPhoto } from '../../components/auth/authSlice';
+import { updateUserName, updateUserPhoto } from '../../app/authSlice';
 import blur from '../images/nullPhoto.png';
 import Typed from 'typed.js';
 

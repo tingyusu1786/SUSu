@@ -12,7 +12,7 @@ import 'animate.css';
 import swal from '../../utils/swal';
 
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { signInStart, signInSuccess, signInFail, signOutStart, signOutSuccess, signOutFail } from './authSlice';
+import { signInStart, signInSuccess, signInFail, signOutStart, signOutSuccess, signOutFail } from '../../app/authSlice';
 import { showAuth, closeAuth } from '../../app/popUpSlice';
 
 function Authentication() {

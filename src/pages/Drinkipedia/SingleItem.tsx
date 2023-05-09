@@ -1,5 +1,5 @@
 import React from 'react';
-import PostsFeed from '../../components/postsFeed/PostsFeed';
+import PostsFeed from '../../components/PostsFeed/';
 import { StarIcon } from '@heroicons/react/24/solid';
 
 interface CatalogueProps {

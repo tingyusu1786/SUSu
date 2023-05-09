@@ -3,17 +3,10 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import Header from './components/Header';
-import Authentication from './components/auth/Authentication';
-import SearchModal from './components/SearchModal';
+import Authentication from './components/AuthModal/';
+import SearchModal from './components/SearchModal/';
 import { useAppSelector, useAppDispatch } from './app/hooks';
-import {
-  signInStart,
-  signInSuccess,
-  signInFail,
-  signOutStart,
-  signOutSuccess,
-  signOutFail,
-} from './components/auth/authSlice';
+import { signInStart, signInSuccess, signInFail, signOutStart, signOutSuccess, signOutFail } from './app/authSlice';
 import { showAuth, closeAuth } from './app/popUpSlice';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth, db } from './services/firebase';

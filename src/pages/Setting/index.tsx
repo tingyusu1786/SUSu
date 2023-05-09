@@ -6,7 +6,7 @@ import { db, auth, storage } from '../../services/firebase';
 import { useState, useEffect, ChangeEvent } from 'react';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { User } from '../../interfaces/interfaces';
-import { updateUserName, updateUserPhoto } from '../../components/auth/authSlice';
+import { updateUserName, updateUserPhoto } from '../../app/authSlice';
 import { ArrowLeftIcon } from '@heroicons/react/24/solid';
 import swal from '../../utils/swal';
 

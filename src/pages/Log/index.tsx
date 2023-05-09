@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom';
-import PostsFeed from '../../components/postsFeed/PostsFeed';
+import PostsFeed from '../../components/PostsFeed/';
 
 function Log() {
   const { logId } = useParams<{ logId: string }>();

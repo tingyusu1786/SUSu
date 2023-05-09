@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { useAppDispatch } from '../app/hooks';
+import { useAppDispatch } from '../../app/hooks';
 import { Link } from 'react-router-dom';
-import { closeSearch } from '../app/popUpSlice';
+import { closeSearch } from '../../app/popUpSlice';
 import { PoweredBy } from 'react-instantsearch-hooks-web';
 import algoliasearch from 'algoliasearch/lite';
-import dbApi from '../utils/dbApi';
+import dbApi from '../../utils/dbApi';
 import { InstantSearch, SearchBox, Hits, Highlight, Index, useInstantSearch } from 'react-instantsearch-hooks-web';
 
 const searchClient = algoliasearch(process.env.REACT_APP_ALGOLIA_APP_ID!, process.env.REACT_APP_ALGOLIA_SEARCH_KEY!);

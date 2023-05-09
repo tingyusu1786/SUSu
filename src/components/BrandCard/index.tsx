@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useAppSelector, useAppDispatch } from '../app/hooks';
+import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { Link } from 'react-router-dom';
-import dbApi from '../utils/dbApi';
-import { Brand } from '../interfaces/interfaces';
+import dbApi from '../../utils/dbApi';
+import { Brand } from '../../interfaces/interfaces';
 import { StarIcon, ChevronDoubleRightIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
 
 interface BrandProps {

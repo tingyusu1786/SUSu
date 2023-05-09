@@ -1,5 +1,5 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit';
-import authReducer from '../components/auth/authSlice';
+import authReducer from './authSlice';
 import infoReducer from './infoSlice';
 import popUpReducer from './popUpSlice';
 
