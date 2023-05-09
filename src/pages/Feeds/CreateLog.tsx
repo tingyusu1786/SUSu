@@ -50,7 +50,7 @@ function CreatePost() {
     sugar: '',
     ice: '',
     size: '',
-    price: '', //帶入的是number, 手調會變string
+    price: '',
     orderNum: '',
     rating: '',
     selfComment: '',
@@ -74,7 +74,6 @@ function CreatePost() {
   const [itemsOfBrand, setItemsOfBrand] = useState<string[][][]>([]);
   const [sizesOfItem, setSizesOfItem] = useState<string[][]>([]);
   const [inputs, setInputs] = useState(initialInput);
-  // const [date, setDate] = useState<Date>(new Date(Date.now() - new Date().getTimezoneOffset() * 60000));
   const [date, setDate] = useState<dayjs.Dayjs | null>(dayjs());
   const [dropdownShown, setDropdownShown] = useState(initialDropdownShown);
 
@@ -82,25 +81,11 @@ function CreatePost() {
     return date.toISOString().slice(0, 16);
   };
 
-  // const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   const { value } = event.target;
-  //   if (value === '' || parseInt(value.split('-')[0]) > 9999) {
-  //     return;
-  //   }
-
-  //   let newDate = new Date(new Date(value).getTime() - new Date().getTimezoneOffset() * 60000);
-  //   setDate(newDate);
-  // };
-
   const handleChange = (event: any) => {
     const { value } = event.target;
-    console.log(value);
     if (value === '' || parseInt(value.split('-')[0]) > 9999) {
       return;
     }
-
-    // let newDate = new Date(new Date(value).getTime() - new Date().getTimezoneOffset() * 60000);
-    // setDate(newDate);
   };
 
   const sugarOptions = [
@@ -247,7 +232,6 @@ function CreatePost() {
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const key = e.target.name;
-    console.log(e.target.value);
 
     interface UpdateFunctions {
       [key: string]: () => { [key: string]: string | undefined };
@@ -462,15 +446,6 @@ function CreatePost() {
                   />
                 </div>
               </ThemeProvider>
-
-              {/*<input
-                required
-                type='datetime-local'
-                value={formatDate(date)}
-                onChange={handleChange}
-                max={formatDate(new Date(Date.now() - new Date().getTimezoneOffset() * 60000))}
-                className='w-full cursor-pointer bg-transparent outline-0 after:cursor-pointer'
-              />*/}
               <span className=''>•</span>
               {inputs.audience === 'public' ? (
                 <GlobeAsiaAustraliaIcon className=' h-4 w-4 ' title='public' />
