@@ -28,7 +28,7 @@ function NotificationsList() {
       return;
     }
 
-    setTimeout(() => fetchNotifications(currentUserRef), 800);
+    setTimeout(() => fetchNotifications(currentUserRef), 500);
 
     const unsubscribe = onSnapshot(currentUserRef, async (docSnapshot: DocumentSnapshot) => {
       const newNotifications = docSnapshot
@@ -91,10 +91,10 @@ function NotificationsList() {
     return (
       <div className='justify-top absolute right-5 top-20 flex max-h-[80vh] w-96 flex-col items-center gap-2 overflow-y-scroll rounded-lg border-4 border-neutral-900 bg-neutral-100 p-5 shadow-lg'>
         <SmileyWink
-          size={28}
+          size={32}
           color='#171717'
           weight='light'
-          className='animate__animated animate__bounce animate__infinite animate__fast mt-6'
+          className='animate__animated animate__swing animate__infinite animate__fast'
         />
       </div>
     );
