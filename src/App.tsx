@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+
 import Header from './components/Header';
 import Authentication from './components/AuthModal/';
 import SearchModal from './components/SearchModal/';
@@ -59,12 +58,12 @@ function App() {
   }
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
+    <>
       <Header />
       {isAuthShown && <Authentication />}
       {isSearchShown && <SearchModal />}
       <Outlet />
-    </LocalizationProvider>
+    </>
   );
 }
 

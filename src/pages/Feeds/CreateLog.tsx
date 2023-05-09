@@ -13,7 +13,8 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DateTimeField } from '@mui/x-date-pickers/DateTimeField';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs from 'dayjs';
-
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { createTheme, ThemeProvider } from '@mui/material';
 const theme = createTheme({
   typography: {
@@ -422,31 +423,33 @@ function CreatePost() {
               </span>
             </div>
             <div className='flex items-center justify-end gap-x-1'>
-              <ThemeProvider theme={theme}>
-                <div className='mt-px'>
-                  <DateTimePicker
-                    value={dayjs(date)}
-                    showDaysOutsideCurrentMonth={true}
-                    sx={{
-                      padding: 0,
-                      width: '220px',
-                      marginRight: '-10px',
-                      '& fieldset': { border: 'none' },
-                      '& button': { backgroundColor: '', padding: 0, margin: 0 },
-                      '& svg': { width: '18px', color: '#171717' },
-                    }}
-                    className=''
-                    disableFuture={true}
-                    onChange={(newValue) =>
-                      setDate((prev) => {
-                        console.log(date);
-                        return newValue;
-                      })
-                    }
-                    slotProps={{ textField: { size: 'small' } }}
-                  />
-                </div>
-              </ThemeProvider>
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <ThemeProvider theme={theme}>
+                  <div className='mt-px'>
+                    <DateTimePicker
+                      value={dayjs(date)}
+                      showDaysOutsideCurrentMonth={true}
+                      sx={{
+                        padding: 0,
+                        width: '220px',
+                        marginRight: '-10px',
+                        '& fieldset': { border: 'none' },
+                        '& button': { backgroundColor: '', padding: 0, margin: 0 },
+                        '& svg': { width: '18px', color: '#171717' },
+                      }}
+                      className=''
+                      disableFuture={true}
+                      onChange={(newValue) =>
+                        setDate((prev) => {
+                          console.log(date);
+                          return newValue;
+                        })
+                      }
+                      slotProps={{ textField: { size: 'small' } }}
+                    />
+                  </div>
+                </ThemeProvider>
+              </LocalizationProvider>
               <span className=''>•</span>
               {inputs.audience === 'public' ? (
                 <GlobeHemisphereEast className='' size={18} color='#171717' weight='bold' />
