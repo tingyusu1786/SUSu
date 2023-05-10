@@ -85,6 +85,7 @@ function CreatePost() {
 
   const handleChange = (event: any) => {
     const { value } = event.target;
+    console.log(value);
     if (value === '' || parseInt(value.split('-')[0]) > 9999) {
       return;
     }
@@ -441,7 +442,6 @@ function CreatePost() {
                       disableFuture={true}
                       onChange={(newValue) =>
                         setDate((prev) => {
-                          console.log(date);
                           return newValue;
                         })
                       }

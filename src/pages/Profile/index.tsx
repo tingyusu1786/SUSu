@@ -233,7 +233,7 @@ function Profile() {
   }
 
   return (
-    <main className='bg-boxes-diag relative min-h-[calc(100vh-64px)] scroll-smooth bg-fixed p-10 sm:p-5'>
+    <main className='bg-boxes-diag relative min-h-[calc(100vh-64px)] bg-fixed p-10 sm:p-5'>
       {currentUserId === profileUserId && (
         <div className='mb-2 w-full text-center'>
           <Link to={`/setting/${currentUserId}`} className=' opacity-60 transition-all duration-100 hover:opacity-100'>

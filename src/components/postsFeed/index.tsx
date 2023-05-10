@@ -204,9 +204,7 @@ const PostsFeed: React.FC<PostsProps> = ({
       isFetching.current = false;
       return;
     }
-
     let q: Query<DocumentData> = query(collection(db, 'posts'));
-
     if (currentPage === 'posts') {
       if (lastKey && hashtag) {
         if (onlySeeFollowing) {

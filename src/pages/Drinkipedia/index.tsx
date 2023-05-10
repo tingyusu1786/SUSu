@@ -9,6 +9,9 @@ import SingleItem from './SingleItem';
 import BreadcrumbNav from './BreadcrumbNav';
 import { Brand } from '../../interfaces/interfaces';
 
+//todo: [catalogueBrandName, setCatalogueBrandName] 從catalogueBrandObj拿？
+//todo: [brands, setBrands] 從infoSlice拿
+
 function Catalogue() {
   const { catalogueBrandId } = useParams<{ catalogueBrandId: string }>();
   const { catalogueItemId } = useParams<{ catalogueItemId: string }>();
@@ -29,7 +32,6 @@ function Catalogue() {
   }, []);
 
   useEffect(() => {
-    // setCatalogueBrandName(undefined); // to clear out the last state
     const currentBrand = brands?.find((brand) => brand.brandId === catalogueBrandId);
     const currentBrandName = currentBrand && currentBrand.name;
     setCatalogueBrandName(currentBrandName);

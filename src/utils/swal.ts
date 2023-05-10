@@ -2,13 +2,10 @@ import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
 import { BellIcon } from '@heroicons/react/24/outline';
 import { SmileyWink } from '@phosphor-icons/react';
-// import SmileyWink from '../images/SmileyWink.svg';
-import Meet from '../images/Meet.gif';
 const MySwal = withReactContent(Swal);
 
 const Toast = MySwal.mixin({
   toast: true,
-  // html: html,
   iconColor: '#4ade80',
   showConfirmButton: false,
   position: 'top-end',
@@ -45,28 +42,6 @@ const Success = Swal.mixin({
   hideClass: {
     popup: 'animate__animated animate__faster animate__zoomOut',
   },
-});
-
-const Test = Swal.mixin({
-  // icon: 'success',
-  iconColor: '#4ade80',
-  iconHtml: 'ü',
-  backdrop: '',
-  customClass: {
-    icon: 'pt-2 px-1',
-    popup: 'rotate-6',
-    // container: 'bg-white bg-opacity-40', //大的
-  },
-  showClass: {
-    popup: 'animate__animated animate__faster animate__zoomIn',
-    icon: 'animate__animated animate__rubberBand animate__repeat-2',
-  },
-  hideClass: {
-    popup: 'animate__animated animate__faster animate__zoomOut',
-  },
-  confirmButtonColor: '#4ade80',
-  color: '#171717',
-  background: '#f5f5f5',
 });
 
 const Warning = Swal.mixin({
@@ -130,15 +105,6 @@ const swal = {
   toast(html: JSX.Element) {
     Toast.fire({ html });
   },
-  test(title: string, text: string, confirmButtonText: string) {
-    Test.fire({ title, text, confirmButtonText });
-  },
 };
-
-// Toast.fire({
-//   icon: 'success',
-//   title: 'Signed up successful 🫰',
-//   confirmButtonText: 'ya',
-// });
 
 export default swal;
