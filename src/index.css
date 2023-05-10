@@ -20,7 +20,6 @@
     -webkit-appearance: none;
     margin: 0;
   }
-
   input[type='number'] {
     -moz-appearance: textfield;
   }
@@ -39,11 +38,6 @@
   .bg-boxes {
     background-image: linear-gradient(#beefce 1px, transparent 1px), linear-gradient(to right, #beefce 1px, #f6f6f9 1px);
     background-size: 20px 20px;
-  }
-  .bg-boxes-revert- {
-    background-image: linear-gradient(#beefce 1px, transparent 1px), linear-gradient(to right, #beefce 1px, #f6f6f9 1px);
-    background-size: 20px 20px;
-    /* transform: translateY(45deg); */
   }
   .bg-boxes-diag {
     background-color: #f6f6f9;
@@ -76,17 +70,9 @@
   stroke-width: 1px;
 }
 
-/*
- * Default color scale
- */
-
 .react-calendar-heatmap .color-empty {
   fill: #eeeeee;
 }
-
-/*
- * Github color scale
- */
 
 .react-calendar-heatmap .color-gitlab-0 {
   fill: #ededed;
