@@ -4,7 +4,8 @@
 
 @layer base {
   :root {
-    font-family: 'sayger', 'tp-bold', 'sans-serif';
+    font-family: 'sayger', 'TaipeiSansTCBeta-Bold', 'sans-serif';
+    font-weight: 900;
     color: #171717;
     box-sizing: border-box;
   }
@@ -59,11 +60,6 @@
 @font-face {
   font-family: 'sayger';
   src: url('../public/fonts/Sayger.otf');
-}
-
-@font-face {
-  font-family: 'tp-bold';
-  src: url('../public/fonts/TaipeiSansTCBeta-Bold.ttf');
 }
 
 .react-calendar-heatmap text {
