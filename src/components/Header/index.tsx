@@ -1,21 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
+import { doc, DocumentSnapshot, DocumentReference, DocumentData, onSnapshot } from 'firebase/firestore';
 import { db } from '../../services/firebase';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { showNotification, closeNotification, showSearch, closeSearch, showAuth } from '../../app/popUpSlice';
 import { signOutStart, signOutSuccess, signOutFail } from '../../app/authSlice';
 import NotificationsList from '../../components/NotificationsModal/';
 import { Notification } from '../../interfaces/interfaces';
-import { doc, DocumentSnapshot, DocumentReference, DocumentData, onSnapshot } from 'firebase/firestore';
 import dbApi from '../../utils/dbApi';
 import authApi from '../../utils/authApi';
-import { MagnifyingGlassIcon } from '@heroicons/react/24/solid';
-import { BellIcon } from '@heroicons/react/24/outline';
 import swal from '../../utils/swal';
-import { CaretCircleRight, CaretCircleUpDown } from '@phosphor-icons/react';
+import { CaretCircleRight, BellSimple, MagnifyingGlass } from '@phosphor-icons/react';
 
 function NotificationsListener() {
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
+  // eslint-disable-next-line
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const initSnap = useRef(true);
   const notificationsLength = useRef(0);
@@ -51,7 +50,7 @@ function NotificationsListener() {
     return unsubscribe;
   }, [currentUserId]);
 
-  const fireNotification = ({ authorId, authorName, content, postId, type, unread }: Notification) => {
+  const fireNotification = ({ authorId, authorName, content, postId, type }: Notification) => {
     let html: JSX.Element = <></>;
     switch (type) {
       case 'follow': {
@@ -102,47 +101,6 @@ function NotificationsListener() {
   return <></>;
 }
 
-function ScreenSize() {
-  const [width, setWidth] = useState(window.innerWidth);
-  const [height, setHeight] = useState(window.innerHeight);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setWidth(window.innerWidth);
-      setHeight(window.innerHeight);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const getSize = () => {
-    let size: string;
-    if (width >= 1536) {
-      size = 'over 2xl';
-    } else if (width > 1279) {
-      size = '2xl';
-    } else if (width > 1023) {
-      size = 'xl';
-    } else if (width > 767) {
-      size = 'lg';
-    } else if (width > 639) {
-      size = 'md';
-    } else if (width > 399) {
-      size = 'sm';
-    } else {
-      size = 'xs';
-    }
-
-    return size;
-  };
-
-  return (
-    <span className='absolute left-0 top-0'>
-      &nbsp;&nbsp;[{getSize()}]: {width}px x {height}px
-    </span>
-  );
-}
-
 function Header() {
   const dispatch = useAppDispatch();
   const userId = useAppSelector((state) => state.auth.currentUserId);
@@ -189,7 +147,6 @@ function Header() {
     { name: 'DRINKIPEDIA', to: '/drinkipedia' },
     { name: 'INSPIRATION', to: '/inspiration' },
   ];
-  const location = useLocation();
 
   return (
     <header
@@ -224,14 +181,16 @@ function Header() {
           }`}
         >
           {navLi.map((li) => (
-            <Link
+            <NavLink
               to={li.to}
-              className={`flex h-full items-center justify-center hover:bg-neutral-100`}
+              className={({ isActive }) =>
+                `flex h-full items-center justify-center hover:bg-neutral-100 ${isActive && 'bg-neutral-100'}`
+              }
               data-text={li.name}
               key={li.name}
             >
               {li.name}
-            </Link>
+            </NavLink>
           ))}
           <div
             className={`flex h-full items-center justify-center hover:bg-neutral-100`}
@@ -249,26 +208,33 @@ function Header() {
       <nav className='sm:hidden'>
         <ul className='flex gap-4'>
           <li>
-            <Link to='/' className=' mt-8 block pb-8 transition-all hover:text-green-400'>
+            <NavLink to='/' className=' mt-8 block pb-8 transition-all hover:text-green-400'>
               SUSü
-            </Link>
+            </NavLink>
           </li>
           {navLi.map((li) => (
             <li key={li.name}>
-              <Link
+              <NavLink
                 to={li.to}
-                className={`navLi ${
-                  location.pathname.includes(li.to) ? 'before:decoration-sky-400 before:decoration-wavy' : ''
-                }`}
+                className={({ isActive }) => `navLi ${isActive && 'before:decoration-sky-400 before:decoration-wavy'}`}
                 data-text={li.name}
               >
                 {li.name}
-              </Link>
+              </NavLink>
             </li>
           ))}
           <li>
-            <MagnifyingGlassIcon
+            {/*<MagnifyingGlassIcon
               className='mt-8 h-5 w-5 cursor-pointer text-neutral-900 transition-all duration-150 hover:text-green-400'
+              onClick={() => {
+                isSearchShown ? dispatch(closeSearch()) : dispatch(showSearch());
+              }}
+            />*/}
+            <MagnifyingGlass
+              size={20}
+              color='#171717'
+              weight='bold'
+              className='mt-8 h-5 w-5 cursor-pointer  transition-all duration-150 hover:fill-green-400'
               onClick={() => {
                 isSearchShown ? dispatch(closeSearch()) : dispatch(showSearch());
               }}
@@ -318,9 +284,14 @@ function Header() {
                 dropdownShown.profile ? 'h-[30vh] shadow-lg' : 'h-0 shadow-none'
               }`}
             >
-              <Link to={`/profile/${userId}`} className='flex h-full items-center justify-center hover:bg-neutral-100'>
+              <NavLink
+                to={`/profile/${userId}`}
+                className={({ isActive }) =>
+                  `flex h-full items-center justify-center hover:bg-neutral-100 ${isActive && 'bg-neutral-100'}`
+                }
+              >
                 profile
-              </Link>
+              </NavLink>
               <div
                 className='flex h-full items-center justify-center hover:bg-neutral-100'
                 onClick={() => {
@@ -337,8 +308,12 @@ function Header() {
               </div>
             </div>
           </div>
-          <BellIcon
-            className='h-5 w-5 cursor-pointer text-neutral-900 transition-all duration-100 hover:text-green-400 sm:hidden'
+
+          <BellSimple
+            size={20}
+            color='#171717'
+            weight='bold'
+            className='h-5 w-5 cursor-pointer transition-all duration-100 hover:fill-green-400 sm:hidden'
             onClick={() => {
               isNotificationShown ? dispatch(closeNotification()) : dispatch(showNotification());
             }}
