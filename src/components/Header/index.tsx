@@ -1,106 +1,12 @@
-/* eslint-disable no-unused-vars */
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { doc, DocumentSnapshot, DocumentReference, DocumentData, onSnapshot } from 'firebase/firestore';
-import { db } from '../../services/firebase';
+import { CaretCircleRight, BellSimple, MagnifyingGlass } from '@phosphor-icons/react';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { showNotification, closeNotification, showSearch, closeSearch, showAuth } from '../../app/popUpSlice';
 import { signOutStart, signOutSuccess, signOutFail } from '../../app/authSlice';
 import NotificationsList from '../../components/NotificationsModal/';
-import { Notification } from '../../interfaces/interfaces';
-import dbApi from '../../utils/dbApi';
 import authApi from '../../utils/authApi';
 import swal from '../../utils/swal';
-import { CaretCircleRight, BellSimple, MagnifyingGlass } from '@phosphor-icons/react';
-
-function NotificationsListener() {
-  const currentUserId = useAppSelector((state) => state.auth.currentUserId);
-  // eslint-disable-next-line
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const initSnap = useRef(true);
-  const notificationsLength = useRef(0);
-
-  let currentUserRef: DocumentReference<DocumentData> | undefined;
-
-  if (currentUserId) {
-    currentUserRef = doc(db, 'users', currentUserId);
-  }
-
-  useEffect(() => {
-    if (!currentUserRef) {
-      return;
-    }
-    fetchNotifications(currentUserRef);
-    const unsubscribe = onSnapshot(currentUserRef, async (docSnapshot: DocumentSnapshot) => {
-      const newNotifications = docSnapshot
-        .data()
-        ?.notifications?.reverse()
-        .filter((notif: any) => notif.authorId !== currentUserId);
-
-      !initSnap.current && setNotifications(newNotifications);
-      !initSnap.current &&
-        newNotifications &&
-        newNotifications.length > notificationsLength.current &&
-        fireNotification(newNotifications[0]);
-      if (newNotifications) {
-        notificationsLength.current = newNotifications.length;
-      }
-      initSnap.current = false;
-    });
-
-    return unsubscribe;
-  }, [currentUserId]);
-
-  const fireNotification = ({ authorId, authorName, content, postId, type }: Notification) => {
-    let html: JSX.Element;
-    switch (type) {
-      case 'follow': {
-        html = (
-          <a href={`/profile/${authorId}`} className='group text-neutral-500'>
-            <span className='group-hover:text-green-400 '>{authorName}</span> started following you!
-          </a>
-        );
-        break;
-      }
-      case 'like': {
-        html = (
-          <a href={`/log/${postId}`} className='group text-neutral-500'>
-            {authorName} liked your&nbsp;
-            <span className='group-hover:text-green-400 '>log</span>!
-          </a>
-        );
-        break;
-      }
-      case 'comment': {
-        html = (
-          <a href={`/log/${postId}`} className='group text-neutral-500'>
-            {authorName} commented <q className='text-neutral-900'>{content}</q> <span>on your&nbsp;</span>
-            <span className='group-hover:text-green-400 '>log</span>!
-          </a>
-        );
-        break;
-      }
-    }
-    swal.toast(html);
-  };
-
-  const fetchNotifications = async (currentUserRef: DocumentReference<DocumentData> | undefined) => {
-    if (!currentUserRef) {
-      return;
-    }
-    const currentUserDoc = await dbApi.getDoc(currentUserRef);
-    if (!currentUserDoc.exists()) {
-      alert('No such user!');
-      return;
-    }
-    const currentUserData = currentUserDoc.data();
-    const currentUserNotifications =
-      currentUserData?.notifications?.reverse().filter((notif: any) => notif.authorId !== currentUserId) || [];
-    notificationsLength.current = currentUserNotifications.length;
-    setNotifications(currentUserNotifications);
-  };
-  return <></>;
-}
 
 function Header() {
   const dispatch = useAppDispatch();
@@ -260,8 +166,6 @@ function Header() {
       className={`sticky top-0 z-40 flex h-16 w-screen items-center justify-between border-b-4 border-green-400 bg-neutral-100 px-16 transition-[padding] duration-300 md:px-8 sm:px-5`}
       onClick={closeDropdown}
     >
-      {/*{<ScreenSize />}*/}
-      {/*<NotificationsListener />*/}
       {smNavLiDropdown()}
       <Link to='/' className='mt-1 hidden transition-all hover:text-green-400 sm:block sm:text-3xl'>
         SUSü
@@ -296,14 +200,7 @@ function Header() {
         </ul>
       </nav>
 
-      {!isSignedIn && (
-        <div className='group relative cursor-pointer ' onClick={() => dispatch(showAuth())}>
-          <span className='decoration-2 underline-offset-2 group-hover:underline'>sign in</span>
-          <span className='md:hidden'>&nbsp;to see your profile and notifications!</span>
-        </div>
-      )}
-
-      {isSignedIn && (
+      {isSignedIn ? (
         <div className='flex items-center gap-3'>
           <div className='overflow-hidden text-ellipsis whitespace-nowrap text-center lg:max-w-[calc(100vw-128px-390px-180px)] md:hidden'>
             Hi {currentUserName}
@@ -323,7 +220,7 @@ function Header() {
             className='cursor-pointer transition-all duration-100 hover:fill-green-400 sm:hidden'
             onClick={toggleNotificationShown}
           />
-          {isNotificationShown && <NotificationsList />}
+
           <div
             onClick={handleSignOut}
             className='cursor-pointer scroll-px-2.5 text-neutral-500 decoration-2 underline-offset-2 hover:underline sm:hidden'
@@ -331,7 +228,13 @@ function Header() {
             sign out
           </div>
         </div>
+      ) : (
+        <div className='group relative cursor-pointer ' onClick={() => dispatch(showAuth())}>
+          <span className='decoration-2 underline-offset-2 group-hover:underline'>sign in</span>
+          <span className='md:hidden'>&nbsp;to see your profile and notifications!</span>
+        </div>
       )}
+      <NotificationsList />
     </header>
   );
 }
