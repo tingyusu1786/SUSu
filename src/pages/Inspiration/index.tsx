@@ -7,7 +7,7 @@ import { db } from '../../services/firebase';
 import { collection, doc, getDoc, getDocs, query, where, DocumentData } from 'firebase/firestore';
 import { StarIcon as SolidStar } from '@heroicons/react/24/solid';
 import { ReactComponent as ShootingStar } from '../../assets/ShootingStar.svg';
-import { MapTrifold, ArrowDown } from '@phosphor-icons/react';
+import { MapTrifold, Star } from '@phosphor-icons/react';
 
 function Inspiration() {
   type RandomItem = {
@@ -53,7 +53,6 @@ function Inspiration() {
   useEffect(() => {
     if (Object.keys(allBrandsInfo).length > 0) return;
     fetchAllBrandsInfo();
-    // eslint-disable-next-line
   }, []);
 
   const fetchAllBrandsInfo = async () => {
@@ -74,7 +73,7 @@ function Inspiration() {
   };
 
   const scrollToMapEnd = () => {
-    mapRef!.current!.scrollIntoView({ block: 'end', behavior: 'smooth' });
+    mapRef?.current?.scrollIntoView({ block: 'end', behavior: 'smooth' });
   };
 
   const handleClickMapBar = () => {
@@ -163,7 +162,7 @@ function Inspiration() {
 
   return (
     <main className='bg-boxes relative z-0 min-h-[calc(100vh-64px)] bg-fixed p-10 sm:p-5'>
-      <h1 className='pageTitle mb-5'>Can't decide? Leave it to us!</h1>
+      <h1 className='pageTitle mb-5'>Can&rsquo;t decide? Leave it to us!</h1>
       <div className='mx-auto max-w-[960px]'>
         <span className='mb-3 mr-3 inline-block before:mr-2 before:content-["✦"]'>filter some brands</span>
         <span
@@ -215,7 +214,7 @@ function Inspiration() {
                 onChange={handleRatingChange}
               />
               <span className='flex items-center gap-1'>
-                <SolidStar className='mb-1 w-5 text-neutral-900' />
+                <Star size={18} color='#171717' weight='fill' className='mb-1' />
                 {num}+
               </span>
             </label>
@@ -231,7 +230,7 @@ function Inspiration() {
               getUserPosition();
             }}
           >
-            I'm feeling lucky :)
+            I&rsquo;m feeling lucky :)
           </button>
         </div>
       </div>
@@ -245,14 +244,13 @@ function Inspiration() {
                 <Link to={`/drinkipedia/${randomItem.brandId}`}>
                   <div className=' text-4xl transition-all duration-200 hover:-translate-y-1'>{randomItem.brand}</div>
                 </Link>
-                {/*<span className='mr-2 lg:hidden'>'s</span>*/}
                 <Link to={`/drinkipedia/${randomItem.brandId}/${randomItem.itemId}`}>
                   <div className='ransition-all mr-1 text-5xl duration-200 hover:-translate-y-1'>{randomItem.name}</div>
                 </Link>
               </div>
               {randomItem.averageRating && (
                 <div className='flex items-center justify-center'>
-                  <SolidStar className='mb-1 w-5 text-amber-400' />
+                  <Star size={18} color='#fbbf24' weight='fill' className='mb-1' />
                   <span className=''>
                     &nbsp;{randomItem.averageRating} ({randomItem.numRatings})
                   </span>
