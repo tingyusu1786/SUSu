@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { doc, DocumentSnapshot, DocumentReference, DocumentData, onSnapshot } from 'firebase/firestore';
@@ -51,7 +52,7 @@ function NotificationsListener() {
   }, [currentUserId]);
 
   const fireNotification = ({ authorId, authorName, content, postId, type }: Notification) => {
-    let html: JSX.Element = <></>;
+    let html: JSX.Element;
     switch (type) {
       case 'follow': {
         html = (
@@ -137,8 +138,6 @@ function Header() {
         swal.error('oh no!', 'something went wrong...try again later', 'ok');
         dispatch(signOutFail(error));
       }
-    } else {
-      return;
     }
   };
 
@@ -148,60 +147,122 @@ function Header() {
     { name: 'INSPIRATION', to: '/inspiration' },
   ];
 
+  const closeDropdown = () => {
+    Object.values(dropdownShown).some((dropdown) => dropdown === true) &&
+      setDropdownShown({ profile: false, navLi: false });
+    isNotificationShown && dispatch(closeNotification());
+  };
+
+  const toggleDropdown = (type: 'navLi' | 'profile') => {
+    if (isNotificationShown) return;
+    const newShown = {
+      navLi: type === 'navLi',
+      profile: type === 'profile',
+    };
+    setDropdownShown(newShown);
+  };
+
+  const toggleNotificationShown = () => {
+    isNotificationShown ? dispatch(closeNotification()) : dispatch(showNotification());
+  };
+
+  const toggleSearchShown = () => {
+    isSearchShown ? dispatch(closeSearch()) : dispatch(showSearch());
+  };
+
+  const smProfileDropdown = () => (
+    <div
+      className='group hidden sm:block'
+      onClick={() => {
+        toggleDropdown('profile');
+      }}
+    >
+      <img
+        src={currentUserphotoURL}
+        alt=''
+        className='box-content h-10 w-10 min-w-[40px] cursor-pointer rounded-full border-2 border-solid border-neutral-900 object-cover transition-all duration-100 hover:border-green-400 '
+      />
+      <div
+        className={`absolute left-0 top-[64px] grid w-screen grid-rows-[repeat(3,10vh)_1fr] items-center overflow-hidden whitespace-nowrap text-center transition-[height] duration-500 ${
+          dropdownShown.profile ? 'h-[calc(100vh-64px)] ' : 'h-0 shadow-none'
+        }`}
+      >
+        <NavLink
+          to={`/profile/${userId}`}
+          className={({ isActive }) =>
+            `flex h-full cursor-pointer items-center justify-center  hover:bg-neutral-100 ${
+              isActive ? 'bg-neutral-100' : 'bg-white'
+            }`
+          }
+        >
+          profile
+        </NavLink>
+        <div
+          className='flex h-full cursor-pointer items-center justify-center bg-white hover:bg-neutral-100'
+          onClick={toggleNotificationShown}
+        >
+          notifications
+        </div>
+        <div
+          className={`flex h-full cursor-pointer items-center justify-center bg-white text-neutral-500 shadow-lg hover:bg-neutral-100`}
+          onClick={handleSignOut}
+        >
+          sign out
+        </div>
+        <div className='h-full bg-transparent' onClick={closeDropdown} />
+      </div>
+    </div>
+  );
+
+  const smNavLiDropdown = () => (
+    <div className='hidden sm:block'>
+      <CaretCircleRight
+        size={44}
+        color='#171717'
+        weight='thin'
+        className={`cursor-pointer ${dropdownShown.navLi && 'rotate-90'} transition-all duration-300`}
+        onClick={() => {
+          toggleDropdown('navLi');
+        }}
+      />
+      <div
+        className={`absolute left-0 top-[64px] grid w-screen grid-rows-[repeat(4,10vh)_1fr] items-center overflow-hidden whitespace-nowrap  text-center transition-[height] duration-300 ${
+          dropdownShown.navLi ? 'h-[calc(100vh-64px)] ' : 'h-0 shadow-none'
+        }`}
+      >
+        {navLi.map((li) => (
+          <NavLink
+            to={li.to}
+            className={({ isActive }) =>
+              `flex h-full cursor-pointer items-center justify-center bg-white hover:bg-neutral-100 ${
+                isActive && 'bg-neutral-100'
+              }`
+            }
+            data-text={li.name}
+            key={li.name}
+          >
+            {li.name}
+          </NavLink>
+        ))}
+        <div
+          className={`flex h-full cursor-pointer items-center justify-center bg-white shadow-lg hover:bg-neutral-100`}
+          onClick={toggleSearchShown}
+        >
+          SEARCH
+        </div>
+        <div className='h-full bg-transparent' onClick={closeDropdown} />
+      </div>
+    </div>
+  );
+
   return (
     <header
       className={`sticky top-0 z-40 flex h-16 w-screen items-center justify-between border-b-4 border-green-400 bg-neutral-100 px-16 transition-[padding] duration-300 md:px-8 sm:px-5`}
-      onClick={() => {
-        Object.values(dropdownShown).some((dropdown) => dropdown === true) &&
-          setDropdownShown({ profile: false, navLi: false });
-        isNotificationShown && dispatch(closeNotification());
-      }}
+      onClick={closeDropdown}
     >
       {/*{<ScreenSize />}*/}
-      <NotificationsListener />
-      <div className={`hidden sm:block`}>
-        <CaretCircleRight
-          size={44}
-          color='#171717'
-          weight='thin'
-          className={`cursor-pointer ${dropdownShown.navLi && 'rotate-90'} transition-all duration-300`}
-          onClick={() => {
-            !isNotificationShown &&
-              setDropdownShown((prev) => {
-                const newShown = { ...prev };
-                newShown.navLi = !newShown.navLi;
-                newShown.profile = false;
-                return newShown;
-              });
-          }}
-        />
-        <div
-          className={`absolute left-0 top-[64px] grid w-screen cursor-pointer grid-rows-4 items-center overflow-hidden whitespace-nowrap bg-white text-center transition-[height] duration-300 ${
-            dropdownShown.navLi ? 'h-[40vh] shadow-lg' : 'h-0 shadow-none'
-          }`}
-        >
-          {navLi.map((li) => (
-            <NavLink
-              to={li.to}
-              className={({ isActive }) =>
-                `flex h-full items-center justify-center hover:bg-neutral-100 ${isActive && 'bg-neutral-100'}`
-              }
-              data-text={li.name}
-              key={li.name}
-            >
-              {li.name}
-            </NavLink>
-          ))}
-          <div
-            className={`flex h-full items-center justify-center hover:bg-neutral-100`}
-            onClick={() => {
-              dispatch(showSearch());
-            }}
-          >
-            SEARCH
-          </div>
-        </div>
-      </div>
+      {/*<NotificationsListener />*/}
+      {smNavLiDropdown()}
       <Link to='/' className='mt-1 hidden transition-all hover:text-green-400 sm:block sm:text-3xl'>
         SUSü
       </Link>
@@ -224,20 +285,12 @@ function Header() {
             </li>
           ))}
           <li>
-            {/*<MagnifyingGlassIcon
-              className='mt-8 h-5 w-5 cursor-pointer text-neutral-900 transition-all duration-150 hover:text-green-400'
-              onClick={() => {
-                isSearchShown ? dispatch(closeSearch()) : dispatch(showSearch());
-              }}
-            />*/}
             <MagnifyingGlass
               size={20}
               color='#171717'
               weight='bold'
-              className='mt-8 h-5 w-5 cursor-pointer  transition-all duration-150 hover:fill-green-400'
-              onClick={() => {
-                isSearchShown ? dispatch(closeSearch()) : dispatch(showSearch());
-              }}
+              className='mt-8 cursor-pointer transition-all duration-150 hover:fill-green-400'
+              onClick={toggleSearchShown}
             />
           </li>
         </ul>
@@ -258,65 +311,17 @@ function Header() {
           <Link to={`/profile/${userId}`} className='group relative sm:hidden'>
             <img
               src={currentUserphotoURL}
-              alt=''
+              alt={currentUserName || 'user avatar'}
               className='box-content h-10 w-10 min-w-[40px] rounded-full border-2 border-solid border-neutral-900 object-cover transition-all duration-100 hover:border-green-400 '
             />
           </Link>
-          <div
-            className='group hidden cursor-pointer sm:block'
-            onClick={() => {
-              !isNotificationShown &&
-                setDropdownShown((prev) => {
-                  const newShown = { ...prev };
-                  newShown.profile = !newShown.profile;
-                  newShown.navLi = false;
-                  return newShown;
-                });
-            }}
-          >
-            <img
-              src={currentUserphotoURL}
-              alt=''
-              className='box-content h-10 w-10 min-w-[40px] rounded-full border-2 border-solid border-neutral-900 object-cover transition-all duration-100 hover:border-green-400 '
-            />
-            <div
-              className={`absolute left-0 top-[64px] grid w-screen cursor-pointer grid-rows-3 items-center overflow-hidden whitespace-nowrap bg-white text-center transition-[height] duration-300 ${
-                dropdownShown.profile ? 'h-[30vh] shadow-lg' : 'h-0 shadow-none'
-              }`}
-            >
-              <NavLink
-                to={`/profile/${userId}`}
-                className={({ isActive }) =>
-                  `flex h-full items-center justify-center hover:bg-neutral-100 ${isActive && 'bg-neutral-100'}`
-                }
-              >
-                profile
-              </NavLink>
-              <div
-                className='flex h-full items-center justify-center hover:bg-neutral-100'
-                onClick={() => {
-                  isNotificationShown ? dispatch(closeNotification()) : dispatch(showNotification());
-                }}
-              >
-                notifications
-              </div>
-              <div
-                className={`flex h-full items-center justify-center text-neutral-500 hover:bg-neutral-100`}
-                onClick={handleSignOut}
-              >
-                sign out
-              </div>
-            </div>
-          </div>
-
+          {smProfileDropdown()}
           <BellSimple
             size={20}
             color='#171717'
             weight='bold'
-            className='h-5 w-5 cursor-pointer transition-all duration-100 hover:fill-green-400 sm:hidden'
-            onClick={() => {
-              isNotificationShown ? dispatch(closeNotification()) : dispatch(showNotification());
-            }}
+            className='cursor-pointer transition-all duration-100 hover:fill-green-400 sm:hidden'
+            onClick={toggleNotificationShown}
           />
           {isNotificationShown && <NotificationsList />}
           <div
