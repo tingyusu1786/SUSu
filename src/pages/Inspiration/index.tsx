@@ -1,11 +1,10 @@
-import dbApi from '../../utils/dbApi';
-import { Link } from 'react-router-dom';
 import { useState, useEffect, useRef, ChangeEvent } from 'react';
+import { Link } from 'react-router-dom';
+import dbApi from '../../utils/dbApi';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { addAllBrands } from '../../app/infoSlice';
 import { db } from '../../services/firebase';
 import { collection, doc, getDoc, getDocs, query, where, DocumentData } from 'firebase/firestore';
-import { StarIcon as SolidStar } from '@heroicons/react/24/solid';
 import { ReactComponent as ShootingStar } from '../../assets/ShootingStar.svg';
 import { MapTrifold, Star } from '@phosphor-icons/react';
 
@@ -31,6 +30,17 @@ function Inspiration() {
   const [locationErrorMessage, setLocationErrorMessage] = useState<string>();
   const mapRef = useRef<HTMLIFrameElement | null>(null);
 
+  //#get all brands and send to redux
+  // useEffect(() => {
+  //   const fetchAllBrandsInfo = async () => {
+  //     const allBrands = await dbApi.getAllBrandsInfo();
+  //     dispatch(addAllBrands({ allBrands }));
+  //   };
+  //   if (Object.keys(allBrandsInfo).length === 0) {
+  //     fetchAllBrandsInfo();
+  //   }
+  // }, []);
+
   const getUserPosition = () => {
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -38,7 +48,6 @@ function Inspiration() {
         setCurrentLocation({ latitude, longitude });
       },
       (error) => {
-        console.log('Error occurred. Error code: ' + error.code);
         const errorMessage: { [key: string]: string } = {
           '0': 'Unknown error occured, try again later',
           '1': 'User location permission denied. Please go to browser setting to grant permission  to see stores near you.',
@@ -48,16 +57,6 @@ function Inspiration() {
         setLocationErrorMessage(errorMessage[error.code]);
       }
     );
-  };
-
-  useEffect(() => {
-    if (Object.keys(allBrandsInfo).length > 0) return;
-    fetchAllBrandsInfo();
-  }, []);
-
-  const fetchAllBrandsInfo = async () => {
-    const allBrands = await dbApi.getAllBrandsInfo();
-    dispatch(addAllBrands({ allBrands }));
   };
 
   const handleBrandsChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -81,24 +80,24 @@ function Inspiration() {
     setTimeout(() => scrollToMapEnd(), 200);
   };
 
-  const getRandomItem = async (selectedBrands: string[], selectedRating: number | undefined) => {
+  const getRandomItem = async (filterBrands: string[], filterRating: number | undefined) => {
     setRandomItem(undefined);
     setNoItemMessage(undefined);
     setIsFinding(true);
 
     let randomItemFromDb: DocumentData | RandomItem | undefined = undefined;
 
-    if (selectedBrands.length === 0) {
-      selectedBrands = Object.keys(allBrandsInfo);
+    if (filterBrands.length === 0) {
+      filterBrands = Object.keys(allBrandsInfo);
     }
     let foundItem = false;
-    const indexQueue = Array(selectedBrands.length)
+    const indexQueue = Array(filterBrands.length)
       .fill('')
       .map((_, index) => index);
     brandLoop: while (indexQueue.length > 0) {
       // 從user選的裡面選一個brand
       const randomQueueIndex = Math.floor(Math.random() * indexQueue.length);
-      const randomBrandId = selectedBrands[indexQueue[randomQueueIndex]];
+      const randomBrandId = filterBrands[indexQueue[randomQueueIndex]];
       // 把選到的剔除
       indexQueue.splice(randomQueueIndex, 1);
 
@@ -117,14 +116,14 @@ function Inspiration() {
         let itemsRef;
 
         // 拿出這個category的所有item
-        if (!selectedRating) {
-          itemsRef = query(collection(db, 'brands', randomBrandId, 'categories', randomCategoryId, 'items'));
-        } else {
+        if (filterRating) {
           // 有選rating的話變成拿出這個category的大於n分的所有item
           itemsRef = query(
             collection(db, 'brands', randomBrandId, 'categories', randomCategoryId, 'items'),
-            where('averageRating', '>=', selectedRating)
+            where('averageRating', '>=', filterRating)
           );
+        } else {
+          itemsRef = query(collection(db, 'brands', randomBrandId, 'categories', randomCategoryId, 'items'));
         }
 
         const itemsSnapshot = await getDocs(itemsRef);
@@ -150,13 +149,11 @@ function Inspiration() {
         };
         setRandomItem(randomItemFromDb as RandomItem);
         setTimeout(() => setIsFinding(false), 1500);
-        // setIsFinding(false);
         foundItem = true;
         break brandLoop;
       }
     }
     setTimeout(() => setIsFinding(false), 1500);
-    // setIsFinding(false);
     !foundItem && setNoItemMessage('no item ☹ try another brand or lower the rating');
   };
 

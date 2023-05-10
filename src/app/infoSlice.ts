@@ -1,12 +1,10 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState, AppThunk } from './store';
+import { Brand } from '../interfaces/interfaces';
 
 export interface infoState {
   brands: {
-    [brandId: string]: {
-      name: string;
-      photoURL: string;
-    };
+    [brandId: string]: Brand;
   };
   items: {
     [itemId: string]: {
@@ -34,14 +32,14 @@ export const infoSlice = createSlice({
   initialState,
   reducers: {
     addAllBrands: (state, action) => {
-      state.brands = action.payload.allBrands
+      state.brands = action.payload.allBrands;
     },
-    addBrand: (state, action) => {
-      state.brands[action.payload.brandId] = {
-        name: action.payload.name,
-        photoURL: action.payload.photoURL,
-      };
-    },
+    // addBrand: (state, action) => {
+    //   state.brands[action.payload.brandId] = {
+    //     name: action.payload.name,
+    //     photoURL: action.payload.photoURL,
+    //   };
+    // },
     addItem: (state, action) => {
       state.items[action.payload.itemId] = {
         name: action.payload.name,
@@ -65,5 +63,5 @@ export const infoSlice = createSlice({
   },
 });
 
-export const { addBrand, addItem, addUser, addAllBrands } = infoSlice.actions;
+export const { addItem, addUser, addAllBrands } = infoSlice.actions;
 export default infoSlice.reducer;

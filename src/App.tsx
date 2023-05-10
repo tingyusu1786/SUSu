@@ -11,6 +11,8 @@ import { onAuthStateChanged } from 'firebase/auth';
 import { auth, db } from './services/firebase';
 import { doc, setDoc, getDoc, collection, serverTimestamp } from 'firebase/firestore';
 import dbApi from './utils/dbApi';
+import commonApi from './utils/commonApi';
+import { addAllBrands } from './app/infoSlice';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -48,6 +50,23 @@ function App() {
     });
     return unsubscribe;
   }, []);
+
+  const loadAllBrands = () => {
+    return async (dispatch: any) => {
+      const allBrands = await commonApi.fetchAllBrandsInfo();
+      dispatch(addAllBrands({ allBrands }));
+    };
+  };
+
+  useEffect(() => {
+    dispatch(loadAllBrands());
+  }, []);
+
+  //#get all brands and send to redux
+  // useEffect(() => {
+  //   const allBrands = commonApi.fetchAllBrandsInfo();
+  //   dispatch(addAllBrands({ allBrands }));
+  // }, []);
 
   if (isLoading) {
     return (

@@ -2,7 +2,7 @@ import React from 'react';
 import { useAppSelector } from '../../app/hooks';
 import { Link } from 'react-router-dom';
 import { Post, Comment } from '../../interfaces/interfaces';
-import { getTimeDiff } from '../../utils/common';
+import commonApi from '../../utils/commonApi';
 import { Trash } from '@phosphor-icons/react';
 
 interface CommentsProps {
@@ -15,7 +15,7 @@ interface CommentsProps {
 
 const CommentDiv: React.FC<CommentsProps> = ({ post, postIndex, comment, commentIndex, handleDeleteComment }) => {
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
-  const timeDiff = getTimeDiff(comment.timeCreated);
+  const timeDiff = commonApi.getTimeDiff(comment.timeCreated);
 
   const date = comment.timeCreated?.toDate();
   const formattedTime = date?.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });

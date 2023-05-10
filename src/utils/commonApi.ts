@@ -1,7 +1,11 @@
 import { Timestamp } from 'firebase/firestore';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
+import dbApi from './dbApi';
+import { addAllBrands } from '../app/infoSlice';
 
-export const getTimeDiff = (timestamp: Timestamp): string => {
+// const dispatch = useAppDispatch();
+
+const getTimeDiff = (timestamp: Timestamp): string => {
   const now = new Date();
   const target = timestamp.toDate();
   const diff = now.getTime() - target.getTime();
@@ -36,3 +40,10 @@ export const getTimeDiff = (timestamp: Timestamp): string => {
     return 'just now';
   }
 };
+
+const fetchAllBrandsInfo = async () => {
+  const allBrands = await dbApi.getAllBrandsInfo();
+  return allBrands;
+};
+
+export default { getTimeDiff, fetchAllBrandsInfo };

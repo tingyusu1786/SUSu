@@ -1,20 +1,16 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from '@phosphor-icons/react';
+import { useAppSelector } from '../../app/hooks';
 
 interface BreadcrumProps {
-  catalogueBrandId: string | undefined;
+  pageBrandId: string | undefined;
   catalogueItemId: string | undefined;
-  catalogueBrandName: string | undefined;
   catalogueItemName: string | undefined;
 }
 
-const BreadcrumbNav: React.FC<BreadcrumProps> = ({
-  catalogueBrandId,
-  catalogueItemId,
-  catalogueBrandName,
-  catalogueItemName,
-}) => {
+const BreadcrumbNav: React.FC<BreadcrumProps> = ({ pageBrandId, catalogueItemId, catalogueItemName }) => {
+  const allBrandsInfo = useAppSelector((state) => state.info.brands);
   return (
     <nav className=''>
       <ol className='flex sm:flex-wrap'>
@@ -23,11 +19,11 @@ const BreadcrumbNav: React.FC<BreadcrumProps> = ({
             All Brands
           </Link>
         </li>
-        {catalogueBrandId && (
+        {pageBrandId && (
           <li className=''>
             <ArrowRight size={22} color='#737373' weight='regular' className='mx-1 -mt-1 inline-block' />
-            <Link to={`/drinkipedia/${catalogueBrandId}`} className='text-neutral-500 hover:text-neutral-700'>
-              {catalogueBrandName}
+            <Link to={`/drinkipedia/${pageBrandId}`} className='text-neutral-500 hover:text-neutral-700'>
+              {allBrandsInfo[pageBrandId]?.name || 'oops'}
             </Link>
           </li>
         )}

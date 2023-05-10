@@ -5,7 +5,7 @@ import { doc, DocumentSnapshot, DocumentReference, DocumentData, onSnapshot, upd
 import dbApi from '../../utils/dbApi';
 import { closeNotification } from '../../app/popUpSlice';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { getTimeDiff } from '../../utils/common';
+import commonApi from '../../utils/commonApi';
 import { Notification } from '../../interfaces/interfaces';
 import swal from '../../utils/swal';
 import { SmileyWink } from '@phosphor-icons/react';
@@ -114,9 +114,9 @@ function NotificationsList() {
       )}
       <div className='flex h-4/5 w-full flex-col items-center gap-2 '>
         {notifications.map((notification, index) => {
-          const timeDiff = getTimeDiff(notification.timeCreated);
+          const timeDiff = commonApi.getTimeDiff(notification.timeCreated);
           let html: JSX.Element = <></>;
-          let to: string = '';
+          let to = '';
           switch (notification.type) {
             case 'follow': {
               to = `/profile/${notification.authorId}`;

@@ -33,7 +33,7 @@ root.render(
           <Route path='/setting/:settingUserId' element={<Setting />} />
           <Route path='/feeds/:postId?' element={<Feeds />} />
           <Route path='/log/:logId' element={<Log />} />
-          <Route path='/drinkipedia/:catalogueBrandId?/:catalogueItemId?' element={<Drinkipedia />} />
+          <Route path='/drinkipedia/:pageBrandId?/:catalogueItemId?' element={<Drinkipedia />} />
           <Route path='/inspiration' element={<Inspiration />} />
           <Route path='*' element={<PageNotFound />} />
         </Route>

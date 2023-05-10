@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { useState, useEffect, ChangeEvent, KeyboardEvent, useRef } from 'react';
 import { db } from '../../services/firebase';
 import dbApi from '../../utils/dbApi';
@@ -38,7 +40,7 @@ interface PostsProps {
   currentPage: 'posts' | 'profile' | 'brand' | 'item' | 'log';
   logId?: string;
   profileUserId?: string;
-  catalogueBrandId?: string;
+  pageBrandId?: string;
   catalogueItemId?: string;
 }
 
@@ -47,7 +49,7 @@ const PostsFeed: React.FC<PostsProps> = ({
   currentPage,
   logId,
   profileUserId,
-  catalogueBrandId,
+  pageBrandId,
   catalogueItemId,
 }) => {
   const dispatch = useAppDispatch();
@@ -109,7 +111,7 @@ const PostsFeed: React.FC<PostsProps> = ({
       q = query(
         collection(db, 'posts'),
         and(
-          where('brandId', '==', catalogueBrandId),
+          where('brandId', '==', pageBrandId),
           or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
         ),
         orderBy('timeCreated', 'desc')
@@ -378,7 +380,7 @@ const PostsFeed: React.FC<PostsProps> = ({
         q = query(
           collection(db, 'posts'),
           and(
-            where('brandId', '==', catalogueBrandId),
+            where('brandId', '==', pageBrandId),
             where('hashtags', 'array-contains', hashtag),
             or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
           ),
@@ -390,7 +392,7 @@ const PostsFeed: React.FC<PostsProps> = ({
         q = query(
           collection(db, 'posts'),
           and(
-            where('brandId', '==', catalogueBrandId),
+            where('brandId', '==', pageBrandId),
             or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
           ),
           orderBy('timeCreated', 'desc'),
@@ -401,7 +403,7 @@ const PostsFeed: React.FC<PostsProps> = ({
         q = query(
           collection(db, 'posts'),
           and(
-            where('brandId', '==', catalogueBrandId),
+            where('brandId', '==', pageBrandId),
             where('hashtags', 'array-contains', hashtag),
             or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
           ),
@@ -412,7 +414,7 @@ const PostsFeed: React.FC<PostsProps> = ({
         q = query(
           collection(db, 'posts'),
           and(
-            where('brandId', '==', catalogueBrandId),
+            where('brandId', '==', pageBrandId),
             or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
           ),
           orderBy('timeCreated', 'desc'),

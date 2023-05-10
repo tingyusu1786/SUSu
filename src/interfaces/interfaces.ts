@@ -79,8 +79,5 @@ export interface Brand {
 }
 
 export interface BrandsInfo {
-  [brandId: string]: {
-    name: string;
-    photoURL: string;
-  };
+  [brandId: string]: Brand;
 }

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useState, useEffect, useRef, KeyboardEvent, ChangeEvent } from 'react';
 import { db } from '../../services/firebase'; //todo
 import { useNavigate } from 'react-router-dom';
@@ -6,7 +7,7 @@ import authApi from '../../utils/authApi';
 import { doc, setDoc, getDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../services/firebase';
-import { EyeIcon, EyeSlashIcon, HeartIcon } from '@heroicons/react/24/solid';
+import { Eye, EyeClosed } from '@phosphor-icons/react';
 import withReactContent from 'sweetalert2-react-content';
 import 'animate.css';
 import swal from '../../utils/swal';
@@ -20,7 +21,7 @@ function Authentication() {
   const isAuthShown = useAppSelector((state) => state.popUp.isAuthShown);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
   const [input, setInput] = useState({ name: '', email: '', password: '' });
-  const [haveAccount, setHaveAccount] = useState(false);
+  const [haveAccount, setHaveAccount] = useState(true);
   const [passwordType, setPasswordType] = useState('password');
   const navigate = useNavigate();
   const nameRef = useRef(null);
@@ -219,9 +220,9 @@ function Authentication() {
           continue with Google
         </button>
         <div className='flex w-full items-baseline justify-around gap-3 px-6'>
-          <div className='grow border-b border-solid border-gray-400'></div>
+          <div className='grow border-b border-solid border-neutral-400'></div>
           <span className='text-sm '>or</span>
-          <div className='grow border-b border-solid border-gray-400'></div>
+          <div className='grow border-b border-solid border-neutral-400'></div>
         </div>
         {!haveAccount && (
           <label className='flex w-full flex-col'>
@@ -230,7 +231,7 @@ function Authentication() {
               id='name'
               name='name'
               type='text'
-              className='h-10 w-full rounded-full border-2 border-solid border-gray-400 p-3 focus:outline-green-400'
+              className='h-10 w-full rounded-full border-2 border-solid border-neutral-400 p-3 focus:outline-green-400'
               value={input.name}
               onChange={handleInputChange}
               autoComplete='name'
@@ -244,7 +245,7 @@ function Authentication() {
             id='email'
             name='email'
             type='text'
-            className='h-10 w-full rounded-full border-2 border-solid border-gray-400 p-3 focus:outline-green-400'
+            className='h-10 w-full rounded-full border-2 border-solid border-neutral-400 p-3 focus:outline-green-400'
             value={input.email}
             onChange={handleInputChange}
             autoComplete={haveAccount ? 'email' : 'off'}
@@ -258,22 +259,28 @@ function Authentication() {
               id='password'
               type={passwordType}
               name='password'
-              className='h-10 w-full rounded-full border-2 border-solid border-gray-400 p-3 focus:outline-green-400'
+              className='h-10 w-full rounded-full border-2 border-solid border-neutral-400 p-3 focus:outline-green-400'
               value={input.password}
               onChange={handleInputChange}
               autoComplete={haveAccount ? 'current-password' : 'new-password'}
               required
             />
             {passwordType === 'password' ? (
-              <EyeSlashIcon
-                className='absolute right-4 top-[0.6rem] h-5 w-5 text-gray-400 hover:text-green-400'
+              <EyeClosed
+                size={20}
+                weight='bold'
+                color='#a3a3a3'
+                className='absolute right-4 top-[0.6rem] cursor-pointer hover:fill-green-400'
                 onClick={() => {
                   setPasswordType((prev) => (prev === 'password' ? 'text' : 'password'));
                 }}
               />
             ) : (
-              <EyeIcon
-                className='absolute right-4 top-[0.6rem] h-5 w-5 text-gray-400 hover:text-green-400'
+              <Eye
+                size={20}
+                weight='bold'
+                color='#a3a3a3'
+                className='absolute right-4 top-[0.6rem] cursor-pointer hover:fill-green-400'
                 onClick={() => {
                   setPasswordType((prev) => (prev === 'password' ? 'text' : 'password'));
                 }}

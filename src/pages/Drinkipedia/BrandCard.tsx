@@ -1,15 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { useAppSelector, useAppDispatch } from '../../app/hooks';
+/* eslint-disable react/prop-types */
 import { Link } from 'react-router-dom';
-import dbApi from '../../utils/dbApi';
 import { Brand } from '../../interfaces/interfaces';
-import { StarIcon, ChevronDoubleRightIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
+import { StarIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
 
 interface BrandProps {
   brand: Brand;
 }
-
-// sm:h-48 sm:even:-translate-y-0 sm:even:hover:-translate-y-3
 
 const BrandCard: React.FC<BrandProps> = ({ brand }) => {
   return (

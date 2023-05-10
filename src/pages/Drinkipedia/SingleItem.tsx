@@ -3,7 +3,7 @@ import PostsFeed from '../../components/PostsFeed/';
 import { StarIcon } from '@heroicons/react/24/solid';
 
 interface CatalogueProps {
-  catalogueBrandId: string | undefined;
+  pageBrandId: string | undefined;
   catalogueItemId: string | undefined;
   catalogueItemObj: any;
   catalogueBrandName?: string | undefined;

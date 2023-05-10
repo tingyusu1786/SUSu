@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { db } from '../services/firebase';
 import {
   collection,
@@ -21,11 +22,61 @@ import {
   arrayUnion,
   arrayRemove,
 } from 'firebase/firestore';
-import { BrandsInfo } from '../interfaces/interfaces';
+import { Brand } from '../interfaces/interfaces';
+import swal from './swal';
 
-interface dbApi {}
+// interface dbApi {}
 
 const dbApi = {
+  //#
+  async getAllBrandsInfo() {
+    try {
+      const querySnapshot = await getDocs(collection(db, 'brands'));
+      const allBrandsInfo: { [brandId: string]: Brand } = {};
+      querySnapshot.forEach((doc) => {
+        allBrandsInfo[doc.id] = { ...doc.data(), brandId: doc.id } as Brand;
+      });
+      return allBrandsInfo;
+    } catch {
+      swal.error('Something went wrong', 'try again later', 'ok');
+    }
+  },
+  //#
+  async getCategoriesIdAndName(brandId: string): Promise<string[][] | undefined> {
+    try {
+      const querySnapshot = await getDocs(collection(db, 'brands', brandId, 'categories'));
+      const documents: string[][] = [];
+      querySnapshot.forEach((doc) => {
+        const docInfo = [];
+        docInfo.push(doc.id);
+        if (doc.data() && doc.data().name) {
+          docInfo.push(doc.data().name);
+        }
+        documents.push(docInfo);
+      });
+      return documents;
+    } catch {
+      swal.error('Something went wrong', 'try again later', 'ok');
+    }
+  },
+  //#
+  async getItemsIdAndName(brandId: string, categoryId: string): Promise<string[][] | undefined> {
+    try {
+      const querySnapshot = await getDocs(collection(db, 'brands', brandId, 'categories', categoryId, 'items'));
+      let documents: string[][] = [];
+      querySnapshot.forEach((doc) => {
+        const docInfo = [doc.id];
+        if (doc.data() && doc.data().name) {
+          docInfo.push(doc.data().name);
+        }
+        documents = [...documents, docInfo];
+      });
+      return documents;
+    } catch {
+      swal.error('Something went wrong', 'try again later', 'ok');
+    }
+  },
+
   // todo: 應該要讓page都不用用到doc, db, ...
   async getDoc(docRef: DocumentReference) {
     const doc = await getDoc(docRef);
@@ -35,7 +86,7 @@ const dbApi = {
   async getDocField(docRef: DocumentReference, field: string) {
     const doc = await getDoc(docRef);
     if (!doc.exists()) {
-      console.log(`No such document!(${docRef})`);
+      swal.error('Something went wrong', 'try agin later', 'ok');
       return null;
     }
     const docData = doc.data();
@@ -45,25 +96,14 @@ const dbApi = {
   async getUserField(userId: string, field: string) {
     const userDoc = await getDoc(doc(db, 'users', userId));
     if (!userDoc.exists()) {
-      console.log(`No such user!(${userId})`);
+      swal.error('Something went wrong (user not found)', 'try agin later', 'ok');
       return null;
     }
     const docData = userDoc.data();
     const docField = docData[field];
     return docField;
   },
-  async getPostsWhere(userId?: string, brandId?: string, itemId?: string) {},
 
-  async getAllBrandsInfo() {
-    const querySnapshot = await getDocs(collection(db, 'brands'));
-    const allBrandsInfo: BrandsInfo = {};
-    querySnapshot.forEach((doc) => {
-      if (doc.data() && doc.data().name) {
-        allBrandsInfo[doc.id] = { name: doc.data().name, photoURL: doc.data().photoURL };
-      }
-    });
-    return allBrandsInfo;
-  },
   async getInfo(id: string | undefined, type: string, field: string) {
     if (id !== undefined) {
       let docRef;
