@@ -1,7 +1,7 @@
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { updateProfile } from 'firebase/auth';
-import { Link, useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { db, auth, storage } from '../../services/firebase';
 import { useState, useEffect, ChangeEvent } from 'react';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
@@ -24,6 +24,7 @@ function Setting() {
   });
   const [file, setFile] = useState<File | null>(null);
   const [imgPreview, setImgPreview] = useState<string>();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (currentUserId === null) return;
@@ -146,20 +147,20 @@ function Setting() {
   if (currentUserId !== settingUserId) {
     return (
       <main className='bg-boxes-diag relative flex min-h-[calc(100vh-64px)] items-center justify-center bg-fixed p-10 text-xl'>
-        you don't have access to this page
+        you don&lsquo;t have access to this page
       </main>
     );
   }
 
   return (
     <main className='bg-boxes-diag relative min-h-[calc(100vh-64px)] bg-fixed p-10 sm:p-5 sm:pr-10'>
-      <Link
-        to={`/profile/${currentUserId}`}
-        className='group left-10 top-10 flex items-start gap-2 text-lg text-neutral-500 hover:text-neutral-900'
+      <div
+        className=' group left-10 top-10 flex w-max cursor-pointer items-start gap-2 pr-5 text-lg text-neutral-500 hover:text-neutral-900'
+        onClick={() => navigate(-1)}
       >
         <ArrowLeftIcon className='w-6 text-neutral-500 group-hover:animate-arrowLeft' />
         back to profile
-      </Link>
+      </div>
       <h1 className='mb-6 mt-5 text-center text-3xl sm:my-3'>Edit Profile</h1>
       <div className='mx-auto grid max-w-[960px] grid-cols-[30%_70%] grid-rows-[auto_1fr_1fr_2fr] items-center gap-4'>
         <label className='group relative col-span-2 cursor-pointer justify-self-center'>
