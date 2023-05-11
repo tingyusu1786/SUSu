@@ -1,29 +1,34 @@
+/* eslint-disable no-prototype-builtins */
 import React, { useState, useEffect } from 'react';
 import CalendarHeatmapComponent from './CalendarHeatmapComponent';
 import Badges from './Badges/Badges';
-import { Timestamp } from 'firebase/firestore';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { addAllBrands } from '../../app/infoSlice';
 import dbApi from '../../utils/dbApi';
 import { ReactComponent as Streak } from '../../assets/Streak.svg';
 import { ReactComponent as Store } from '../../assets/Store.svg';
 import { ReactComponent as Expense } from '../../assets/Expense.svg';
+import { db } from '../../services/firebase';
+import {
+  doc,
+  getDoc,
+  collection,
+  query,
+  where,
+  getDocs,
+  orderBy,
+  QuerySnapshot,
+  and,
+  Timestamp,
+} from 'firebase/firestore';
+import { getStatisticsFromPosts, timestampToDate } from './helper';
 
 interface AllPostsProps {
-  profileUserPosts: any[];
   profileUserId: string | undefined;
+  currentUserId: string;
 }
 
-interface PriceStatistic {
-  overall: number;
-  year: number;
-  month: number;
-  week: number;
-  day: number;
-  [key: string]: number; // add index signature
-}
-
-const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts, profileUserId }) => {
+const DashboardSection: React.FC<AllPostsProps> = ({ profileUserId, currentUserId }) => {
   const dispatch = useAppDispatch();
   const allBrandsInfo = useAppSelector((state) => state.info.brands);
   const [priceStatistic, setPriceStatistic] = useState({ overall: 0, year: 0, month: 0, week: 0, day: 0 });
@@ -31,159 +36,39 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts, profileUs
   const [drankItems, setDrankItems] = useState<Record<string, { times: number }>>();
   const [streaks, setStreaks] = useState<{ current: number; longest: number }>({ current: 0, longest: 0 });
   const [numMonthBefore, setNumMonthBefore] = useState(6);
-
-  // for heatmap
+  const [profileUserPosts, setProfileUserPosts] = useState<any[]>([]);
   const [values, setValues] = useState<{ date: Date; count: number }[]>();
 
   useEffect(() => {
-    if (Object.keys(allBrandsInfo).length > 0) return;
-    fetchAllBrandsInfo();
-  }, []);
-
-  const reversedProfileUserPosts = profileUserPosts.reverse();
+    if (!profileUserId) return;
+    const fetchProfileUserPosts = async (profileUserId: string) => {
+      const posts = await dbApi.getProfileUserPosts(profileUserId, currentUserId);
+      setProfileUserPosts(posts.reverse());
+    };
+    fetchProfileUserPosts(profileUserId);
+  }, [profileUserId]);
 
   useEffect(() => {
     if (profileUserPosts.length === 0) {
       return;
     }
-    const { drankBrandsStatistic, drankItemsStatistic, drankDatesValues, priceStatistic, streaks, prevDate } =
-      reversedProfileUserPosts.reduce(
-        (accumulator, post) => {
-          // drank brands
-          const { drankBrandsStatistic } = accumulator;
-          drankBrandsStatistic[post.brandId]
-            ? (drankBrandsStatistic[post.brandId].times = drankBrandsStatistic[post.brandId].times + 1)
-            : (drankBrandsStatistic[post.brandId] = { times: 1, brandName: post.brandName });
-
-          // drank items
-          const { drankItemsStatistic } = accumulator;
-          drankItemsStatistic[post.itemId]
-            ? (drankItemsStatistic[post.itemId].times = drankItemsStatistic[post.itemId].times + 1)
-            : (drankItemsStatistic[post.itemId] = { times: 1 });
-
-          // drank dates
-          const { drankDatesValues } = accumulator;
-          const dateString = timestampToDate(post.timeCreated);
-          const newDate = new Date(dateString);
-          const index = drankDatesValues.findIndex((element: any) => element.date.getTime() === newDate.getTime());
-          if (index === -1) {
-            drankDatesValues.push({ date: newDate, count: 1 });
-          } else {
-            drankDatesValues[index].count += 1;
-          }
-
-          // streaks
-          const { streaks } = accumulator;
-          let { prevDate } = accumulator;
-          const currentDate = new Date(dateString);
-
-          if (prevDate.getTime() !== currentDate.getTime()) {
-            // console.log(currentDate);
-            const areConsecutive = currentDate.getTime() - prevDate.getTime() === 86400000;
-            if (areConsecutive) {
-              streaks.current += 1;
-            } else {
-              streaks.current = 1;
-            }
-            if (streaks.current > streaks.longest) {
-              streaks.longest = streaks.current;
-            }
-            accumulator.prevDate = currentDate;
-          }
-          // console.log('prevDate', prevDate, 'currentDate', currentDate, 'streak', streaks);
-
-          // price statistic
-          const { priceStatistic } = accumulator;
-          if (post.price) {
-            const currentDate = new Date();
-            const intervals = [
-              { label: 'year', value: currentDate.getFullYear() - 1 },
-              { label: 'month', value: currentDate.getMonth() - 1 },
-              { label: 'week', value: currentDate.getDate() - 7 },
-              { label: 'day', value: currentDate.getDate() - 1 },
-            ];
-            intervals.forEach(({ label, value }) => {
-              const startDate = new Date();
-              switch (label) {
-                case 'year':
-                  startDate.setFullYear(value);
-                  break;
-                case 'month':
-                  startDate.setMonth(value);
-                  break;
-                case 'week':
-                  startDate.setDate(value);
-                  break;
-                case 'day':
-                  startDate.setDate(value);
-                  break;
-              }
-              const postDate = new Date(post.timeCreated.seconds * 1000);
-              if (postDate >= startDate && postDate <= currentDate) {
-                priceStatistic[label] += Number(post.price);
-              }
-            });
-            priceStatistic.overall += Number(post.price);
-          }
-
-          return accumulator;
-        },
-        {
-          drankBrandsStatistic: {},
-          drankItemsStatistic: {},
-          drankDatesValues: [],
-          priceStatistic: { overall: 0, year: 0, month: 0, week: 0, day: 0 },
-          streaks: { current: 0, longest: 0 },
-          prevDate: new Date('1900/01/01'),
-        }
-      );
-
-    const oneDayBeforeToday = new Date();
-    oneDayBeforeToday.setDate(oneDayBeforeToday.getDate() - 1);
-    oneDayBeforeToday.setHours(0, 0, 0, 0);
-
-    if (prevDate.getTime() < oneDayBeforeToday.getTime()) {
-      // The given date is earlier than or equal to one day before today 00:00 AM
-      streaks.current = 0;
-    }
-
-    // Add missing brands to drankBrandsStatistic
-    for (const key in allBrandsInfo) {
-      if (allBrandsInfo.hasOwnProperty(key) && !drankBrandsStatistic.hasOwnProperty(key)) {
-        drankBrandsStatistic[key] = { brandName: allBrandsInfo[key].name, times: 0 };
-      }
-    }
+    const { drankBrandsStatistic, drankItemsStatistic, drankDatesValues, priceStatistic, streaks } =
+      getStatisticsFromPosts(profileUserPosts, allBrandsInfo);
 
     setDrankBrands(drankBrandsStatistic);
     setDrankItems(drankItemsStatistic);
     setValues(drankDatesValues);
     setPriceStatistic(priceStatistic);
     setStreaks(streaks);
-  }, [profileUserPosts, allBrandsInfo]);
-
-  const fetchAllBrandsInfo = async () => {
-    const allBrands = await dbApi.getAllBrandsInfo();
-    dispatch(addAllBrands({ allBrands }));
-  };
-
-  function timestampToDate(timestamp: Timestamp) {
-    if (typeof timestamp === 'number') {
-      timestamp = Timestamp.fromMillis(timestamp);
-    }
-    const dateObj = timestamp.toDate();
-    const year = dateObj.getFullYear();
-    const month = ('0' + (dateObj.getMonth() + 1)).slice(-2);
-    const day = ('0' + dateObj.getDate()).slice(-2);
-    return `${year}-${month}-${day}`;
-  }
+  }, [profileUserPosts]);
 
   const getMostDrankBrand = () => {
     if (!drankBrands) return;
-    const maxTimesBrandName = Object.keys(drankBrands).reduce((a, b) =>
+    const maxTimesBrandId = Object.keys(drankBrands).reduce((a, b) =>
       drankBrands[a].times > drankBrands[b].times ? a : b
     );
 
-    return { name: drankBrands[maxTimesBrandName].brandName, times: drankBrands[maxTimesBrandName].times };
+    return drankBrands[maxTimesBrandId].brandName;
   };
 
   return (
@@ -193,7 +78,7 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts, profileUs
         {getMostDrankBrand() && (
           <div className='col-span-2 grid grid-cols-[50px_1fr] items-center rounded-xl border-2 border-solid border-neutral-900 bg-neutral-100 px-10 py-5 shadow-[3px_3px_#171717] transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[3px_6px_#171717]'>
             <Store className='row-span-2' />
-            <div className='text-xl'>{getMostDrankBrand()?.name}</div>
+            <div className='text-xl'>{getMostDrankBrand()}</div>
             <div className='text-neutral-500'>most frequently drank</div>
           </div>
         )}
@@ -272,7 +157,7 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts, profileUs
       <div className='grid w-full max-w-[900px] grid-cols-4 items-stretch gap-x-5 gap-y-5 lg:grid-cols-3 sm:grid-cols-2'>
         <div className='col-span-full ml-3 text-xl before:mr-2 before:content-["✦"]'>drank brands</div>
         {drankBrands
-          ? Object.entries(drankBrands).map((brand, index) =>
+          ? Object.entries(drankBrands).map((brand) =>
               brand[1].times !== 0 ? (
                 <div
                   key={brand[0]}
@@ -298,7 +183,7 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserPosts, profileUs
                 </div>
               )
             )
-          : Object.entries(allBrandsInfo).map((brand, index) => (
+          : Object.entries(allBrandsInfo).map((brand) => (
               <div
                 key={brand[1].name}
                 className='relative flex flex-col items-center rounded-xl border-2 border-solid border-neutral-300 bg-gray-50 px-5 py-2'

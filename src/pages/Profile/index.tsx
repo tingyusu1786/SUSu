@@ -31,12 +31,11 @@ function Profile() {
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
   const currentUserName = useAppSelector((state) => state.auth.currentUser.name);
-  // const dispatch = useAppDispatch();
   const [profileUser, setProfileUser] = useState<User>();
   const [isFollowing, setIsFollowing] = useState(false);
   const [usersFollowing, setUsersFollowing] = useState<{ id: string; name: string; photoURL: string }[]>([]);
   const [usersFollowers, setUsersFollowers] = useState<{ id: string; name: string; photoURL: string }[]>([]);
-  const [profileUserPosts, setProfileUserPosts] = useState<any[]>([]);
+
   const { profileUserId } = useParams<{ profileUserId: string }>();
   const [tab, setTab] = useState<TabName>('DASHBOARD');
 
@@ -49,14 +48,6 @@ function Profile() {
     const unsub = onSnapshot(doc(db, 'users', profileUserId), (doc) => {
       setProfileUser(doc.data() as User);
     });
-    const fetchProfileUser = async (profileUserId: string) => {
-      // const profileUserInfo = await getProfileUser(profileUserId);
-      // profileUserInfo && setProfileUser(profileUserInfo);
-
-      const posts = await getProfileUserPosts(profileUserId);
-      setProfileUserPosts(posts);
-    };
-    profileUserId && fetchProfileUser(profileUserId);
     return unsub;
   }, [profileUserId, currentUserId]);
 
@@ -68,45 +59,6 @@ function Profile() {
   useEffect(() => {
     getProfileUserFollows();
   }, []);
-
-  // const getProfileUser = async (id: string) => {
-  //   const profileUserDocRef = doc(db, 'users', id);
-  //   const profileUserDoc = await getDoc(profileUserDocRef);
-  //   if (!profileUserDoc.exists()) {
-  //     // alert('No such document!');
-  //     return;
-  //   }
-  //   const profileUserData = profileUserDoc.data() as User | undefined;
-  //   return profileUserData;
-  // };
-
-  const getProfileUserPosts = async (profileUserId: string) => {
-    const postsRef = collection(db, 'posts');
-    // console.log(currentUserId);
-
-    let q;
-    if (profileUserId === currentUserId) {
-      q = query(postsRef, where('authorId', '==', profileUserId), orderBy('timeCreated', 'desc'));
-    } else {
-      q = query(
-        postsRef,
-        and(where('audience', '==', 'public'), where('authorId', '==', profileUserId)),
-        orderBy('timeCreated', 'desc')
-      );
-    }
-
-    const querySnapshot: QuerySnapshot = await getDocs(q);
-    const posts = querySnapshot.docs.map(async (change) => {
-      const postData = change.data();
-      const brandName: string = await getName(postData.brandId || '', 'brand');
-      const itemName: string = await getName(postData.itemId || '', 'item');
-      return { ...postData, postId: change.id, brandName, itemName };
-    });
-
-    const postsWithQueriedInfos = await Promise.all(posts);
-    // console.log(postsWithQueriedInfos);
-    return postsWithQueriedInfos;
-  };
 
   const getProfileUserFollows = async () => {
     const userFollowersInfo = profileUser?.followers?.map(async (followerId) => {
@@ -126,32 +78,6 @@ function Profile() {
     if (!userFollowingInfo) return;
     const userFollowingInfos = await Promise.all(userFollowingInfo);
     setUsersFollowing(userFollowingInfos);
-  };
-
-  const getName = async (id: string, type: string) => {
-    if (id !== '') {
-      let docRef;
-      switch (type) {
-        case 'brand': {
-          docRef = doc(db, 'brands', id);
-          break;
-        }
-        case 'item': {
-          const idArray = id.split('-');
-          docRef = doc(db, 'brands', idArray[0], 'categories', idArray[0] + '-' + idArray[1], 'items', id);
-          break;
-        }
-      }
-      if (docRef !== undefined) {
-        const theDoc = await getDoc(docRef);
-        if (!theDoc.exists()) {
-          // alert('No such document!');
-          return '';
-        }
-        const theData = theDoc.data();
-        return theData.name;
-      }
-    }
   };
 
   const handleFollow = async (profileUserId: string, isFollowing: boolean | undefined) => {
@@ -192,8 +118,8 @@ function Profile() {
   };
 
   const tabToComponentMap: Record<TabName, React.ReactNode> = {
-    LOGS: <PostsSection profileUserPosts={profileUserPosts} profileUserId={profileUserId || ''} />,
-    DASHBOARD: <DashboardSection profileUserPosts={profileUserPosts} profileUserId={profileUserId} />,
+    LOGS: <PostsSection profileUserId={profileUserId || ''} />,
+    DASHBOARD: <DashboardSection profileUserId={profileUserId} currentUserId={currentUserId || ''} />,
     FOLLOWING: (
       <div className='flex flex-col flex-nowrap items-center gap-5'>
         {profileUser?.following?.map((followingId) => (

@@ -16,6 +16,7 @@ import {
   Timestamp,
   updateDoc,
   where,
+  and,
   DocumentReference,
   DocumentData,
   deleteDoc,
@@ -143,58 +144,7 @@ const dbApi = {
   async createNewUser(userId: string, content: Record<string, string | Date | Timestamp | FieldValue>) {
     await setDoc(doc(db, 'users', userId), content);
   },
-
-  // todo: 應該要讓page都不用用到doc, db, ...
-  async getDoc(docRef: DocumentReference) {
-    const doc = await getDoc(docRef);
-    return doc;
-  },
-  // todo: 應該要讓page都不用用到doc, db, ...
-  async getDocField(docRef: DocumentReference, field: string) {
-    const doc = await getDoc(docRef);
-    if (!doc.exists()) {
-      swal.error('Something went wrong', 'try agin later', 'ok');
-      return null;
-    }
-    const docData = doc.data();
-    const docField = docData[field];
-    return docField;
-  },
-
-  async getInfo(id: string | undefined, type: string, field: string) {
-    if (id !== undefined) {
-      let docRef;
-      switch (type) {
-        case 'brand': {
-          docRef = doc(db, 'brands', id);
-          break;
-        }
-        case 'item': {
-          const idArray = id.split('-');
-          docRef = doc(db, 'brands', idArray[0], 'categories', idArray[0] + '-' + idArray[1], 'items', id);
-          break;
-        }
-        case 'user': {
-          docRef = doc(db, 'users', id);
-          break;
-        }
-        default: {
-          return;
-        }
-      }
-      if (docRef !== undefined) {
-        const doc = await getDoc(docRef);
-        if (!doc.exists()) {
-          swal.error('No such document!', '', 'ok');
-          return '';
-        }
-        const data = doc.data();
-        const fieldValue = data[field];
-        return fieldValue;
-      }
-    }
-  },
-
+  //#
   async getPostInfo(postData: any) {
     const brandName: string = await this.getInfo(postData?.brandId, 'brand', 'name');
     const itemName: string = await this.getInfo(postData?.itemId, 'item', 'name');
@@ -227,6 +177,83 @@ const dbApi = {
       authorName,
       authorPhoto,
     };
+  },
+  //#
+  async getInfo(id: string | undefined, type: 'brand' | 'item' | 'user', field: string) {
+    if (id !== undefined) {
+      let docRef;
+      switch (type) {
+        case 'brand': {
+          docRef = doc(db, 'brands', id);
+          break;
+        }
+        case 'item': {
+          const idArray = id.split('-');
+          docRef = doc(db, 'brands', idArray[0], 'categories', idArray[0] + '-' + idArray[1], 'items', id);
+          break;
+        }
+        case 'user': {
+          docRef = doc(db, 'users', id);
+          break;
+        }
+        default: {
+          return;
+        }
+      }
+      if (docRef !== undefined) {
+        const doc = await getDoc(docRef);
+        if (!doc.exists()) {
+          swal.error('No such document!', '', 'ok');
+          return '';
+        }
+        const data = doc.data();
+        const fieldValue = data[field];
+        return fieldValue;
+      }
+    }
+  },
+  //#
+  async getProfileUserPosts(profileUserId: string, currentUserId: string) {
+    const postsRef = collection(db, 'posts');
+
+    let q;
+    if (profileUserId === currentUserId) {
+      q = query(postsRef, where('authorId', '==', profileUserId), orderBy('timeCreated', 'desc'));
+    } else {
+      q = query(
+        postsRef,
+        and(where('audience', '==', 'public'), where('authorId', '==', profileUserId)),
+        orderBy('timeCreated', 'desc')
+      );
+    }
+
+    const querySnapshot: QuerySnapshot = await getDocs(q);
+    const posts = querySnapshot.docs.map(async (change) => {
+      const postData = change.data();
+      const brandName: string = await this.getInfo(postData.brandId || '', 'brand', 'name');
+      const itemName: string = await this.getInfo(postData.itemId || '', 'item', 'name');
+      return { ...postData, postId: change.id, brandName, itemName };
+    });
+
+    const postsWithQueriedInfos = await Promise.all(posts);
+    return postsWithQueriedInfos;
+  },
+
+  // todo: 應該要讓page都不用用到doc, db, ...
+  async getDoc(docRef: DocumentReference) {
+    const doc = await getDoc(docRef);
+    return doc;
+  },
+  // todo: 應該要讓page都不用用到doc, db, ...
+  async getDocField(docRef: DocumentReference, field: string) {
+    const doc = await getDoc(docRef);
+    if (!doc.exists()) {
+      swal.error('Something went wrong', 'try agin later', 'ok');
+      return null;
+    }
+    const docData = doc.data();
+    const docField = docData[field];
+    return docField;
   },
 };
 
