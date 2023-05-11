@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { db } from '../../services/firebase';
@@ -109,8 +110,8 @@ function Profile() {
 
   const getProfileUserFollows = async () => {
     const userFollowersInfo = profileUser?.followers?.map(async (followerId) => {
-      const name = await dbApi.getUserField(followerId, 'name');
-      const photoURL = await dbApi.getUserField(followerId, 'photoURL');
+      const name = (await dbApi.getUserField(followerId, 'name')) || 'user';
+      const photoURL = (await dbApi.getUserField(followerId, 'photoURL')) || '';
       return { id: followerId, name, photoURL };
     });
     if (!userFollowersInfo) return;
@@ -118,8 +119,8 @@ function Profile() {
     setUsersFollowers(userFollowersInfos);
 
     const userFollowingInfo = profileUser?.following?.map(async (followingId) => {
-      const name = await dbApi.getUserField(followingId, 'name');
-      const photoURL = await dbApi.getUserField(followingId, 'photoURL');
+      const name = (await dbApi.getUserField(followingId, 'name')) || 'user';
+      const photoURL = (await dbApi.getUserField(followingId, 'photoURL')) || '';
       return { id: followingId, name, photoURL };
     });
     if (!userFollowingInfo) return;
