@@ -9,7 +9,6 @@ export interface User {
   followers?: string[];
   following?: string[];
   notifications?: Notification[];
-  [key: string]: string | string[] | Timestamp | undefined | Notification[];
 }
 
 export interface Notification {
