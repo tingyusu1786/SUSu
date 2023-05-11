@@ -24,7 +24,7 @@ import {
 import { getStatisticsFromPosts, timestampToDate } from './helper';
 
 interface AllPostsProps {
-  profileUserId: string | undefined;
+  profileUserId: string;
   currentUserId: string;
 }
 
@@ -40,7 +40,6 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserId, currentUserI
   const [values, setValues] = useState<{ date: Date; count: number }[]>();
 
   useEffect(() => {
-    if (!profileUserId) return;
     const fetchProfileUserPosts = async (profileUserId: string) => {
       const posts = await dbApi.getProfileUserPosts(profileUserId, currentUserId);
       setProfileUserPosts(posts);

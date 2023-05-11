@@ -119,7 +119,7 @@ function Profile() {
 
   const tabToComponentMap: Record<TabName, React.ReactNode> = {
     LOGS: <PostsSection profileUserId={profileUserId || ''} />,
-    DASHBOARD: <DashboardSection profileUserId={profileUserId} currentUserId={currentUserId || ''} />,
+    DASHBOARD: <DashboardSection profileUserId={profileUserId || ''} currentUserId={currentUserId || ''} />,
     FOLLOWING: (
       <div className='flex flex-col flex-nowrap items-center gap-5'>
         {profileUser?.following?.map((followingId) => (
@@ -136,7 +136,7 @@ function Profile() {
     ),
   };
 
-  if (profileUser === undefined) {
+  if (!profileUserId || !profileUser) {
     return (
       <main className='bg-boxes-diag relative flex min-h-[calc(100vh-64px)] items-center justify-center bg-fixed p-10'>
         user not found ☹&nbsp;
