@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import CalendarHeatmapComponent from './CalendarHeatmapComponent';
-import Badges from './Badges';
+import Badges from './Badges/Badges';
 import { Timestamp } from 'firebase/firestore';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { addAllBrands } from '../../app/infoSlice';
