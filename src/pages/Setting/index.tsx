@@ -1,135 +1,72 @@
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { updateProfile } from 'firebase/auth';
+import authApi from '../../utils/authApi';
+import dbApi from '../../utils/dbApi';
+import storageApi from '../../utils/storageApi';
 import { useParams, useNavigate } from 'react-router-dom';
-import { db, auth, storage } from '../../services/firebase';
 import { useState, useEffect, ChangeEvent } from 'react';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { User } from '../../interfaces/interfaces';
 import { updateUserName, updateUserPhoto } from '../../app/authSlice';
 import { ArrowLeft } from '@phosphor-icons/react';
 import swal from '../../utils/swal';
 
 function Setting() {
+  const { settingUserId } = useParams<{ settingUserId: string }>();
   const dispatch = useAppDispatch();
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
-  const currentUserName = useAppSelector((state) => state.auth.currentUser.name);
-  const currentUserphotoURL = useAppSelector((state) => state.auth.currentUser.photoURL);
-  const currentAuthUser = auth.currentUser;
-  const { settingUserId } = useParams<{ settingUserId: string }>();
-  const [profileUser, setProfileUser] = useState<User>();
+  const currentUser = useAppSelector((state) => state.auth.currentUser);
+  const currentAuthUser = authApi.currentAuthUser;
   const [inputs, setInputs] = useState({
-    name: currentUserName || '',
-    status: profileUser?.status || '',
+    name: currentUser.name || '',
+    status: currentUser.status || '',
   });
   const [file, setFile] = useState<File | null>(null);
   const [imgPreview, setImgPreview] = useState<string>();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (currentUserId === null) return;
-    const fectchProfileUser = async () => {
-      const profileUser = await getProfileUser(currentUserId);
-      setProfileUser(profileUser);
-    };
-    fectchProfileUser();
-  }, [currentUserId]);
-
-  useEffect(() => {
-    if (!profileUser) {
-      return;
-    }
-    setInputs({ name: profileUser?.name, status: profileUser?.status || '' });
-  }, [profileUser]);
-
-  useEffect(() => {
-    if (!file) {
+    if (file) {
+      const objectUrl = URL.createObjectURL(file);
+      setImgPreview(objectUrl);
+      return () => URL.revokeObjectURL(objectUrl);
+    } else {
       setImgPreview(undefined);
-      return;
     }
-
-    const objectUrl = URL.createObjectURL(file);
-    setImgPreview(objectUrl);
-
-    // free memory when ever this component is unmounted
-    return () => URL.revokeObjectURL(objectUrl);
   }, [file]);
 
   const handleFileInputChange = (event: ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files) return;
+
     setFile(event.target.files[0]);
-  };
-
-  const updatePhoto = async () => {
-    if (currentAuthUser === null || file === null || !currentUserId) return;
-
-    // updateAuthProfile
-    // Upload the new user photo to Firebase Storage
-    const storageRef = ref(storage, `userPhotos/${currentAuthUser.uid}`);
-    await uploadBytes(storageRef, file);
-
-    // Update the user's photoURL in Firebase Auth
-    const photoURL = await getDownloadURL(storageRef);
-    await updateProfile(currentAuthUser, { photoURL });
-
-    // updateDoc
-    // Update the user's photoURL in Firestore
-    const userDocRef = doc(db, 'users', currentUserId);
-    await updateDoc(userDocRef, { photoURL });
-
-    dispatch(updateUserPhoto({ photoURL }));
-
-    // 用一樣名字會直接蓋掉就不用另外刪掉
-  };
-
-  const updateName = async () => {
-    if (currentAuthUser === null || !currentUserId) return;
-    // updateAuthProfile
-    await updateProfile(currentAuthUser, { displayName: inputs.name });
-    // updateDoc
-    const userDocRef = doc(db, 'users', currentUserId);
-    await updateDoc(userDocRef, { name: inputs.name });
-
-    dispatch(updateUserName({ name: inputs.name }));
-  };
-  const updateStatus = async () => {
-    if (currentAuthUser === null || !currentUserId) return;
-    const userDocRef = doc(db, 'users', currentUserId);
-    await updateDoc(userDocRef, { status: inputs.status });
-  };
-
-  const getProfileUser = async (id: string) => {
-    const profileUserDocRef = doc(db, 'users', id);
-    const profileUserDoc = await getDoc(profileUserDocRef);
-    if (!profileUserDoc.exists()) {
-      // alert('No such document!');
-      return;
-    }
-    const profileUserData = profileUserDoc.data() as User | undefined;
-    return profileUserData;
   };
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     const key = e.target.name;
-    switch (key) {
-      case 'name': {
-        setInputs((prev) => {
-          const newInput = { ...prev, [key]: e.target.value, itemId: '', size: '', price: '' };
-          return newInput;
-        });
-        break;
-      }
-      case 'status': {
-        setInputs((prev) => {
-          const newInput = { ...prev, [key]: e.target.value, size: '', price: '' };
-          return newInput;
-        });
-        break;
-      }
-      default: {
-        return;
-      }
-    }
+    setInputs((prev) => ({
+      ...prev,
+      [key]: e.target.value,
+    }));
+  };
+
+  const updatePhoto = async () => {
+    if (currentAuthUser === null || file === null || !currentUserId) return;
+    await storageApi.uploadUserPhoto(currentUserId, file);
+
+    const photoURL = await storageApi.getPhotoURL(currentUserId);
+    if (!photoURL) return;
+    await authApi.updateAuthProfile(currentAuthUser, { photoURL });
+    await dbApi.updateUserDoc(currentUserId, { photoURL });
+    dispatch(updateUserPhoto({ photoURL }));
+  };
+
+  const updateName = async () => {
+    if (currentAuthUser === null || !currentUserId) return;
+    await authApi.updateAuthProfile(currentAuthUser, { displayName: inputs.name });
+    await dbApi.updateUserDoc(currentUserId, { name: inputs.name });
+    dispatch(updateUserName({ name: inputs.name }));
+  };
+
+  const updateStatus = async () => {
+    if (currentAuthUser === null || !currentUserId) return;
+    await dbApi.updateUserDoc(currentUserId, { status: inputs.status });
   };
 
   const handleConfirmAll = async () => {
@@ -166,8 +103,8 @@ function Setting() {
         <label className='group relative col-span-2 cursor-pointer justify-self-center'>
           <img
             className='h-32 w-32 rounded-full border-4 border-solid border-neutral-900 object-cover group-hover:border-green-400'
-            src={file ? imgPreview : currentUserphotoURL}
-            alt={currentUserName || ''}
+            src={file ? imgPreview : currentUser.photoURL}
+            alt={currentUser.name || ''}
           />
           <div className='absolute bottom-1 left-24 w-40 rounded-full border-2 border-solid border-gray-400 bg-white pt-1 text-center'>
             {file ? 'Choose another' : 'Upload new pic'}
