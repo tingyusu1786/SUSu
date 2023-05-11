@@ -10,7 +10,6 @@ import {
   getDocs,
   orderBy,
   QuerySnapshot,
-  or,
   and,
   updateDoc,
   arrayUnion,
@@ -19,27 +18,19 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { showAuth } from '../../app/popUpSlice';
 import { User } from '../../interfaces/interfaces';
 import { Notification } from '../../interfaces/interfaces';
-import NameCard from '../../components/NameCard';
+import NameCard from './NameCard';
 import dbApi from '../../utils/dbApi';
 import PostsSection from './PostsSection';
 import DashboardSection from './DashboardSection';
-import {
-  User as UserIcon,
-  UsersThree,
-  ArrowRight,
-  ArrowLeft,
-  Browsers,
-  PresentationChart,
-} from '@phosphor-icons/react';
+import { User as UserIcon, UsersThree, ArrowRight, Browsers, PresentationChart } from '@phosphor-icons/react';
 
 function Profile() {
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
-  const currentUserName = useAppSelector((state) => state.auth.currentUserName);
-  const dispatch = useAppDispatch();
+  const currentUserName = useAppSelector((state) => state.auth.currentUser.name);
+  // const dispatch = useAppDispatch();
   const [profileUser, setProfileUser] = useState<User>();
   const [isFollowing, setIsFollowing] = useState(false);
   const [usersFollowing, setUsersFollowing] = useState<{ id: string; name: string; photoURL: string }[]>([]);
@@ -77,16 +68,16 @@ function Profile() {
     getProfileUserFollows();
   }, []);
 
-  const getProfileUser = async (id: string) => {
-    const profileUserDocRef = doc(db, 'users', id);
-    const profileUserDoc = await getDoc(profileUserDocRef);
-    if (!profileUserDoc.exists()) {
-      // alert('No such document!');
-      return;
-    }
-    const profileUserData = profileUserDoc.data() as User | undefined;
-    return profileUserData;
-  };
+  // const getProfileUser = async (id: string) => {
+  //   const profileUserDocRef = doc(db, 'users', id);
+  //   const profileUserDoc = await getDoc(profileUserDocRef);
+  //   if (!profileUserDoc.exists()) {
+  //     // alert('No such document!');
+  //     return;
+  //   }
+  //   const profileUserData = profileUserDoc.data() as User | undefined;
+  //   return profileUserData;
+  // };
 
   const getProfileUserPosts = async (profileUserId: string) => {
     const postsRef = collection(db, 'posts');
@@ -144,13 +135,11 @@ function Profile() {
           docRef = doc(db, 'brands', id);
           break;
         }
-        case 'item':
-          {
-            const idArray = id.split('-');
-            docRef = doc(db, 'brands', idArray[0], 'categories', idArray[0] + '-' + idArray[1], 'items', id);
-            break;
-          }
-          deafult: return;
+        case 'item': {
+          const idArray = id.split('-');
+          docRef = doc(db, 'brands', idArray[0], 'categories', idArray[0] + '-' + idArray[1], 'items', id);
+          break;
+        }
       }
       if (docRef !== undefined) {
         const theDoc = await getDoc(docRef);
