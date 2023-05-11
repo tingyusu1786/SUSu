@@ -74,7 +74,7 @@ function Header() {
     isSearchShown ? dispatch(closeSearch()) : dispatch(showSearch());
   };
 
-  const smProfileDropdown = () => (
+  const SmProfileDropdown = () => (
     <div
       className='group hidden sm:block'
       onClick={() => {
@@ -118,7 +118,7 @@ function Header() {
     </div>
   );
 
-  const smNavLiDropdown = () => (
+  const SmNavLiDropdown = () => (
     <div className='hidden sm:block'>
       <CaretCircleRight
         size={44}
@@ -164,7 +164,7 @@ function Header() {
       className={`sticky top-0 z-40 flex h-16 w-screen items-center justify-between border-b-4 border-green-400 bg-neutral-100 px-16 transition-[padding] duration-300 md:px-8 sm:px-5`}
       onClick={closeDropdown}
     >
-      {smNavLiDropdown()}
+      <SmNavLiDropdown />
       <Link to='/' className='mt-1 hidden transition-all hover:text-green-400 sm:block sm:text-3xl'>
         SUSü
       </Link>
@@ -210,7 +210,7 @@ function Header() {
               className='box-content h-10 w-10 min-w-[40px] rounded-full border-2 border-solid border-neutral-900 object-cover transition-all duration-100 hover:border-green-400 '
             />
           </Link>
-          {smProfileDropdown()}
+          <SmProfileDropdown />
           <BellSimple
             size={20}
             color='#171717'
