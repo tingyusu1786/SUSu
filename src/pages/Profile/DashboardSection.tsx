@@ -1,27 +1,12 @@
-/* eslint-disable no-prototype-builtins */
 import React, { useState, useEffect } from 'react';
-import CalendarHeatmapComponent from './CalendarHeatmapComponent';
-import Badges from './Badges/Badges';
-import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { addAllBrands } from '../../app/infoSlice';
+import { useAppSelector } from '../../app/hooks';
 import dbApi from '../../utils/dbApi';
 import { ReactComponent as Streak } from '../../assets/Streak.svg';
 import { ReactComponent as Store } from '../../assets/Store.svg';
 import { ReactComponent as Expense } from '../../assets/Expense.svg';
-import { db } from '../../services/firebase';
-import {
-  doc,
-  getDoc,
-  collection,
-  query,
-  where,
-  getDocs,
-  orderBy,
-  QuerySnapshot,
-  and,
-  Timestamp,
-} from 'firebase/firestore';
-import { getStatisticsFromPosts, timestampToDate } from './helper';
+import CalendarHeatmapComponent from './CalendarHeatmapComponent';
+import Badges from './Badges/Badges';
+import { getStatisticsFromPosts } from './helper';
 
 interface AllPostsProps {
   profileUserId: string;
@@ -29,7 +14,6 @@ interface AllPostsProps {
 }
 
 const DashboardSection: React.FC<AllPostsProps> = ({ profileUserId, currentUserId }) => {
-  const dispatch = useAppDispatch();
   const allBrandsInfo = useAppSelector((state) => state.info.brands);
   const [priceStatistic, setPriceStatistic] = useState({ overall: 0, year: 0, month: 0, week: 0, day: 0 });
   const [drankBrands, setDrankBrands] = useState<Record<string, { brandName: string; times: number }>>();
@@ -40,8 +24,8 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserId, currentUserI
   const [values, setValues] = useState<{ date: Date; count: number }[]>();
 
   useEffect(() => {
-    const fetchProfileUserPosts = async (profileUserId: string) => {
-      const posts = await dbApi.getProfileUserPosts(profileUserId, currentUserId);
+    const fetchProfileUserPosts = async (userId: string) => {
+      const posts = await dbApi.getProfileUserPosts(userId, currentUserId);
       setProfileUserPosts(posts);
     };
     fetchProfileUserPosts(profileUserId);
@@ -66,7 +50,6 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserId, currentUserI
     const maxTimesBrandId = Object.keys(drankBrands).reduce((a, b) =>
       drankBrands[a].times > drankBrands[b].times ? a : b
     );
-
     return drankBrands[maxTimesBrandId].brandName;
   };
 
@@ -157,7 +140,7 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserId, currentUserI
         <div className='col-span-full ml-3 text-xl before:mr-2 before:content-["✦"]'>drank brands</div>
         {drankBrands
           ? Object.entries(drankBrands).map((brand) =>
-              brand[1].times !== 0 ? (
+              brand[1].times > 0 ? (
                 <div
                   key={brand[0]}
                   className='relative flex flex-col items-center rounded-xl border-2 border-solid border-neutral-900 bg-neutral-50 px-5 py-2 shadow-[3px_3px_#171717] transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[3px_6px_#171717]'
