@@ -22,6 +22,7 @@ import {
   startAfter,
   arrayUnion,
   arrayRemove,
+  FieldValue,
 } from 'firebase/firestore';
 import { Brand, User } from '../interfaces/interfaces';
 import swal from './swal';
@@ -139,7 +140,7 @@ const dbApi = {
     const userDocRef = doc(db, 'users', userId);
     await updateDoc(userDocRef, content);
   },
-  async createNewUser(userId: string, content: Record<string, string | Date>) {
+  async createNewUser(userId: string, content: Record<string, string | Date | Timestamp | FieldValue>) {
     await setDoc(doc(db, 'users', userId), content);
   },
 

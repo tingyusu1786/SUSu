@@ -115,14 +115,13 @@ function Authentication() {
 
       if (OAuthCredential !== null) {
         const token = OAuthCredential.accessToken;
-        // The signed-in user info.
         const user = OAuthUserCredential.user;
         const isNewUser = await authApi.checkIfNewUser(OAuthUserCredential);
         if (isNewUser === undefined) {
           throw new Error();
         }
-        if (isNewUser) {
-          await setDoc(doc(db, 'users', user.uid), {
+        if (isNewUser && user.displayName && user.email && user.photoURL) {
+          await dbApi.createNewUser(user.uid, {
             name: user.displayName,
             email: user.email,
             photoURL: user.photoURL,
@@ -132,35 +131,16 @@ function Authentication() {
         } else {
           swal.success(`Welcome back ${user.displayName} 🫰`, '', 'hi~');
         }
-        const userDoc = await getDoc(doc(db, 'users', user.uid));
-
-        const userData = userDoc.data();
-        if (userData) {
-          let filteredUserData: { [key: string]: any } = Object.keys(userDoc)
-            .filter((key) => key !== 'timeCreated' && key !== 'notifications')
-            .reduce((acc: { [key: string]: any }, key) => {
-              acc[key] = userData[key];
-              return acc;
-            }, {});
-          dispatch(
-            signInSuccess({ user: filteredUserData, id: user.uid, name: user.displayName, photoURL: user.photoURL })
-          );
-          dispatch(closeAuth());
-        }
       }
     } catch (error: any) {
       const errorCode = error.code;
-      const errorMessage = error.message;
       swal.error(`☹️ ${errorCode}`, 'try again', 'ok');
-      dispatch(signInFail(errorMessage));
+      dispatch(signInFail(errorCode));
       dispatch(closeAuth());
 
-      // The email of the user's account used
       const errEmail = error.customData.email;
       swal.error(`☹️ error: email used (${errEmail})`, 'try again', 'ok');
 
-      // The AuthCredential type that was used
-      // const credential = GoogleAuthProvider.credentialFromError(error);
       const errorOAuthCredential = await authApi.getErrorOAuthCredential(error);
       swal.error(`☹️ credential error: ${errorOAuthCredential}`, 'try again', 'ok');
     }
