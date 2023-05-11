@@ -14,25 +14,12 @@ import {
   OAuthCredential,
 } from 'firebase/auth';
 
-interface AuthApi {
-  getUserCredential: (
+const authApi = {
+  async getUserCredential(
     type: 'signUp' | 'signIn',
     email: string,
     password: string
-  ) => Promise<UserCredential | undefined>;
-  getOAuthUserCredential: (type: 'google') => Promise<UserCredential | undefined>;
-  getOAuthCredential: (
-    type: 'google',
-    OAuthUserCredential: UserCredential
-  ) => Promise<OAuthCredential | null | undefined>;
-  getErrorOAuthCredential: (erroe: any) => Promise<OAuthCredential | null>;
-  checkIfNewUser: (OAuthUserCredential: UserCredential) => Promise<boolean | undefined>;
-  updateAuthProfile: (user: UserCredential['user'], name: string | null | undefined, photoURL: string) => Promise<void>;
-  signOut: () => Promise<void>;
-}
-
-const authApi: AuthApi = {
-  async getUserCredential(type, email, password) {
+  ): Promise<UserCredential | undefined> {
     let userCredential;
     if (type === 'signUp') {
       userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -41,7 +28,7 @@ const authApi: AuthApi = {
     }
     return userCredential;
   },
-  async getOAuthUserCredential(type) {
+  async getOAuthUserCredential(type: 'google'): Promise<UserCredential | undefined> {
     let OAuthUserCredential;
     if (type === 'google') {
       const provider = new GoogleAuthProvider();
@@ -49,31 +36,31 @@ const authApi: AuthApi = {
     }
     return OAuthUserCredential;
   },
-  async getOAuthCredential(type, OAuthUserCredential) {
+  async getOAuthCredential(
+    type: 'google',
+    OAuthUserCredential: UserCredential
+  ): Promise<OAuthCredential | null | undefined> {
     let OAuthCredential;
     if (type === 'google') {
       OAuthCredential = GoogleAuthProvider.credentialFromResult(OAuthUserCredential);
     }
     return OAuthCredential;
   },
-  async getErrorOAuthCredential(error) {
+  async getErrorOAuthCredential(error: any) {
     let errorOAuthCredential;
     errorOAuthCredential = GoogleAuthProvider.credentialFromError(error);
     return errorOAuthCredential;
   },
-  async checkIfNewUser(OAuthUserCredential) {
+  async checkIfNewUser(OAuthUserCredential: UserCredential): Promise<boolean | undefined> {
     let isNewUser;
     let additionalUserInfo = getAdditionalUserInfo(OAuthUserCredential);
     isNewUser = additionalUserInfo?.isNewUser;
     return isNewUser;
   },
-  async updateAuthProfile(user, name, photoURL) {
-    await updateProfile(user, {
-      displayName: name,
-      photoURL: photoURL,
-    });
+  async updateAuthProfile(user: UserCredential['user'], content: Record<string, string>): Promise<void> {
+    await updateProfile(user, content);
   },
-  async signOut() {
+  async signOut(): Promise<void> {
     await signOut(auth);
   },
 };
