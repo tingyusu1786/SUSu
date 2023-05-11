@@ -184,7 +184,7 @@ const dbApi = {
       if (docRef !== undefined) {
         const doc = await getDoc(docRef);
         if (!doc.exists()) {
-          alert('No such document!');
+          swal.error('No such document!', '', 'ok');
           return '';
         }
         const data = doc.data();
