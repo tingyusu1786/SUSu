@@ -50,7 +50,9 @@ function PostHit({ hit }: any) {
   const dispatch = useAppDispatch();
   const [name, setName] = useState('user');
   dbApi.getUserField(hit.authorId, 'name').then((data) => {
-    setName(data);
+    if (data) {
+      setName(data);
+    }
   });
   return (
     <Link
