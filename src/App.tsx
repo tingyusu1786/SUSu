@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
+import { onAuthStateChanged } from 'firebase/auth';
 import Header from './components/Header';
 import Authentication from './components/AuthModal/';
 import SearchModal from './components/SearchModal/';
 import { useAppSelector, useAppDispatch } from './app/hooks';
 import { signInSuccess, signOutSuccess } from './app/authSlice';
 import { closeAuth } from './app/popUpSlice';
-import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from './services/firebase';
 import dbApi from './utils/dbApi';
 import { addAllBrands } from './app/infoSlice';
@@ -18,35 +18,14 @@ function App() {
   const isAuthShown = useAppSelector((state) => state.popUp.isAuthShown);
   const isSearchShown = useAppSelector((state) => state.popUp.isSearchShown);
 
-  type FilteredUserData = {
-    name: string;
-    email: string;
-    photoURL: string;
-    timeCreated: Date;
-    status?: string;
-    followers?: string[];
-    following?: string[];
-  };
-
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         try {
           const getUser = async () => {
-            const userName = await dbApi.getUserField(user.uid, 'name');
-            const userPhotoURL = await dbApi.getUserField(user.uid, 'photoURL');
-            const userData = await dbApi.getUser(user.uid);
+            const userData = await dbApi.getFilteredUser(user.uid);
             if (userData) {
-              let filteredUserData: FilteredUserData = Object.keys(userData)
-                .filter((key) => key !== 'notifications')
-                .reduce((acc: any, key) => {
-                  acc[key] = userData[key];
-                  if (key === 'timeCreated') {
-                    acc.timeCreated = userData.timeCreated.toDate();
-                  }
-                  return acc;
-                }, {});
-              dispatch(signInSuccess({ user: filteredUserData, id: user.uid, name: userName, photoURL: userPhotoURL }));
+              dispatch(signInSuccess({ user: userData, id: user.uid }));
             }
           };
           getUser();
