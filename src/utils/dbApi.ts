@@ -6,6 +6,7 @@ import {
   DocumentSnapshot,
   getDoc,
   getDocs,
+  setDoc,
   query,
   Query,
   orderBy,
@@ -26,6 +27,15 @@ import { Brand, User } from '../interfaces/interfaces';
 import swal from './swal';
 
 // interface dbApi {}
+type FilteredUserData = {
+  name: string;
+  email: string;
+  photoURL: string;
+  timeCreated: Date;
+  status?: string;
+  followers?: string[];
+  following?: string[];
+};
 
 const dbApi = {
   //#
@@ -104,6 +114,33 @@ const dbApi = {
     } catch {
       swal.error('Something went wrong', 'try again later', 'ok');
     }
+  },
+  async getFilteredUser(userId: string): Promise<FilteredUserData | undefined> {
+    try {
+      const userData = await this.getUser(userId);
+      if (userData) {
+        let filteredUserData: FilteredUserData = Object.keys(userData)
+          .filter((key) => key !== 'notifications')
+          .reduce((acc: any, key) => {
+            acc[key] = userData[key as keyof FilteredUserData];
+            if (key === 'timeCreated') {
+              acc.timeCreated = String(userData.timeCreated.toDate());
+            }
+            return acc;
+          }, {});
+        return filteredUserData;
+      }
+    } catch {
+      swal.error('Something went wrong', 'try again later', 'ok');
+    }
+  },
+  //#
+  async updateUserDoc(userId: string, content: Record<string, string>) {
+    const userDocRef = doc(db, 'users', userId);
+    await updateDoc(userDocRef, content);
+  },
+  async createNewUser(userId: string, content: Record<string, string | Date>) {
+    await setDoc(doc(db, 'users', userId), content);
   },
 
   // todo: 應該要讓page都不用用到doc, db, ...
