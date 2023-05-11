@@ -37,8 +37,6 @@ function Header() {
     if (result.isConfirmed) {
       try {
         await authApi.signOut();
-        dispatch(signOutStart());
-        dispatch(signOutSuccess());
         swal.success('signed out', 'come back soon!', 'ok');
       } catch (error: any) {
         swal.error('oh no!', 'something went wrong...try again later', 'ok');

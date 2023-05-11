@@ -4,6 +4,7 @@ import { db } from '../../services/firebase'; //todo
 import { useNavigate } from 'react-router-dom';
 import storageApi from '../../utils/storageApi';
 import authApi from '../../utils/authApi';
+import dbApi from '../../utils/dbApi';
 import { doc, setDoc, getDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../services/firebase';
@@ -20,6 +21,7 @@ function Authentication() {
   const dispatch = useAppDispatch();
   const isAuthShown = useAppSelector((state) => state.popUp.isAuthShown);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
+  const currentUser = useAppSelector((state) => state.auth.currentUser);
   const [input, setInput] = useState({ name: '', email: '', password: '' });
   const [haveAccount, setHaveAccount] = useState(true);
   const [passwordType, setPasswordType] = useState('password');
@@ -59,7 +61,7 @@ function Authentication() {
       const imgUrl = await storageApi.getInitPhotoURL('initPhoto.png'); /////
 
       // update user profile with name and init photo
-      await authApi.updateAuthProfile(user, name, imgUrl);
+      await authApi.updateAuthProfile(user, { name, imgUrl });
 
       // add user to firestore
       await setDoc(doc(db, 'users', user.uid), {
@@ -95,36 +97,17 @@ function Authentication() {
     try {
       dispatch(signInStart());
       const userCredential = await authApi.getUserCredential('signIn', email, password);
-
       if (userCredential === undefined) {
         throw new Error();
       }
+      const userId = userCredential.user.uid;
+      const userName = await dbApi.getUserField(userId, 'name');
 
-      const user = userCredential.user;
-
-      const userDocRef = doc(db, 'users', user.uid);
-      const userDoc = await getDoc(userDocRef);
-
-      const userData = userDoc.data();
-
-      if (userData) {
-        let filteredUserData: { [key: string]: any } = Object.keys(userDoc)
-          .filter((key) => key !== 'timeCreated' && key !== 'notifications')
-          .reduce((acc: { [key: string]: any }, key) => {
-            acc[key] = userData[key];
-            return acc;
-          }, {});
-        dispatch(
-          signInSuccess({ user: filteredUserData, id: user.uid, name: userData.name, photoURL: userData.photoURL })
-        );
-        dispatch(closeAuth());
-      }
-      swal.success(`Welcome back ${userData?.name}!`, '', 'hi');
+      swal.success(`Welcome back ${userName}!`, '', 'hi');
     } catch (error: any) {
       const errorCode = error.code;
-      const errorMessage = error.message;
       swal.error(`☹️ ${errorCode}`, 'try again', 'ok');
-      dispatch(signInFail(errorMessage));
+      dispatch(signInFail(errorCode));
       dispatch(closeAuth());
     }
   };
