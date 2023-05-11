@@ -5,10 +5,13 @@ import { collection, doc, getDoc, addDoc, getDocs, updateDoc, Timestamp } from '
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import dbApi from '../../utils/dbApi';
 import swal from '../../utils/swal';
-import { GlobeHemisphereEast, UserCircle } from '@phosphor-icons/react';
-import { StarIcon as SolidStar } from '@heroicons/react/24/solid';
-import { StarIcon as LineStar } from '@heroicons/react/24/outline';
-import { ReactComponent as SmileyWink } from '../../assets/SmileyWink.svg';
+import {
+  SmileyWink,
+  GlobeHemisphereEast,
+  UserCircle,
+  Star as SolidStar,
+  Star as LineStar,
+} from '@phosphor-icons/react';
 import { showAuth } from '../../app/popUpSlice';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { DateTimeField } from '@mui/x-date-pickers/DateTimeField';
@@ -401,7 +404,7 @@ function CreatePost() {
             <span className='decoration-2 group-hover:underline'>sign in</span>
             &nbsp;to log your drinks
           </div>
-          <SmileyWink className='ml-2' />
+          <SmileyWink size={28} color='#171717' weight='regular' className='ml-2' />
         </div>
       ) : (
         <div
@@ -538,7 +541,6 @@ function CreatePost() {
                           className='hidden'
                           checked={brand[0] === inputs.brandId}
                           onChange={(e) => {
-                            console.log('onChange');
                             handleInputChange(e);
                           }}
                         ></input>
@@ -738,13 +740,23 @@ function CreatePost() {
               </div>
             </div>
 
-            <div className='flex text-amber-400'>
+            <div className='flex'>
               {['1', '2', '3', '4', '5'].map((num) => (
                 <label key={num} htmlFor={`rating-${num}`}>
                   {inputs.rating >= num ? (
-                    <SolidStar className='h-8 transition-all duration-150 hover:scale-125 ' />
+                    <SolidStar
+                      size={32}
+                      color='#fbbf24'
+                      weight='fill'
+                      className='transition-all duration-150 hover:scale-125 '
+                    />
                   ) : (
-                    <LineStar className='h-8 transition-all duration-150 hover:scale-125 ' />
+                    <LineStar
+                      size={32}
+                      color='#fbbf24'
+                      weight='regular'
+                      className='transition-all duration-150 hover:scale-125 '
+                    />
                   )}
 
                   <input

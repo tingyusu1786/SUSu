@@ -7,7 +7,7 @@ import { useState, useEffect, ChangeEvent } from 'react';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { User } from '../../interfaces/interfaces';
 import { updateUserName, updateUserPhoto } from '../../app/authSlice';
-import { ArrowLeftIcon } from '@heroicons/react/24/solid';
+import { ArrowLeft } from '@phosphor-icons/react';
 import swal from '../../utils/swal';
 
 function Setting() {
@@ -158,7 +158,7 @@ function Setting() {
         className=' group left-10 top-10 flex w-max cursor-pointer items-start gap-2 pr-5 text-lg text-neutral-500 hover:text-neutral-900'
         onClick={() => navigate(-1)}
       >
-        <ArrowLeftIcon className='w-6 text-neutral-500 group-hover:animate-arrowLeft' />
+        <ArrowLeft size={24} color='#737373' weight='regular' className='mt-1 group-hover:animate-arrowLeft' />
         back to profile
       </div>
       <h1 className='mb-6 mt-5 text-center text-3xl sm:my-3'>Edit Profile</h1>

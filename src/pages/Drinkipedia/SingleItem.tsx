@@ -1,6 +1,6 @@
 import React from 'react';
 import PostsFeed from '../../components/PostsFeed/';
-import { StarIcon } from '@heroicons/react/24/solid';
+import { Star } from '@phosphor-icons/react';
 
 interface CatalogueProps {
   pageBrandId: string | undefined;
@@ -30,7 +30,7 @@ const ItemCatalogue: React.FC<CatalogueProps> = ({ catalogueItemId, catalogueIte
         </div>
       </div>
       <div className='mb-5 flex items-center justify-start gap-1 text-lg'>
-        <StarIcon className='mb-1 inline h-5 w-5 text-amber-400' />
+        <Star size={20} color='#fbbf24' weight='fill' className='mb-1 inline' />
         <span>{catalogueItemObj?.averageRating || '-'}</span>
         <span>({catalogueItemObj?.numRatings || 0})</span>
       </div>

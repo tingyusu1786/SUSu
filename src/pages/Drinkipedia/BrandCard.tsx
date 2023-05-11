@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { Link } from 'react-router-dom';
 import { Brand } from '../../interfaces/interfaces';
-import { StarIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
+import { ArrowRight, Star } from '@phosphor-icons/react';
 
 interface BrandProps {
   brand: Brand;
@@ -22,13 +22,18 @@ const BrandCard: React.FC<BrandProps> = ({ brand }) => {
         <div>{brand.name}</div>
 
         <div className=' flex w-full items-center justify-center gap-1 text-sm'>
-          <StarIcon className='mb-1 inline h-5 w-5 text-amber-400' />
+          <Star size={18} color='#fbbf24' weight='fill' className='mb-1 inline' />
           <span>{brand.averageRating || '-'}</span>
           <span>({brand.numRatings || 0})</span>
         </div>
       </div>
 
-      <ArrowRightIcon className='absolute right-5 top-3 hidden w-6 animate-arrow transition-all duration-150 group-hover:block' />
+      <ArrowRight
+        size={24}
+        color='#171717'
+        weight='regular'
+        className='absolute right-5 top-3 hidden animate-arrow transition-all duration-150 group-hover:block'
+      />
     </Link>
   );
 };

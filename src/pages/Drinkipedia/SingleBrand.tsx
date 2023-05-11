@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PostsFeed from '../../components/PostsFeed/';
-import { StarIcon, BuildingStorefrontIcon } from '@heroicons/react/24/solid';
+import { Star, Storefront } from '@phosphor-icons/react';
 import { useAppSelector } from '../../app/hooks';
 interface CatalogueProps {
   pageBrandId: string;
@@ -22,9 +22,9 @@ const BrandCatalogue: React.FC<CatalogueProps> = ({ pageBrandId, categories, ite
         <img src={allBrandsInfo[pageBrandId].photoURL} alt='' className='-mt-3 inline-block h-20' />
       </div>
       <div className='mb-5 flex items-center justify-start gap-1 text-lg'>
-        <BuildingStorefrontIcon className='mb-1 inline h-5 w-5 text-sky-400' />
+        <Storefront size={20} color='#38bdf8' weight='bold' className='mb-1 inline' />
         <span className='mr-5'>{allBrandsInfo[pageBrandId].numStore || '?'}</span>
-        <StarIcon className='mb-1 inline h-5 w-5 text-amber-400' />
+        <Star size={20} color='#fbbf24' weight='fill' className='mb-1 inline' />
         <span>{allBrandsInfo[pageBrandId].averageRating || '-'}</span>
         <span>({allBrandsInfo[pageBrandId].numRatings || 0})</span>
       </div>

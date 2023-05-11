@@ -1,14 +1,21 @@
+/* eslint-disable */
 import { ChangeEvent, KeyboardEvent, useState } from 'react';
+
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '../../app/hooks';
 import { Post } from '../../interfaces/interfaces';
 import CommentInputSection from './CommentInputSection';
 import CommentDiv from './CommentDiv';
-import { StarIcon as SolidStar } from '@heroicons/react/24/solid';
-import { StarIcon as LineStar } from '@heroicons/react/24/outline';
 import heartFill from '../../assets/heartFill.png';
 import heartLine from '../../assets/heartLine.png';
-import { Trash, ChatCircleDots, GlobeHemisphereEast, UserCircle } from '@phosphor-icons/react';
+import {
+  Trash,
+  ChatCircleDots,
+  GlobeHemisphereEast,
+  UserCircle,
+  Star as SolidStar,
+  Star as LineStar,
+} from '@phosphor-icons/react';
 
 interface PostProps {
   post: Post;
@@ -132,12 +139,12 @@ const PostCard: React.FC<PostProps> = ({
           </span>
         )}
         {post?.rating && (
-          <div className='mb-4 flex text-amber-400'>
+          <div className='mb-4 flex'>
             {[1, 2, 3, 4, 5].map((num) => {
               return Number(post.rating) >= num ? (
-                <SolidStar className='h-6 drop-shadow-sm' key={num} />
+                <SolidStar size={26} color='#fbbf24' weight='fill' className='drop-shadow-sm' key={num} />
               ) : (
-                <LineStar className='h-6 drop-shadow-md' key={num} />
+                <LineStar size={26} color='#fbbf24' weight='regular' className='drop-shadow-md' key={num} />
               );
             })}
           </div>
