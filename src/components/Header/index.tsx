@@ -12,8 +12,8 @@ function Header() {
   const dispatch = useAppDispatch();
   const userId = useAppSelector((state) => state.auth.currentUserId);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
-  const currentUserName = useAppSelector((state) => state.auth.currentUserName);
-  const currentUserphotoURL = useAppSelector((state) => state.auth.currentUserPhotoURL);
+  const currentUserName = useAppSelector((state) => state.auth.currentUser.name);
+  const currentUserphotoURL = useAppSelector((state) => state.auth.currentUser.photoURL);
   const isNotificationShown = useAppSelector((state) => state.popUp.isNotificationShown);
   const isSearchShown = useAppSelector((state) => state.popUp.isSearchShown);
   const [dropdownShown, setDropdownShown] = useState({ profile: false, navLi: false });

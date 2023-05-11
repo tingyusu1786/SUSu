@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { useState, useRef, useEffect, ChangeEvent, MouseEvent } from 'react';
 import { db } from '../../services/firebase';
 import { collection, doc, getDoc, addDoc, getDocs, updateDoc, Timestamp } from 'firebase/firestore';
@@ -66,8 +67,8 @@ function CreatePost() {
     ice: false,
   };
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
-  const userName = useAppSelector((state) => state.auth.currentUserName);
-  const userPhotoURL = useAppSelector((state) => state.auth.currentUserPhotoURL);
+  const userName = useAppSelector((state) => state.auth.currentUser.name);
+  const userPhotoURL = useAppSelector((state) => state.auth.currentUser.photoURL);
   const [customTagsInput, setCustomTagsInput] = useState('');
   const [customTags, setCustomTags] = useState<string[]>([]);
   const [autoTags, setAutoTags] = useState<string[]>([]);

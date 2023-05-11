@@ -32,8 +32,8 @@ import Typed from 'typed.js';
 function Landing() {
   const dispatch = useAppDispatch();
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
-  const currentUserName = useAppSelector((state) => state.auth.currentUserName);
-  const currentUserphotoURL = useAppSelector((state) => state.auth.currentUserPhotoURL);
+  const currentUserName = useAppSelector((state) => state.auth.currentUser.name);
+  const currentUserphotoURL = useAppSelector((state) => state.auth.currentUser.photoURL);
   const currentAuthUser = auth.currentUser;
   // Create reference to store the DOM element containing the animation
   const el = useRef(null);

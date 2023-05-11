@@ -13,8 +13,8 @@ import swal from '../../utils/swal';
 function Setting() {
   const dispatch = useAppDispatch();
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
-  const currentUserName = useAppSelector((state) => state.auth.currentUserName);
-  const currentUserphotoURL = useAppSelector((state) => state.auth.currentUserPhotoURL);
+  const currentUserName = useAppSelector((state) => state.auth.currentUser.name);
+  const currentUserphotoURL = useAppSelector((state) => state.auth.currentUser.photoURL);
   const currentAuthUser = auth.currentUser;
   const { settingUserId } = useParams<{ settingUserId: string }>();
   const [profileUser, setProfileUser] = useState<User>();
