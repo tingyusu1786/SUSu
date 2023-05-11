@@ -43,7 +43,7 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserId, currentUserI
     if (!profileUserId) return;
     const fetchProfileUserPosts = async (profileUserId: string) => {
       const posts = await dbApi.getProfileUserPosts(profileUserId, currentUserId);
-      setProfileUserPosts(posts.reverse());
+      setProfileUserPosts(posts);
     };
     fetchProfileUserPosts(profileUserId);
   }, [profileUserId]);

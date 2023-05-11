@@ -218,12 +218,12 @@ const dbApi = {
 
     let q;
     if (profileUserId === currentUserId) {
-      q = query(postsRef, where('authorId', '==', profileUserId), orderBy('timeCreated', 'desc'));
+      q = query(postsRef, where('authorId', '==', profileUserId), orderBy('timeCreated', 'asc'));
     } else {
       q = query(
         postsRef,
         and(where('audience', '==', 'public'), where('authorId', '==', profileUserId)),
-        orderBy('timeCreated', 'desc')
+        orderBy('timeCreated', 'asc')
       );
     }
 
