@@ -2,15 +2,28 @@
 
 import { storage } from '../services/firebase';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import swal from './swal';
 
-interface StorageApi {
-  getInitPhotoURL: (photoName: string) => Promise<string>;
-}
-
-const storageApi: StorageApi = {
-  async getInitPhotoURL(photoName: string) {
+const storageApi = {
+  async getInitPhotoURL(photoName: string): Promise<string> {
     const initPhotoURL = await getDownloadURL(ref(storage, photoName));
     return initPhotoURL;
+  },
+  async getPhotoURL(photoName: string): Promise<string | undefined> {
+    try {
+      const photoURL = await getDownloadURL(ref(storage, `userPhotos/${photoName}`));
+      return photoURL;
+    } catch {
+      swal.error('Unable to retrieve photo url', 'try again later', 'ok');
+    }
+  },
+  async uploadUserPhoto(userId: string, file: File) {
+    try {
+      const storageRef = ref(storage, `userPhotos/${userId}`);
+      await uploadBytes(storageRef, file);
+    } catch {
+      swal.error('Unable to upload photo', 'try again later', 'ok');
+    }
   },
 };
 
