@@ -49,41 +49,30 @@ function Authentication() {
     }
     try {
       dispatch(signInStart());
-      // sign up new user
       const userCredential = await authApi.getUserCredential('signUp', email, password);
-
       if (userCredential === undefined) {
         throw new Error();
       }
-
       const user = userCredential.user;
-
-      const imgUrl = await storageApi.getInitPhotoURL('initPhoto.png'); /////
-
-      // update user profile with name and init photo
+      const imgUrl = (await storageApi.getPhotoURL('initPhoto.png')) || '';
       await authApi.updateAuthProfile(user, { name, imgUrl });
-
-      // add user to firestore
-      await setDoc(doc(db, 'users', user.uid), {
-        name: user.displayName,
-        email: user.email,
-        photoURL: user.photoURL,
+      await dbApi.createNewUser(user.uid, {
+        name: name,
+        email: email,
+        photoURL: imgUrl,
         timeCreated: new Date(),
       });
       swal.success('Signed up successful!', '', 'cool');
       dispatch(
         signInSuccess({
           user: {
-            name: user.displayName,
-            email: user.email,
-            photoURL: user.photoURL,
+            name: name,
+            email: email,
+            photoURL: imgUrl,
           },
           id: user.uid,
-          name: user.displayName,
-          photoURL: user.photoURL,
         })
       );
-      dispatch(closeAuth());
     } catch (error: any) {
       const errorCode = error.code;
       const errorMessage = error.message;

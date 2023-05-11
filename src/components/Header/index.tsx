@@ -3,7 +3,7 @@ import { Link, NavLink } from 'react-router-dom';
 import { CaretCircleRight, BellSimple, MagnifyingGlass } from '@phosphor-icons/react';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import { showNotification, closeNotification, showSearch, closeSearch, showAuth } from '../../app/popUpSlice';
-import { signOutStart, signOutSuccess, signOutFail } from '../../app/authSlice';
+import { signOutFail } from '../../app/authSlice';
 import NotificationsList from '../../components/NotificationsModal/';
 import authApi from '../../utils/authApi';
 import swal from '../../utils/swal';
