@@ -1,7 +1,6 @@
 import Swal from 'sweetalert2';
 import withReactContent from 'sweetalert2-react-content';
-import { BellIcon } from '@heroicons/react/24/outline';
-import { SmileyWink } from '@phosphor-icons/react';
+
 const MySwal = withReactContent(Swal);
 
 const Toast = MySwal.mixin({
