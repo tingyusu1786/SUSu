@@ -13,8 +13,10 @@ import {
   getAdditionalUserInfo,
   OAuthCredential,
 } from 'firebase/auth';
+import swal from './swal';
 
 const authApi = {
+  currentAuthUser: auth.currentUser,
   async getUserCredential(
     type: 'signUp' | 'signIn',
     email: string,
@@ -58,7 +60,11 @@ const authApi = {
     return isNewUser;
   },
   async updateAuthProfile(user: UserCredential['user'], content: Record<string, string>): Promise<void> {
-    await updateProfile(user, content);
+    try {
+      await updateProfile(user, content);
+    } catch {
+      swal.error('Something went wrong while updating profile', 'try again later', 'ok');
+    }
   },
   async signOut(): Promise<void> {
     await signOut(auth);
