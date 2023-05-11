@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { Timestamp } from 'firebase/firestore';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
 import dbApi from './dbApi';
@@ -41,9 +43,9 @@ const getTimeDiff = (timestamp: Timestamp): string => {
   }
 };
 
-const fetchAllBrandsInfo = async () => {
-  const allBrands = await dbApi.getAllBrandsInfo();
-  return allBrands;
-};
+// const fetchAllBrandsInfo = async () => {
+//   const allBrands = await dbApi.getAllBrandsInfo();
+//   return allBrands;
+// };
 
-export default { getTimeDiff, fetchAllBrandsInfo };
+export default { getTimeDiff };

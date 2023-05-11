@@ -1,49 +1,60 @@
 import React, { useEffect } from 'react';
-import { Outlet, useNavigate, useLocation } from 'react-router-dom';
-
+import { Outlet } from 'react-router-dom';
 import Header from './components/Header';
 import Authentication from './components/AuthModal/';
 import SearchModal from './components/SearchModal/';
 import { useAppSelector, useAppDispatch } from './app/hooks';
-import { signInStart, signInSuccess, signInFail, signOutStart, signOutSuccess, signOutFail } from './app/authSlice';
-import { showAuth, closeAuth } from './app/popUpSlice';
+import { signInSuccess, signOutSuccess } from './app/authSlice';
+import { closeAuth } from './app/popUpSlice';
 import { onAuthStateChanged } from 'firebase/auth';
-import { auth, db } from './services/firebase';
-import { doc, setDoc, getDoc, collection, serverTimestamp } from 'firebase/firestore';
+import { auth } from './services/firebase';
 import dbApi from './utils/dbApi';
-import commonApi from './utils/commonApi';
 import { addAllBrands } from './app/infoSlice';
+import swal from './utils/swal';
 
 function App() {
   const dispatch = useAppDispatch();
-  const navigate = useNavigate();
-  const location = useLocation();
-  const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
   const isLoading = useAppSelector((state) => state.auth.isLoading);
   const isAuthShown = useAppSelector((state) => state.popUp.isAuthShown);
   const isSearchShown = useAppSelector((state) => state.popUp.isSearchShown);
-  const userId = useAppSelector((state) => state.auth.currentUserId);
+
+  type FilteredUserData = {
+    name: string;
+    email: string;
+    photoURL: string;
+    timeCreated: Date;
+    status?: string;
+    followers?: string[];
+    following?: string[];
+  };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        const getUser = async () => {
-          const userName = await dbApi.getUserField(user.uid, 'name');
-          const userPhotoURL = await dbApi.getUserField(user.uid, 'photoURL');
-          const userDoc = await getDoc(doc(db, 'users', user.uid));
-          const userData = userDoc.data();
-          if (userData) {
-            let filteredUserData: { [key: string]: any } = Object.keys(userData)
-              .filter((key) => key !== 'timeCreated' && key !== 'notifications')
-              .reduce((acc: { [key: string]: any }, key) => {
-                acc[key] = userData[key];
-                return acc;
-              }, {});
-            dispatch(signInSuccess({ user: filteredUserData, id: user.uid, name: userName, photoURL: userPhotoURL }));
-            dispatch(closeAuth());
-          }
-        };
-        getUser();
+        try {
+          const getUser = async () => {
+            const userName = await dbApi.getUserField(user.uid, 'name');
+            const userPhotoURL = await dbApi.getUserField(user.uid, 'photoURL');
+            const userData = await dbApi.getUser(user.uid);
+            if (userData) {
+              let filteredUserData: FilteredUserData = Object.keys(userData)
+                .filter((key) => key !== 'notifications')
+                .reduce((acc: any, key) => {
+                  acc[key] = userData[key];
+                  if (key === 'timeCreated') {
+                    acc.timeCreated = userData.timeCreated.toDate();
+                  }
+                  return acc;
+                }, {});
+              dispatch(signInSuccess({ user: filteredUserData, id: user.uid, name: userName, photoURL: userPhotoURL }));
+            }
+          };
+          getUser();
+        } catch {
+          swal.error('Something went wrong', 'try again later', 'ok');
+        } finally {
+          dispatch(closeAuth());
+        }
       } else {
         dispatch(signOutSuccess());
       }
@@ -53,7 +64,7 @@ function App() {
 
   const loadAllBrands = () => {
     return async (dispatch: any) => {
-      const allBrands = await commonApi.fetchAllBrandsInfo();
+      const allBrands = await dbApi.getAllBrandsInfo();
       dispatch(addAllBrands({ allBrands }));
     };
   };
@@ -61,12 +72,6 @@ function App() {
   useEffect(() => {
     dispatch(loadAllBrands());
   }, []);
-
-  //#get all brands and send to redux
-  // useEffect(() => {
-  //   const allBrands = commonApi.fetchAllBrandsInfo();
-  //   dispatch(addAllBrands({ allBrands }));
-  // }, []);
 
   if (isLoading) {
     return (

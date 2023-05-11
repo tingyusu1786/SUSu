@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { storage } from '../services/firebase';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 

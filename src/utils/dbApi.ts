@@ -22,7 +22,7 @@ import {
   arrayUnion,
   arrayRemove,
 } from 'firebase/firestore';
-import { Brand } from '../interfaces/interfaces';
+import { Brand, User } from '../interfaces/interfaces';
 import swal from './swal';
 
 // interface dbApi {}
@@ -76,6 +76,35 @@ const dbApi = {
       swal.error('Something went wrong', 'try again later', 'ok');
     }
   },
+  //#
+  async getUserField(userId: string, field: string): Promise<string | undefined> {
+    try {
+      const userDoc = await getDoc(doc(db, 'users', userId));
+      if (!userDoc.exists()) {
+        swal.error('Something went wrong (user not found)', 'try agin later', 'ok');
+        return undefined;
+      }
+      const docData = userDoc.data();
+      const docField = docData[field];
+      return docField;
+    } catch {
+      swal.error('Something went wrong', 'try again later', 'ok');
+    }
+  },
+  //#
+  async getUser(userId: string): Promise<User | undefined> {
+    try {
+      const userDoc = await getDoc(doc(db, 'users', userId));
+      if (!userDoc.exists()) {
+        swal.error('Something went wrong (user not found)', 'try agin later', 'ok');
+        return undefined;
+      }
+      const docData = userDoc.data();
+      return docData as User;
+    } catch {
+      swal.error('Something went wrong', 'try again later', 'ok');
+    }
+  },
 
   // todo: 應該要讓page都不用用到doc, db, ...
   async getDoc(docRef: DocumentReference) {
@@ -90,16 +119,6 @@ const dbApi = {
       return null;
     }
     const docData = doc.data();
-    const docField = docData[field];
-    return docField;
-  },
-  async getUserField(userId: string, field: string) {
-    const userDoc = await getDoc(doc(db, 'users', userId));
-    if (!userDoc.exists()) {
-      swal.error('Something went wrong (user not found)', 'try agin later', 'ok');
-      return null;
-    }
-    const docData = userDoc.data();
     const docField = docData[field];
     return docField;
   },

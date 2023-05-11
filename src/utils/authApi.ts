@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { auth } from '../services/firebase';
 import {
   createUserWithEmailAndPassword,
