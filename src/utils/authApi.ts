@@ -16,7 +16,9 @@ import {
 import swal from './swal';
 
 const authApi = {
-  currentAuthUser: auth.currentUser,
+  getCurrentAuthUser() {
+    return auth.currentUser;
+  },
   async getUserCredential(
     type: 'signUp' | 'signIn',
     email: string,
