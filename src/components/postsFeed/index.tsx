@@ -31,9 +31,7 @@ import { Post } from '../../interfaces/interfaces';
 import PostCard from './PostCard';
 import { v4 as uuidv4 } from 'uuid';
 import swal from '../../utils/swal';
-import {
-  SmileyWink,
-} from '@phosphor-icons/react';
+import { SmileyWink } from '@phosphor-icons/react';
 
 interface PostsProps {
   onlySeeFollowing?: boolean;
@@ -41,7 +39,7 @@ interface PostsProps {
   logId?: string;
   profileUserId?: string;
   pageBrandId?: string;
-  catalogueItemId?: string;
+  pageItemId?: string;
 }
 
 const PostsFeed: React.FC<PostsProps> = ({
@@ -50,7 +48,7 @@ const PostsFeed: React.FC<PostsProps> = ({
   logId,
   profileUserId,
   pageBrandId,
-  catalogueItemId,
+  pageItemId,
 }) => {
   const dispatch = useAppDispatch();
   const currentUser = useAppSelector((state) => state.auth.currentUser);
@@ -70,7 +68,9 @@ const PostsFeed: React.FC<PostsProps> = ({
   useEffect(() => {
     if (
       onlySeeFollowing &&
-      (currentUser.following === undefined || currentUser.following?.length === 0 || !currentUserId)
+      (currentUser.following === undefined ||
+        currentUser.following?.length === 0 ||
+        !currentUserId)
     ) {
       return;
     }
@@ -86,24 +86,37 @@ const PostsFeed: React.FC<PostsProps> = ({
           collection(db, 'posts'),
           and(
             where('authorId', 'in', currentUser.following),
-            or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+            or(
+              where('audience', '==', 'public'),
+              where('authorId', '==', currentUserId)
+            )
           ),
           orderBy('timeCreated', 'desc')
         );
       } else {
         q = query(
           collection(db, 'posts'),
-          or(where('audience', '==', 'public'), where('authorId', '==', currentUserId)),
+          or(
+            where('audience', '==', 'public'),
+            where('authorId', '==', currentUserId)
+          ),
           orderBy('timeCreated', 'desc')
         );
       }
     } else if (currentPage === 'profile') {
       if (profileUserId === currentUserId) {
-        q = query(collection(db, 'posts'), where('authorId', '==', profileUserId), orderBy('timeCreated', 'desc'));
+        q = query(
+          collection(db, 'posts'),
+          where('authorId', '==', profileUserId),
+          orderBy('timeCreated', 'desc')
+        );
       } else {
         q = query(
           collection(db, 'posts'),
-          and(where('audience', '==', 'public'), where('authorId', '==', profileUserId)),
+          and(
+            where('audience', '==', 'public'),
+            where('authorId', '==', profileUserId)
+          ),
           orderBy('timeCreated', 'desc')
         );
       }
@@ -112,7 +125,10 @@ const PostsFeed: React.FC<PostsProps> = ({
         collection(db, 'posts'),
         and(
           where('brandId', '==', pageBrandId),
-          or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+          or(
+            where('audience', '==', 'public'),
+            where('authorId', '==', currentUserId)
+          )
         ),
         orderBy('timeCreated', 'desc')
       );
@@ -120,15 +136,20 @@ const PostsFeed: React.FC<PostsProps> = ({
       q = query(
         collection(db, 'posts'),
         and(
-          where('itemId', '==', catalogueItemId),
-          or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+          where('itemId', '==', pageItemId),
+          or(
+            where('audience', '==', 'public'),
+            where('authorId', '==', currentUserId)
+          )
         ),
         orderBy('timeCreated', 'desc')
       );
     }
 
     const unsubscribe = onSnapshot(q, async (querySnapshot: QuerySnapshot) => {
-      const addedChanges = querySnapshot.docChanges().filter((change) => change.type === 'added');
+      const addedChanges = querySnapshot
+        .docChanges()
+        .filter((change) => change.type === 'added');
 
       const newPosts: Post[] = await Promise.all(
         addedChanges.map(async (change) => {
@@ -181,7 +202,9 @@ const PostsFeed: React.FC<PostsProps> = ({
     }
     const handleScroll = () => {
       const bufferHeight = 200;
-      const isBottom = window.innerHeight + window.scrollY + bufferHeight >= document.body.offsetHeight;
+      const isBottom =
+        window.innerHeight + window.scrollY + bufferHeight >=
+        document.body.offsetHeight;
       if (isBottom) {
         // console.log('isBottom', isBottom, 'isFetching.current', isFetching.current);
         if (isFetching.current) return;
@@ -197,11 +220,16 @@ const PostsFeed: React.FC<PostsProps> = ({
     };
   }, [lastKey, hashtagFilter]);
 
-  const fetchFivePosts = async (lastKey: Timestamp | undefined, hashtag: string | undefined) => {
+  const fetchFivePosts = async (
+    lastKey: Timestamp | undefined,
+    hashtag: string | undefined
+  ) => {
     isFetching.current = true;
     if (
       onlySeeFollowing &&
-      (currentUser.following === undefined || currentUser.following?.length === 0 || !currentUserId)
+      (currentUser.following === undefined ||
+        currentUser.following?.length === 0 ||
+        !currentUserId)
     ) {
       isFetching.current = false;
       return;
@@ -215,7 +243,10 @@ const PostsFeed: React.FC<PostsProps> = ({
             and(
               where('authorId', 'in', currentUser.following),
               where('hashtags', 'array-contains', hashtag),
-              or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+              or(
+                where('audience', '==', 'public'),
+                where('authorId', '==', currentUserId)
+              )
             ),
             orderBy('timeCreated', 'desc'),
             startAfter(lastKey),
@@ -226,7 +257,10 @@ const PostsFeed: React.FC<PostsProps> = ({
             collection(db, 'posts'),
             and(
               where('hashtags', 'array-contains', hashtag),
-              or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+              or(
+                where('audience', '==', 'public'),
+                where('authorId', '==', currentUserId)
+              )
             ),
             orderBy('timeCreated', 'desc'),
             startAfter(lastKey),
@@ -239,7 +273,10 @@ const PostsFeed: React.FC<PostsProps> = ({
             collection(db, 'posts'),
             and(
               where('authorId', 'in', currentUser.following),
-              or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+              or(
+                where('audience', '==', 'public'),
+                where('authorId', '==', currentUserId)
+              )
             ),
             orderBy('timeCreated', 'desc'),
             startAfter(lastKey),
@@ -248,7 +285,10 @@ const PostsFeed: React.FC<PostsProps> = ({
         } else {
           q = query(
             collection(db, 'posts'),
-            or(where('audience', '==', 'public'), where('authorId', '==', currentUserId)),
+            or(
+              where('audience', '==', 'public'),
+              where('authorId', '==', currentUserId)
+            ),
             orderBy('timeCreated', 'desc'),
             startAfter(lastKey),
             limit(5)
@@ -261,7 +301,10 @@ const PostsFeed: React.FC<PostsProps> = ({
             and(
               where('authorId', 'in', currentUser.following),
               where('hashtags', 'array-contains', hashtag),
-              or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+              or(
+                where('audience', '==', 'public'),
+                where('authorId', '==', currentUserId)
+              )
             ),
             orderBy('timeCreated', 'desc'),
             limit(5)
@@ -271,7 +314,10 @@ const PostsFeed: React.FC<PostsProps> = ({
             collection(db, 'posts'),
             and(
               where('hashtags', 'array-contains', hashtag),
-              or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+              or(
+                where('audience', '==', 'public'),
+                where('authorId', '==', currentUserId)
+              )
             ),
             orderBy('timeCreated', 'desc'),
             limit(5)
@@ -283,7 +329,10 @@ const PostsFeed: React.FC<PostsProps> = ({
             collection(db, 'posts'),
             and(
               where('authorId', 'in', currentUser.following),
-              or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+              or(
+                where('audience', '==', 'public'),
+                where('authorId', '==', currentUserId)
+              )
             ),
             orderBy('timeCreated', 'desc'),
             limit(5)
@@ -291,7 +340,10 @@ const PostsFeed: React.FC<PostsProps> = ({
         } else {
           q = query(
             collection(db, 'posts'),
-            or(where('audience', '==', 'public'), where('authorId', '==', currentUserId)),
+            or(
+              where('audience', '==', 'public'),
+              where('authorId', '==', currentUserId)
+            ),
             orderBy('timeCreated', 'desc'),
             limit(5)
           );
@@ -302,7 +354,10 @@ const PostsFeed: React.FC<PostsProps> = ({
         if (profileUserId === currentUserId) {
           q = query(
             collection(db, 'posts'),
-            and(where('authorId', '==', profileUserId), where('hashtags', 'array-contains', hashtag)),
+            and(
+              where('authorId', '==', profileUserId),
+              where('hashtags', 'array-contains', hashtag)
+            ),
             orderBy('timeCreated', 'desc'),
             startAfter(lastKey),
             limit(5)
@@ -332,7 +387,10 @@ const PostsFeed: React.FC<PostsProps> = ({
         } else {
           q = query(
             collection(db, 'posts'),
-            and(where('audience', '==', 'public'), where('authorId', '==', profileUserId)),
+            and(
+              where('audience', '==', 'public'),
+              where('authorId', '==', profileUserId)
+            ),
             orderBy('timeCreated', 'desc'),
             startAfter(lastKey),
             limit(5)
@@ -342,7 +400,10 @@ const PostsFeed: React.FC<PostsProps> = ({
         if (profileUserId === currentUserId) {
           q = query(
             collection(db, 'posts'),
-            and(where('authorId', '==', profileUserId), where('hashtags', 'array-contains', hashtag)),
+            and(
+              where('authorId', '==', profileUserId),
+              where('hashtags', 'array-contains', hashtag)
+            ),
             orderBy('timeCreated', 'desc'),
             limit(5)
           );
@@ -369,7 +430,10 @@ const PostsFeed: React.FC<PostsProps> = ({
         } else {
           q = query(
             collection(db, 'posts'),
-            and(where('audience', '==', 'public'), where('authorId', '==', profileUserId)),
+            and(
+              where('audience', '==', 'public'),
+              where('authorId', '==', profileUserId)
+            ),
             orderBy('timeCreated', 'desc'),
             limit(5)
           );
@@ -382,7 +446,10 @@ const PostsFeed: React.FC<PostsProps> = ({
           and(
             where('brandId', '==', pageBrandId),
             where('hashtags', 'array-contains', hashtag),
-            or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+            or(
+              where('audience', '==', 'public'),
+              where('authorId', '==', currentUserId)
+            )
           ),
           orderBy('timeCreated', 'desc'),
           startAfter(lastKey),
@@ -393,7 +460,10 @@ const PostsFeed: React.FC<PostsProps> = ({
           collection(db, 'posts'),
           and(
             where('brandId', '==', pageBrandId),
-            or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+            or(
+              where('audience', '==', 'public'),
+              where('authorId', '==', currentUserId)
+            )
           ),
           orderBy('timeCreated', 'desc'),
           startAfter(lastKey),
@@ -405,7 +475,10 @@ const PostsFeed: React.FC<PostsProps> = ({
           and(
             where('brandId', '==', pageBrandId),
             where('hashtags', 'array-contains', hashtag),
-            or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+            or(
+              where('audience', '==', 'public'),
+              where('authorId', '==', currentUserId)
+            )
           ),
           orderBy('timeCreated', 'desc'),
           limit(5)
@@ -415,7 +488,10 @@ const PostsFeed: React.FC<PostsProps> = ({
           collection(db, 'posts'),
           and(
             where('brandId', '==', pageBrandId),
-            or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+            or(
+              where('audience', '==', 'public'),
+              where('authorId', '==', currentUserId)
+            )
           ),
           orderBy('timeCreated', 'desc'),
           limit(5)
@@ -426,9 +502,12 @@ const PostsFeed: React.FC<PostsProps> = ({
         q = query(
           collection(db, 'posts'),
           and(
-            where('itemId', '==', catalogueItemId),
+            where('itemId', '==', pageItemId),
             where('hashtags', 'array-contains', hashtag),
-            or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+            or(
+              where('audience', '==', 'public'),
+              where('authorId', '==', currentUserId)
+            )
           ),
           orderBy('timeCreated', 'desc'),
           startAfter(lastKey),
@@ -438,8 +517,11 @@ const PostsFeed: React.FC<PostsProps> = ({
         q = query(
           collection(db, 'posts'),
           and(
-            where('itemId', '==', catalogueItemId),
-            or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+            where('itemId', '==', pageItemId),
+            or(
+              where('audience', '==', 'public'),
+              where('authorId', '==', currentUserId)
+            )
           ),
           orderBy('timeCreated', 'desc'),
           startAfter(lastKey),
@@ -449,9 +531,12 @@ const PostsFeed: React.FC<PostsProps> = ({
         q = query(
           collection(db, 'posts'),
           and(
-            where('itemId', '==', catalogueItemId),
+            where('itemId', '==', pageItemId),
             where('hashtags', 'array-contains', hashtag),
-            or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+            or(
+              where('audience', '==', 'public'),
+              where('authorId', '==', currentUserId)
+            )
           ),
           orderBy('timeCreated', 'desc'),
           limit(5)
@@ -460,8 +545,11 @@ const PostsFeed: React.FC<PostsProps> = ({
         q = query(
           collection(db, 'posts'),
           and(
-            where('itemId', '==', catalogueItemId),
-            or(where('audience', '==', 'public'), where('authorId', '==', currentUserId))
+            where('itemId', '==', pageItemId),
+            or(
+              where('audience', '==', 'public'),
+              where('authorId', '==', currentUserId)
+            )
           ),
           orderBy('timeCreated', 'desc'),
           limit(5)
@@ -474,7 +562,14 @@ const PostsFeed: React.FC<PostsProps> = ({
         if (logDoc.exists()) {
           const logDocData = logDoc.data();
           const logWithQueriedInfos = await dbApi.getPostInfo(logDocData);
-          setPosts([{ ...logWithQueriedInfos, postId: logId, commentsShown: true, commentInput: '' }]);
+          setPosts([
+            {
+              ...logWithQueriedInfos,
+              postId: logId,
+              commentsShown: true,
+              commentInput: '',
+            },
+          ]);
         } else {
           setPosts([]);
           setBottomMessage('Log not found');
@@ -514,7 +609,9 @@ const PostsFeed: React.FC<PostsProps> = ({
     });
     const postsWithQueriedInfos = await Promise.all(postsArray);
     setPosts((posts) => {
-      const newPosts = lastKey ? [...posts, ...postsWithQueriedInfos] : postsWithQueriedInfos;
+      const newPosts = lastKey
+        ? [...posts, ...postsWithQueriedInfos]
+        : postsWithQueriedInfos;
       return newPosts;
     });
   };
@@ -533,7 +630,10 @@ const PostsFeed: React.FC<PostsProps> = ({
     });
   };
 
-  const handleCommentInput = (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => {
+  const handleCommentInput = (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    index: number
+  ) => {
     setPosts((prev) => {
       const newPosts = [...prev];
       newPosts[index].commentInput = event.target.value;
@@ -553,14 +653,25 @@ const PostsFeed: React.FC<PostsProps> = ({
     return;
   };
 
-  const handleDeleteComment = async (post: Post, postIndex: number, commentIndex: number, commentId: string) => {
+  const handleDeleteComment = async (
+    post: Post,
+    postIndex: number,
+    commentIndex: number,
+    commentId: string
+  ) => {
     if (!post.comments || post.comments.length === 0) return;
-    const result = await swal.warning('delete this comment?', 'this cannot be undone!', 'yes');
+    const result = await swal.warning(
+      'delete this comment?',
+      'this cannot be undone!',
+      'yes'
+    );
 
     if (result.isConfirmed) {
       // updateDoc
       const postRef = doc(db, 'posts', post.postId);
-      const updatedComments = post.comments.filter((comment, index) => index !== commentIndex);
+      const updatedComments = post.comments.filter(
+        (comment, index) => index !== commentIndex
+      );
       await updateDoc(postRef, { comments: updatedComments });
       // setState
       setPosts((prev) => {
@@ -569,14 +680,20 @@ const PostsFeed: React.FC<PostsProps> = ({
         return newPosts;
       });
       // unnotify
-      post.authorId && unnotifyOtherUser(post.postId, post.authorId, 'comment', commentId);
+      post.authorId &&
+        unnotifyOtherUser(post.postId, post.authorId, 'comment', commentId);
       // swal.success('Comment deleted!', '', 'ok');
     } else {
       return;
     }
   };
 
-  const handleUpdatePost = async (post: Post, userId: string, postIndex: number, type: 'like' | 'comment') => {
+  const handleUpdatePost = async (
+    post: Post,
+    userId: string,
+    postIndex: number,
+    type: 'like' | 'comment'
+  ) => {
     const postRef = doc(db, 'posts', post.postId);
     const curretTime = new Date();
     const timestamp = Timestamp.fromDate(curretTime);
@@ -586,10 +703,17 @@ const PostsFeed: React.FC<PostsProps> = ({
       authorName: currentUser.name,
       authorPhoto: currentUser.photoURL,
       timeCreated: timestamp,
-      ...(isComment ? { content: post.commentInput?.replace(/\n/g, '<br>'), commentId: uuidv4() } : {}),
+      ...(isComment
+        ? {
+            content: post.commentInput?.replace(/\n/g, '<br>'),
+            commentId: uuidv4(),
+          }
+        : {}),
     };
     const targetArray = isComment ? post.comments : post.likes;
-    const hasLiked = isComment ? undefined : targetArray?.some((like) => like.authorId === userId);
+    const hasLiked = isComment
+      ? undefined
+      : targetArray?.some((like) => like.authorId === userId);
     const updatedArray = targetArray
       ? hasLiked
         ? targetArray.filter((entry) => entry.authorId !== userId)
@@ -610,7 +734,8 @@ const PostsFeed: React.FC<PostsProps> = ({
       return newPosts;
     });
 
-    !hasLiked && notifyOtherUser(post.postId, post.authorId as string, newEntry, type);
+    !hasLiked &&
+      notifyOtherUser(post.postId, post.authorId as string, newEntry, type);
     hasLiked && unnotifyOtherUser(post.postId, post.authorId as string, type);
   };
 
@@ -629,10 +754,14 @@ const PostsFeed: React.FC<PostsProps> = ({
     if (type === 'like') {
       notificationToRemove = originNotifications.find(
         (notification: any) =>
-          notification.postId === postId && notification.authorId === currentUserId && notification.type === 'like'
+          notification.postId === postId &&
+          notification.authorId === currentUserId &&
+          notification.type === 'like'
       );
     } else {
-      notificationToRemove = originNotifications.find((notification: any) => notification.commentId === commentId);
+      notificationToRemove = originNotifications.find(
+        (notification: any) => notification.commentId === commentId
+      );
       // console.log(notificationToRemove);
     }
 
@@ -641,7 +770,12 @@ const PostsFeed: React.FC<PostsProps> = ({
     });
   };
 
-  const notifyOtherUser = async (postId: string, postAuthorId: string, content: any, type: 'like' | 'comment') => {
+  const notifyOtherUser = async (
+    postId: string,
+    postAuthorId: string,
+    content: any,
+    type: 'like' | 'comment'
+  ) => {
     const userRef = doc(db, 'users', postAuthorId);
     if (!userRef) return;
     const contentWithType = { ...content, type, postId, unread: true };
@@ -656,12 +790,18 @@ const PostsFeed: React.FC<PostsProps> = ({
   };
 
   const handleDeletePost = async (post: Post, index: number) => {
-    const result = await swal.warning('Delete this log?', 'this cannot be undone!', 'yes');
+    const result = await swal.warning(
+      'Delete this log?',
+      'this cannot be undone!',
+      'yes'
+    );
 
     if (result.isConfirmed) {
       const postRef = doc(db, 'posts', post.postId);
       setPosts((prev) => {
-        const newPosts = prev.filter((keptPost) => keptPost.postId !== post.postId);
+        const newPosts = prev.filter(
+          (keptPost) => keptPost.postId !== post.postId
+        );
         return newPosts;
       });
       await deleteDoc(postRef);
@@ -684,16 +824,27 @@ const PostsFeed: React.FC<PostsProps> = ({
   if (onlySeeFollowing && !currentUserId) {
     return (
       <div className='relative mx-auto mt-10 flex w-full max-w-3xl items-center justify-center rounded-md border-[3px] border-solid border-neutral-900 bg-neutral-100 '>
-        <div className='group hover:cursor-pointer' onClick={() => dispatch(showAuth())}>
+        <div
+          className='group hover:cursor-pointer'
+          onClick={() => dispatch(showAuth())}
+        >
           <span className='decoration-2 group-hover:underline'>sign in</span>
           &nbsp;to see logs from people you follow
         </div>
-        <SmileyWink  className='ml-2' size={28} color='#171717' weight='regular' />
+        <SmileyWink
+          className='ml-2'
+          size={28}
+          color='#171717'
+          weight='regular'
+        />
       </div>
     );
   }
 
-  if (onlySeeFollowing && (currentUser.following === undefined || currentUser.following?.length === 0)) {
+  if (
+    onlySeeFollowing &&
+    (currentUser.following === undefined || currentUser.following?.length === 0)
+  ) {
     return (
       <div className='relative mx-auto mt-10 flex w-full max-w-3xl items-center justify-center rounded-md border-[3px] border-solid border-neutral-900 bg-neutral-100 '>
         follow some users to see their posts
@@ -706,7 +857,10 @@ const PostsFeed: React.FC<PostsProps> = ({
   }
 
   return (
-    <div className='justify-top flex scroll-mt-36 flex-col items-center gap-3' ref={hashtagRef}>
+    <div
+      className='justify-top flex scroll-mt-36 flex-col items-center gap-3'
+      ref={hashtagRef}
+    >
       {hashtagFilter && (
         <div>
           <div className='mr-2 inline-block bg-gradient-to-l from-sky-500 to-green-500 bg-clip-text text-transparent before:mr-px before:content-["#"]'>
@@ -738,7 +892,14 @@ const PostsFeed: React.FC<PostsProps> = ({
           handleClickHashtag={handleClickHashtag}
         />
       ))}
-      {hasMore && <SmileyWink size={28} color='#171717' weight='regular' className='mx-auto my-10 animate-bounce' />}
+      {hasMore && (
+        <SmileyWink
+          size={28}
+          color='#171717'
+          weight='regular'
+          className='mx-auto my-10 animate-bounce'
+        />
+      )}
       <span>{bottomMessage}</span>
     </div>
   );
