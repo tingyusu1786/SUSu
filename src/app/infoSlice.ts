@@ -1,5 +1,4 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState, AppThunk } from './store';
+import { createSlice } from '@reduxjs/toolkit';
 import { Brand } from '../interfaces/interfaces';
 
 export interface infoState {
@@ -34,12 +33,6 @@ export const infoSlice = createSlice({
     addAllBrands: (state, action) => {
       state.brands = action.payload.allBrands;
     },
-    // addBrand: (state, action) => {
-    //   state.brands[action.payload.brandId] = {
-    //     name: action.payload.name,
-    //     photoURL: action.payload.photoURL,
-    //   };
-    // },
     addItem: (state, action) => {
       state.items[action.payload.itemId] = {
         name: action.payload.name,
@@ -53,13 +46,6 @@ export const infoSlice = createSlice({
         photoURL: action.payload.photoURL,
       };
     },
-    // todo: is delete necessary?
-
-    // deleteBrand: (state, action) => {
-    //   state.isShown = false;
-    //   state.content = null;
-    //   state.type = null;
-    // },
   },
 });
 

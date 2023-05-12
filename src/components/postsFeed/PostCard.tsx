@@ -1,5 +1,4 @@
-/* eslint-disable */
-import { ChangeEvent, KeyboardEvent, useState } from 'react';
+import { ChangeEvent, KeyboardEvent } from 'react';
 
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '../../app/hooks';
@@ -44,7 +43,6 @@ const PostCard: React.FC<PostProps> = ({
   handleCommentsShown,
   handleCommentInput,
   handleCommentSubmit,
-  handleUpdatePost,
   handleClickHashtag,
 }) => {
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
@@ -52,10 +50,6 @@ const PostCard: React.FC<PostProps> = ({
   const formattedTime = date?.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
   const formattedDate = date?.toLocaleDateString('en-US');
   const formattedDateTime = `${formattedDate} ${formattedTime}`;
-  const [randomNum, setRandomNum] = useState(getRandomInt(3));
-  function getRandomInt(max: number) {
-    return Math.floor(Math.random() * max);
-  }
 
   return (
     <div

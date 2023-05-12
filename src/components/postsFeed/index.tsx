@@ -18,8 +18,6 @@ import {
   updateDoc,
   where,
   DocumentData,
-  DocumentReference,
-  DocumentSnapshot,
   deleteDoc,
   startAfter,
   arrayUnion,
@@ -33,7 +31,9 @@ import { Post } from '../../interfaces/interfaces';
 import PostCard from './PostCard';
 import { v4 as uuidv4 } from 'uuid';
 import swal from '../../utils/swal';
-import { ReactComponent as SmileyWink } from '../../assets/SmileyWink.svg';
+import {
+  SmileyWink,
+} from '@phosphor-icons/react';
 
 interface PostsProps {
   onlySeeFollowing?: boolean;
@@ -688,7 +688,7 @@ const PostsFeed: React.FC<PostsProps> = ({
           <span className='decoration-2 group-hover:underline'>sign in</span>
           &nbsp;to see logs from people you follow
         </div>
-        <SmileyWink className='ml-2' />
+        <SmileyWink  className='ml-2' size={28} color='#171717' weight='regular' />
       </div>
     );
   }
@@ -723,7 +723,6 @@ const PostsFeed: React.FC<PostsProps> = ({
           </button>
         </div>
       )}
-      {/*<span className=''>({posts.length})</span>*/}
       {posts.map((post, index) => (
         <PostCard
           key={post.postId + index}
@@ -739,9 +738,8 @@ const PostsFeed: React.FC<PostsProps> = ({
           handleClickHashtag={handleClickHashtag}
         />
       ))}
-      {hasMore && <SmileyWink className='mx-auto my-10 animate-bounce' />}
+      {hasMore && <SmileyWink size={28} color='#171717' weight='regular' className='mx-auto my-10 animate-bounce' />}
       <span>{bottomMessage}</span>
-      {/*<span className=''>({posts.length})</span>*/}
     </div>
   );
 };

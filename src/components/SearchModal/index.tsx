@@ -7,9 +7,10 @@ import algoliasearch from 'algoliasearch/lite';
 import dbApi from '../../utils/dbApi';
 import { InstantSearch, SearchBox, Hits, Highlight, Index, useInstantSearch } from 'react-instantsearch-hooks-web';
 
+// eslint-disable-next-line no-undef, @typescript-eslint/no-non-null-assertion
 const searchClient = algoliasearch(process.env.REACT_APP_ALGOLIA_APP_ID!, process.env.REACT_APP_ALGOLIA_SEARCH_KEY!);
 
-function BrandHit({ hit }: any) {
+function BrandHit({ hit }): JSX.Element {
   const dispatch = useAppDispatch();
   return (
     <Link
@@ -27,7 +28,7 @@ function BrandHit({ hit }: any) {
   );
 }
 
-function UserHit({ hit }: any) {
+function UserHit({ hit }): JSX.Element {
   const dispatch = useAppDispatch();
   return (
     <Link
@@ -46,7 +47,7 @@ function UserHit({ hit }: any) {
   );
 }
 
-function PostHit({ hit }: any) {
+function PostHit({ hit }): JSX.Element {
   const dispatch = useAppDispatch();
   const [name, setName] = useState('user');
   dbApi.getUserField(hit.authorId, 'name').then((data) => {
@@ -93,8 +94,6 @@ const EmptyQueryBoundary: React.FC<FallbackProps> = ({ children, fallback }) => 
 const NoResultsBoundary: React.FC<FallbackProps> = ({ children, fallback }) => {
   const { results } = useInstantSearch();
 
-  // The `__isArtificial` flag makes sure not to display the No Results message
-  // when no hits have been returned yet.
   if (!results.__isArtificial && results.nbHits === 0) {
     return (
       <>
@@ -108,8 +107,6 @@ const NoResultsBoundary: React.FC<FallbackProps> = ({ children, fallback }) => {
 };
 
 const NoResults: React.FC = () => {
-  // const { indexUiState } = useInstantSearch();
-  // for <q>{indexUiState.query}</q>
   return <p>No results. Try searching another keyword</p>;
 };
 

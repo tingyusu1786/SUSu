@@ -1,38 +1,24 @@
-/* eslint-disable */
-import React, { useState, useEffect, useRef, KeyboardEvent, ChangeEvent } from 'react';
-import { db } from '../../services/firebase'; //todo
-import { useNavigate } from 'react-router-dom';
+import  { useState, useEffect, ChangeEvent } from 'react';
 import storageApi from '../../utils/storageApi';
 import authApi from '../../utils/authApi';
 import dbApi from '../../utils/dbApi';
-import { doc, setDoc, getDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '../../services/firebase';
+import { serverTimestamp } from 'firebase/firestore';
 import { Eye, EyeClosed } from '@phosphor-icons/react';
-import withReactContent from 'sweetalert2-react-content';
 import 'animate.css';
 import swal from '../../utils/swal';
 
-import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { signInStart, signInSuccess, signInFail, signOutStart, signOutSuccess, signOutFail } from '../../app/authSlice';
-import { showAuth, closeAuth } from '../../app/popUpSlice';
+import { useAppDispatch } from '../../app/hooks';
+import { signInStart, signInSuccess, signInFail } from '../../app/authSlice';
+import { closeAuth } from '../../app/popUpSlice';
 
 function Authentication() {
   const dispatch = useAppDispatch();
-  const isAuthShown = useAppSelector((state) => state.popUp.isAuthShown);
-  const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
-  const currentUser = useAppSelector((state) => state.auth.currentUser);
   const [input, setInput] = useState({ name: '', email: '', password: '' });
   const [haveAccount, setHaveAccount] = useState(true);
   const [passwordType, setPasswordType] = useState('password');
-  const navigate = useNavigate();
-  const nameRef = useRef(null);
-  const emailRef = useRef(null);
-  const passwordRef = useRef(null);
 
   useEffect(() => {
-    //todo: any
-    const handleKeyDown = (event: any) => {
+    const handleKeyDown = (event: { key: string; }) => {
       if (event.key === 'Escape') {
         dispatch(closeAuth());
       }
@@ -44,7 +30,7 @@ function Authentication() {
   }, []);
 
   const handleNativeSignUp = async (name: string, email: string, password: string) => {
-    if ([name, email, password].some((input) => input === '')) {
+    if ([name, email, password].some((value) => value === '')) {
       return;
     }
     try {
@@ -57,8 +43,8 @@ function Authentication() {
       const imgUrl = (await storageApi.getPhotoURL('initPhoto.png')) || '';
       await authApi.updateAuthProfile(user, { name, imgUrl });
       await dbApi.createNewUser(user.uid, {
-        name: name,
-        email: email,
+        name,
+        email,
         photoURL: imgUrl,
         timeCreated: new Date(),
       });
@@ -66,8 +52,8 @@ function Authentication() {
       dispatch(
         signInSuccess({
           user: {
-            name: name,
-            email: email,
+            name,
+            email,
             photoURL: imgUrl,
           },
           id: user.uid,
@@ -114,7 +100,6 @@ function Authentication() {
       }
 
       if (OAuthCredential !== null) {
-        const token = OAuthCredential.accessToken;
         const user = OAuthUserCredential.user;
         const isNewUser = await authApi.checkIfNewUser(OAuthUserCredential);
         if (isNewUser === undefined) {
@@ -271,7 +256,7 @@ function Authentication() {
 
         {haveAccount ? (
           <div className='text-sm'>
-            <span>Don't have an account? </span>
+            <span>Don&rsquo;t have an account? </span>
             <span
               className='cursor-pointer hover:underline'
               onClick={() => {

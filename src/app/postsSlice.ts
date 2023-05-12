@@ -1,6 +1,4 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState, AppThunk } from './store';
-import { Query, DocumentData } from 'firebase/firestore';
+import { createSlice } from '@reduxjs/toolkit';
 import { Post } from '../interfaces/interfaces';
 
 export interface postsState {

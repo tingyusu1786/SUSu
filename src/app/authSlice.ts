@@ -1,12 +1,19 @@
-// import { createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import { createSlice } from '@reduxjs/toolkit';
-// import { RootState, AppThunk } from './store';
 
 export interface AuthState {
   isSignedIn: boolean;
   isLoading: boolean;
   error: string | null;
-  currentUser: any; //todo
+  currentUser: {
+    email: string;
+    followers?: string[];
+    photoURL: string;
+    timeCreated: string;
+    following?: string[];
+    feedSource: string;
+    name: string;
+    status?: string;
+  };
   currentUserId: string | null;
 }
 
@@ -14,7 +21,13 @@ const initialState: AuthState = {
   isSignedIn: false,
   isLoading: true,
   error: null,
-  currentUser: {},
+  currentUser: {
+    email: '',
+    photoURL: '',
+    timeCreated: '',
+    feedSource: '',
+    name: '',
+  },
   currentUserId: null,
 };
 
@@ -44,7 +57,13 @@ export const authSlice = createSlice({
     signOutSuccess: (state) => {
       state.isLoading = false;
       state.isSignedIn = false;
-      state.currentUser = {};
+      state.currentUser = {
+        email: '',
+        photoURL: '',
+        timeCreated: '',
+        feedSource: '',
+        name: '',
+      };
       state.currentUserId = null;
     },
     signOutFail: (state, action) => {

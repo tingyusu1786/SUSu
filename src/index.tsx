@@ -1,5 +1,4 @@
 import './index.css';
-import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
@@ -27,8 +26,6 @@ root.render(
           <Route
             path='/profile/:profileUserId?'
             element={<Profile />}
-            // loader={}
-            // action={}
           />
           <Route path='/setting/:settingUserId' element={<Setting />} />
           <Route path='/feeds/:postId?' element={<Feeds />} />

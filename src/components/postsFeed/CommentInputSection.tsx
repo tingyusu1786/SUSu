@@ -1,4 +1,3 @@
-/* eslint-disable */
 import React from 'react';
 import { ChangeEvent, KeyboardEvent } from 'react';
 import { Link } from 'react-router-dom';
@@ -51,7 +50,7 @@ const CommentInputSection: React.FC<PostProps> = ({ post, handleCommentInput, ha
         disabled={!isSignedIn}
         value={post.commentInput}
         onChange={(e) => handleCommentInput(e, index)}
-        onKeyPress={(e) => e.key === 'Enter' && !e.shiftKey && userId && handleCommentSubmit(e, post, userId, index)}
+        onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && userId && handleCommentSubmit(e, post, userId, index)}
       />
     </div>
   );

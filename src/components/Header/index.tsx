@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { CaretCircleRight, BellSimple, MagnifyingGlass } from '@phosphor-icons/react';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
@@ -12,8 +12,7 @@ function Header() {
   const dispatch = useAppDispatch();
   const userId = useAppSelector((state) => state.auth.currentUserId);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
-  const currentUserName = useAppSelector((state) => state.auth.currentUser.name);
-  const currentUserphotoURL = useAppSelector((state) => state.auth.currentUser.photoURL);
+  const currentUser = useAppSelector(state=>state.auth.currentUser);
   const isNotificationShown = useAppSelector((state) => state.popUp.isNotificationShown);
   const isSearchShown = useAppSelector((state) => state.popUp.isSearchShown);
   const [dropdownShown, setDropdownShown] = useState({ profile: false, navLi: false });
@@ -82,7 +81,7 @@ function Header() {
       }}
     >
       <img
-        src={currentUserphotoURL}
+        src={currentUser.photoURL}
         alt=''
         className='box-content h-10 w-10 min-w-[40px] cursor-pointer rounded-full border-2 border-solid border-neutral-900 object-cover transition-all duration-100 hover:border-green-400 '
       />
@@ -201,12 +200,12 @@ function Header() {
       {isSignedIn ? (
         <div className='flex items-center gap-3'>
           <div className='overflow-hidden text-ellipsis whitespace-nowrap text-center lg:max-w-[calc(100vw-128px-390px-180px)] md:hidden'>
-            Hi {currentUserName}
+            Hi {currentUser.name}
           </div>
           <Link to={`/profile/${userId}`} className='group relative sm:hidden'>
             <img
-              src={currentUserphotoURL}
-              alt={currentUserName || 'user avatar'}
+              src={currentUser.photoURL}
+              alt={currentUser.name || 'user avatar'}
               className='box-content h-10 w-10 min-w-[40px] rounded-full border-2 border-solid border-neutral-900 object-cover transition-all duration-100 hover:border-green-400 '
             />
           </Link>

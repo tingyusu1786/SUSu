@@ -1,5 +1,4 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState, AppThunk } from './store';
+import { createSlice } from '@reduxjs/toolkit';
 
 export interface infoState {
   isNotificationShown: boolean;
@@ -38,5 +37,12 @@ export const popUpSlice = createSlice({
   },
 });
 
-export const { showNotification, closeNotification, showSearch, closeSearch, showAuth, closeAuth } = popUpSlice.actions;
+export const {
+  showNotification,
+  closeNotification,
+  showSearch,
+  closeSearch,
+  showAuth,
+  closeAuth,
+} = popUpSlice.actions;
 export default popUpSlice.reducer;

@@ -35,7 +35,7 @@ function NotificationsList() {
       const newNotifications = docSnapshot
         .data()
         ?.notifications?.reverse()
-        .filter((notif: any) => notif.authorId !== currentUserId);
+        .filter((notif: { authorId: string | null; }) => notif.authorId !== currentUserId);
 
       !initSnap.current && setNotifications(newNotifications);
       !initSnap.current &&
@@ -52,7 +52,7 @@ function NotificationsList() {
   }, [currentUserId]);
 
   const fireNotification = ({ authorId, authorName, content, postId, type }: Notification) => {
-    let html: JSX.Element;
+    let html;
     switch (type) {
       case 'follow': {
         html = (
@@ -84,18 +84,18 @@ function NotificationsList() {
     swal.toast(html);
   };
 
-  const fetchNotifications = async (currentUserRef: DocumentReference<DocumentData> | undefined) => {
-    if (!currentUserRef) {
+  const fetchNotifications = async (userRef: DocumentReference<DocumentData> | undefined) => {
+    if (!userRef) {
       return;
     }
-    const currentUserDoc = await dbApi.getDoc(currentUserRef);
+    const currentUserDoc = await dbApi.getDoc(userRef);
     if (!currentUserDoc.exists()) {
       alert('No such user!');
       return;
     }
     const currentUserData = currentUserDoc.data();
     const currentUserNotifications =
-      currentUserData?.notifications?.reverse().filter((notif: any) => notif.authorId !== currentUserId) || [];
+      currentUserData?.notifications?.reverse().filter((notif: { authorId: string | null; }) => notif.authorId !== currentUserId) || [];
 
     setNotifications(currentUserNotifications);
   };
@@ -105,29 +105,26 @@ function NotificationsList() {
     const result = await swal.warning('clear all notifications?', 'this cannot be undone!', 'yes');
 
     if (result.isConfirmed) {
-      // updateDoc
       const userRef = doc(db, 'users', currentUserId);
       await updateDoc(userRef, { notifications: [] });
-      // setState
+
       setNotifications([]);
       swal.success('Notifications cleared!', '', 'ok');
-    } else {
-      return;
     }
   };
 
   const notificationCards = () => {
     return notifications?.map((notification, index) => {
       const timeDiff = commonApi.getTimeDiff(notification.timeCreated);
-      let html: JSX.Element = <></>;
+      let html;
       let to = '';
       switch (notification.type) {
         case 'follow': {
           to = `/profile/${notification.authorId}`;
           html = (
             <div className='group text-neutral-500'>
-              <span className='transition-all duration-300 group-hover:text-green-400 '>{notification.authorName}</span>{' '}
-              started following you!
+              <span className='transition-all duration-300 group-hover:text-green-400 '>{notification.authorName}</span>
+              &nbsp;started following you!
               <br />
               <div className='text-right text-sm text-neutral-900'>{timeDiff}</div>
             </div>

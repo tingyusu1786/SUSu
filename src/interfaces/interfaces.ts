@@ -57,8 +57,8 @@ export interface Post {
   itemName?: string;
   likes?: Like[];
   orderNum?: string;
-  price?: number | string; //手調之後就會變string
-  rating?: 0 | string; //手調之後就會變string
+  price?: number | string;
+  rating?: 0 | string;
   selfComment?: string;
   sugar?: string;
   size?: string;
@@ -74,7 +74,7 @@ export interface Brand {
   numRatings?: number;
   numStore: number;
   size: { [key: string]: number };
-  story: any;
+  story: string;
   photoURL?: string;
 }
 
