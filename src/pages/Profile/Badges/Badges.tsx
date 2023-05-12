@@ -1,3 +1,4 @@
+import React from 'react';
 import 'animate.css';
 import { badgeConfig } from './badgeConfig';
 
@@ -8,8 +9,15 @@ interface BadgesProps {
   streaks: { longest: number; current: number };
 }
 
-const Badges: React.FC<BadgesProps> = ({ drankBrands, drankItems, numPosts, streaks }) => {
-  const numDrankBrands = drankBrands ? Object.values(drankBrands).filter((brand) => brand.times > 0).length : 0;
+const Badges: React.FC<BadgesProps> = ({
+  drankBrands,
+  drankItems,
+  numPosts,
+  streaks,
+}) => {
+  const numDrankBrands = drankBrands
+    ? Object.values(drankBrands).filter((brand) => brand.times > 0).length
+    : 0;
 
   const numDrankItems = drankItems ? Object.keys(drankItems).length : 0;
 
@@ -46,13 +54,16 @@ const Badges: React.FC<BadgesProps> = ({ drankBrands, drankItems, numPosts, stre
           const prevGoal = goals[index - 1] || 0;
           const isGoalReached = num >= goal;
           const isBetweenGoals = num > prevGoal && num < goal;
-          const progressBarWidth = (num / (goals.find((g) => g > num) || 1)) * 100;
+          const progressBarWidth =
+            (num / (goals.find((g) => g > num) || 1)) * 100;
           return (
             <div
               key={`${category.type}-${goal}-${index}`}
               className={`${
                 isGoalReached
-                  ? `bg-${bg}-${index + 1} ring-2 ring-neutral-900 ring-offset-2`
+                  ? `bg-${bg}-${
+                      index + 1
+                    } ring-2 ring-neutral-900 ring-offset-2`
                   : ' bg-neutral-200 opacity-30'
               } group relative flex h-24 w-24 cursor-default items-center justify-center gap-x-2 rounded-full  border-2  border-neutral-900  transition-all duration-100`}
             >
