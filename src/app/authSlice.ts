@@ -14,7 +14,7 @@ export interface AuthState {
     name: string;
     status?: string;
   };
-  currentUserId: string | null;
+  currentUserId: string | undefined;
 }
 
 const initialState: AuthState = {
@@ -28,7 +28,7 @@ const initialState: AuthState = {
     feedSource: '',
     name: '',
   },
-  currentUserId: null,
+  currentUserId: undefined,
 };
 
 export const authSlice = createSlice({
@@ -64,7 +64,7 @@ export const authSlice = createSlice({
         feedSource: '',
         name: '',
       };
-      state.currentUserId = null;
+      state.currentUserId = undefined;
     },
     signOutFail: (state, action) => {
       state.isLoading = false;

@@ -23,14 +23,14 @@ root.render(
       <Routes>
         <Route path='/' element={<App />}>
           <Route index element={<Landing />} />
-          <Route
-            path='/profile/:profileUserId?'
-            element={<Profile />}
-          />
+          <Route path='/profile/:profileUserId?' element={<Profile />} />
           <Route path='/setting/:settingUserId' element={<Setting />} />
           <Route path='/feeds/:postId?' element={<Feeds />} />
           <Route path='/log/:logId' element={<Log />} />
-          <Route path='/drinkipedia/:pageBrandId?/:catalogueItemId?' element={<Drinkipedia />} />
+          <Route
+            path='/drinkipedia/:pageBrandId?/:pageItemId?'
+            element={<Drinkipedia />}
+          />
           <Route path='/inspiration' element={<Inspiration />} />
           <Route path='*' element={<PageNotFound />} />
         </Route>

@@ -7,11 +7,11 @@ import AllBrands from './AllBrands';
 import SingleBrand from './SingleBrand';
 import SingleItem from './SingleItem';
 import BreadcrumbNav from './BreadcrumbNav';
-import { Item }from '../../interfaces/interfaces';
+import { Item } from '../../interfaces/interfaces';
 
 function Drinkipedia() {
   const { pageBrandId } = useParams<{ pageBrandId: string }>();
-  const { catalogueItemId } = useParams<{ catalogueItemId: string }>();
+  const { pageItemId } = useParams<{ pageItemId: string }>();
   const [catalogueItemObj, setCatalogueItemObj] = useState<Item>();
   const [catalogueItemName, setCatalogueItemName] = useState<string>();
   const [categories, setCategories] = useState<string[][]>([]);
@@ -48,14 +48,14 @@ function Drinkipedia() {
   useEffect(() => {
     setCatalogueItemName(undefined);
     const fetchCatalogueItemName = async () => {
-      const itemName = await getCatalogueItemName(catalogueItemId);
+      const itemName = await getCatalogueItemName(pageItemId);
       setCatalogueItemName(itemName);
     };
-    if (catalogueItemId) {
+    if (pageItemId) {
       fetchCatalogueItemName();
-      getCatalogueItemObj(catalogueItemId);
+      getCatalogueItemObj(pageItemId);
     }
-  }, [catalogueItemId]);
+  }, [pageItemId]);
 
   const getCatalogueItemObj = async (itemId: string) => {
     const itemIdArray = itemId.split('-');
@@ -64,7 +64,7 @@ function Drinkipedia() {
       'brands',
       itemIdArray[0],
       'categories',
-      `${itemIdArray[0]  }-${  itemIdArray[1]}`,
+      `${itemIdArray[0]}-${itemIdArray[1]}`,
       'items',
       itemId
     );
@@ -76,7 +76,15 @@ function Drinkipedia() {
   const getCatalogueItemName = async (itemId: string | undefined) => {
     if (itemId !== undefined) {
       const idArray = itemId.split('-');
-      const docRef = doc(db, 'brands', idArray[0], 'categories', `${idArray[0]  }-${  idArray[1]}`, 'items', itemId);
+      const docRef = doc(
+        db,
+        'brands',
+        idArray[0],
+        'categories',
+        `${idArray[0]}-${idArray[1]}`,
+        'items',
+        itemId
+      );
       if (docRef !== undefined) {
         const itemDoc = await getDoc(docRef);
         if (!itemDoc.exists()) {
@@ -89,15 +97,15 @@ function Drinkipedia() {
     }
   };
 
-  const shouldRenderAll = !pageBrandId && !catalogueItemId;
-  const shouldRenderSingleBrand = pageBrandId && !catalogueItemId;
-  const shouldRenderSingleItem = pageBrandId && catalogueItemId;
+  const shouldRenderAll = !pageBrandId && !pageItemId;
+  const shouldRenderSingleBrand = pageBrandId && !pageItemId;
+  const shouldRenderSingleItem = pageBrandId && pageItemId;
 
   return (
     <main className='bg-boxes relative min-h-[calc(100vh-64px)] bg-fixed p-10 sm:p-5'>
       <BreadcrumbNav
         pageBrandId={pageBrandId}
-        catalogueItemId={catalogueItemId}
+        pageItemId={pageItemId}
         catalogueItemName={catalogueItemName}
       />
       {shouldRenderAll && <AllBrands />}
@@ -108,9 +116,9 @@ function Drinkipedia() {
           itemsOfBrand={itemsOfBrand}
         />
       )}
-      {shouldRenderSingleItem && catalogueItemObj &&(
+      {shouldRenderSingleItem && catalogueItemObj && (
         <SingleItem
-          catalogueItemId={catalogueItemId}
+          pageItemId={pageItemId}
           catalogueItemName={catalogueItemName}
           catalogueItemObj={catalogueItemObj}
         />

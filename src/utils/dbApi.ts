@@ -153,8 +153,12 @@ const dbApi = {
       const docData = userDoc.data();
       const docField = docData[field];
       return docField;
-    } catch {
-      swal.error('Something went wrong', 'try again later', 'ok');
+    } catch (error: any) {
+      swal.error(
+        'Something went wrong when getting user name',
+        'try again later',
+        'ok'
+      );
     }
   },
   //#
