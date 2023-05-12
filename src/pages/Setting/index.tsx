@@ -27,9 +27,8 @@ function Setting() {
       const objectUrl = URL.createObjectURL(file);
       setImgPreview(objectUrl);
       return () => URL.revokeObjectURL(objectUrl);
-    } else {
-      setImgPreview(undefined);
     }
+    setImgPreview(undefined);
   }, [file]);
 
   const handleFileInputChange = (event: ChangeEvent<HTMLInputElement>) => {

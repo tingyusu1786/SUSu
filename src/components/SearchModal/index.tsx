@@ -10,7 +10,7 @@ import { InstantSearch, SearchBox, Hits, Highlight, Index, useInstantSearch } fr
 // eslint-disable-next-line no-undef, @typescript-eslint/no-non-null-assertion
 const searchClient = algoliasearch(process.env.REACT_APP_ALGOLIA_APP_ID!, process.env.REACT_APP_ALGOLIA_SEARCH_KEY!);
 
-function BrandHit({ hit }): JSX.Element {
+function BrandHit({ hit }:any): JSX.Element {
   const dispatch = useAppDispatch();
   return (
     <Link
@@ -28,7 +28,7 @@ function BrandHit({ hit }): JSX.Element {
   );
 }
 
-function UserHit({ hit }): JSX.Element {
+function UserHit({ hit }:any): JSX.Element {
   const dispatch = useAppDispatch();
   return (
     <Link
@@ -47,7 +47,7 @@ function UserHit({ hit }): JSX.Element {
   );
 }
 
-function PostHit({ hit }): JSX.Element {
+function PostHit({ hit }:any): JSX.Element {
   const dispatch = useAppDispatch();
   const [name, setName] = useState('user');
   dbApi.getUserField(hit.authorId, 'name').then((data) => {

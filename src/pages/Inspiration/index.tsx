@@ -1,8 +1,6 @@
-import { useState, useEffect, useRef, ChangeEvent } from 'react';
+import { useState, useRef, ChangeEvent } from 'react';
 import { Link } from 'react-router-dom';
-import dbApi from '../../utils/dbApi';
-import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { addAllBrands } from '../../app/infoSlice';
+import { useAppSelector } from '../../app/hooks';
 import { db } from '../../services/firebase';
 import { collection, doc, getDoc, getDocs, query, where, DocumentData } from 'firebase/firestore';
 import { ReactComponent as ShootingStar } from '../../assets/ShootingStar.svg';
@@ -18,7 +16,6 @@ function Inspiration() {
     numRatings?: number;
     averageRating?: number;
   };
-  const dispatch = useAppDispatch();
   const allBrandsInfo = useAppSelector((state) => state.info.brands);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [selectedRating, setSelectedRating] = useState<number>();
@@ -29,17 +26,6 @@ function Inspiration() {
   const [showMap, setShowMap] = useState(false);
   const [locationErrorMessage, setLocationErrorMessage] = useState<string>();
   const mapRef = useRef<HTMLIFrameElement | null>(null);
-
-  //#get all brands and send to redux
-  // useEffect(() => {
-  //   const fetchAllBrandsInfo = async () => {
-  //     const allBrands = await dbApi.getAllBrandsInfo();
-  //     dispatch(addAllBrands({ allBrands }));
-  //   };
-  //   if (Object.keys(allBrandsInfo).length === 0) {
-  //     fetchAllBrandsInfo();
-  //   }
-  // }, []);
 
   const getUserPosition = () => {
     navigator.geolocation.getCurrentPosition(

@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useAppSelector } from '../../app/hooks';
 import dbApi from '../../utils/dbApi';
 import { ReactComponent as Streak } from '../../assets/Streak.svg';
-import { ReactComponent as Store } from '../../assets/Store.svg';
-import { ReactComponent as Expense } from '../../assets/Expense.svg';
 import CalendarHeatmapComponent from './CalendarHeatmapComponent';
 import Badges from './Badges/Badges';
 import { getStatisticsFromPosts } from './helper';
+import { Post } from '../../interfaces/interfaces';
+import {Coins, Storefront} from '@phosphor-icons/react';
 
 interface AllPostsProps {
   profileUserId: string;
@@ -20,7 +20,7 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserId, currentUserI
   const [drankItems, setDrankItems] = useState<Record<string, { times: number }>>();
   const [streaks, setStreaks] = useState<{ current: number; longest: number }>({ current: 0, longest: 0 });
   const [numMonthBefore, setNumMonthBefore] = useState(6);
-  const [profileUserPosts, setProfileUserPosts] = useState<any[]>([]);
+  const [profileUserPosts, setProfileUserPosts] = useState<Omit<Post, 'commentsShown'>[]>([]);
   const [values, setValues] = useState<{ date: Date; count: number }[]>();
 
   useEffect(() => {
@@ -59,7 +59,7 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserId, currentUserI
         <div className='col-span-2 ml-3 text-xl before:mr-2 before:content-["✦"]'>statistics</div>
         {getMostDrankBrand() && (
           <div className='col-span-2 grid grid-cols-[50px_1fr] items-center rounded-xl border-2 border-solid border-neutral-900 bg-neutral-100 px-10 py-5 shadow-[3px_3px_#171717] transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[3px_6px_#171717]'>
-            <Store className='row-span-2' />
+            <Storefront color='#0ea5e9' size={40} weight='regular' className='row-span-2 -ml-1' />
             <div className='text-xl'>{getMostDrankBrand()}</div>
             <div className='text-neutral-500'>most frequently drank</div>
           </div>
@@ -116,7 +116,7 @@ const DashboardSection: React.FC<AllPostsProps> = ({ profileUserId, currentUserI
               className='grid grid-cols-[50px_1fr] items-center rounded-xl border-2 border-solid border-neutral-900 bg-neutral-100 px-5 py-3 shadow-[3px_3px_#171717] transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[3px_6px_#171717] lg:grid-cols-[40px_1fr] md:grid-cols-1 md:justify-items-center'
               key={expense[0]}
             >
-              <Expense className='row-span-2 md:mb-3' />
+              <Coins size={32} color="#facc15" className='row-span-2 md:mb-3' />
               <div className='text-xl before:content-["$"]'>{expense[1]}</div>
               <div className='text-neutral-500'>{expense[0]}</div>
             </div>
