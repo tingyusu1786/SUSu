@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../services/firebase';
@@ -7,14 +7,12 @@ import AllBrands from './AllBrands';
 import SingleBrand from './SingleBrand';
 import SingleItem from './SingleItem';
 import BreadcrumbNav from './BreadcrumbNav';
-// import { useAppDispatch } from '../../app/hooks';
-
-//todo: [catalogueBrandName, setCatalogueBrandName] 從catalogueBrandObj拿？
+import { Item }from '../../interfaces/interfaces';
 
 function Drinkipedia() {
   const { pageBrandId } = useParams<{ pageBrandId: string }>();
   const { catalogueItemId } = useParams<{ catalogueItemId: string }>();
-  const [catalogueItemObj, setCatalogueItemObj] = useState<any>();
+  const [catalogueItemObj, setCatalogueItemObj] = useState<Item>();
   const [catalogueItemName, setCatalogueItemName] = useState<string>();
   const [categories, setCategories] = useState<string[][]>([]);
   const [itemsOfBrand, setItemsOfBrand] = useState<string[][][]>([]);
@@ -37,7 +35,7 @@ function Drinkipedia() {
         return;
       }
       const itemInfos = await dbApi.getItemsIdAndName(pageBrandId, categoryId);
-      itemInfos && setItemsOfBrand((itemsOfBrand) => itemsOfBrand.concat([itemInfos]));
+      itemInfos && setItemsOfBrand((items) => items.concat([itemInfos]));
     };
 
     if (categories.length > 0) {
@@ -48,7 +46,7 @@ function Drinkipedia() {
   }, [categories]);
 
   useEffect(() => {
-    // setCatalogueItemName(undefined); // to clear out the last state
+    setCatalogueItemName(undefined);
     const fetchCatalogueItemName = async () => {
       const itemName = await getCatalogueItemName(catalogueItemId);
       setCatalogueItemName(itemName);
@@ -66,19 +64,19 @@ function Drinkipedia() {
       'brands',
       itemIdArray[0],
       'categories',
-      itemIdArray[0] + '-' + itemIdArray[1],
+      `${itemIdArray[0]  }-${  itemIdArray[1]}`,
       'items',
       itemId
     );
     const itemDoc = await getDoc(itemRef);
     const itemDocData = itemDoc.data();
-    itemDocData && setCatalogueItemObj(itemDocData);
+    itemDocData && setCatalogueItemObj(itemDocData as Item);
   };
 
   const getCatalogueItemName = async (itemId: string | undefined) => {
     if (itemId !== undefined) {
       const idArray = itemId.split('-');
-      const docRef = doc(db, 'brands', idArray[0], 'categories', idArray[0] + '-' + idArray[1], 'items', itemId);
+      const docRef = doc(db, 'brands', idArray[0], 'categories', `${idArray[0]  }-${  idArray[1]}`, 'items', itemId);
       if (docRef !== undefined) {
         const itemDoc = await getDoc(docRef);
         if (!itemDoc.exists()) {
@@ -106,14 +104,12 @@ function Drinkipedia() {
       {shouldRenderSingleBrand && (
         <SingleBrand
           pageBrandId={pageBrandId}
-          // catalogueBrandObj={allBrandsInfo[pageBrandId]}
           categories={categories}
           itemsOfBrand={itemsOfBrand}
         />
       )}
-      {shouldRenderSingleItem && (
+      {shouldRenderSingleItem && catalogueItemObj &&(
         <SingleItem
-          pageBrandId={pageBrandId}
           catalogueItemId={catalogueItemId}
           catalogueItemName={catalogueItemName}
           catalogueItemObj={catalogueItemObj}

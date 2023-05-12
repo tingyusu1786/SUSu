@@ -3,11 +3,11 @@ import { Link } from 'react-router-dom';
 import PostsFeed from '../../components/PostsFeed/';
 import { Star, Storefront } from '@phosphor-icons/react';
 import { useAppSelector } from '../../app/hooks';
+
 interface CatalogueProps {
   pageBrandId: string;
-  catalogueItemName?: string | undefined;
-  categories?: string[][];
-  itemsOfBrand?: any;
+  categories: string[][];
+  itemsOfBrand: string[][][];
 }
 
 const BrandCatalogue: React.FC<CatalogueProps> = ({ pageBrandId, categories, itemsOfBrand }) => {
@@ -37,7 +37,7 @@ const BrandCatalogue: React.FC<CatalogueProps> = ({ pageBrandId, categories, ite
         {itemsOfBrand.length !== 0 &&
           categories &&
           categories.length !== 0 &&
-          itemsOfBrand.map((itemsOfCategory: [], index: number) => (
+          itemsOfBrand.map((itemsOfCategory, index: number) => (
             <div key={index} className='flex justify-start gap-3 sm:flex-col'>
               <div
                 className='self-start rounded-md border-2 border-solid border-neutral-900 bg-green-700 pb-5 pl-2 pr-3 pt-6 text-xl tracking-[10px] text-white sm:hidden'
@@ -50,7 +50,7 @@ const BrandCatalogue: React.FC<CatalogueProps> = ({ pageBrandId, categories, ite
               </div>
               <div className='flex flex-wrap content-start gap-3'>
                 {itemsOfCategory.length !== 0 &&
-                  itemsOfCategory.map((item: any) => (
+                  itemsOfCategory.map((item: string[]) => (
                     <Link to={`/drinkipedia/${allBrandsInfo[pageBrandId].brandId}/${item[0]}`} key={item[0]}>
                       <div
                         key={item[0]}

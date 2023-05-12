@@ -78,6 +78,13 @@ export interface Brand {
   photoURL?: string;
 }
 
+export interface Item {
+  averageRating?: number;
+  name: string;
+  numRatings?: number;
+  price: Record<string, number>;
+}
+
 export interface BrandsInfo {
   [brandId: string]: Brand;
 }

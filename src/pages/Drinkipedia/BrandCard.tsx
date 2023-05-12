@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Brand } from '../../interfaces/interfaces';
 import { ArrowRight, Star } from '@phosphor-icons/react';

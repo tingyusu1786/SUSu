@@ -12,15 +12,15 @@ interface BreadcrumProps {
 const BreadcrumbNav: React.FC<BreadcrumProps> = ({ pageBrandId, catalogueItemId, catalogueItemName }) => {
   const allBrandsInfo = useAppSelector((state) => state.info.brands);
   return (
-    <nav className=''>
+    <nav>
       <ol className='flex sm:flex-wrap'>
-        <li className=''>
+        <li>
           <Link to='/drinkipedia' className='text-neutral-500 hover:text-neutral-700'>
             All Brands
           </Link>
         </li>
         {pageBrandId && (
-          <li className=''>
+          <li>
             <ArrowRight size={22} color='#737373' weight='regular' className='mx-1 -mt-1 inline-block' />
             <Link to={`/drinkipedia/${pageBrandId}`} className='text-neutral-500 hover:text-neutral-700'>
               {allBrandsInfo[pageBrandId]?.name || 'oops'}
@@ -28,7 +28,7 @@ const BreadcrumbNav: React.FC<BreadcrumProps> = ({ pageBrandId, catalogueItemId,
           </li>
         )}
         {catalogueItemId && (
-          <li className=''>
+          <li>
             <ArrowRight size={22} color='#737373' weight='regular' className='mx-1 -mt-1 inline-block' />
             <span className='text-neutral-500'>{catalogueItemName}</span>
           </li>

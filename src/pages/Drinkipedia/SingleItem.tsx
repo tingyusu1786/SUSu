@@ -1,22 +1,19 @@
 import React from 'react';
 import PostsFeed from '../../components/PostsFeed/';
 import { Star } from '@phosphor-icons/react';
+import { Item }from '../../interfaces/interfaces';
 
 interface CatalogueProps {
-  pageBrandId: string | undefined;
   catalogueItemId: string | undefined;
-  catalogueItemObj: any;
-  catalogueBrandName?: string | undefined;
   catalogueItemName: string | undefined;
-  categories?: string[][];
-  itemsOfBrand?: any;
+  catalogueItemObj: Item;
 }
 
-const ItemCatalogue: React.FC<CatalogueProps> = ({ catalogueItemId, catalogueItemObj, catalogueItemName }) => {
+const ItemCatalogue: React.FC<CatalogueProps> = ({ catalogueItemId, catalogueItemName, catalogueItemObj }) => {
   return (
     <div className='mx-auto mt-5 max-w-[960px]'>
       <div className='flex items-baseline gap-5 sm:flex-col sm:gap-0'>
-        <h1 className='mb-3 inline-block text-6xl selection:bg-green-400 sm:text-5xl'>{catalogueItemName}</h1>
+        <h1 className='mt-1 mb-3 inline-block text-6xl selection:bg-green-400 sm:text-5xl'>{catalogueItemName}</h1>
         <div className='mb-4 inline-block flex items-center justify-start gap-6 text-lg'>
           {catalogueItemObj?.price &&
             Object.entries(catalogueItemObj?.price).map((p) => (
@@ -34,7 +31,6 @@ const ItemCatalogue: React.FC<CatalogueProps> = ({ catalogueItemId, catalogueIte
         <span>{catalogueItemObj?.averageRating || '-'}</span>
         <span>({catalogueItemObj?.numRatings || 0})</span>
       </div>
-
       <div className='mt-5 flex w-full items-baseline justify-around gap-3 px-6'>
         <div className='grow border-b-4 border-solid border-neutral-900'></div>
         <span className=''>RELATED LOGS</span>

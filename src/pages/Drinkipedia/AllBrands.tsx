@@ -1,3 +1,4 @@
+import React from 'react';
 import BrandCard from './BrandCard';
 import { useAppSelector } from '../../app/hooks';
 
