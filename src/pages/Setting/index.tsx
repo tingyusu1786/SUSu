@@ -28,7 +28,7 @@ function Setting() {
       setImgPreview(objectUrl);
       return () => URL.revokeObjectURL(objectUrl);
     }
-    setImgPreview(undefined);
+    return setImgPreview(undefined);
   }, [file]);
 
   const handleFileInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -58,7 +58,9 @@ function Setting() {
 
   const updateName = async () => {
     if (currentAuthUser === null || !currentUserId) return;
-    await authApi.updateAuthProfile(currentAuthUser, { displayName: inputs.name });
+    await authApi.updateAuthProfile(currentAuthUser, {
+      displayName: inputs.name,
+    });
     await dbApi.updateUserDoc(currentUserId, { name: inputs.name });
     dispatch(updateUserName({ name: inputs.name }));
   };
@@ -94,7 +96,12 @@ function Setting() {
         className=' group left-10 top-10 flex w-max cursor-pointer items-start gap-2 pr-5 text-lg text-neutral-500 hover:text-neutral-900'
         onClick={() => navigate(-1)}
       >
-        <ArrowLeft size={24} color='#737373' weight='regular' className='mt-px group-hover:animate-arrowLeft' />
+        <ArrowLeft
+          size={24}
+          color='#737373'
+          weight='regular'
+          className='mt-px group-hover:animate-arrowLeft'
+        />
         back to profile
       </div>
       <h1 className='mb-6 mt-5 text-center text-3xl sm:my-3'>Edit Profile</h1>
