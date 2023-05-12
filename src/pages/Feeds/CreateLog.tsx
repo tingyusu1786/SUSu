@@ -1,7 +1,6 @@
-/* eslint-disable */
-import { useState, useRef, useEffect, ChangeEvent, MouseEvent } from 'react';
+import React, { useState, useEffect, ChangeEvent } from 'react';
 import { db } from '../../services/firebase';
-import { collection, doc, getDoc, addDoc, getDocs, updateDoc, Timestamp } from 'firebase/firestore';
+import { collection, doc, getDoc, addDoc, updateDoc } from 'firebase/firestore';
 import { useAppSelector, useAppDispatch } from '../../app/hooks';
 import dbApi from '../../utils/dbApi';
 import swal from '../../utils/swal';
@@ -13,42 +12,20 @@ import {
   Star as LineStar,
 } from '@phosphor-icons/react';
 import { showAuth } from '../../app/popUpSlice';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { DateTimeField } from '@mui/x-date-pickers/DateTimeField';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { createTheme, ThemeProvider } from '@mui/material';
+import { addItem } from '../../app/infoSlice';
+
 const theme = createTheme({
   typography: {
     fontFamily: ['sayger', 'tp-bold', 'sans-serif'].join(','),
   },
 });
 
-function useComponentVisible(initialIsVisible: boolean) {
-  const [isComponentVisible, setIsComponentVisible] = useState(initialIsVisible);
-  const ref = useRef<HTMLDivElement>(null);
-
-  const handleClickOutside = (event: any) => {
-    if (ref.current && !ref.current.contains(event.target)) {
-      setIsComponentVisible(false);
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener('click', handleClickOutside, true);
-    return () => {
-      document.removeEventListener('click', handleClickOutside, true);
-    };
-  }, []);
-
-  return { ref, isComponentVisible, setIsComponentVisible };
-}
-
-function CreatePost() {
-  const { ref, isComponentVisible, setIsComponentVisible } = useComponentVisible(true);
-  const dispatch = useAppDispatch();
+function CreateLog() {
   const initialInput = {
     audience: 'public',
     brandId: '',
@@ -69,31 +46,20 @@ function CreatePost() {
     sugar: false,
     ice: false,
   };
+  const dispatch = useAppDispatch();
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
-  const userName = useAppSelector((state) => state.auth.currentUser.name);
-  const userPhotoURL = useAppSelector((state) => state.auth.currentUser.photoURL);
+  const currentUser = useAppSelector((state) => state.auth.currentUser);
+  const allBrandsInfo = useAppSelector((state) => state.info.brands);
+  const itemsInfo = useAppSelector((state) => state.info.items);
   const [customTagsInput, setCustomTagsInput] = useState('');
   const [customTags, setCustomTags] = useState<string[]>([]);
   const [autoTags, setAutoTags] = useState<string[]>([]);
-  const [brands, setBrands] = useState<string[][]>([]);
   const [categories, setCategories] = useState<string[][]>([]);
   const [itemsOfBrand, setItemsOfBrand] = useState<string[][][]>([]);
-  const [sizesOfItem, setSizesOfItem] = useState<string[][]>([]);
+  const [sizesOfItem, setSizesOfItem] = useState<any[][]>([]);
   const [inputs, setInputs] = useState(initialInput);
-  const [date, setDate] = useState<dayjs.Dayjs | null>(dayjs());
+  const [date, setDate] = useState<dayjs.Dayjs>(dayjs());
   const [dropdownShown, setDropdownShown] = useState(initialDropdownShown);
-
-  const formatDate = (date: Date): string => {
-    return date.toISOString().slice(0, 16);
-  };
-
-  const handleChange = (event: any) => {
-    const { value } = event.target;
-    console.log(value);
-    if (value === '' || parseInt(value.split('-')[0]) > 9999) {
-      return;
-    }
-  };
 
   const sugarOptions = [
     '無糖',
@@ -111,23 +77,21 @@ function CreatePost() {
   ];
   const iceOptions = ['溫/熱', '去冰', '微冰', '少冰', '正常冰'];
 
-  // 把所有brand列出來
-  useEffect(() => {
-    const fetchBrands = async () => {
-      const brandInfos = await getBrandsIdAndName();
-      brandInfos && setBrands(brandInfos);
-    };
-    fetchBrands();
-  }, []);
-
   // 選brand之後把該brand的category列出來
   useEffect(() => {
-    const fetchCategories = async () => {
-      const categoryInfos = await getCategoriesIdAndName(inputs.brandId);
-      categoryInfos && setCategories(categoryInfos);
+    const loadCategories = async () => {
+      const categoryInfos = await dbApi.getCategoriesIdAndName(inputs.brandId);
+      if (!categoryInfos || categoryInfos.length === 0) {
+        return swal.error(
+          'something went wrong when getting items',
+          'try again later',
+          'ok'
+        );
+      }
+      setCategories(categoryInfos);
     };
     if (inputs.brandId !== '') {
-      fetchCategories();
+      loadCategories();
       setItemsOfBrand([]);
       setSizesOfItem([]);
     }
@@ -135,29 +99,36 @@ function CreatePost() {
 
   // 有category之後把item列出來
   useEffect(() => {
-    const fetchItems = async (categoryId: string) => {
-      const itemInfos = await getItemsIdAndName(inputs.brandId, categoryId);
-      itemInfos && setItemsOfBrand((itemsOfBrand) => itemsOfBrand.concat([itemInfos]));
+    const loadItems = async (categoryId: string) => {
+      const itemInfos = await dbApi.getItemsIdAndName(
+        inputs.brandId,
+        categoryId
+      );
+      itemInfos && setItemsOfBrand((items) => items.concat([itemInfos]));
     };
-
     if (categories.length !== 0) {
       categories.forEach((category) => {
-        fetchItems(category[0]);
+        loadItems(category[0]);
       });
     }
   }, [categories]);
 
-  // 選item之後自動產生tag + 把size列出來
+  // 選item之後 拿item + 自動產生tag + 把size列出來
   useEffect(() => {
     handleAutoTag(inputs.itemId);
 
-    const fetchSizes = async (itemId: string) => {
-      const priceInfos = await getItemPrice(itemId);
-      priceInfos && setSizesOfItem(Object.entries(priceInfos));
+    const loadSizes = async (itemId: string) => {
+      let priceInfo = itemsInfo[itemId]?.price;
+      if (!priceInfo) {
+        const itemInfo = await dbApi.getItem(itemId);
+        dispatch(addItem({ itemId, itemInfo }));
+        priceInfo = itemInfo?.price;
+      }
+      priceInfo && setSizesOfItem(Object.entries(priceInfo));
     };
 
     if (inputs.itemId !== '') {
-      fetchSizes(inputs.itemId);
+      loadSizes(inputs.itemId);
     }
   }, [inputs.itemId]);
 
@@ -165,13 +136,19 @@ function CreatePost() {
   useEffect(() => {
     if (sizesOfItem.length === 1) {
       setInputs((prev) => {
-        const newInput = { ...prev, size: sizesOfItem[0][0], price: sizesOfItem[0][1] };
+        const newInput = {
+          ...prev,
+          size: sizesOfItem[0][0],
+          price: sizesOfItem[0][1],
+        };
         return newInput;
       });
     }
   }, [sizesOfItem]);
 
-  const handleTagInputKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleTagInputKeyDown = (
+    event: React.KeyboardEvent<HTMLInputElement>
+  ) => {
     const noSpacecustomTagsInput = customTagsInput.replace(/\s/g, '');
     if (event.key === 'Enter' && noSpacecustomTagsInput !== '') {
       const newTags = [...customTags, noSpacecustomTagsInput];
@@ -179,10 +156,9 @@ function CreatePost() {
       setCustomTags(uniqueNewTags);
       setCustomTagsInput('');
     }
-    return;
   };
 
-  const handleTagInputBlur = (event: React.FocusEvent<HTMLInputElement>) => {
+  const handleTagInputBlur = () => {
     const noSpacecustomTagsInput = customTagsInput.replace(/\s/g, '');
     if (noSpacecustomTagsInput !== '') {
       const newTags = [...customTags, noSpacecustomTagsInput];
@@ -193,20 +169,27 @@ function CreatePost() {
   };
 
   const handleAutoTag = (itemId: string) => {
-    if (itemId !== '') {
-      const idArray = itemId.split('-');
-      const brandName = brands.find((brand) => brand[0] === idArray[0])?.[1] || '';
-      const itemName = itemsOfBrand.flat().find(([idValue]) => idValue === itemId)?.[1] || '';
-      setAutoTags([brandName, itemName]);
-    } else {
-      setAutoTags([]);
+    if (itemId === '') {
+      return setAutoTags([]);
     }
+    const brandName = allBrandsInfo[inputs.brandId].name;
+    const itemName =
+      itemsOfBrand.flat().find(([idValue]) => idValue === itemId)?.[1] || '';
+    setAutoTags([brandName, itemName]);
   };
 
-  const handlePostSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handlePostSubmit = async () => {
     try {
-      if ([inputs.brandId, inputs.itemId, inputs.rating].some((input) => input === '')) {
-        swal.warning('please fill in all required fields', '(brand, item, rating)', 'ok');
+      if (
+        [inputs.brandId, inputs.itemId, inputs.rating].some(
+          (input) => input === ''
+        )
+      ) {
+        swal.warning(
+          'please fill in all required fields',
+          '(brand, item, rating)',
+          'ok'
+        );
         return;
       }
       // todo: invalid date
@@ -215,7 +198,7 @@ function CreatePost() {
       const postInputs = Object.assign({}, inputs, {
         authorId: currentUserId,
         hashtags: customTags.concat(autoTags),
-        timeCreated: new Date(date!.unix() * 1000),
+        timeCreated: new Date(date.unix() * 1000),
         likes: [],
         comments: [],
       });
@@ -237,7 +220,9 @@ function CreatePost() {
     }
   };
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
     const key = e.target.name;
 
     interface UpdateFunctions {
@@ -246,14 +231,22 @@ function CreatePost() {
     }
 
     const updateFunctions: UpdateFunctions = {
-      brandId: () => ({ brandId: e.target.value, itemId: '', size: '', price: '' }),
+      brandId: () => ({
+        brandId: e.target.value,
+        itemId: '',
+        size: '',
+        price: '',
+      }),
       itemId: () => ({ itemId: e.target.value, size: '', price: '' }),
       size: () => {
         const price = sizesOfItem.find((i) => i[0] === e.target.value)?.[1];
         return { size: e.target.value, price };
       },
       price: () => ({
-        price: parseInt(e.target.value) < 0 || e.target.value === '' ? '0' : String(parseInt(e.target.value)),
+        price:
+          parseInt(e.target.value) < 0 || e.target.value === ''
+            ? '0'
+            : String(parseInt(e.target.value)),
       }),
       default: () => ({ [key]: e.target.value }),
     };
@@ -265,27 +258,22 @@ function CreatePost() {
   const updateRatings = async (brandId: string, itemId: string) => {
     try {
       // brand
-      const brandRef = doc(db, 'brands', brandId);
-      const brandDoc = await getDoc(brandRef);
-      const prevBrandAverageRating: number | undefined = brandDoc.data()?.averageRating;
-      const prevBrandNumRatings: number | undefined = brandDoc.data()?.numRatings;
-      let updatedBrandAverageRating;
-      let updatedBrandNumRatings;
-      if (prevBrandAverageRating && prevBrandNumRatings) {
-        updatedBrandNumRatings = prevBrandNumRatings + 1;
-        updatedBrandAverageRating =
-          Math.round(
-            ((prevBrandAverageRating * prevBrandNumRatings + Number(inputs.rating)) / updatedBrandNumRatings) * 10
-          ) / 10;
-      } else {
-        updatedBrandNumRatings = 1;
-        updatedBrandAverageRating = Number(inputs.rating);
-      }
-
-      await updateDoc(brandRef, {
-        numRatings: updatedBrandNumRatings,
-        averageRating: updatedBrandAverageRating,
-      });
+      const brandInfo = allBrandsInfo[brandId];
+      const prevBrandAverageRating = brandInfo.averageRating ?? 0;
+      const prevBrandNumRatings = brandInfo.numRatings ?? 0;
+      const updatedBrandNumRatings = prevBrandNumRatings + 1;
+      const updatedBrandAverageRating =
+        Math.round(
+          ((prevBrandAverageRating * prevBrandNumRatings +
+            Number(inputs.rating)) /
+            updatedBrandNumRatings) *
+            10
+        ) / 10;
+      dbApi.updateBrandRating(
+        brandId,
+        updatedBrandNumRatings,
+        updatedBrandAverageRating
+      );
 
       //item
       const itemIdArray = itemId.split('-');
@@ -294,12 +282,13 @@ function CreatePost() {
         'brands',
         itemIdArray[0],
         'categories',
-        itemIdArray[0] + '-' + itemIdArray[1],
+        `${itemIdArray[0]}-${itemIdArray[1]}`,
         'items',
         itemId
       );
       const itemDoc = await getDoc(itemRef);
-      const prevItemAverageRating: number | undefined = itemDoc.data()?.averageRating;
+      const prevItemAverageRating: number | undefined =
+        itemDoc.data()?.averageRating;
       const prevItemNumRatings: number | undefined = itemDoc.data()?.numRatings;
       let updatedItemAverageRating;
       let updatedItemNumRatings;
@@ -307,7 +296,10 @@ function CreatePost() {
         updatedItemNumRatings = prevItemNumRatings + 1;
         updatedItemAverageRating =
           Math.round(
-            ((prevItemAverageRating * prevItemNumRatings + Number(inputs.rating)) / updatedItemNumRatings) * 10
+            ((prevItemAverageRating * prevItemNumRatings +
+              Number(inputs.rating)) /
+              updatedItemNumRatings) *
+              10
           ) / 10;
       } else {
         updatedItemNumRatings = 1;
@@ -323,95 +315,17 @@ function CreatePost() {
     }
   };
 
-  const handleTagsChange = (newTags: string[]) => {
-    setCustomTags(newTags);
-  };
-
-  const getBrandsIdAndName = async (): Promise<string[][] | undefined> => {
-    try {
-      const querySnapshot = await getDocs(collection(db, 'brands'));
-      const documents: string[][] = [];
-      querySnapshot.forEach((doc) => {
-        const docInfo = [];
-        docInfo.push(doc.id);
-        if (doc.data() && doc.data().name) {
-          docInfo.push(doc.data().name);
-        }
-        documents.push(docInfo);
-      });
-      return documents;
-    } catch {
-      swal.error('something went wrong', '', 'ok');
-    }
-  };
-
-  const getCategoriesIdAndName = async (brandId: string): Promise<string[][] | undefined> => {
-    try {
-      const querySnapshot = await getDocs(collection(db, 'brands', brandId, 'categories'));
-      const documents: string[][] = [];
-      querySnapshot.forEach((doc) => {
-        const docInfo = [];
-        docInfo.push(doc.id);
-        if (doc.data() && doc.data().name) {
-          docInfo.push(doc.data().name);
-        }
-        documents.push(docInfo);
-      });
-      return documents;
-    } catch {
-      swal.error('something went wrong', '', 'ok');
-    }
-  };
-
-  const getItemsIdAndName = async (brandId: string, categoryId: string): Promise<string[][] | undefined> => {
-    try {
-      const querySnapshot = await getDocs(collection(db, 'brands', brandId, 'categories', categoryId, 'items'));
-      const documents: string[][] = [];
-      querySnapshot.forEach((doc) => {
-        const docInfo = [];
-        docInfo.push(doc.id);
-        if (doc.data() && doc.data().name) {
-          docInfo.push(doc.data().name);
-        }
-        documents.push(docInfo);
-      });
-      return documents;
-    } catch {
-      swal.error('something went wrong', '', 'ok');
-    }
-  };
-
-  const getItemPrice = async (itemId: string): Promise<Record<string, string> | undefined> => {
-    try {
-      const idArray = itemId.split('-');
-      const itemDocRef = doc(db, 'brands', idArray[0], 'categories', idArray[0] + '-' + idArray[1], 'items', itemId);
-      const itemPrice = await dbApi.getDocField(itemDocRef, 'price');
-      return itemPrice;
-    } catch {
-      swal.error('something went wrong', '', 'ok');
-    }
-  };
-
   const removeTag = (index: number) => {
-    setCustomTags(customTags.filter((el, i) => i !== index));
+    setCustomTags(customTags.filter((_, i) => i !== index));
   };
 
   return (
     <>
-      {!currentUserId ? (
-        <div className='relative mx-auto flex w-full max-w-3xl items-center justify-center rounded-md border-[3px] border-solid border-neutral-900 bg-neutral-100 '>
-          <div className='group hover:cursor-pointer' onClick={() => dispatch(showAuth())}>
-            <span className='decoration-2 group-hover:underline'>sign in</span>
-            &nbsp;to log your drinks
-          </div>
-          <SmileyWink size={28} color='#171717' weight='regular' className='ml-2' />
-        </div>
-      ) : (
+      {currentUserId ? (
         <div
           className='relative mx-auto flex w-full max-w-3xl flex-col rounded-md border-[3px] border-solid border-neutral-900 bg-neutral-100 shadow-[4px_4px_#171717]'
           onClick={() => {
             if (Object.values(dropdownShown).some((show) => show === true)) {
-              console.log('div on click');
               setDropdownShown(initialDropdownShown);
             }
           }}
@@ -419,12 +333,12 @@ function CreatePost() {
           <div className='flex h-12 flex-nowrap items-center justify-between border-b-[3px] border-solid border-neutral-900 px-5'>
             <div>
               <img
-                src={userPhotoURL}
-                alt={userName || 'user'}
+                src={currentUser.photoURL}
+                alt={currentUser.name || 'user'}
                 className='mr-2 inline-block h-9 w-9 rounded-full border-2 border-solid border-neutral-900 object-cover group-hover:border-green-400'
               />
               <span className='text-lg group-hover:underline group-hover:decoration-green-400 group-hover:decoration-wavy group-hover:underline-offset-[5px]'>
-                {userName}
+                {currentUser.name}
               </span>
             </div>
             <div className='flex items-center justify-end gap-x-1'>
@@ -439,28 +353,27 @@ function CreatePost() {
                         width: '220px',
                         marginRight: '-10px',
                         '& fieldset': { border: 'none' },
-                        '& button': { backgroundColor: '', padding: 0, margin: 0 },
+                        '& button': {
+                          backgroundColor: '',
+                          padding: 0,
+                          margin: 0,
+                        },
                         '& svg': { width: '18px', color: '#171717' },
                       }}
-                      className=''
                       disableFuture={true}
-                      onChange={(newValue) =>
-                        setDate((prev) => {
-                          return newValue;
-                        })
-                      }
+                      onChange={(newValue) => newValue && setDate(newValue)}
                       slotProps={{ textField: { size: 'small' } }}
                     />
                   </div>
                 </ThemeProvider>
               </LocalizationProvider>
-              <span className=''>•</span>
+              <span>•</span>
               {inputs.audience === 'public' ? (
-                <GlobeHemisphereEast className='' size={18} color='#171717' weight='bold' />
+                <GlobeHemisphereEast size={18} color='#171717' weight='bold' />
               ) : (
                 <UserCircle size={18} color='#171717' weight='bold' />
               )}
-              <div className='w-50 cursor-pointer '>
+              <div className='w-50 cursor-pointer'>
                 <button
                   onClick={() =>
                     setDropdownShown((prev) => {
@@ -469,7 +382,6 @@ function CreatePost() {
                       return newShown;
                     })
                   }
-                  className=''
                 >
                   {inputs.audience}
                 </button>
@@ -486,10 +398,8 @@ function CreatePost() {
                       value='public'
                       checked={inputs.audience === 'public'}
                       className='hidden'
-                      onChange={(e) => {
-                        handleInputChange(e);
-                      }}
-                    ></input>
+                      onChange={handleInputChange}
+                    />
                   </label>
                   <label className='cursor-pointer px-3 pt-1 text-center text-base hover:bg-neutral-100'>
                     private
@@ -499,10 +409,8 @@ function CreatePost() {
                       value='private'
                       checked={inputs.audience === 'private'}
                       className='hidden'
-                      onChange={(e) => {
-                        handleInputChange(e);
-                      }}
-                    ></input>
+                      onChange={handleInputChange}
+                    />
                   </label>
                 </div>
               </div>
@@ -510,7 +418,7 @@ function CreatePost() {
           </div>
           <div className='flex flex-col gap-y-2 p-5'>
             <div className='flex items-center gap-x-2 text-xl'>
-              <span className=''>I drank </span>
+              <div>I drank</div>
               <div className='relative w-56'>
                 <button
                   onClick={() =>
@@ -522,35 +430,34 @@ function CreatePost() {
                   }
                   className='h-10 w-full grow rounded-full border-2 border-solid border-neutral-900 bg-white p-0 px-2 pt-1 text-base focus:outline focus:outline-green-400'
                 >
-                  {inputs.brandId ? brands.find((brand) => brand[0] === inputs.brandId)![1] : 'select a brand'}
+                  {inputs.brandId
+                    ? allBrandsInfo[inputs.brandId].name
+                    : 'select a brand'}
                 </button>
                 <div
                   className={`flex gap-y-1 ${
                     !dropdownShown.brand && 'hidden'
                   } absolute z-10 max-h-[305px] w-full flex-col overflow-y-scroll rounded-lg border border-neutral-900 bg-white py-2 shadow-lg`}
                 >
-                  {brands.length !== 0 &&
-                    brands.map((brand) => (
-                      <label className='cursor-pointer px-3 pt-1 text-center text-base hover:bg-neutral-100'>
-                        {brand[1]}
-                        <input
-                          type='radio'
-                          name='brandId'
-                          value={brand[0]}
-                          key={brand[0]}
-                          className='hidden'
-                          checked={brand[0] === inputs.brandId}
-                          onChange={(e) => {
-                            handleInputChange(e);
-                          }}
-                        ></input>
-                      </label>
-                    ))}
+                  {Object.entries(allBrandsInfo).map((brand) => (
+                    <label
+                      className='cursor-pointer px-3 pt-1 text-center text-base hover:bg-neutral-100'
+                      key={brand[0]}
+                    >
+                      {brand[1].name}
+                      <input
+                        type='radio'
+                        name='brandId'
+                        value={brand[0]}
+                        className='hidden'
+                        checked={brand[0] === inputs.brandId}
+                        onChange={handleInputChange}
+                      />
+                    </label>
+                  ))}
                 </div>
               </div>
-
-              <span className=''>'s </span>
-
+              <div>&rsquo;s</div>
               <div className='relative w-60'>
                 <button
                   disabled={itemsOfBrand.length === 0}
@@ -565,7 +472,11 @@ function CreatePost() {
                     itemsOfBrand.length === 0 && 'cursor-not-allowed opacity-60'
                   }`}
                 >
-                  {inputs.itemId ? itemsOfBrand.flat().find((item) => item[0] === inputs.itemId)![1] : 'select an item'}
+                  {inputs.itemId
+                    ? itemsOfBrand
+                        .flat()
+                        .find((item) => item[0] === inputs.itemId)?.[1]
+                    : 'select an item'}
                 </button>
                 <div
                   className={`flex gap-y-1 ${
@@ -575,15 +486,20 @@ function CreatePost() {
                   {itemsOfBrand.length !== 0 &&
                     categories.length !== 0 &&
                     itemsOfBrand.map((itemsOfCategory, index) => (
-                      <div className='flex flex-col'>
+                      <div className='flex flex-col' key={index}>
                         <div className='flex w-full items-center justify-around gap-3 px-6'>
                           <div className='grow border-b border-dashed border-neutral-500'></div>
-                          <div className='mt-1 text-center text-base text-neutral-500'>{categories[index]?.[1]}</div>
+                          <div className='mt-1 text-center text-base text-neutral-500'>
+                            {categories[index]?.[1]}
+                          </div>
                           <div className='grow border-b border-dashed border-neutral-500'></div>
                         </div>
                         {itemsOfCategory.length !== 0 &&
                           itemsOfCategory.map((item) => (
-                            <label className='cursor-pointer px-3 pt-1 text-center text-base hover:bg-neutral-100'>
+                            <label
+                              className='cursor-pointer px-3 pt-1 text-center text-base hover:bg-neutral-100'
+                              key={item[0]}
+                            >
                               {item[1]}
                               <input
                                 type='radio'
@@ -592,10 +508,7 @@ function CreatePost() {
                                 key={item[0]}
                                 checked={item[0] === inputs.itemId}
                                 className='hidden'
-                                onChange={(e) => {
-                                  console.log('onChange');
-                                  handleInputChange(e);
-                                }}
+                                onChange={handleInputChange}
                               />
                             </label>
                           ))}
@@ -628,25 +541,25 @@ function CreatePost() {
                 >
                   {sizesOfItem.length !== 0 &&
                     sizesOfItem.map((size) => (
-                      <label className='cursor-pointer px-3 pt-1 text-center text-sm hover:bg-neutral-100'>
+                      <label
+                        className='cursor-pointer px-3 pt-1 text-center text-sm hover:bg-neutral-100'
+                        key={size[0]}
+                      >
                         {size[0]}
                         <input
                           type='radio'
                           name='size'
                           value={size[0]}
-                          key={size[0]}
                           checked={size[0] === inputs.size}
                           className='hidden'
-                          onChange={(e) => {
-                            handleInputChange(e);
-                          }}
-                        ></input>
+                          onChange={handleInputChange}
+                        />
                       </label>
                     ))}
                 </div>
               </div>
 
-              <span className='before:ml-3 before:content-["$"]'></span>
+              <span className='before:ml-3 before:content-["$"]' />
               <input
                 disabled={sizesOfItem.length === 0}
                 name='price'
@@ -661,7 +574,7 @@ function CreatePost() {
             </div>
             <div className='flex gap-x-3'>
               <div className='flex items-center gap-1'>
-                <span className='text-neutral-500'>sugar </span>
+                <div className='mr-1 text-neutral-500'>sugar</div>
                 <div className='relative h-8 w-36'>
                   <button
                     className={`h-full w-full rounded-full border-2 border-solid border-neutral-900 bg-white p-0 px-2 pt-1 text-base text-sm focus:outline focus:outline-green-400`}
@@ -681,7 +594,10 @@ function CreatePost() {
                     } absolute z-10 w-full flex-col overflow-y-scroll rounded-lg border border-neutral-900 bg-white py-2 shadow-lg`}
                   >
                     {sugarOptions.map((option) => (
-                      <label className='cursor-pointer px-3 pt-1 text-center text-sm hover:bg-neutral-100'>
+                      <label
+                        className='cursor-pointer px-3 pt-1 text-center text-sm hover:bg-neutral-100'
+                        key={option}
+                      >
                         {option}
                         <input
                           type='radio'
@@ -690,17 +606,15 @@ function CreatePost() {
                           key={option}
                           checked={option === inputs.sugar}
                           className='hidden'
-                          onChange={(e) => {
-                            handleInputChange(e);
-                          }}
-                        ></input>
+                          onChange={handleInputChange}
+                        />
                       </label>
                     ))}
                   </div>
                 </div>
               </div>
               <div className='flex items-center gap-1'>
-                <span className='text-neutral-500'>ice </span>
+                <div className='mr-1 text-neutral-500'>ice</div>
                 <div className='relative h-8 w-36'>
                   <button
                     className={`h-full w-full rounded-full border-2 border-solid border-neutral-900 bg-white p-0 px-2 pt-1 text-base text-sm focus:outline focus:outline-green-400`}
@@ -720,19 +634,19 @@ function CreatePost() {
                     } absolute z-10 w-full flex-col overflow-y-scroll rounded-lg border border-neutral-900 bg-white py-2 shadow-lg`}
                   >
                     {iceOptions.map((option) => (
-                      <label className='cursor-pointer px-3 pt-1 text-center text-sm hover:bg-neutral-100'>
+                      <label
+                        className='cursor-pointer px-3 pt-1 text-center text-sm hover:bg-neutral-100'
+                        key={option}
+                      >
                         {option}
                         <input
                           type='radio'
                           name='ice'
                           value={option}
-                          key={option}
                           checked={option === inputs.ice}
                           className='hidden'
-                          onChange={(e) => {
-                            handleInputChange(e);
-                          }}
-                        ></input>
+                          onChange={handleInputChange}
+                        />
                       </label>
                     ))}
                   </div>
@@ -798,8 +712,8 @@ function CreatePost() {
             <div>
               <span className='mr-1 text-neutral-600'>#</span>
               <input
-                onBlur={(e) => handleTagInputBlur(e)}
-                onKeyPress={(e) => handleTagInputKeyPress(e)}
+                onBlur={() => handleTagInputBlur()}
+                onKeyDown={(e) => handleTagInputKeyDown(e)}
                 onChange={(e) => setCustomTagsInput(e.target.value)}
                 value={customTagsInput}
                 type='text'
@@ -807,25 +721,27 @@ function CreatePost() {
                 className='inline-block h-7 rounded-lg border-2 border-solid border-neutral-900 p-0 px-1 text-neutral-600 placeholder:text-sm placeholder:text-neutral-400 focus:outline focus:outline-green-400'
               />
               <div className='flex flex-wrap items-center gap-x-3 gap-y-2'>
-                {customTags.map(
-                  (tag, index) =>
-                    tag !== '' && (
-                      <div key={index} className='mt-2'>
-                        <span className='text-neutral-600 before:mr-px before:content-["#"]'>{tag}</span>
-                        <span onClick={() => removeTag(index)} className='ml-1 cursor-pointer text-neutral-500'>
-                          &times;
-                        </span>
-                      </div>
-                    )
-                )}
-                {autoTags.map(
-                  (tag, index) =>
-                    tag !== '' && (
-                      <div key={index} className='mt-2 text-neutral-600 before:mr-px before:content-["#"]'>
-                        {tag}
-                      </div>
-                    )
-                )}
+                {customTags.map((tag, index) => (
+                  <div key={index} className='mt-2'>
+                    <span className='text-neutral-600 before:mr-px before:content-["#"]'>
+                      {tag}
+                    </span>
+                    <span
+                      onClick={() => removeTag(index)}
+                      className='ml-1 cursor-pointer text-neutral-500'
+                    >
+                      &times;
+                    </span>
+                  </div>
+                ))}
+                {autoTags.map((tag, index) => (
+                  <div
+                    key={index}
+                    className='mt-2 text-neutral-600 before:mr-px before:content-["#"]'
+                  >
+                    {tag}
+                  </div>
+                ))}
               </div>
             </div>
             <button
@@ -836,9 +752,25 @@ function CreatePost() {
             </button>
           </div>
         </div>
+      ) : (
+        <div className='relative mx-auto flex w-full max-w-3xl items-center justify-center rounded-md border-[3px] border-solid border-neutral-900 bg-neutral-100 '>
+          <div
+            className='group hover:cursor-pointer'
+            onClick={() => dispatch(showAuth())}
+          >
+            <span className='decoration-2 group-hover:underline'>sign in</span>
+            &nbsp;to log your drinks
+          </div>
+          <SmileyWink
+            size={28}
+            color='#171717'
+            weight='regular'
+            className='ml-2'
+          />
+        </div>
       )}
     </>
   );
 }
 
-export default CreatePost;
+export default CreateLog;

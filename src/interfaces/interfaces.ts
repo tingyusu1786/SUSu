@@ -79,9 +79,9 @@ export interface Brand {
 }
 
 export interface Item {
-  averageRating?: number;
+  averageRating?: number | string;
   name: string;
-  numRatings?: number;
+  numRatings?: number | string;
   price: Record<string, number>;
 }
 

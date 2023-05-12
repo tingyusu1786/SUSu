@@ -1,15 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { Brand } from '../interfaces/interfaces';
+import { Brand, Item } from '../interfaces/interfaces';
 
 export interface infoState {
   brands: {
     [brandId: string]: Brand;
   };
   items: {
-    [itemId: string]: {
-      name: string;
-      photoURL: string;
-    };
+    [itemId: string]: Item;
   };
   users: {
     [userId: string]: {
@@ -34,10 +31,7 @@ export const infoSlice = createSlice({
       state.brands = action.payload.allBrands;
     },
     addItem: (state, action) => {
-      state.items[action.payload.itemId] = {
-        name: action.payload.name,
-        photoURL: action.payload.photoURL,
-      };
+      state.items[action.payload.itemId] = action.payload.itemInfo;
     },
     addUser: (state, action) => {
       state.users[action.payload.userId] = {

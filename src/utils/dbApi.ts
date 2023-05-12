@@ -54,9 +54,13 @@ const dbApi = {
     }
   },
   //#
-  async getCategoriesIdAndName(brandId: string): Promise<string[][] | undefined> {
+  async getCategoriesIdAndName(
+    brandId: string
+  ): Promise<string[][] | undefined> {
     try {
-      const querySnapshot = await getDocs(collection(db, 'brands', brandId, 'categories'));
+      const querySnapshot = await getDocs(
+        collection(db, 'brands', brandId, 'categories')
+      );
       const documents: string[][] = [];
       querySnapshot.forEach((doc) => {
         const docInfo = [];
@@ -72,9 +76,14 @@ const dbApi = {
     }
   },
   //#
-  async getItemsIdAndName(brandId: string, categoryId: string): Promise<string[][] | undefined> {
+  async getItemsIdAndName(
+    brandId: string,
+    categoryId: string
+  ): Promise<string[][] | undefined> {
     try {
-      const querySnapshot = await getDocs(collection(db, 'brands', brandId, 'categories', categoryId, 'items'));
+      const querySnapshot = await getDocs(
+        collection(db, 'brands', brandId, 'categories', categoryId, 'items')
+      );
       let documents: string[][] = [];
       querySnapshot.forEach((doc) => {
         const docInfo = [doc.id];
@@ -88,12 +97,57 @@ const dbApi = {
       swal.error('Something went wrong', 'try again later', 'ok');
     }
   },
+  async getItemPrice(
+    itemId: string
+  ): Promise<Record<string, string> | undefined> {
+    try {
+      const idArray = itemId.split('-');
+      const itemDocRef = doc(
+        db,
+        'brands',
+        idArray[0],
+        'categories',
+        `${idArray[0]}-${idArray[1]}`,
+        'items',
+        itemId
+      );
+      const itemPrice = await dbApi.getDocField(itemDocRef, 'price');
+      return itemPrice;
+    } catch {
+      swal.error('something went wrong', '', 'ok');
+    }
+  },
+  async getItem(itemId: string) {
+    try {
+      const idArray = itemId.split('-');
+      const itemDocRef = doc(
+        db,
+        'brands',
+        idArray[0],
+        'categories',
+        `${idArray[0]}-${idArray[1]}`,
+        'items',
+        itemId
+      );
+      const itemInfo = (await getDoc(itemDocRef)).data();
+      return itemInfo;
+    } catch {
+      swal.error('something went wrong', '', 'ok');
+    }
+  },
   //#
-  async getUserField(userId: string, field: string): Promise<string | undefined> {
+  async getUserField(
+    userId: string,
+    field: string
+  ): Promise<string | undefined> {
     try {
       const userDoc = await getDoc(doc(db, 'users', userId));
       if (!userDoc.exists()) {
-        swal.error('Something went wrong (user not found)', 'try agin later', 'ok');
+        swal.error(
+          'Something went wrong (user not found)',
+          'try agin later',
+          'ok'
+        );
         return undefined;
       }
       const docData = userDoc.data();
@@ -108,7 +162,11 @@ const dbApi = {
     try {
       const userDoc = await getDoc(doc(db, 'users', userId));
       if (!userDoc.exists()) {
-        swal.error('Something went wrong (user not found)', 'try agin later', 'ok');
+        swal.error(
+          'Something went wrong (user not found)',
+          'try agin later',
+          'ok'
+        );
         return undefined;
       }
       const docData = userDoc.data();
@@ -141,22 +199,53 @@ const dbApi = {
     const userDocRef = doc(db, 'users', userId);
     await updateDoc(userDocRef, content);
   },
-  async createNewUser(userId: string, content: Record<string, string | Date | Timestamp | FieldValue>) {
+  async createNewUser(
+    userId: string,
+    content: Record<string, string | Date | Timestamp | FieldValue>
+  ) {
     await setDoc(doc(db, 'users', userId), content);
   },
   //#
   async getPostInfo(postData: any) {
-    const brandName: string = await this.getInfo(postData?.brandId, 'brand', 'name');
-    const itemName: string = await this.getInfo(postData?.itemId, 'item', 'name');
-    const authorName: string = await this.getInfo(postData?.authorId, 'user', 'name');
-    const authorPhoto: string = await this.getInfo(postData?.authorId, 'user', 'photoURL');
+    const brandName: string = await this.getInfo(
+      postData?.brandId,
+      'brand',
+      'name'
+    );
+    const itemName: string = await this.getInfo(
+      postData?.itemId,
+      'item',
+      'name'
+    );
+    const authorName: string = await this.getInfo(
+      postData?.authorId,
+      'user',
+      'name'
+    );
+    const authorPhoto: string = await this.getInfo(
+      postData?.authorId,
+      'user',
+      'photoURL'
+    );
 
     if (postData.comments) {
       const comments: Comment[] = await Promise.all(
         postData.comments.map(async (comment: any) => {
-          const commentAuthorName: string = await this.getInfo(comment.authorId, 'user', 'name');
-          const commentAuthorPhoto: string = await this.getInfo(comment.authorId, 'user', 'photoURL');
-          return { ...comment, authorName: commentAuthorName, authorPhoto: commentAuthorPhoto };
+          const commentAuthorName: string = await this.getInfo(
+            comment.authorId,
+            'user',
+            'name'
+          );
+          const commentAuthorPhoto: string = await this.getInfo(
+            comment.authorId,
+            'user',
+            'photoURL'
+          );
+          return {
+            ...comment,
+            authorName: commentAuthorName,
+            authorPhoto: commentAuthorPhoto,
+          };
         })
       );
 
@@ -179,7 +268,11 @@ const dbApi = {
     };
   },
   //#
-  async getInfo(id: string | undefined, type: 'brand' | 'item' | 'user', field: string) {
+  async getInfo(
+    id: string | undefined,
+    type: 'brand' | 'item' | 'user',
+    field: string
+  ) {
     if (id !== undefined) {
       let docRef;
       switch (type) {
@@ -189,7 +282,15 @@ const dbApi = {
         }
         case 'item': {
           const idArray = id.split('-');
-          docRef = doc(db, 'brands', idArray[0], 'categories', idArray[0] + '-' + idArray[1], 'items', id);
+          docRef = doc(
+            db,
+            'brands',
+            idArray[0],
+            'categories',
+            idArray[0] + '-' + idArray[1],
+            'items',
+            id
+          );
           break;
         }
         case 'user': {
@@ -218,11 +319,18 @@ const dbApi = {
 
     let q;
     if (profileUserId === currentUserId) {
-      q = query(postsRef, where('authorId', '==', profileUserId), orderBy('timeCreated', 'asc'));
+      q = query(
+        postsRef,
+        where('authorId', '==', profileUserId),
+        orderBy('timeCreated', 'asc')
+      );
     } else {
       q = query(
         postsRef,
-        and(where('audience', '==', 'public'), where('authorId', '==', profileUserId)),
+        and(
+          where('audience', '==', 'public'),
+          where('authorId', '==', profileUserId)
+        ),
         orderBy('timeCreated', 'asc')
       );
     }
@@ -230,13 +338,37 @@ const dbApi = {
     const querySnapshot: QuerySnapshot = await getDocs(q);
     const posts = querySnapshot.docs.map(async (change) => {
       const postData = change.data();
-      const brandName: string = await this.getInfo(postData.brandId || '', 'brand', 'name');
-      const itemName: string = await this.getInfo(postData.itemId || '', 'item', 'name');
+      const brandName: string = await this.getInfo(
+        postData.brandId || '',
+        'brand',
+        'name'
+      );
+      const itemName: string = await this.getInfo(
+        postData.itemId || '',
+        'item',
+        'name'
+      );
       return { ...postData, postId: change.id, brandName, itemName };
     });
 
     const postsWithQueriedInfos = await Promise.all(posts);
     return postsWithQueriedInfos;
+  },
+  async updateBrandRating(
+    brandId: string,
+    updatedBrandNumRatings: number,
+    updatedBrandAverageRating: number
+  ) {
+    try {
+      const brandRef = doc(db, 'brands', brandId);
+
+      await updateDoc(brandRef, {
+        numRatings: updatedBrandNumRatings,
+        averageRating: updatedBrandAverageRating,
+      });
+    } catch {
+      swal.error('Something went wrong', 'try agin later', 'ok');
+    }
   },
 
   // todo: 應該要讓page都不用用到doc, db, ...
