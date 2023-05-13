@@ -25,8 +25,8 @@ import {
   or,
   and,
 } from 'firebase/firestore';
-import { showAuth } from '../../app/popUpSlice';
-import { useAppSelector, useAppDispatch } from '../../app/hooks';
+import { showAuth } from '../../redux/popUpSlice';
+import { useAppSelector, useAppDispatch } from '../../redux/hooks';
 import { Post } from '../../interfaces/interfaces';
 import PostCard from './PostCard';
 import { v4 as uuidv4 } from 'uuid';

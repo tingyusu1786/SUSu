@@ -12,7 +12,7 @@ import DashboardSection from './DashboardSection';
 import PostsSection from './PostsSection';
 import NameCard from './NameCard';
 import { db } from '../../services/firebase';
-import { useAppSelector } from '../../app/hooks';
+import { useAppSelector } from '../../redux/hooks';
 import { User } from '../../interfaces/interfaces';
 import dbApi from '../../utils/dbApi';
 

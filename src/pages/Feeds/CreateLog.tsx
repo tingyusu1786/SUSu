@@ -1,7 +1,7 @@
 import React, { useState, useEffect, ChangeEvent } from 'react';
 import { db } from '../../services/firebase';
 import { collection, doc, getDoc, addDoc, updateDoc } from 'firebase/firestore';
-import { useAppSelector, useAppDispatch } from '../../app/hooks';
+import { useAppSelector, useAppDispatch } from '../../redux/hooks';
 import dbApi from '../../utils/dbApi';
 import swal from '../../utils/swal';
 import {
@@ -11,13 +11,13 @@ import {
   Star as SolidStar,
   Star as LineStar,
 } from '@phosphor-icons/react';
-import { showAuth } from '../../app/popUpSlice';
+import { showAuth } from '../../redux/popUpSlice';
 import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
 import dayjs from 'dayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { createTheme, ThemeProvider } from '@mui/material';
-import { addItem } from '../../app/infoSlice';
+import { addItem } from '../../redux/infoSlice';
 
 const theme = createTheme({
   typography: {

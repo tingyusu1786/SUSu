@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useAppDispatch } from '../../app/hooks';
+import { useAppDispatch } from '../../redux/hooks';
 import { Link } from 'react-router-dom';
-import { closeSearch } from '../../app/popUpSlice';
+import { closeSearch } from '../../redux/popUpSlice';
 import { PoweredBy } from 'react-instantsearch-hooks-web';
 import algoliasearch from 'algoliasearch/lite';
 import dbApi from '../../utils/dbApi';

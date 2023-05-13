@@ -1,5 +1,5 @@
 import React from 'react';
-import { useAppSelector } from '../../app/hooks';
+import { useAppSelector } from '../../redux/hooks';
 import { Link } from 'react-router-dom';
 import { Post, Comment } from '../../interfaces/interfaces';
 import commonApi from '../../utils/commonApi';
@@ -10,22 +10,40 @@ interface CommentsProps {
   postIndex: number;
   comment: Comment;
   commentIndex: number;
-  handleDeleteComment: (post: Post, postIndex: number, commentIndex: number, commentId: string) => Promise<void>;
+  handleDeleteComment: (
+    post: Post,
+    postIndex: number,
+    commentIndex: number,
+    commentId: string
+  ) => Promise<void>;
 }
 
-const CommentDiv: React.FC<CommentsProps> = ({ post, postIndex, comment, commentIndex, handleDeleteComment }) => {
+const CommentDiv: React.FC<CommentsProps> = ({
+  post,
+  postIndex,
+  comment,
+  commentIndex,
+  handleDeleteComment,
+}) => {
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
   const timeDiff = commonApi.getTimeDiff(comment.timeCreated);
 
   const date = comment.timeCreated?.toDate();
-  const formattedTime = date?.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+  const formattedTime = date?.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true,
+  });
   const formattedDate = date?.toLocaleDateString('en-US');
   const formattedDateTime = `${formattedDate} ${formattedTime}`;
 
   return (
     <div className='relative py-1'>
       <div className='flex items-end justify-between'>
-        <Link to={`/profile/${comment.authorId}`} className='group mb-1 flex items-center'>
+        <Link
+          to={`/profile/${comment.authorId}`}
+          className='group mb-1 flex items-center'
+        >
           <img
             src={comment.authorPhoto}
             alt='123'
@@ -51,7 +69,14 @@ const CommentDiv: React.FC<CommentsProps> = ({ post, postIndex, comment, comment
               color='#737373'
               className='cursor-pointer'
               weight='regular'
-              onClick={() => handleDeleteComment(post, postIndex, commentIndex, comment.commentId)}
+              onClick={() =>
+                handleDeleteComment(
+                  post,
+                  postIndex,
+                  commentIndex,
+                  comment.commentId
+                )
+              }
             />
           )}
         </div>

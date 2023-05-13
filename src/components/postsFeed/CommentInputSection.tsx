@@ -1,12 +1,15 @@
 import React from 'react';
 import { ChangeEvent, KeyboardEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { useAppSelector } from '../../app/hooks';
+import { useAppSelector } from '../../redux/hooks';
 import { Post } from '../../interfaces/interfaces';
 
 interface PostProps {
   post: Post;
-  handleCommentInput: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => void;
+  handleCommentInput: (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    index: number
+  ) => void;
   handleCommentSubmit: (
     event: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
     post: Post,
@@ -16,17 +19,27 @@ interface PostProps {
   index: number;
 }
 
-const CommentInputSection: React.FC<PostProps> = ({ post, handleCommentInput, handleCommentSubmit, index }) => {
+const CommentInputSection: React.FC<PostProps> = ({
+  post,
+  handleCommentInput,
+  handleCommentSubmit,
+  index,
+}) => {
   const userId = useAppSelector((state) => state.auth.currentUserId);
   const userName = useAppSelector((state) => state.auth.currentUser.name);
-  const userPhotoURL = useAppSelector((state) => state.auth.currentUser.photoURL);
+  const userPhotoURL = useAppSelector(
+    (state) => state.auth.currentUser.photoURL
+  );
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
 
   return (
     <div className='py-1'>
       {isSignedIn && (
         <div className='flex items-end'>
-          <Link to={`/profile/${userId}`} className='group mb-1 flex items-center'>
+          <Link
+            to={`/profile/${userId}`}
+            className='group mb-1 flex items-center'
+          >
             <img
               src={userPhotoURL}
               alt='123'
@@ -50,7 +63,12 @@ const CommentInputSection: React.FC<PostProps> = ({ post, handleCommentInput, ha
         disabled={!isSignedIn}
         value={post.commentInput}
         onChange={(e) => handleCommentInput(e, index)}
-        onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && userId && handleCommentSubmit(e, post, userId, index)}
+        onKeyDown={(e) =>
+          e.key === 'Enter' &&
+          !e.shiftKey &&
+          userId &&
+          handleCommentSubmit(e, post, userId, index)
+        }
       />
     </div>
   );

@@ -1,6 +1,6 @@
 import { useState, useRef, ChangeEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { useAppSelector } from '../../app/hooks';
+import { useAppSelector } from '../../redux/hooks';
 import { db } from '../../services/firebase';
 import {
   collection,

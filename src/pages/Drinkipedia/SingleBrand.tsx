@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import PostsFeed from '../../components/PostsFeed/';
 import { Star, Storefront } from '@phosphor-icons/react';
-import { useAppSelector } from '../../app/hooks';
+import { useAppSelector } from '../../redux/hooks';
 
 interface CatalogueProps {
   pageBrandId: string;

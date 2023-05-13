@@ -1,12 +1,14 @@
 import React from 'react';
 import BrandCard from './BrandCard';
-import { useAppSelector } from '../../app/hooks';
+import { useAppSelector } from '../../redux/hooks';
 
 const AllCatalogue: React.FC = () => {
   const allBrandsInfo = useAppSelector((state) => state.info.brands);
   return (
     <div className='w-full '>
-      <h1 className='pageTitle mb-10 md:mt-2 sm:my-5 '>Discover peoples&rsquo; favorites!</h1>
+      <h1 className='pageTitle mb-10 md:mt-2 sm:my-5 '>
+        Discover peoples&rsquo; favorites!
+      </h1>
       <h2 className='mb-28 text-center text-3xl transition-all duration-1000 sm:mb-20 sm:text-xl'>
         (almost) all chain hand-shake drink store in Taiwan listed
       </h2>
@@ -15,7 +17,9 @@ const AllCatalogue: React.FC = () => {
           <BrandCard key={brand[0]} brand={brand[1]} />
         ))}
       </div>
-      <div className='mt-10 text-center text-3xl sm:text-xl'>...and more to come!</div>
+      <div className='mt-10 text-center text-3xl sm:text-xl'>
+        ...and more to come!
+      </div>
     </div>
   );
 };

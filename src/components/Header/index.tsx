@@ -1,9 +1,19 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { CaretCircleRight, BellSimple, MagnifyingGlass } from '@phosphor-icons/react';
-import { useAppSelector, useAppDispatch } from '../../app/hooks';
-import { showNotification, closeNotification, showSearch, closeSearch, showAuth } from '../../app/popUpSlice';
-import { signOutFail } from '../../app/authSlice';
+import {
+  CaretCircleRight,
+  BellSimple,
+  MagnifyingGlass,
+} from '@phosphor-icons/react';
+import { useAppSelector, useAppDispatch } from '../../redux/hooks';
+import {
+  showNotification,
+  closeNotification,
+  showSearch,
+  closeSearch,
+  showAuth,
+} from '../../redux/popUpSlice';
+import { signOutFail } from '../../redux/authSlice';
 import NotificationsList from '../../components/NotificationsModal/';
 import authApi from '../../utils/authApi';
 import swal from '../../utils/swal';
@@ -12,10 +22,15 @@ function Header() {
   const dispatch = useAppDispatch();
   const userId = useAppSelector((state) => state.auth.currentUserId);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
-  const currentUser = useAppSelector(state=>state.auth.currentUser);
-  const isNotificationShown = useAppSelector((state) => state.popUp.isNotificationShown);
+  const currentUser = useAppSelector((state) => state.auth.currentUser);
+  const isNotificationShown = useAppSelector(
+    (state) => state.popUp.isNotificationShown
+  );
   const isSearchShown = useAppSelector((state) => state.popUp.isSearchShown);
-  const [dropdownShown, setDropdownShown] = useState({ profile: false, navLi: false });
+  const [dropdownShown, setDropdownShown] = useState({
+    profile: false,
+    navLi: false,
+  });
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -66,7 +81,9 @@ function Header() {
   };
 
   const toggleNotificationShown = () => {
-    isNotificationShown ? dispatch(closeNotification()) : dispatch(showNotification());
+    isNotificationShown
+      ? dispatch(closeNotification())
+      : dispatch(showNotification());
   };
 
   const toggleSearchShown = () => {
@@ -123,7 +140,9 @@ function Header() {
         size={44}
         color='#171717'
         weight='thin'
-        className={`cursor-pointer ${dropdownShown.navLi && 'rotate-90'} transition-all duration-300`}
+        className={`cursor-pointer ${
+          dropdownShown.navLi && 'rotate-90'
+        } transition-all duration-300`}
         onClick={() => {
           toggleDropdown('navLi');
         }}
@@ -164,13 +183,19 @@ function Header() {
       onClick={closeDropdown}
     >
       {renderSmNavLiDropdown()}
-      <Link to='/' className='mt-1 hidden transition-all hover:text-green-400 sm:block sm:text-3xl'>
+      <Link
+        to='/'
+        className='mt-1 hidden transition-all hover:text-green-400 sm:block sm:text-3xl'
+      >
         SUSü
       </Link>
       <nav className='sm:hidden'>
         <ul className='flex gap-4'>
           <li>
-            <NavLink to='/' className=' mt-8 block pb-8 transition-all hover:text-green-400'>
+            <NavLink
+              to='/'
+              className=' mt-8 block pb-8 transition-all hover:text-green-400'
+            >
               SUSü
             </NavLink>
           </li>
@@ -178,7 +203,12 @@ function Header() {
             <li key={li.name}>
               <NavLink
                 to={li.to}
-                className={({ isActive }) => `navLi ${isActive && 'before:decoration-sky-400 before:decoration-wavy'}`}
+                className={({ isActive }) =>
+                  `navLi ${
+                    isActive &&
+                    'before:decoration-sky-400 before:decoration-wavy'
+                  }`
+                }
                 data-text={li.name}
               >
                 {li.name}
@@ -226,9 +256,16 @@ function Header() {
           </div>
         </div>
       ) : (
-        <div className='group relative cursor-pointer ' onClick={() => dispatch(showAuth())}>
-          <span className='decoration-2 underline-offset-2 group-hover:underline'>sign in</span>
-          <span className='md:hidden'>&nbsp;to see your profile and notifications!</span>
+        <div
+          className='group relative cursor-pointer '
+          onClick={() => dispatch(showAuth())}
+        >
+          <span className='decoration-2 underline-offset-2 group-hover:underline'>
+            sign in
+          </span>
+          <span className='md:hidden'>
+            &nbsp;to see your profile and notifications!
+          </span>
         </div>
       )}
       <NotificationsList />

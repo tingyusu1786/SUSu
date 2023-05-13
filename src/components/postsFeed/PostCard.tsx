@@ -3,7 +3,7 @@
 import { ChangeEvent, KeyboardEvent } from 'react';
 
 import { Link } from 'react-router-dom';
-import { useAppSelector } from '../../app/hooks';
+import { useAppSelector } from '../../redux/hooks';
 import { Post } from '../../interfaces/interfaces';
 import CommentInputSection from './CommentInputSection';
 import CommentDiv from './CommentDiv';

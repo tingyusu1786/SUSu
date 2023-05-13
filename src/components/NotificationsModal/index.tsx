@@ -11,8 +11,8 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import dbApi from '../../utils/dbApi';
-import { closeNotification } from '../../app/popUpSlice';
-import { useAppSelector, useAppDispatch } from '../../app/hooks';
+import { closeNotification } from '../../redux/popUpSlice';
+import { useAppSelector, useAppDispatch } from '../../redux/hooks';
 import commonApi from '../../utils/commonApi';
 import { Notification } from '../../interfaces/interfaces';
 import swal from '../../utils/swal';

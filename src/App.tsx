@@ -1,16 +1,17 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { onAuthStateChanged } from 'firebase/auth';
 import Header from './components/Header';
 import Authentication from './components/AuthModal/';
 import SearchModal from './components/SearchModal/';
-import { useAppSelector, useAppDispatch } from './app/hooks';
-import { signInSuccess, signOutSuccess } from './app/authSlice';
-import { closeAuth } from './app/popUpSlice';
+import { useAppSelector, useAppDispatch } from './redux/hooks';
+import { signInSuccess, signOutSuccess } from './redux/authSlice';
+import { closeAuth } from './redux/popUpSlice';
 import { auth } from './services/firebase';
 import dbApi from './utils/dbApi';
-import { addAllBrands } from './app/infoSlice';
+import { addAllBrands } from './redux/infoSlice';
 import swal from './utils/swal';
+import { AppDispatch } from './redux/store';
 
 function App() {
   const dispatch = useAppDispatch();
@@ -38,18 +39,16 @@ function App() {
         dispatch(signOutSuccess());
       }
     });
-    return unsubscribe;
-  }, []);
 
-  const loadAllBrands = () => {
-    return async (dispatch: any) => {
-      const allBrands = await dbApi.getAllBrandsInfo();
-      dispatch(addAllBrands({ allBrands }));
+    const loadAllBrands = () => {
+      return async (dispatch: AppDispatch) => {
+        const allBrands = await dbApi.getAllBrandsInfo();
+        dispatch(addAllBrands({ allBrands }));
+      };
     };
-  };
-
-  useEffect(() => {
     dispatch(loadAllBrands());
+
+    return unsubscribe;
   }, []);
 
   if (isLoading) {

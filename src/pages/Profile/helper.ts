@@ -1,3 +1,4 @@
+/* eslint-disable no-prototype-builtins */
 import { Timestamp } from 'firebase/firestore';
 import { Brand, Post } from '../../interfaces/interfaces';
 

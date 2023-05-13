@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { db } from '../../services/firebase';
 import { doc, onSnapshot } from 'firebase/firestore';
 import dbApi from '../../utils/dbApi';
-import { useAppSelector } from '../../app/hooks';
+import { useAppSelector } from '../../redux/hooks';
 import { User } from '../../interfaces/interfaces';
 
 type CardUser = Omit<User, 'notifications' | 'timeCreated' | 'following'>;

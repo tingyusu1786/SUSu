@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Coins, Storefront } from '@phosphor-icons/react';
 import CalendarHeatmapComponent from './CalendarHeatmapComponent';
 import Badges from './Badges/Badges';
-import { useAppSelector } from '../../app/hooks';
+import { useAppSelector } from '../../redux/hooks';
 import dbApi from '../../utils/dbApi';
 import { ReactComponent as Streak } from '../../assets/Streak.svg';
 import { getStatisticsFromPosts } from './helper';
