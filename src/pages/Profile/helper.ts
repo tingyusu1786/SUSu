@@ -1,7 +1,12 @@
-/* eslint-disable no-prototype-builtins */
 import { Timestamp } from 'firebase/firestore';
+import { Brand, Post } from '../../interfaces/interfaces';
 
-export const getStatisticsFromPosts = (posts: any, allBrandsInfo: any) => {
+export const getStatisticsFromPosts = (
+  posts: Omit<Post, 'commentsShown'>[],
+  allBrandsInfo: {
+    [brandId: string]: Brand;
+  }
+) => {
   const {
     drankBrandsStatistic,
     drankItemsStatistic,
@@ -10,7 +15,30 @@ export const getStatisticsFromPosts = (posts: any, allBrandsInfo: any) => {
     streaks,
     prevDate,
   } = posts.reduce(
-    (accumulator: any, post: any) => {
+    (
+      accumulator: {
+        drankBrandsStatistic: Record<
+          string,
+          { brandName: string; times: number }
+        >;
+        drankItemsStatistic: Record<string, { times: number }>;
+        drankDatesValues: { date: Date; count: number }[];
+        priceStatistic: {
+          overall: number;
+          year: number;
+          month: number;
+          week: number;
+          day: number;
+          [key: string]: number;
+        };
+        streaks: {
+          current: number;
+          longest: number;
+        };
+        prevDate: Date;
+      },
+      post: any
+    ) => {
       // drank brands
       const { drankBrandsStatistic } = accumulator;
       drankBrandsStatistic[post.brandId]
@@ -43,7 +71,7 @@ export const getStatisticsFromPosts = (posts: any, allBrandsInfo: any) => {
 
       // streaks
       const { streaks } = accumulator;
-      let { prevDate } = accumulator;
+      const { prevDate } = accumulator;
       const currentDate = new Date(dateString);
 
       if (prevDate.getTime() !== currentDate.getTime()) {
@@ -142,7 +170,7 @@ export const timestampToDate = (timestamp: Timestamp) => {
   }
   const dateObj = timestamp.toDate();
   const year = dateObj.getFullYear();
-  const month = ('0' + (dateObj.getMonth() + 1)).slice(-2);
-  const day = ('0' + dateObj.getDate()).slice(-2);
+  const month = `0${dateObj.getMonth() + 1}`.slice(-2);
+  const day = `0${dateObj.getDate()}`.slice(-2);
   return `${year}-${month}-${day}`;
 };
