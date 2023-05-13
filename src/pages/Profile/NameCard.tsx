@@ -1,79 +1,80 @@
-import React, { useState, useEffect } from 'react';
-import { doc, onSnapshot } from 'firebase/firestore';
-import { useAppSelector } from '../../app/hooks';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { db } from '../../services/firebase';
+import { doc, onSnapshot } from 'firebase/firestore';
+import dbApi from '../../utils/dbApi';
+import { useAppSelector } from '../../app/hooks';
 import { User } from '../../interfaces/interfaces';
-type UserCard = Omit<User, 'notifications' | 'timeCreated' | 'following'>;
 
-interface Props {
-  userId: string;
-  handleFollow: (
-    profileUserId: string,
-    isFollowing: boolean | undefined
-  ) => Promise<void>;
-}
-const NameCard: React.FC<Props> = ({ userId, handleFollow }) => {
+type CardUser = Omit<User, 'notifications' | 'timeCreated' | 'following'>;
+
+const NameCard = ({ cardUserId }: { cardUserId: string }) => {
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
-  const [user, setUser] = useState<UserCard>();
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
+  const currentUser = useAppSelector((state) => state.auth.currentUser);
+  const [cardUser, setCardUser] = useState<CardUser>();
 
   useEffect(() => {
-    if (!userId) return;
-    const unsub = onSnapshot(doc(db, 'users', userId), (userDoc) => {
+    if (!cardUserId) return;
+    const unsub = onSnapshot(doc(db, 'users', cardUserId), (userDoc) => {
       if (userDoc?.data()) {
         const { email, followers, name, photoURL, status } =
           userDoc.data() as User;
         const userState = { email, followers, name, photoURL, status };
-        setUser(userState);
+        setCardUser(userState);
       }
     });
     return unsub;
-  }, [userId]);
+  }, [cardUserId]);
 
-  if (!user) {
+  if (!cardUser) {
     return null;
   }
 
   return (
     <div className='grid w-full max-w-3xl grid-cols-[80px_1fr_128px] items-center gap-5 rounded-xl border-2 border-solid border-neutral-900 bg-neutral-100 px-8 py-3 shadow-[3px_3px_#000] md:px-3 sm:grid-cols-[80px_calc(100%-96px)] sm:gap-3 sm:p-3'>
-      <Link to={`/profile/${userId}`} className='focus:outline-none'>
+      <Link to={`/profile/${cardUserId}`} className='focus:outline-none'>
         <img
-          src={user.photoURL}
-          alt=''
+          src={cardUser.photoURL}
+          alt={cardUser.name}
           className='h-20 w-20 min-w-[80px] rounded-full border-2 border-solid border-neutral-900 object-cover hover:border-green-400 peer-hover:border-green-400'
         />
       </Link>
       <div>
-        <Link to={`/profile/${userId}`} className='focus:outline-none'>
-          <span className='text-xl'>{user.name}</span>
+        <Link to={`/profile/${cardUserId}`} className='focus:outline-none'>
+          <span className='text-xl'>{cardUser.name}</span>
         </Link>
         <div className='mb-px truncate text-sm text-neutral-400'>
-          {user.email}
+          {cardUser.email}
         </div>
         <div
           className={`bg-gradient-to-r from-violet-500 to-fuchsia-500 bg-clip-text leading-5 text-transparent ${
-            user?.status &&
-            user?.status?.trim() !== '' &&
+            cardUser?.status &&
+            cardUser?.status?.trim() !== '' &&
             'before:mr-1 before:content-["-"]'
           }`}
         >
-          {user.status}
+          {cardUser.status}
         </div>
       </div>
 
-      {currentUserId && isSignedIn && userId !== currentUserId && (
+      {currentUserId && isSignedIn && cardUserId !== currentUserId && (
         <button
           className={`button ml-auto w-32 rounded-full border-2 border-solid border-neutral-900 px-2 hover:bg-green-300 focus:outline-none ${
-            currentUserId && user?.followers?.includes(currentUserId)
+            currentUserId && cardUser?.followers?.includes(currentUserId)
               ? ' bg-neutral-100 '
               : 'bg-green-400 '
           }`}
           onClick={() =>
-            handleFollow(userId, user?.followers?.includes(currentUserId))
+            dbApi.handleFollow(
+              currentUserId,
+              currentUser.name,
+              cardUserId,
+              cardUser?.followers?.includes(currentUserId)
+            )
           }
         >
-          {currentUserId && user?.followers?.includes(currentUserId)
+          {currentUserId && cardUser?.followers?.includes(currentUserId)
             ? 'unfollow'
             : 'follow'}
         </button>

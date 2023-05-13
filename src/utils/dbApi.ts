@@ -25,7 +25,7 @@ import {
   arrayRemove,
   FieldValue,
 } from 'firebase/firestore';
-import { Brand, User } from '../interfaces/interfaces';
+import { Brand, User, Notification } from '../interfaces/interfaces';
 import swal from './swal';
 
 // interface dbApi {}
@@ -40,7 +40,6 @@ type FilteredUserData = {
 };
 
 const dbApi = {
-  //#
   async getAllBrandsInfo() {
     try {
       const querySnapshot = await getDocs(collection(db, 'brands'));
@@ -53,7 +52,6 @@ const dbApi = {
       swal.error('Something went wrong', 'try again later', 'ok');
     }
   },
-  //#
   async getCategoriesIdAndName(
     brandId: string
   ): Promise<string[][] | undefined> {
@@ -75,7 +73,6 @@ const dbApi = {
       swal.error('Something went wrong', 'try again later', 'ok');
     }
   },
-  //#
   async getItemsIdAndName(
     brandId: string,
     categoryId: string
@@ -135,7 +132,6 @@ const dbApi = {
       swal.error('something went wrong', '', 'ok');
     }
   },
-  //#
   async getUserField(
     userId: string,
     field: string
@@ -161,7 +157,6 @@ const dbApi = {
       );
     }
   },
-  //#
   async getUser(userId: string): Promise<User | undefined> {
     try {
       const userDoc = await getDoc(doc(db, 'users', userId));
@@ -198,7 +193,6 @@ const dbApi = {
       swal.error('Something went wrong', 'try again later', 'ok');
     }
   },
-  //#
   async updateUserDoc(userId: string, content: Record<string, string>) {
     const userDocRef = doc(db, 'users', userId);
     await updateDoc(userDocRef, content);
@@ -209,7 +203,6 @@ const dbApi = {
   ) {
     await setDoc(doc(db, 'users', userId), content);
   },
-  //#
   async getPostInfo(postData: any) {
     const brandName: string = await this.getInfo(
       postData?.brandId,
@@ -271,7 +264,6 @@ const dbApi = {
       authorPhoto,
     };
   },
-  //#
   async getInfo(
     id: string | undefined,
     type: 'brand' | 'item' | 'user',
@@ -317,8 +309,10 @@ const dbApi = {
       }
     }
   },
-  //#
-  async getProfileUserPosts(profileUserId: string, currentUserId: string) {
+  async getProfileUserPosts(
+    profileUserId: string,
+    currentUserId: string | undefined
+  ) {
     const postsRef = collection(db, 'posts');
 
     let q;
@@ -372,6 +366,56 @@ const dbApi = {
       });
     } catch {
       swal.error('Something went wrong', 'try agin later', 'ok');
+    }
+  },
+  async handleFollow(
+    currentUserId: string | undefined,
+    currentUserName: string,
+    profileUserId: string,
+    isFollowing: boolean | undefined
+  ) {
+    {
+      if (!profileUserId || !currentUserId) {
+        return;
+      }
+      const profileUserRef = doc(db, 'users', profileUserId);
+      const currentUserRef = doc(db, 'users', currentUserId);
+      const newEntry = {
+        authorId: currentUserId,
+        authorName: currentUserName,
+        timeCreated: new Date(),
+        type: 'follow',
+        unread: true,
+      };
+      if (!isFollowing) {
+        await updateDoc(profileUserRef, {
+          followers: arrayUnion(currentUserId),
+        });
+        await updateDoc(currentUserRef, {
+          following: arrayUnion(profileUserId),
+        });
+        await updateDoc(profileUserRef, {
+          notifications: arrayUnion(newEntry),
+        });
+      } else {
+        await updateDoc(profileUserRef, {
+          followers: arrayRemove(currentUserId),
+        });
+        await updateDoc(currentUserRef, {
+          following: arrayRemove(profileUserId),
+        });
+        const profileUserData = await getDoc(profileUserRef);
+        const originNotifications = profileUserData.data()?.notifications;
+        if (!originNotifications) return;
+        const notificationToRemove = originNotifications.find(
+          (notification: Notification) =>
+            notification.authorId === currentUserId &&
+            notification.type === 'follow'
+        );
+        await updateDoc(profileUserRef, {
+          notifications: arrayRemove(notificationToRemove),
+        });
+      }
     }
   },
 
