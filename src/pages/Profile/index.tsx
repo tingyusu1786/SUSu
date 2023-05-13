@@ -1,13 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { db } from '../../services/firebase';
-import { doc, onSnapshot } from 'firebase/firestore';
-import { useAppSelector } from '../../app/hooks';
-import { User } from '../../interfaces/interfaces';
-import NameCard from './NameCard';
-import dbApi from '../../utils/dbApi';
-import PostsSection from './PostsSection';
-import DashboardSection from './DashboardSection';
 import {
   User as UserIcon,
   UsersThree,
@@ -15,13 +7,23 @@ import {
   Browsers,
   PresentationChart,
 } from '@phosphor-icons/react';
+import { doc, onSnapshot } from 'firebase/firestore';
+import DashboardSection from './DashboardSection';
+import PostsSection from './PostsSection';
+import NameCard from './NameCard';
+import { db } from '../../services/firebase';
+import { useAppSelector } from '../../app/hooks';
+import { User } from '../../interfaces/interfaces';
+import dbApi from '../../utils/dbApi';
 
 function Profile() {
   const { profileUserId } = useParams<{ profileUserId: string }>();
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
   const currentUser = useAppSelector((state) => state.auth.currentUser);
-  const [profileUser, setProfileUser] = useState<User>();
+  const [profileUser, setProfileUser] = useState<User | undefined | null>(
+    undefined
+  );
   const [tab, setTab] = useState<TabName>('DASHBOARD');
 
   type TabName = 'LOGS' | 'DASHBOARD' | 'FOLLOWING' | 'FOLLOWERS';
@@ -31,6 +33,9 @@ function Profile() {
   useEffect(() => {
     if (!profileUserId) return;
     const unsub = onSnapshot(doc(db, 'users', profileUserId), (doc) => {
+      if (!doc.exists()) {
+        return setProfileUser(null);
+      }
       setProfileUser(doc.data() as User);
     });
     return unsub;
@@ -130,7 +135,13 @@ function Profile() {
     ),
   };
 
-  if (!profileUserId || !profileUser) {
+  if (profileUser === undefined) {
+    return (
+      <main className='bg-boxes-diag relative flex min-h-[calc(100vh-64px)] items-center justify-center bg-fixed p-10' />
+    );
+  }
+
+  if (profileUser === null) {
     return (
       <main className='bg-boxes-diag relative flex min-h-[calc(100vh-64px)] items-center justify-center bg-fixed p-10'>
         user not found ☹&nbsp;
@@ -172,14 +183,11 @@ function Profile() {
         <div className='-mt-4 text-sm text-gray-400'>{profileUser.email}</div>
         <div>
           <span className='mr-1'>member since</span>
-          {profileUser.timeCreated
-            ?.toDate()
-            .toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: '2-digit',
-              day: '2-digit',
-            })
-            .replace(/\//g, '/')}
+          {profileUser.timeCreated?.toDate().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: '2-digit',
+          })}
         </div>
 
         {currentUserId &&
