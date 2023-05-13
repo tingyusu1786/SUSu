@@ -31,7 +31,7 @@ const BrandCatalogue: React.FC<CatalogueProps> = ({
         </h1>
         <img
           src={allBrandsInfo[pageBrandId].photoURL}
-          alt=''
+          alt={allBrandsInfo[pageBrandId].name}
           className='-mt-3 inline-block h-20'
         />
       </div>

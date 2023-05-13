@@ -190,7 +190,7 @@ const DashboardSection = ({
                   <div className='flex h-3/4 items-center justify-center'>
                     <img
                       src={allBrandsInfo[brand[0]]?.photoURL}
-                      alt=''
+                      alt={allBrandsInfo[brand[0]]?.name}
                       className='w-20'
                     />
                   </div>
@@ -211,7 +211,7 @@ const DashboardSection = ({
                   <div className='flex h-3/4 items-center justify-center'>
                     <img
                       src={allBrandsInfo[brand[0]]?.photoURL}
-                      alt=''
+                      alt={allBrandsInfo[brand[0]]?.name}
                       className='w-20 opacity-30 grayscale'
                     />
                   </div>
@@ -229,7 +229,7 @@ const DashboardSection = ({
                 <div className='flex h-3/4 items-center justify-center'>
                   <img
                     src={brand[1].photoURL}
-                    alt=''
+                    alt={brand[1].name}
                     className='w-20 opacity-30 grayscale'
                   />
                 </div>

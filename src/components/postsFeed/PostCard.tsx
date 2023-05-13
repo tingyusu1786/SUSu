@@ -203,7 +203,7 @@ const PostCard: React.FC<PostProps> = ({
           <img
             className='animate__animated animate__rubberBand w-7 cursor-pointer'
             src={heartFill}
-            alt=''
+            alt='liked'
             onClick={() =>
               currentUserId && handleLike(post, currentUserId, index)
             }
@@ -212,7 +212,7 @@ const PostCard: React.FC<PostProps> = ({
           <img
             className=' w-7 cursor-pointer'
             src={heartLine}
-            alt=''
+            alt='like'
             onClick={() =>
               currentUserId && handleLike(post, currentUserId, index)
             }

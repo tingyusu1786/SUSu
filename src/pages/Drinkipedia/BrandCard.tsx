@@ -15,14 +15,19 @@ const BrandCard: React.FC<BrandProps> = ({ brand }) => {
     >
       <img
         src={brand.photoURL}
-        alt=''
+        alt={brand.name}
         className=' absolute left-1/2 top-1/3 w-2/5 -translate-x-1/2 -translate-y-1/2 drop-shadow-md duration-1000 sm:top-1/4'
       />
       <div className='absolute bottom-2 left-1/2 flex w-full -translate-x-1/2 flex-col justify-items-center text-center text-xl sm:text-lg'>
         <div>{brand.name}</div>
 
         <div className=' flex w-full items-center justify-center gap-1 text-sm'>
-          <Star size={18} color='#fbbf24' weight='fill' className='mb-1 inline' />
+          <Star
+            size={18}
+            color='#fbbf24'
+            weight='fill'
+            className='mb-1 inline'
+          />
           <span>{brand.averageRating || '-'}</span>
           <span>({brand.numRatings || 0})</span>
         </div>

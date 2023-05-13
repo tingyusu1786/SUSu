@@ -8,6 +8,7 @@ import SingleBrand from './SingleBrand';
 import SingleItem from './SingleItem';
 import BreadcrumbNav from './BreadcrumbNav';
 import { Item } from '../../interfaces/interfaces';
+import swal from '../../utils/swal';
 
 function Drinkipedia() {
   const { pageBrandId } = useParams<{ pageBrandId: string }>();
@@ -88,7 +89,11 @@ function Drinkipedia() {
       if (docRef !== undefined) {
         const itemDoc = await getDoc(docRef);
         if (!itemDoc.exists()) {
-          alert('No such document!');
+          swal.error(
+            'Something went wrong when fetching drink catagories...',
+            '',
+            'ok'
+          );
           return '';
         }
         const data = itemDoc.data();
