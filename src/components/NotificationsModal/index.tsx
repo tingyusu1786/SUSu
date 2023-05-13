@@ -78,8 +78,8 @@ function NotificationsList() {
       case 'follow': {
         html = (
           <a href={`/profile/${authorId}`} className='group text-neutral-500'>
-            <span className='group-hover:text-green-400 '>{authorName}</span>{' '}
-            started following you!
+            <span className='group-hover:text-green-400 '>{authorName}</span>
+            &nbsp;started following you!
           </a>
         );
         break;
@@ -87,7 +87,7 @@ function NotificationsList() {
       case 'like': {
         html = (
           <a href={`/log/${postId}`} className='group text-neutral-500'>
-            {authorName} liked your&nbsp;
+            {authorName}&nbsp;liked your&nbsp;
             <span className='group-hover:text-green-400 '>log</span>!
           </a>
         );
@@ -96,8 +96,9 @@ function NotificationsList() {
       case 'comment': {
         html = (
           <a href={`/log/${postId}`} className='group text-neutral-500'>
-            {authorName} commented <q className='text-neutral-900'>{content}</q>{' '}
-            <span>on your&nbsp;</span>
+            {authorName}&nbsp;commented&nbsp;
+            <q className='text-neutral-900'>{content}</q>
+            <span>&nbsp;on your&nbsp;</span>
             <span className='group-hover:text-green-400 '>log</span>!
           </a>
         );
@@ -194,8 +195,9 @@ function NotificationsList() {
           to = `/log/${notification.postId}`;
           html = (
             <div className='group text-neutral-500'>
-              {notification.authorName} commented{' '}
-              <q className='text-neutral-900'>{notification.content}</q> on your{' '}
+              {notification.authorName}&nbsp;commented&nbsp;
+              <q className='text-neutral-900'>{notification.content}</q>&nbsp;on
+              your&nbsp;
               <span className='transition-all duration-300 group-hover:text-green-400 '>
                 log
               </span>
