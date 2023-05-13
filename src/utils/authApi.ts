@@ -1,5 +1,3 @@
-/* eslint-disable */
-
 import { auth } from '../services/firebase';
 import {
   createUserWithEmailAndPassword,
@@ -7,7 +5,6 @@ import {
   signOut,
   signInWithPopup,
   GoogleAuthProvider,
-  onAuthStateChanged,
   updateProfile,
   UserCredential,
   getAdditionalUserInfo,
@@ -26,13 +23,19 @@ const authApi = {
   ): Promise<UserCredential | undefined> {
     let userCredential;
     if (type === 'signUp') {
-      userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      userCredential = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
     } else if (type === 'signIn') {
       userCredential = await signInWithEmailAndPassword(auth, email, password);
     }
     return userCredential;
   },
-  async getOAuthUserCredential(type: 'google'): Promise<UserCredential | undefined> {
+  async getOAuthUserCredential(
+    type: 'google'
+  ): Promise<UserCredential | undefined> {
     let OAuthUserCredential;
     if (type === 'google') {
       const provider = new GoogleAuthProvider();
@@ -46,7 +49,8 @@ const authApi = {
   ): Promise<OAuthCredential | null | undefined> {
     let OAuthCredential;
     if (type === 'google') {
-      OAuthCredential = GoogleAuthProvider.credentialFromResult(OAuthUserCredential);
+      OAuthCredential =
+        GoogleAuthProvider.credentialFromResult(OAuthUserCredential);
     }
     return OAuthCredential;
   },
@@ -55,17 +59,25 @@ const authApi = {
     errorOAuthCredential = GoogleAuthProvider.credentialFromError(error);
     return errorOAuthCredential;
   },
-  async checkIfNewUser(OAuthUserCredential: UserCredential): Promise<boolean | undefined> {
-    let isNewUser;
-    let additionalUserInfo = getAdditionalUserInfo(OAuthUserCredential);
-    isNewUser = additionalUserInfo?.isNewUser;
+  async checkIfNewUser(
+    OAuthUserCredential: UserCredential
+  ): Promise<boolean | undefined> {
+    const additionalUserInfo = getAdditionalUserInfo(OAuthUserCredential);
+    const isNewUser = additionalUserInfo?.isNewUser;
     return isNewUser;
   },
-  async updateAuthProfile(user: UserCredential['user'], content: Record<string, string>): Promise<void> {
+  async updateAuthProfile(
+    user: UserCredential['user'],
+    content: Record<string, string>
+  ): Promise<void> {
     try {
       await updateProfile(user, content);
     } catch {
-      swal.error('Something went wrong while updating profile', 'try again later', 'ok');
+      swal.error(
+        'Something went wrong while updating profile',
+        'try again later',
+        'ok'
+      );
     }
   },
   async signOut(): Promise<void> {

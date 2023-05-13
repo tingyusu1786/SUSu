@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { ChangeEvent, KeyboardEvent } from 'react';
 
 import { Link } from 'react-router-dom';
@@ -20,17 +22,30 @@ interface PostProps {
   post: Post;
   index: number;
   handleDeletePost: (post: Post, index: number) => Promise<void>;
-  handleDeleteComment: (post: Post, postIndex: number, commentIndex: number, commentId: string) => Promise<void>;
+  handleDeleteComment: (
+    post: Post,
+    postIndex: number,
+    commentIndex: number,
+    commentId: string
+  ) => Promise<void>;
   handleLike: (post: Post, userId: string, index: number) => Promise<void>;
   handleCommentsShown: (index: number) => void;
-  handleCommentInput: (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => void;
+  handleCommentInput: (
+    event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    index: number
+  ) => void;
   handleCommentSubmit: (
     event: KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>,
     post: Post,
     userId: string,
     index: number
   ) => Promise<void>;
-  handleUpdatePost: (post: Post, userId: string, postIndex: number, type: 'like' | 'comment') => Promise<void>;
+  handleUpdatePost: (
+    post: Post,
+    userId: string,
+    postIndex: number,
+    type: 'like' | 'comment'
+  ) => Promise<void>;
   handleClickHashtag: (hashtag: string) => void;
 }
 
@@ -47,7 +62,11 @@ const PostCard: React.FC<PostProps> = ({
 }) => {
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
   const date = post.timeCreated?.toDate();
-  const formattedTime = date?.toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+  const formattedTime = date?.toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: true,
+  });
   const formattedDate = date?.toLocaleDateString('en-US');
   const formattedDateTime = `${formattedDate} ${formattedTime}`;
 
@@ -57,7 +76,10 @@ const PostCard: React.FC<PostProps> = ({
       key={index}
     >
       <div className='flex h-12 flex-nowrap items-center justify-between border-b-[3px] border-solid border-neutral-900 px-5 sm:h-20 sm:flex-col-reverse sm:items-start sm:justify-end sm:px-3 sm:pt-1'>
-        <Link to={`/profile/${post.authorId}`} className='group flex items-center xs:pr-1'>
+        <Link
+          to={`/profile/${post.authorId}`}
+          className='group flex items-center xs:pr-1'
+        >
           <img
             src={post.authorPhoto}
             alt={post.authorName}
@@ -68,9 +90,11 @@ const PostCard: React.FC<PostProps> = ({
           </span>
         </Link>
         <div className=' flex items-center justify-between'>
-          <span className='mt-1 after:mx-1 after:content-["•"]'>{formattedDateTime}</span>
+          <span className='mt-1 after:mx-1 after:content-["•"]'>
+            {formattedDateTime}
+          </span>
           {post.audience === 'public' ? (
-            <GlobeHemisphereEast className='' size={18} color='#171717' weight='bold' />
+            <GlobeHemisphereEast size={18} color='#171717' weight='bold' />
           ) : (
             <UserCircle size={18} color='#171717' weight='bold' />
           )}
@@ -96,7 +120,10 @@ const PostCard: React.FC<PostProps> = ({
               </span>
             </Link>
             <span className='xs:hidden'>'s </span>
-            <Link to={`/drinkipedia/${post.brandId}/${post.itemId}`} className='hover:translate-y-1'>
+            <Link
+              to={`/drinkipedia/${post.brandId}/${post.itemId}`}
+              className='hover:translate-y-1'
+            >
               <span className='inline-block transition-all duration-150 ease-out hover:-translate-y-1'>
                 {post.itemName}
               </span>
@@ -136,9 +163,21 @@ const PostCard: React.FC<PostProps> = ({
           <div className='mb-4 flex'>
             {[1, 2, 3, 4, 5].map((num) => {
               return Number(post.rating) >= num ? (
-                <SolidStar size={26} color='#fbbf24' weight='fill' className='drop-shadow-sm' key={num} />
+                <SolidStar
+                  size={26}
+                  color='#fbbf24'
+                  weight='fill'
+                  className='drop-shadow-sm'
+                  key={num}
+                />
               ) : (
-                <LineStar size={26} color='#fbbf24' weight='regular' className='drop-shadow-md' key={num} />
+                <LineStar
+                  size={26}
+                  color='#fbbf24'
+                  weight='regular'
+                  className='drop-shadow-md'
+                  key={num}
+                />
               );
             })}
           </div>
@@ -165,14 +204,18 @@ const PostCard: React.FC<PostProps> = ({
             className='animate__animated animate__rubberBand w-7 cursor-pointer'
             src={heartFill}
             alt=''
-            onClick={() => currentUserId && handleLike(post, currentUserId, index)}
+            onClick={() =>
+              currentUserId && handleLike(post, currentUserId, index)
+            }
           />
         ) : (
           <img
             className=' w-7 cursor-pointer'
             src={heartLine}
             alt=''
-            onClick={() => currentUserId && handleLike(post, currentUserId, index)}
+            onClick={() =>
+              currentUserId && handleLike(post, currentUserId, index)
+            }
           />
         )}
         {/*todo: signin to like*/}

@@ -42,7 +42,7 @@ const ItemCatalogue: React.FC<CatalogueProps> = ({
       </div>
       <div className='mt-5 flex w-full items-baseline justify-around gap-3 px-6'>
         <div className='grow border-b-4 border-solid border-neutral-900' />
-        <span className=''>RELATED LOGS</span>
+        <span>RELATED LOGS</span>
         <div className='grow border-b-4 border-solid border-neutral-900' />
       </div>
       <div className='mb-5 text-center text-sm'>

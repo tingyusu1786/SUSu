@@ -2,7 +2,15 @@ import { useState, useRef, ChangeEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '../../app/hooks';
 import { db } from '../../services/firebase';
-import { collection, doc, getDoc, getDocs, query, where, DocumentData } from 'firebase/firestore';
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  where,
+  DocumentData,
+} from 'firebase/firestore';
 import { ReactComponent as ShootingStar } from '../../assets/ShootingStar.svg';
 import { MapTrifold, Star } from '@phosphor-icons/react';
 
@@ -22,7 +30,10 @@ function Inspiration() {
   const [randomItem, setRandomItem] = useState<RandomItem | null>();
   const [noItemMessage, setNoItemMessage] = useState<string>();
   const [isFinding, setIsFinding] = useState(false);
-  const [currentLocation, setCurrentLocation] = useState<{ latitude: number; longitude: number }>();
+  const [currentLocation, setCurrentLocation] = useState<{
+    latitude: number;
+    longitude: number;
+  }>();
   const [showMap, setShowMap] = useState(false);
   const [locationErrorMessage, setLocationErrorMessage] = useState<string>();
   const mapRef = useRef<HTMLIFrameElement | null>(null);
@@ -66,7 +77,10 @@ function Inspiration() {
     setTimeout(() => scrollToMapEnd(), 200);
   };
 
-  const getRandomItem = async (filterBrands: string[], filterRating: number | undefined) => {
+  const getRandomItem = async (
+    filterBrands: string[],
+    filterRating: number | undefined
+  ) => {
     setRandomItem(undefined);
     setNoItemMessage(undefined);
     setIsFinding(true);
@@ -88,13 +102,20 @@ function Inspiration() {
       indexQueue.splice(randomQueueIndex, 1);
 
       // 拿出這個brand的所有categories
-      const categoriesRef = collection(db, 'brands', randomBrandId, 'categories');
+      const categoriesRef = collection(
+        db,
+        'brands',
+        randomBrandId,
+        'categories'
+      );
       const categoriesSnapshot = await getDocs(categoriesRef);
       const categoriesIds = categoriesSnapshot.docs.map((c) => c.id);
 
       while (categoriesIds.length > 0) {
         // 隨機選一個category
-        const randomCategoryIndex = Math.floor(Math.random() * categoriesIds.length);
+        const randomCategoryIndex = Math.floor(
+          Math.random() * categoriesIds.length
+        );
         const randomCategoryId = categoriesIds[randomCategoryIndex];
         // 把選到的剔除
         categoriesIds.splice(randomCategoryIndex, 1);
@@ -105,11 +126,27 @@ function Inspiration() {
         if (filterRating) {
           // 有選rating的話變成拿出這個category的大於n分的所有item
           itemsRef = query(
-            collection(db, 'brands', randomBrandId, 'categories', randomCategoryId, 'items'),
+            collection(
+              db,
+              'brands',
+              randomBrandId,
+              'categories',
+              randomCategoryId,
+              'items'
+            ),
             where('averageRating', '>=', filterRating)
           );
         } else {
-          itemsRef = query(collection(db, 'brands', randomBrandId, 'categories', randomCategoryId, 'items'));
+          itemsRef = query(
+            collection(
+              db,
+              'brands',
+              randomBrandId,
+              'categories',
+              randomCategoryId,
+              'items'
+            )
+          );
         }
 
         const itemsSnapshot = await getDocs(itemsRef);
@@ -120,10 +157,19 @@ function Inspiration() {
 
         // 隨機選一個item
         const itemsIds = itemsSnapshot.docs.map((i) => i.id);
-        const randomItemId = itemsIds[Math.floor(Math.random() * itemsIds.length)];
+        const randomItemId =
+          itemsIds[Math.floor(Math.random() * itemsIds.length)];
 
         // 拿出這個item
-        const itemRef = doc(db, 'brands', randomBrandId, 'categories', randomCategoryId, 'items', randomItemId);
+        const itemRef = doc(
+          db,
+          'brands',
+          randomBrandId,
+          'categories',
+          randomCategoryId,
+          'items',
+          randomItemId
+        );
         const randomItemDoc = await getDoc(itemRef);
         randomItemFromDb = await randomItemDoc.data();
         // 加上brand資訊
@@ -140,16 +186,21 @@ function Inspiration() {
       }
     }
     setTimeout(() => setIsFinding(false), 1500);
-    !foundItem && setNoItemMessage('no item ☹ try another brand or lower the rating');
+    !foundItem &&
+      setNoItemMessage('no item ☹ try another brand or lower the rating');
   };
 
   return (
     <main className='bg-boxes relative z-0 min-h-[calc(100vh-64px)] bg-fixed p-10 sm:p-5'>
       <h1 className='pageTitle mb-5'>Can&rsquo;t decide? Leave it to us!</h1>
       <div className='mx-auto max-w-[960px]'>
-        <span className='mb-3 mr-3 inline-block before:mr-2 before:content-["✦"]'>filter some brands</span>
+        <span className='mb-3 mr-3 inline-block before:mr-2 before:content-["✦"]'>
+          filter some brands
+        </span>
         <span
-          className={`cursor-pointer text-sm text-gray-400 ${selectedBrands.length > 0 ? 'inline-block' : 'hidden'}`}
+          className={`cursor-pointer text-sm text-gray-400 ${
+            selectedBrands.length > 0 ? 'inline-block' : 'hidden'
+          }`}
           onClick={() => setSelectedBrands([])}
         >
           clear all brands
@@ -160,7 +211,11 @@ function Inspiration() {
               key={key}
               className={`button cursor-pointer rounded-full border-2 border-solid border-neutral-900 px-2 pt-1 transition-all duration-100 hover:bg-amber-400 ${
                 selectedBrands.includes(key) ? 'bg-amber-400' : 'bg-transparent'
-              } ${selectedBrands.length !== 0 && !selectedBrands.includes(key) && 'opacity-40'}`}
+              } ${
+                selectedBrands.length !== 0 &&
+                !selectedBrands.includes(key) &&
+                'opacity-40'
+              }`}
             >
               <input
                 type='checkbox'
@@ -173,9 +228,13 @@ function Inspiration() {
             </label>
           ))}
         </div>
-        <span className='mb-3 mr-3 inline-block before:mr-2 before:content-["✦"]'>set the rating lower bound</span>
+        <span className='mb-3 mr-3 inline-block before:mr-2 before:content-["✦"]'>
+          set the rating lower bound
+        </span>
         <span
-          className={`cursor-pointer text-sm text-gray-400 ${selectedRating ? 'inline-block' : 'hidden'}`}
+          className={`cursor-pointer text-sm text-gray-400 ${
+            selectedRating ? 'inline-block' : 'hidden'
+          }`}
           onClick={() => setSelectedRating(undefined)}
         >
           clear rating
@@ -186,7 +245,11 @@ function Inspiration() {
               key={num}
               className={`button cursor-pointer rounded-full border-2 border-solid border-neutral-900 px-2 pt-1 transition-all duration-100 hover:bg-amber-400 ${
                 selectedRating === num ? ' bg-amber-400 ' : 'bg-transparent'
-              } ${selectedRating !== undefined && selectedRating !== num && 'opacity-40'}`}
+              } ${
+                selectedRating !== undefined &&
+                selectedRating !== num &&
+                'opacity-40'
+              }`}
             >
               <input
                 className='hidden'
@@ -197,7 +260,12 @@ function Inspiration() {
                 onChange={handleRatingChange}
               />
               <span className='flex items-center gap-1'>
-                <Star size={18} color='#171717' weight='fill' className='mb-1' />
+                <Star
+                  size={18}
+                  color='#171717'
+                  weight='fill'
+                  className='mb-1'
+                />
                 {num}+
               </span>
             </label>
@@ -225,16 +293,27 @@ function Inspiration() {
               <div className='mb-3 text-lg'>↓ we picked this for you! ↓</div>
               <div className='flex flex-col items-center gap-2 '>
                 <Link to={`/drinkipedia/${randomItem.brandId}`}>
-                  <div className=' text-4xl transition-all duration-200 hover:-translate-y-1'>{randomItem.brand}</div>
+                  <div className=' text-4xl transition-all duration-200 hover:-translate-y-1'>
+                    {randomItem.brand}
+                  </div>
                 </Link>
-                <Link to={`/drinkipedia/${randomItem.brandId}/${randomItem.itemId}`}>
-                  <div className='ransition-all mr-1 text-5xl duration-200 hover:-translate-y-1'>{randomItem.name}</div>
+                <Link
+                  to={`/drinkipedia/${randomItem.brandId}/${randomItem.itemId}`}
+                >
+                  <div className='ransition-all mr-1 text-5xl duration-200 hover:-translate-y-1'>
+                    {randomItem.name}
+                  </div>
                 </Link>
               </div>
               {randomItem.averageRating && (
                 <div className='flex items-center justify-center'>
-                  <Star size={18} color='#fbbf24' weight='fill' className='mb-1' />
-                  <span className=''>
+                  <Star
+                    size={18}
+                    color='#fbbf24'
+                    weight='fill'
+                    className='mb-1'
+                  />
+                  <span>
                     &nbsp;{randomItem.averageRating} ({randomItem.numRatings})
                   </span>
                 </div>
@@ -242,11 +321,16 @@ function Inspiration() {
               <div className='flex items-center justify-center gap-3'>
                 {randomItem.price &&
                   Object.entries(randomItem.price).map((p) => (
-                    <div key={p[0]} className='inline-block flex items-center justify-start gap-1'>
+                    <div
+                      key={p[0]}
+                      className='inline-block flex items-center justify-start gap-1'
+                    >
                       <div className='flex h-6 w-6 items-center justify-center rounded-full border-2 border-solid border-neutral-900 bg-green-400 pt-1 text-sm'>
                         {p[0]}
                       </div>
-                      <span className='mt-1 before:content-["$"]'>{p[1] as number}</span>
+                      <span className='mt-1 before:content-["$"]'>
+                        {p[1] as number}
+                      </span>
                     </div>
                   ))}
               </div>
@@ -268,9 +352,11 @@ function Inspiration() {
                 size={26}
                 color='#171717'
                 weight='light'
-                className={`${showMap && '-rotate-180'}  transition-all duration-500`}
+                className={`${
+                  showMap && '-rotate-180'
+                }  transition-all duration-500`}
               />
-              <div className=''>Check out the stores nearby</div>
+              <div>Check out the stores nearby</div>
             </div>
             <div
               className={`absolute w-1/3 px-5 text-[0px] transition-all duration-500 ${
@@ -282,7 +368,8 @@ function Inspiration() {
             <iframe
               ref={mapRef}
               className={`h-0 w-full max-w-[960px] scroll-mb-20 transition-[height] duration-200 ${
-                showMap && 'h-[480px] rounded-b-md border-t-4 border-neutral-900 sm:scroll-mb-10'
+                showMap &&
+                'h-[480px] rounded-b-md border-t-4 border-neutral-900 sm:scroll-mb-10'
               }`}
               loading='lazy'
               title='Stores Nearby'
@@ -290,8 +377,12 @@ function Inspiration() {
               referrerPolicy='no-referrer-when-downgrade'
               src={
                 currentLocation &&
-                `https://www.google.com/maps/embed/v1/search?key=${process.env.REACT_APP_GOOGLEMAPS_KEY}
-                            &q=${randomItem.brand}+nearby&language=en&center=${Number(
+                `https://www.google.com/maps/embed/v1/search?key=${
+                  process.env.REACT_APP_GOOGLEMAPS_KEY
+                }
+                            &q=${
+                              randomItem.brand
+                            }+nearby&language=en&center=${Number(
                   currentLocation.latitude
                 )},${Number(currentLocation.longitude)}&zoom=13`
               }
@@ -299,7 +390,9 @@ function Inspiration() {
           </div>
         </div>
       )}
-      {!isFinding && noItemMessage && <div className='mt-10 w-full text-center text-lg'>{noItemMessage}</div>}
+      {!isFinding && noItemMessage && (
+        <div className='mt-10 w-full text-center text-lg'>{noItemMessage}</div>
+      )}
     </main>
   );
 }

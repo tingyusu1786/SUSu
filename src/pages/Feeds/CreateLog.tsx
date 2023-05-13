@@ -488,11 +488,11 @@ function CreateLog() {
                     itemsOfBrand.map((itemsOfCategory, index) => (
                       <div className='flex flex-col' key={index}>
                         <div className='flex w-full items-center justify-around gap-3 px-6'>
-                          <div className='grow border-b border-dashed border-neutral-500'></div>
+                          <div className='grow border-b border-dashed border-neutral-500' />
                           <div className='mt-1 text-center text-base text-neutral-500'>
                             {categories[index]?.[1]}
                           </div>
-                          <div className='grow border-b border-dashed border-neutral-500'></div>
+                          <div className='grow border-b border-dashed border-neutral-500' />
                         </div>
                         {itemsOfCategory.length !== 0 &&
                           itemsOfCategory.map((item) => (

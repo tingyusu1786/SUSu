@@ -1,7 +1,5 @@
-/* eslint-disable */
-
 import { storage } from '../services/firebase';
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import swal from './swal';
 
 const storageApi = {
@@ -11,10 +9,13 @@ const storageApi = {
   },
   async getPhotoURL(photoName: string): Promise<string | undefined> {
     try {
-      const photoURL = await getDownloadURL(ref(storage, `userPhotos/${photoName}`));
+      const photoURL = await getDownloadURL(
+        ref(storage, `userPhotos/${photoName}`)
+      );
       return photoURL;
     } catch {
       swal.error('Unable to retrieve photo url', 'try again later', 'ok');
+      return undefined;
     }
   },
   async uploadUserPhoto(userId: string, file: File) {

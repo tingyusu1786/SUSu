@@ -10,12 +10,19 @@ function Posts() {
   const dispatch = useAppDispatch();
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
   const currentUser = useAppSelector((state) => state.auth.currentUser);
-  const [feedSource, setFeedSource] = useState<string>(currentUser.feedSource || 'all');
+  const [feedSource, setFeedSource] = useState<string>(
+    currentUser.feedSource || 'all'
+  );
   const [dropdownShown, setDropdownShown] = useState({ audience: false });
 
-  const handlePostsSourceChange = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handlePostsSourceChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     setFeedSource(e.target.value);
-    currentUserId && updateDoc(doc(db, 'users', currentUserId), { feedSource: e.target.value });
+    currentUserId &&
+      updateDoc(doc(db, 'users', currentUserId), {
+        feedSource: e.target.value,
+      });
     dispatch(updateUserFeedSource({ feedSource: e.target.value }));
   };
 
@@ -42,9 +49,11 @@ function Posts() {
                   return newShown;
                 })
               }
-              className='h-8 w-full grow rounded-full border border-solid border-neutral-900 bg-transparent p-0 px-2 pt-1 text-base  focus:outline focus:outline-green-400'
+              className='h-8 w-full grow rounded-full border border-solid border-neutral-900 bg-transparent p-0 px-2 pt-1 text-base focus:outline focus:outline-green-400'
             >
-              {feedSource === 'all' ? 'all over the world' : 'people you follow'}
+              {feedSource === 'all'
+                ? 'all over the world'
+                : 'people you follow'}
             </button>
             <div
               className={`flex ${
@@ -59,7 +68,7 @@ function Posts() {
                   value='all'
                   className='hidden'
                   onChange={handlePostsSourceChange}
-                ></input>
+                />
               </label>
               <label className='cursor-pointer px-3 pt-1 text-center text-base hover:bg-neutral-100'>
                 people you follow
@@ -69,22 +78,16 @@ function Posts() {
                   value='following'
                   className='hidden'
                   onChange={handlePostsSourceChange}
-                ></input>
+                />
               </label>
             </div>
           </div>
-          {/*  <select
-            name='audience'
-            className='w-50 my-1 h-6 border-b-2 border-neutral-900 bg-transparent focus:outline-0'
-            value={feedSource}
-            onChange={handlePostsSourceChange}
-          >
-            <option value='all'>all over the world</option>
-            <option value='following'>people you follow</option>
-          </select>*/}
         </div>
       </div>
-      <PostsFeed onlySeeFollowing={feedSource === 'following' ? true : false} currentPage='posts' />
+      <PostsFeed
+        onlySeeFollowing={feedSource === 'following' ? true : false}
+        currentPage='posts'
+      />
     </main>
   );
 }

@@ -1,15 +1,14 @@
-import  { useState, useEffect, ChangeEvent } from 'react';
-import storageApi from '../../utils/storageApi';
-import authApi from '../../utils/authApi';
-import dbApi from '../../utils/dbApi';
+import { useState, useEffect, ChangeEvent } from 'react';
 import { serverTimestamp } from 'firebase/firestore';
 import { Eye, EyeClosed } from '@phosphor-icons/react';
 import 'animate.css';
-import swal from '../../utils/swal';
-
 import { useAppDispatch } from '../../app/hooks';
 import { signInStart, signInSuccess, signInFail } from '../../app/authSlice';
 import { closeAuth } from '../../app/popUpSlice';
+import storageApi from '../../utils/storageApi';
+import authApi from '../../utils/authApi';
+import dbApi from '../../utils/dbApi';
+import swal from '../../utils/swal';
 
 function Authentication() {
   const dispatch = useAppDispatch();
@@ -18,7 +17,7 @@ function Authentication() {
   const [passwordType, setPasswordType] = useState('password');
 
   useEffect(() => {
-    const handleKeyDown = (event: { key: string; }) => {
+    const handleKeyDown = (event: { key: string }) => {
       if (event.key === 'Escape') {
         dispatch(closeAuth());
       }
@@ -29,13 +28,21 @@ function Authentication() {
     };
   }, []);
 
-  const handleNativeSignUp = async (name: string, email: string, password: string) => {
+  const handleNativeSignUp = async (
+    name: string,
+    email: string,
+    password: string
+  ) => {
     if ([name, email, password].some((value) => value === '')) {
       return;
     }
     try {
       dispatch(signInStart());
-      const userCredential = await authApi.getUserCredential('signUp', email, password);
+      const userCredential = await authApi.getUserCredential(
+        'signUp',
+        email,
+        password
+      );
       if (userCredential === undefined) {
         throw new Error();
       }
@@ -71,7 +78,11 @@ function Authentication() {
   const nativeSignIn = async (email: string, password: string) => {
     try {
       dispatch(signInStart());
-      const userCredential = await authApi.getUserCredential('signIn', email, password);
+      const userCredential = await authApi.getUserCredential(
+        'signIn',
+        email,
+        password
+      );
       if (userCredential === undefined) {
         throw new Error();
       }
@@ -90,11 +101,16 @@ function Authentication() {
   const googleSignIn = async () => {
     try {
       dispatch(signInStart());
-      const OAuthUserCredential = await authApi.getOAuthUserCredential('google');
+      const OAuthUserCredential = await authApi.getOAuthUserCredential(
+        'google'
+      );
       if (OAuthUserCredential === undefined) {
         throw new Error();
       }
-      const OAuthCredential = await authApi.getOAuthCredential('google', OAuthUserCredential);
+      const OAuthCredential = await authApi.getOAuthCredential(
+        'google',
+        OAuthUserCredential
+      );
       if (OAuthCredential === undefined) {
         throw new Error();
       }
@@ -127,7 +143,11 @@ function Authentication() {
       swal.error(`☹️ error: email used (${errEmail})`, 'try again', 'ok');
 
       const errorOAuthCredential = await authApi.getErrorOAuthCredential(error);
-      swal.error(`☹️ credential error: ${errorOAuthCredential}`, 'try again', 'ok');
+      swal.error(
+        `☹️ credential error: ${errorOAuthCredential}`,
+        'try again',
+        'ok'
+      );
     }
   };
 
@@ -157,9 +177,9 @@ function Authentication() {
           continue with Google
         </button>
         <div className='flex w-full items-baseline justify-around gap-3 px-6'>
-          <div className='grow border-b border-solid border-neutral-400'></div>
+          <div className='grow border-b border-solid border-neutral-400' />
           <span className='text-sm '>or</span>
-          <div className='grow border-b border-solid border-neutral-400'></div>
+          <div className='grow border-b border-solid border-neutral-400' />
         </div>
         {!haveAccount && (
           <label className='flex w-full flex-col'>
@@ -209,7 +229,9 @@ function Authentication() {
                 color='#a3a3a3'
                 className='absolute right-4 top-[0.6rem] cursor-pointer hover:fill-green-400'
                 onClick={() => {
-                  setPasswordType((prev) => (prev === 'password' ? 'text' : 'password'));
+                  setPasswordType((prev) =>
+                    prev === 'password' ? 'text' : 'password'
+                  );
                 }}
               />
             ) : (
@@ -219,7 +241,9 @@ function Authentication() {
                 color='#a3a3a3'
                 className='absolute right-4 top-[0.6rem] cursor-pointer hover:fill-green-400'
                 onClick={() => {
-                  setPasswordType((prev) => (prev === 'password' ? 'text' : 'password'));
+                  setPasswordType((prev) =>
+                    prev === 'password' ? 'text' : 'password'
+                  );
                 }}
               />
             )}
@@ -236,7 +260,6 @@ function Authentication() {
           <button
             onClick={() => {
               nativeSignIn(input.email, input.password);
-              // handleReset();
             }}
             className='button mb-3 h-10 w-full rounded-full bg-white p-0 text-xl transition-all duration-100 hover:bg-green-400'
           >
@@ -246,7 +269,6 @@ function Authentication() {
           <button
             onClick={() => {
               handleNativeSignUp(input.name, input.email, input.password);
-              // handleReset();
             }}
             className='button mb-3 h-10 w-full rounded-full bg-white p-0 text-xl transition-all duration-100 hover:bg-green-400'
           >
@@ -283,7 +305,10 @@ function Authentication() {
           </div>
         )}
       </form>
-      <div className='absolute top-0 h-full w-full bg-white opacity-80' onClick={() => dispatch(closeAuth())}></div>
+      <div
+        className='absolute top-0 h-full w-full bg-white opacity-80'
+        onClick={() => dispatch(closeAuth())}
+      />
     </div>
   );
 }

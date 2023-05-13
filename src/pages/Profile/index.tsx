@@ -25,16 +25,28 @@ import NameCard from './NameCard';
 import dbApi from '../../utils/dbApi';
 import PostsSection from './PostsSection';
 import DashboardSection from './DashboardSection';
-import { User as UserIcon, UsersThree, ArrowRight, Browsers, PresentationChart } from '@phosphor-icons/react';
+import {
+  User as UserIcon,
+  UsersThree,
+  ArrowRight,
+  Browsers,
+  PresentationChart,
+} from '@phosphor-icons/react';
 
 function Profile() {
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
   const isSignedIn = useAppSelector((state) => state.auth.isSignedIn);
-  const currentUserName = useAppSelector((state) => state.auth.currentUser.name);
+  const currentUserName = useAppSelector(
+    (state) => state.auth.currentUser.name
+  );
   const [profileUser, setProfileUser] = useState<User>();
   const [isFollowing, setIsFollowing] = useState(false);
-  const [usersFollowing, setUsersFollowing] = useState<{ id: string; name: string; photoURL: string }[]>([]);
-  const [usersFollowers, setUsersFollowers] = useState<{ id: string; name: string; photoURL: string }[]>([]);
+  const [usersFollowing, setUsersFollowing] = useState<
+    { id: string; name: string; photoURL: string }[]
+  >([]);
+  const [usersFollowers, setUsersFollowers] = useState<
+    { id: string; name: string; photoURL: string }[]
+  >([]);
 
   const { profileUserId } = useParams<{ profileUserId: string }>();
   const [tab, setTab] = useState<TabName>('DASHBOARD');
@@ -61,26 +73,35 @@ function Profile() {
   }, []);
 
   const getProfileUserFollows = async () => {
-    const userFollowersInfo = profileUser?.followers?.map(async (followerId) => {
-      const name = (await dbApi.getUserField(followerId, 'name')) || 'user';
-      const photoURL = (await dbApi.getUserField(followerId, 'photoURL')) || '';
-      return { id: followerId, name, photoURL };
-    });
+    const userFollowersInfo = profileUser?.followers?.map(
+      async (followerId) => {
+        const name = (await dbApi.getUserField(followerId, 'name')) || 'user';
+        const photoURL =
+          (await dbApi.getUserField(followerId, 'photoURL')) || '';
+        return { id: followerId, name, photoURL };
+      }
+    );
     if (!userFollowersInfo) return;
     const userFollowersInfos = await Promise.all(userFollowersInfo);
     setUsersFollowers(userFollowersInfos);
 
-    const userFollowingInfo = profileUser?.following?.map(async (followingId) => {
-      const name = (await dbApi.getUserField(followingId, 'name')) || 'user';
-      const photoURL = (await dbApi.getUserField(followingId, 'photoURL')) || '';
-      return { id: followingId, name, photoURL };
-    });
+    const userFollowingInfo = profileUser?.following?.map(
+      async (followingId) => {
+        const name = (await dbApi.getUserField(followingId, 'name')) || 'user';
+        const photoURL =
+          (await dbApi.getUserField(followingId, 'photoURL')) || '';
+        return { id: followingId, name, photoURL };
+      }
+    );
     if (!userFollowingInfo) return;
     const userFollowingInfos = await Promise.all(userFollowingInfo);
     setUsersFollowing(userFollowingInfos);
   };
 
-  const handleFollow = async (profileUserId: string, isFollowing: boolean | undefined) => {
+  const handleFollow = async (
+    profileUserId: string,
+    isFollowing: boolean | undefined
+  ) => {
     if (!profileUserId || !currentUserId) {
       return;
     }
@@ -98,15 +119,23 @@ function Profile() {
       await updateDoc(currentUserRef, { following: arrayUnion(profileUserId) });
       await updateDoc(profileUserRef, { notifications: arrayUnion(newEntry) });
     } else {
-      await updateDoc(profileUserRef, { followers: arrayRemove(currentUserId) });
-      await updateDoc(currentUserRef, { following: arrayRemove(profileUserId) });
+      await updateDoc(profileUserRef, {
+        followers: arrayRemove(currentUserId),
+      });
+      await updateDoc(currentUserRef, {
+        following: arrayRemove(profileUserId),
+      });
       const profileUserData = await getDoc(profileUserRef);
       const originNotifications = profileUserData.data()?.notifications;
       if (!originNotifications) return;
       const notificationToRemove = originNotifications.find(
-        (notification: Notification) => notification.authorId === currentUserId && notification.type === 'follow'
+        (notification: Notification) =>
+          notification.authorId === currentUserId &&
+          notification.type === 'follow'
       );
-      await updateDoc(profileUserRef, { notifications: arrayRemove(notificationToRemove) });
+      await updateDoc(profileUserRef, {
+        notifications: arrayRemove(notificationToRemove),
+      });
     }
   };
 
@@ -119,18 +148,31 @@ function Profile() {
 
   const tabToComponentMap: Record<TabName, React.ReactNode> = {
     LOGS: <PostsSection profileUserId={profileUserId || ''} />,
-    DASHBOARD: <DashboardSection profileUserId={profileUserId || ''} currentUserId={currentUserId || ''} />,
+    DASHBOARD: (
+      <DashboardSection
+        profileUserId={profileUserId || ''}
+        currentUserId={currentUserId || ''}
+      />
+    ),
     FOLLOWING: (
       <div className='flex flex-col flex-nowrap items-center gap-5'>
         {profileUser?.following?.map((followingId) => (
-          <NameCard userId={followingId} key={followingId} handleFollow={handleFollow} />
+          <NameCard
+            userId={followingId}
+            key={followingId}
+            handleFollow={handleFollow}
+          />
         ))}
       </div>
     ),
     FOLLOWERS: (
       <div className='flex flex-col flex-nowrap items-center gap-4'>
         {profileUser?.followers?.map((followerId) => (
-          <NameCard userId={followerId} key={followerId} handleFollow={handleFollow} />
+          <NameCard
+            userId={followerId}
+            key={followerId}
+            handleFollow={handleFollow}
+          />
         ))}
       </div>
     ),
@@ -140,7 +182,10 @@ function Profile() {
     return (
       <main className='bg-boxes-diag relative flex min-h-[calc(100vh-64px)] items-center justify-center bg-fixed p-10'>
         user not found ☹&nbsp;
-        <Link to='/feeds' className='decoration-2 underline-offset-2 hover:underline'>
+        <Link
+          to='/feeds'
+          className='decoration-2 underline-offset-2 hover:underline'
+        >
           go to feeds
         </Link>
         &nbsp;to explore other users
@@ -152,12 +197,14 @@ function Profile() {
     <main className='bg-boxes-diag relative min-h-[calc(100vh-64px)] bg-fixed p-10 sm:p-5'>
       {currentUserId === profileUserId && (
         <div className='mb-2 w-full text-center'>
-          <Link to={`/setting/${currentUserId}`} className=' opacity-60 transition-all duration-100 hover:opacity-100'>
+          <Link
+            to={`/setting/${currentUserId}`}
+            className=' opacity-60 transition-all duration-100 hover:opacity-100'
+          >
             Edit Profile
           </Link>
         </div>
       )}
-      {/*personal data*/}
       <div className='flex flex-col items-center gap-4'>
         <img
           className='h-32 w-32 rounded-full border-4 border-solid border-neutral-900 object-cover'
@@ -175,7 +222,11 @@ function Profile() {
           member since{' '}
           {profileUser.timeCreated
             ?.toDate()
-            .toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })
+            .toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+            })
             .replace(/\//g, '/')}
         </div>
 
@@ -195,7 +246,9 @@ function Profile() {
           <button
             key={tabName}
             onClick={() => {
-              setTab(tabName as 'LOGS' | 'DASHBOARD' | 'FOLLOWING' | 'FOLLOWERS');
+              setTab(
+                tabName as 'LOGS' | 'DASHBOARD' | 'FOLLOWING' | 'FOLLOWERS'
+              );
             }}
             className={`truncate rounded-t-3xl border-2 border-solid border-neutral-900 px-2 pt-2 transition-[width] duration-1000 md:text-sm sm:text-xs ${
               tab === tabName ? 'grow border-b-0' : 'text-neutral-400'
@@ -203,7 +256,9 @@ function Profile() {
           >
             {tabName === 'FOLLOWING' ? (
               <>
-                <span className='sm:hidden'>FOLLOWING ({profileUser.following?.length || 0})</span>
+                <span className='sm:hidden'>
+                  FOLLOWING ({profileUser.following?.length || 0})
+                </span>
                 <UserIcon
                   size={20}
                   color={`${tab === tabName ? '#171717' : '#a3a3a3'}`}
@@ -225,7 +280,9 @@ function Profile() {
               </>
             ) : tabName === 'FOLLOWERS' ? (
               <>
-                <span className='sm:hidden'>FOLLOWERS ({profileUser.followers?.length || 0})</span>
+                <span className='sm:hidden'>
+                  FOLLOWERS ({profileUser.followers?.length || 0})
+                </span>
                 <UsersThree
                   size={24}
                   color={`${tab === tabName ? '#171717' : '#a3a3a3'}`}

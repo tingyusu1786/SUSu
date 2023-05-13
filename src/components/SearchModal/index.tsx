@@ -5,12 +5,22 @@ import { closeSearch } from '../../app/popUpSlice';
 import { PoweredBy } from 'react-instantsearch-hooks-web';
 import algoliasearch from 'algoliasearch/lite';
 import dbApi from '../../utils/dbApi';
-import { InstantSearch, SearchBox, Hits, Highlight, Index, useInstantSearch } from 'react-instantsearch-hooks-web';
+import {
+  InstantSearch,
+  SearchBox,
+  Hits,
+  Highlight,
+  Index,
+  useInstantSearch,
+} from 'react-instantsearch-hooks-web';
 
 // eslint-disable-next-line no-undef, @typescript-eslint/no-non-null-assertion
-const searchClient = algoliasearch(process.env.REACT_APP_ALGOLIA_APP_ID!, process.env.REACT_APP_ALGOLIA_SEARCH_KEY!);
+const searchClient = algoliasearch(
+  process.env.REACT_APP_ALGOLIA_APP_ID!,
+  process.env.REACT_APP_ALGOLIA_SEARCH_KEY!
+);
 
-function BrandHit({ hit }:any): JSX.Element {
+function BrandHit({ hit }: any): JSX.Element {
   const dispatch = useAppDispatch();
   return (
     <Link
@@ -18,17 +28,25 @@ function BrandHit({ hit }:any): JSX.Element {
       className='mb-2 flex w-full flex-col rounded border-2 border-neutral-900 bg-white p-2 shadow-md transition-all duration-300 hover:-translate-y-1'
       onClick={() => dispatch(closeSearch())}
     >
-      <Highlight attribute='name' hit={hit} className='' />
-      <Highlight attribute='story' hit={hit} className='text-sm text-neutral-500' />
+      <Highlight attribute='name' hit={hit} />
+      <Highlight
+        attribute='story'
+        hit={hit}
+        className='text-sm text-neutral-500'
+      />
       <div className='text-sm'>
         <span>總部：</span>
-        <Highlight attribute='headquarter' hit={hit} className='text-sm text-neutral-500' />
+        <Highlight
+          attribute='headquarter'
+          hit={hit}
+          className='text-sm text-neutral-500'
+        />
       </div>
     </Link>
   );
 }
 
-function UserHit({ hit }:any): JSX.Element {
+function UserHit({ hit }: any): JSX.Element {
   const dispatch = useAppDispatch();
   return (
     <Link
@@ -36,8 +54,12 @@ function UserHit({ hit }:any): JSX.Element {
       className='mb-2 flex w-full flex-col rounded border-2 border-neutral-900 bg-white p-2 shadow-md transition-all duration-300 hover:-translate-y-1'
       onClick={() => dispatch(closeSearch())}
     >
-      <Highlight attribute='name' hit={hit} className='' />
-      <Highlight attribute='email' hit={hit} className='text-sm text-neutral-500' />
+      <Highlight attribute='name' hit={hit} />
+      <Highlight
+        attribute='email'
+        hit={hit}
+        className='text-sm text-neutral-500'
+      />
       {hit.status && (
         <q>
           <Highlight attribute='status' hit={hit} className='text-sm' />
@@ -47,7 +69,7 @@ function UserHit({ hit }:any): JSX.Element {
   );
 }
 
-function PostHit({ hit }:any): JSX.Element {
+function PostHit({ hit }: any): JSX.Element {
   const dispatch = useAppDispatch();
   const [name, setName] = useState('user');
   dbApi.getUserField(hit.authorId, 'name').then((data) => {
@@ -63,13 +85,17 @@ function PostHit({ hit }:any): JSX.Element {
     >
       <div className='text-base'>{name}</div>
       {hit.selfComment && (
-        <div className=''>
+        <div>
           <Highlight attribute='selfComment' hit={hit} className='text-base' />
         </div>
       )}
       {hit.hashtags && (
         <div className='text-sm text-neutral-500'>
-          <Highlight attribute='hashtags' hit={hit} className='rounded text-sm' />
+          <Highlight
+            attribute='hashtags'
+            hit={hit}
+            className='rounded text-sm'
+          />
         </div>
       )}
     </Link>
@@ -81,7 +107,10 @@ interface FallbackProps {
   fallback: any;
 }
 
-const EmptyQueryBoundary: React.FC<FallbackProps> = ({ children, fallback }) => {
+const EmptyQueryBoundary: React.FC<FallbackProps> = ({
+  children,
+  fallback,
+}) => {
   const { indexUiState } = useInstantSearch();
 
   if (!indexUiState.query) {
@@ -151,7 +180,10 @@ const SearchModal: React.FC = () => {
             </EmptyQueryBoundary>
           </div>
         </div>
-        <div className='absolute top-0 h-full w-full bg-white opacity-80' onClick={() => dispatch(closeSearch())}></div>
+        <div
+          className='absolute top-0 h-full w-full bg-white opacity-80'
+          onClick={() => dispatch(closeSearch())}
+        />
       </div>
     </InstantSearch>
   );
