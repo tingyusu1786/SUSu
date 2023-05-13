@@ -1,97 +1,110 @@
 /* eslint-disable no-prototype-builtins */
-import { Post } from '../../interfaces/interfaces';
 import { Timestamp } from 'firebase/firestore';
 
 export const getStatisticsFromPosts = (posts: any, allBrandsInfo: any) => {
-  const { drankBrandsStatistic, drankItemsStatistic, drankDatesValues, priceStatistic, streaks, prevDate } =
-    posts.reduce(
-      (accumulator: any, post: any) => {
-        // drank brands
-        const { drankBrandsStatistic } = accumulator;
-        drankBrandsStatistic[post.brandId]
-          ? (drankBrandsStatistic[post.brandId].times = drankBrandsStatistic[post.brandId].times + 1)
-          : (drankBrandsStatistic[post.brandId] = { times: 1, brandName: post.brandName });
-
-        // drank items
-        const { drankItemsStatistic } = accumulator;
-        drankItemsStatistic[post.itemId]
-          ? (drankItemsStatistic[post.itemId].times = drankItemsStatistic[post.itemId].times + 1)
-          : (drankItemsStatistic[post.itemId] = { times: 1 });
-
-        // drank dates
-        const { drankDatesValues } = accumulator;
-        const dateString = timestampToDate(post.timeCreated);
-        const newDate = new Date(dateString);
-        const index = drankDatesValues.findIndex((element: any) => element.date.getTime() === newDate.getTime());
-        if (index === -1) {
-          drankDatesValues.push({ date: newDate, count: 1 });
-        } else {
-          drankDatesValues[index].count += 1;
-        }
-
-        // streaks
-        const { streaks } = accumulator;
-        let { prevDate } = accumulator;
-        const currentDate = new Date(dateString);
-
-        if (prevDate.getTime() !== currentDate.getTime()) {
-          const areConsecutive = currentDate.getTime() - prevDate.getTime() === 86400000;
-          if (areConsecutive) {
-            streaks.current += 1;
-          } else {
-            streaks.current = 1;
-          }
-          if (streaks.current > streaks.longest) {
-            streaks.longest = streaks.current;
-          }
-          accumulator.prevDate = currentDate;
-        }
-
-        // price statistic
-        const { priceStatistic } = accumulator;
-        if (post.price) {
-          const currentDate = new Date();
-          const intervals = [
-            { label: 'year', value: currentDate.getFullYear() - 1 },
-            { label: 'month', value: currentDate.getMonth() - 1 },
-            { label: 'week', value: currentDate.getDate() - 7 },
-            { label: 'day', value: currentDate.getDate() - 1 },
-          ];
-          intervals.forEach(({ label, value }) => {
-            const startDate = new Date();
-            switch (label) {
-              case 'year':
-                startDate.setFullYear(value);
-                break;
-              case 'month':
-                startDate.setMonth(value);
-                break;
-              case 'week':
-                startDate.setDate(value);
-                break;
-              case 'day':
-                startDate.setDate(value);
-                break;
-            }
-            const postDate = new Date(post.timeCreated.seconds * 1000);
-            if (postDate >= startDate && postDate <= currentDate) {
-              priceStatistic[label] += Number(post.price);
-            }
+  const {
+    drankBrandsStatistic,
+    drankItemsStatistic,
+    drankDatesValues,
+    priceStatistic,
+    streaks,
+    prevDate,
+  } = posts.reduce(
+    (accumulator: any, post: any) => {
+      // drank brands
+      const { drankBrandsStatistic } = accumulator;
+      drankBrandsStatistic[post.brandId]
+        ? (drankBrandsStatistic[post.brandId].times =
+            drankBrandsStatistic[post.brandId].times + 1)
+        : (drankBrandsStatistic[post.brandId] = {
+            times: 1,
+            brandName: post.brandName,
           });
-          priceStatistic.overall += Number(post.price);
-        }
 
-        return accumulator;
-      },
-      {
-        drankBrandsStatistic: {},
-        drankItemsStatistic: {},
-        drankDatesValues: [],
-        priceStatistic: { overall: 0, year: 0, month: 0, week: 0, day: 0 },
-        streaks: { current: 0, longest: 0 },
-        prevDate: new Date('1900/01/01'),
+      // drank items
+      const { drankItemsStatistic } = accumulator;
+      drankItemsStatistic[post.itemId]
+        ? (drankItemsStatistic[post.itemId].times =
+            drankItemsStatistic[post.itemId].times + 1)
+        : (drankItemsStatistic[post.itemId] = { times: 1 });
+
+      // drank dates
+      const { drankDatesValues } = accumulator;
+      const dateString = timestampToDate(post.timeCreated);
+      const newDate = new Date(dateString);
+      const index = drankDatesValues.findIndex(
+        (element: any) => element.date.getTime() === newDate.getTime()
+      );
+      if (index === -1) {
+        drankDatesValues.push({ date: newDate, count: 1 });
+      } else {
+        drankDatesValues[index].count += 1;
       }
-    );
+
+      // streaks
+      const { streaks } = accumulator;
+      let { prevDate } = accumulator;
+      const currentDate = new Date(dateString);
+
+      if (prevDate.getTime() !== currentDate.getTime()) {
+        const areConsecutive =
+          currentDate.getTime() - prevDate.getTime() === 86400000;
+        if (areConsecutive) {
+          streaks.current += 1;
+        } else {
+          streaks.current = 1;
+        }
+        if (streaks.current > streaks.longest) {
+          streaks.longest = streaks.current;
+        }
+        accumulator.prevDate = currentDate;
+      }
+
+      // price statistic
+      const { priceStatistic } = accumulator;
+      if (post.price) {
+        const currentDate = new Date();
+        const intervals = [
+          { label: 'year', value: currentDate.getFullYear() - 1 },
+          { label: 'month', value: currentDate.getMonth() - 1 },
+          { label: 'week', value: currentDate.getDate() - 7 },
+          { label: 'day', value: currentDate.getDate() - 1 },
+        ];
+        intervals.forEach(({ label, value }) => {
+          const startDate = new Date();
+          switch (label) {
+            case 'year':
+              startDate.setFullYear(value);
+              break;
+            case 'month':
+              startDate.setMonth(value);
+              break;
+            case 'week':
+              startDate.setDate(value);
+              break;
+            case 'day':
+              startDate.setDate(value);
+              break;
+          }
+          const postDate = new Date(post.timeCreated.seconds * 1000);
+          if (postDate >= startDate && postDate <= currentDate) {
+            priceStatistic[label] += Number(post.price);
+          }
+        });
+        priceStatistic.overall += Number(post.price);
+      }
+
+      return accumulator;
+    },
+    {
+      drankBrandsStatistic: {},
+      drankItemsStatistic: {},
+      drankDatesValues: [],
+      priceStatistic: { overall: 0, year: 0, month: 0, week: 0, day: 0 },
+      streaks: { current: 0, longest: 0 },
+      prevDate: new Date('1900/01/01'),
+    }
+  );
 
   const oneDayBeforeToday = new Date();
   oneDayBeforeToday.setDate(oneDayBeforeToday.getDate() - 1);
@@ -105,15 +118,22 @@ export const getStatisticsFromPosts = (posts: any, allBrandsInfo: any) => {
   // Add missing brands to drankBrandsStatistic
   for (const key in allBrandsInfo) {
     if (
-      // Object.prototype.hasOwnProperty.call(allBrandsInfo, 'key') &&
-      // !Object.prototype.hasOwnProperty.call(drankBrandsStatistic, 'key')
       allBrandsInfo.hasOwnProperty(key) &&
       !drankBrandsStatistic.hasOwnProperty(key)
     ) {
-      drankBrandsStatistic[key] = { brandName: allBrandsInfo[key].name, times: 0 };
+      drankBrandsStatistic[key] = {
+        brandName: allBrandsInfo[key].name,
+        times: 0,
+      };
     }
   }
-  return { drankBrandsStatistic, drankItemsStatistic, drankDatesValues, priceStatistic, streaks };
+  return {
+    drankBrandsStatistic,
+    drankItemsStatistic,
+    drankDatesValues,
+    priceStatistic,
+    streaks,
+  };
 };
 
 export const timestampToDate = (timestamp: Timestamp) => {

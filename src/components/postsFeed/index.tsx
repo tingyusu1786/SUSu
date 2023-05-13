@@ -169,7 +169,6 @@ const PostsFeed: React.FC<PostsProps> = ({
 
       !initSnap.current &&
         setPosts((posts) => {
-          // console.log('set from snapshot');
           const newPosts = [...postsWithQueriedInfos, ...posts];
           return newPosts;
         });
@@ -195,7 +194,6 @@ const PostsFeed: React.FC<PostsProps> = ({
   }, [posts]);
 
   // scroll listener
-  // todo: phone, firefox, safari
   useEffect(() => {
     if (currentPage === 'log') {
       return;
@@ -206,17 +204,14 @@ const PostsFeed: React.FC<PostsProps> = ({
         window.innerHeight + window.scrollY + bufferHeight >=
         document.body.offsetHeight;
       if (isBottom) {
-        // console.log('isBottom', isBottom, 'isFetching.current', isFetching.current);
         if (isFetching.current) return;
         fetchFivePosts(lastKey, hashtagFilter);
       }
     };
 
     window.addEventListener('scroll', handleScroll);
-    // window.addEventListener('touchmove', handleScroll);
     return () => {
       window.removeEventListener('scroll', handleScroll);
-      // window.removeEventListener('touchmove', handleScroll);
     };
   }, [lastKey, hashtagFilter]);
 
@@ -582,7 +577,6 @@ const PostsFeed: React.FC<PostsProps> = ({
       return;
     }
 
-    // console.log('const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);');
     const querySnapshot: QuerySnapshot<DocumentData> = await getDocs(q);
 
     if (querySnapshot.docs.length === 0) {
@@ -617,9 +611,7 @@ const PostsFeed: React.FC<PostsProps> = ({
   };
 
   useEffect(() => {
-    // console.log(posts.length);
     isFetching.current = false;
-    // console.log('set to false');
   }, [posts.length]);
 
   const handleCommentsShown = (index: number) => {
@@ -667,22 +659,20 @@ const PostsFeed: React.FC<PostsProps> = ({
     );
 
     if (result.isConfirmed) {
-      // updateDoc
       const postRef = doc(db, 'posts', post.postId);
       const updatedComments = post.comments.filter(
-        (comment, index) => index !== commentIndex
+        (_, index) => index !== commentIndex
       );
       await updateDoc(postRef, { comments: updatedComments });
-      // setState
+
       setPosts((prev) => {
         const newPosts = [...prev];
         newPosts[postIndex].comments = updatedComments;
         return newPosts;
       });
-      // unnotify
+
       post.authorId &&
         unnotifyOtherUser(post.postId, post.authorId, 'comment', commentId);
-      // swal.success('Comment deleted!', '', 'ok');
     } else {
       return;
     }
@@ -762,7 +752,6 @@ const PostsFeed: React.FC<PostsProps> = ({
       notificationToRemove = originNotifications.find(
         (notification: any) => notification.commentId === commentId
       );
-      // console.log(notificationToRemove);
     }
 
     await updateDoc(userRef, {
