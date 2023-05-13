@@ -100,6 +100,7 @@ function Drinkipedia() {
         return data.name;
       }
     }
+    return '';
   };
 
   const shouldRenderAll = !pageBrandId && !pageItemId;

@@ -66,7 +66,7 @@ const DashboardSection = ({
   }, [profileUserPosts]);
 
   const getMostDrankBrand = () => {
-    if (!drankBrands) return;
+    if (!drankBrands) return undefined;
     const maxTimesBrandId = Object.keys(drankBrands).reduce((a, b) =>
       drankBrands[a].times > drankBrands[b].times ? a : b
     );
