@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
+
 import {
   User as UserIcon,
   UsersThree,
@@ -8,13 +9,14 @@ import {
   PresentationChart,
 } from '@phosphor-icons/react';
 import { doc, onSnapshot } from 'firebase/firestore';
-import DashboardSection from './DashboardSection';
-import PostsSection from './PostsSection';
-import NameCard from './NameCard';
-import { db } from '../../services/firebase';
-import { useAppSelector } from '../../redux/hooks';
+
 import { User } from '../../interfaces/interfaces';
+import { useAppSelector } from '../../redux/hooks';
+import { db } from '../../services/firebase';
 import dbApi from '../../utils/dbApi';
+import DashboardSection from './DashboardSection';
+import NameCard from './NameCard';
+import PostsSection from './PostsSection';
 
 function Profile() {
   const { profileUserId } = useParams<{ profileUserId: string }>();

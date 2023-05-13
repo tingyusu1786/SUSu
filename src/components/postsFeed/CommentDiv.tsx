@@ -1,9 +1,11 @@
 import React from 'react';
-import { useAppSelector } from '../../redux/hooks';
 import { Link } from 'react-router-dom';
-import { Post, Comment } from '../../interfaces/interfaces';
-import commonApi from '../../utils/commonApi';
+
 import { Trash } from '@phosphor-icons/react';
+
+import { Post, Comment } from '../../interfaces/interfaces';
+import { useAppSelector } from '../../redux/hooks';
+import commonApi from '../../utils/commonApi';
 
 interface CommentsProps {
   post: Post;

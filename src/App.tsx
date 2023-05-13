@@ -1,17 +1,19 @@
 import { useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
+
 import { onAuthStateChanged } from 'firebase/auth';
-import Header from './components/Header';
+
 import Authentication from './components/AuthModal/';
+import Header from './components/Header';
 import SearchModal from './components/SearchModal/';
-import { useAppSelector, useAppDispatch } from './redux/hooks';
 import { signInSuccess, signOutSuccess } from './redux/authSlice';
+import { useAppSelector, useAppDispatch } from './redux/hooks';
+import { addAllBrands } from './redux/infoSlice';
 import { closeAuth } from './redux/popUpSlice';
+import { AppDispatch } from './redux/store';
 import { auth } from './services/firebase';
 import dbApi from './utils/dbApi';
-import { addAllBrands } from './redux/infoSlice';
 import swal from './utils/swal';
-import { AppDispatch } from './redux/store';
 
 function App() {
   const dispatch = useAppDispatch();

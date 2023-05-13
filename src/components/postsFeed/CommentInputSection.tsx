@@ -1,8 +1,9 @@
 import React from 'react';
 import { ChangeEvent, KeyboardEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { useAppSelector } from '../../redux/hooks';
+
 import { Post } from '../../interfaces/interfaces';
+import { useAppSelector } from '../../redux/hooks';
 
 interface PostProps {
   post: Post;

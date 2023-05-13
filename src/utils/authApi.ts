@@ -1,4 +1,3 @@
-import { auth } from '../services/firebase';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -10,6 +9,8 @@ import {
   getAdditionalUserInfo,
   OAuthCredential,
 } from 'firebase/auth';
+
+import { auth } from '../services/firebase';
 import swal from './swal';
 
 const authApi = {

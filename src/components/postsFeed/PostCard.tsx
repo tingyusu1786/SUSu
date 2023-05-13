@@ -1,14 +1,7 @@
 /* eslint-disable */
-
 import { ChangeEvent, KeyboardEvent } from 'react';
-
 import { Link } from 'react-router-dom';
-import { useAppSelector } from '../../redux/hooks';
-import { Post } from '../../interfaces/interfaces';
-import CommentInputSection from './CommentInputSection';
-import CommentDiv from './CommentDiv';
-import heartFill from '../../assets/heartFill.png';
-import heartLine from '../../assets/heartLine.png';
+
 import {
   Trash,
   ChatCircleDots,
@@ -17,6 +10,13 @@ import {
   Star as SolidStar,
   Star as LineStar,
 } from '@phosphor-icons/react';
+
+import heartFill from '../../assets/heartFill.png';
+import heartLine from '../../assets/heartLine.png';
+import { Post } from '../../interfaces/interfaces';
+import { useAppSelector } from '../../redux/hooks';
+import CommentDiv from './CommentDiv';
+import CommentInputSection from './CommentInputSection';
 
 interface PostProps {
   post: Post;

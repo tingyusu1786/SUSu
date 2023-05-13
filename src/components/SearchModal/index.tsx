@@ -1,18 +1,20 @@
-import React, { useState } from 'react';
-import { useAppDispatch } from '../../redux/hooks';
-import { Link } from 'react-router-dom';
-import { closeSearch } from '../../redux/popUpSlice';
-import { PoweredBy } from 'react-instantsearch-hooks-web';
-import algoliasearch from 'algoliasearch/lite';
-import dbApi from '../../utils/dbApi';
+import { useState } from 'react';
 import {
-  InstantSearch,
-  SearchBox,
   Hits,
   Highlight,
   Index,
+  InstantSearch,
+  PoweredBy,
+  SearchBox,
   useInstantSearch,
 } from 'react-instantsearch-hooks-web';
+import { Link } from 'react-router-dom';
+
+import algoliasearch from 'algoliasearch/lite';
+
+import { useAppDispatch } from '../../redux/hooks';
+import { closeSearch } from '../../redux/popUpSlice';
+import dbApi from '../../utils/dbApi';
 
 // eslint-disable-next-line no-undef, @typescript-eslint/no-non-null-assertion
 const searchClient = algoliasearch(

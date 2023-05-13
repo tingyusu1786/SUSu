@@ -1,6 +1,7 @@
 import React from 'react';
-import BrandCard from './BrandCard';
+
 import { useAppSelector } from '../../redux/hooks';
+import BrandCard from './BrandCard';
 
 const AllCatalogue: React.FC = () => {
   const allBrandsInfo = useAppSelector((state) => state.info.brands);

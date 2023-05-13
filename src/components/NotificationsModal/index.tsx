@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
-import { SmileyWink } from '@phosphor-icons/react';
 import { Link } from 'react-router-dom';
-import { db } from '../../services/firebase';
+
+import { SmileyWink } from '@phosphor-icons/react';
 import {
   doc,
   DocumentSnapshot,
@@ -10,11 +10,13 @@ import {
   onSnapshot,
   updateDoc,
 } from 'firebase/firestore';
-import dbApi from '../../utils/dbApi';
-import { closeNotification } from '../../redux/popUpSlice';
-import { useAppSelector, useAppDispatch } from '../../redux/hooks';
-import commonApi from '../../utils/commonApi';
+
 import { Notification } from '../../interfaces/interfaces';
+import { useAppSelector, useAppDispatch } from '../../redux/hooks';
+import { closeNotification } from '../../redux/popUpSlice';
+import { db } from '../../services/firebase';
+import commonApi from '../../utils/commonApi';
+import dbApi from '../../utils/dbApi';
 import swal from '../../utils/swal';
 
 function NotificationsList() {

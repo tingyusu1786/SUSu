@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+
 import { Post } from '../interfaces/interfaces';
 
 export interface postsState {

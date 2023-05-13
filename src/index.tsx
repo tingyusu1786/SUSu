@@ -1,18 +1,19 @@
-import './index.css';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
-import { store } from './redux/store';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import 'react-tooltip/dist/react-tooltip.css';
+
 import App from './App';
-import Profile from './pages/Profile/';
-import Setting from './pages/Setting/';
+import './index.css';
+import Drinkipedia from './pages/Drinkipedia/';
+import Feeds from './pages/Feeds/';
+import Inspiration from './pages/Inspiration/';
 import Landing from './pages/Landing/';
 import Log from './pages/Log/';
-import Feeds from './pages/Feeds/';
-import Drinkipedia from './pages/Drinkipedia/';
-import Inspiration from './pages/Inspiration/';
 import PageNotFound from './pages/PageNotFound/';
-import 'react-tooltip/dist/react-tooltip.css';
+import Profile from './pages/Profile/';
+import Setting from './pages/Setting/';
+import { store } from './redux/store';
 
 const container = document.getElementById('root')!;
 const root = createRoot(container);

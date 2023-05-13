@@ -1,6 +1,8 @@
 import React from 'react';
-import PostsFeed from '../../components/PostsFeed/';
+
 import { Star } from '@phosphor-icons/react';
+
+import PostsFeed from '../../components/PostsFeed/';
 import { Item } from '../../interfaces/interfaces';
 
 interface CatalogueProps {

@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react';
+
 import Typed from 'typed.js';
 
 function Landing() {
@@ -8,7 +9,9 @@ function Landing() {
   useEffect(() => {
     const options = {
       strings: ['Drink.^600 Log.^600 Repeat.^200 '],
-      stringss: ['npm install^1000\n `installing components...` ^1000\n `Fetching from source...`'],
+      stringss: [
+        'npm install^1000\n `installing components...` ^1000\n `Fetching from source...`',
+      ],
       typeSpeed: 40,
       backSpeed: 30,
       loop: true,

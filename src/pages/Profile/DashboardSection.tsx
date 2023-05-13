@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
+
 import { Coins, Storefront } from '@phosphor-icons/react';
-import CalendarHeatmapComponent from './CalendarHeatmapComponent';
-import Badges from './Badges/Badges';
+
+import { ReactComponent as Streak } from '../../assets/Streak.svg';
+import { Post } from '../../interfaces/interfaces';
 import { useAppSelector } from '../../redux/hooks';
 import dbApi from '../../utils/dbApi';
-import { ReactComponent as Streak } from '../../assets/Streak.svg';
+import Badges from './Badges/Badges';
+import CalendarHeatmapComponent from './CalendarHeatmapComponent';
 import { getStatisticsFromPosts } from './helper';
-import { Post } from '../../interfaces/interfaces';
 
 const DashboardSection = ({
   profileUserId,

@@ -1,5 +1,6 @@
-import { storage } from '../services/firebase';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+
+import { storage } from '../services/firebase';
 import swal from './swal';
 
 const storageApi = {

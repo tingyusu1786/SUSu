@@ -1,5 +1,4 @@
 /* eslint-disable */
-import { db } from '../services/firebase';
 import {
   collection,
   doc,
@@ -25,7 +24,9 @@ import {
   arrayRemove,
   FieldValue,
 } from 'firebase/firestore';
+
 import { Brand, User, Notification } from '../interfaces/interfaces';
+import { db } from '../services/firebase';
 import swal from './swal';
 
 // interface dbApi {}

@@ -1,13 +1,15 @@
 import { useState, useEffect, ChangeEvent } from 'react';
-import { serverTimestamp } from 'firebase/firestore';
+
 import { Eye, EyeClosed } from '@phosphor-icons/react';
 import 'animate.css';
-import { useAppDispatch } from '../../redux/hooks';
+import { serverTimestamp } from 'firebase/firestore';
+
 import { signInStart, signInSuccess, signInFail } from '../../redux/authSlice';
+import { useAppDispatch } from '../../redux/hooks';
 import { closeAuth } from '../../redux/popUpSlice';
-import storageApi from '../../utils/storageApi';
 import authApi from '../../utils/authApi';
 import dbApi from '../../utils/dbApi';
+import storageApi from '../../utils/storageApi';
 import swal from '../../utils/swal';
 
 function Authentication() {

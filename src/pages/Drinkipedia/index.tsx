@@ -1,14 +1,16 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+
 import { doc, getDoc } from 'firebase/firestore';
+
+import { Item } from '../../interfaces/interfaces';
 import { db } from '../../services/firebase';
 import dbApi from '../../utils/dbApi';
+import swal from '../../utils/swal';
 import AllBrands from './AllBrands';
+import BreadcrumbNav from './BreadcrumbNav';
 import SingleBrand from './SingleBrand';
 import SingleItem from './SingleItem';
-import BreadcrumbNav from './BreadcrumbNav';
-import { Item } from '../../interfaces/interfaces';
-import swal from '../../utils/swal';
 
 function Drinkipedia() {
   const { pageBrandId } = useParams<{ pageBrandId: string }>();

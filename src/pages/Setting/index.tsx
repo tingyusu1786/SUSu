@@ -1,8 +1,10 @@
 import { useState, useEffect, ChangeEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+
 import { ArrowLeft } from '@phosphor-icons/react';
-import { useAppSelector, useAppDispatch } from '../../redux/hooks';
+
 import { updateUserName, updateUserPhoto } from '../../redux/authSlice';
+import { useAppSelector, useAppDispatch } from '../../redux/hooks';
 import authApi from '../../utils/authApi';
 import dbApi from '../../utils/dbApi';
 import storageApi from '../../utils/storageApi';

@@ -1,5 +1,6 @@
 import React from 'react';
 import CalendarHeatmap from 'react-calendar-heatmap';
+
 import '../../index.css';
 
 interface CalendarHeatmapProps {

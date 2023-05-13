@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
+
 import {
   CaretCircleRight,
   BellSimple,
   MagnifyingGlass,
 } from '@phosphor-icons/react';
+
+import NotificationsList from '../../components/NotificationsModal/';
+import { signOutFail } from '../../redux/authSlice';
 import { useAppSelector, useAppDispatch } from '../../redux/hooks';
 import {
   showNotification,
@@ -13,8 +17,6 @@ import {
   closeSearch,
   showAuth,
 } from '../../redux/popUpSlice';
-import { signOutFail } from '../../redux/authSlice';
-import NotificationsList from '../../components/NotificationsModal/';
 import authApi from '../../utils/authApi';
 import swal from '../../utils/swal';
 

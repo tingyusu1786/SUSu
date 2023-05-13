@@ -1,10 +1,12 @@
 import { useState, ChangeEvent } from 'react';
-import CreatePost from './CreateLog';
+
+import { doc, updateDoc } from 'firebase/firestore';
+
 import PostsFeed from '../../components/PostsFeed/';
+import { updateUserFeedSource } from '../../redux/authSlice';
 import { useAppSelector, useAppDispatch } from '../../redux/hooks';
 import { db } from '../../services/firebase';
-import { doc, updateDoc } from 'firebase/firestore';
-import { updateUserFeedSource } from '../../redux/authSlice';
+import CreatePost from './CreateLog';
 
 function Posts() {
   const dispatch = useAppDispatch();

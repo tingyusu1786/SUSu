@@ -1,7 +1,7 @@
 import { useState, useRef, ChangeEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { useAppSelector } from '../../redux/hooks';
-import { db } from '../../services/firebase';
+
+import { MapTrifold, Star } from '@phosphor-icons/react';
 import {
   collection,
   doc,
@@ -11,8 +11,10 @@ import {
   where,
   DocumentData,
 } from 'firebase/firestore';
+
 import { ReactComponent as ShootingStar } from '../../assets/ShootingStar.svg';
-import { MapTrifold, Star } from '@phosphor-icons/react';
+import { useAppSelector } from '../../redux/hooks';
+import { db } from '../../services/firebase';
 
 function Inspiration() {
   type RandomItem = {

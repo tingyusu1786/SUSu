@@ -11,7 +11,10 @@ function PageNotFound() {
       </div>
       <div className='text-3xl'>
         <span>Got lost? </span>
-        <Link to='/drinkipedia' className='decoration-2 underline-offset-4 hover:underline'>
+        <Link
+          to='/drinkipedia'
+          className='decoration-2 underline-offset-4 hover:underline'
+        >
           Go to drinkipedia
         </Link>
         <span> to find your way</span>

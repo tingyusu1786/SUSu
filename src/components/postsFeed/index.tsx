@@ -1,8 +1,7 @@
 /* eslint-disable */
-
 import { useState, useEffect, ChangeEvent, KeyboardEvent, useRef } from 'react';
-import { db } from '../../services/firebase';
-import dbApi from '../../utils/dbApi';
+
+import { SmileyWink } from '@phosphor-icons/react';
 import {
   collection,
   doc,
@@ -25,13 +24,15 @@ import {
   or,
   and,
 } from 'firebase/firestore';
-import { showAuth } from '../../redux/popUpSlice';
-import { useAppSelector, useAppDispatch } from '../../redux/hooks';
-import { Post } from '../../interfaces/interfaces';
-import PostCard from './PostCard';
 import { v4 as uuidv4 } from 'uuid';
+
+import { Post } from '../../interfaces/interfaces';
+import { useAppSelector, useAppDispatch } from '../../redux/hooks';
+import { showAuth } from '../../redux/popUpSlice';
+import { db } from '../../services/firebase';
+import dbApi from '../../utils/dbApi';
 import swal from '../../utils/swal';
-import { SmileyWink } from '@phosphor-icons/react';
+import PostCard from './PostCard';
 
 interface PostsProps {
   onlySeeFollowing?: boolean;

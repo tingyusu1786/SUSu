@@ -1,4 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit';
+
 import { Brand, Item } from '../interfaces/interfaces';
 
 export interface infoState {

@@ -1,5 +1,7 @@
 import React from 'react';
+
 import 'animate.css';
+
 import { badgeConfig } from './badgeConfig';
 
 interface BadgesProps {
