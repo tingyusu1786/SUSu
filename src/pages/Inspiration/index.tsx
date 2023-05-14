@@ -2,30 +2,22 @@ import { useState, useRef, ChangeEvent } from 'react';
 import { Link } from 'react-router-dom';
 
 import { MapTrifold, Star } from '@phosphor-icons/react';
-import {
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  query,
-  where,
-  DocumentData,
-} from 'firebase/firestore';
 
 import { ReactComponent as ShootingStar } from '../../assets/ShootingStar.svg';
 import { useAppSelector } from '../../redux/hooks';
-import { db } from '../../services/firebase';
+import { getUserPosition, handleClickRandom } from './helper';
+
+export type RandomItem = {
+  brand: string;
+  brandId: string;
+  itemId: string;
+  name: string;
+  price: Record<string, number>;
+  numRatings?: number;
+  averageRating?: number;
+};
 
 function Inspiration() {
-  type RandomItem = {
-    brand: string;
-    brandId: string;
-    itemId: string;
-    name: string;
-    price: Record<string, number>;
-    numRatings?: number;
-    averageRating?: number;
-  };
   const allBrandsInfo = useAppSelector((state) => state.info.brands);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [selectedRating, setSelectedRating] = useState<number>();
@@ -36,38 +28,27 @@ function Inspiration() {
     latitude: number;
     longitude: number;
   }>();
-  const [showMap, setShowMap] = useState(false);
   const [locationErrorMessage, setLocationErrorMessage] = useState<string>();
+  const [showMap, setShowMap] = useState(false);
   const mapRef = useRef<HTMLIFrameElement | null>(null);
 
-  const getUserPosition = () => {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const { latitude, longitude } = position.coords;
-        setCurrentLocation({ latitude, longitude });
-      },
-      (error) => {
-        const errorMessage: { [key: string]: string } = {
-          '0': 'Unknown error occured, try again later',
-          '1': 'User location permission denied. Please go to browser setting to grant permission  to see stores near you.',
-          '2': 'User position unavailable (error response from location provider), try again later',
-          '3': 'Timed out, try again later',
-        };
-        setLocationErrorMessage(errorMessage[error.code]);
+  const handleFilterChange = (e: ChangeEvent<HTMLInputElement>) => {
+    switch (e.target.name) {
+      case 'brands': {
+        const isSelected = selectedBrands.includes(e.target.value);
+        const updatedSelectedBrands = isSelected
+          ? selectedBrands.filter((b) => b !== e.target.value)
+          : [...selectedBrands, e.target.value];
+        setSelectedBrands(updatedSelectedBrands);
+        break;
       }
-    );
-  };
-
-  const handleBrandsChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const isSelected = selectedBrands.includes(e.target.name);
-    const updatedSelectedBrands = isSelected
-      ? selectedBrands.filter((b) => b !== e.target.name)
-      : [...selectedBrands, e.target.name];
-    setSelectedBrands(updatedSelectedBrands);
-  };
-
-  const handleRatingChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSelectedRating(+e.target.value);
+      case 'rating': {
+        setSelectedRating(+e.target.value);
+        break;
+      }
+      default:
+        break;
+    }
   };
 
   const scrollToMapEnd = () => {
@@ -77,119 +58,6 @@ function Inspiration() {
   const handleClickMapBar = () => {
     setShowMap((prev) => !prev);
     setTimeout(() => scrollToMapEnd(), 200);
-  };
-
-  const getRandomItem = async (
-    filterBrands: string[],
-    filterRating: number | undefined
-  ) => {
-    setRandomItem(undefined);
-    setNoItemMessage(undefined);
-    setIsFinding(true);
-
-    let randomItemFromDb: DocumentData | RandomItem | undefined = undefined;
-
-    if (filterBrands.length === 0) {
-      filterBrands = Object.keys(allBrandsInfo);
-    }
-    let foundItem = false;
-    const indexQueue = Array(filterBrands.length)
-      .fill('')
-      .map((_, index) => index);
-    brandLoop: while (indexQueue.length > 0) {
-      // 從user選的裡面選一個brand
-      const randomQueueIndex = Math.floor(Math.random() * indexQueue.length);
-      const randomBrandId = filterBrands[indexQueue[randomQueueIndex]];
-      // 把選到的剔除
-      indexQueue.splice(randomQueueIndex, 1);
-
-      // 拿出這個brand的所有categories
-      const categoriesRef = collection(
-        db,
-        'brands',
-        randomBrandId,
-        'categories'
-      );
-      const categoriesSnapshot = await getDocs(categoriesRef);
-      const categoriesIds = categoriesSnapshot.docs.map((c) => c.id);
-
-      while (categoriesIds.length > 0) {
-        // 隨機選一個category
-        const randomCategoryIndex = Math.floor(
-          Math.random() * categoriesIds.length
-        );
-        const randomCategoryId = categoriesIds[randomCategoryIndex];
-        // 把選到的剔除
-        categoriesIds.splice(randomCategoryIndex, 1);
-
-        let itemsRef;
-
-        // 拿出這個category的所有item
-        if (filterRating) {
-          // 有選rating的話變成拿出這個category的大於n分的所有item
-          itemsRef = query(
-            collection(
-              db,
-              'brands',
-              randomBrandId,
-              'categories',
-              randomCategoryId,
-              'items'
-            ),
-            where('averageRating', '>=', filterRating)
-          );
-        } else {
-          itemsRef = query(
-            collection(
-              db,
-              'brands',
-              randomBrandId,
-              'categories',
-              randomCategoryId,
-              'items'
-            )
-          );
-        }
-
-        const itemsSnapshot = await getDocs(itemsRef);
-        if (itemsSnapshot.size === 0) {
-          // 跳過這個loop去下個loop
-          continue;
-        }
-
-        // 隨機選一個item
-        const itemsIds = itemsSnapshot.docs.map((i) => i.id);
-        const randomItemId =
-          itemsIds[Math.floor(Math.random() * itemsIds.length)];
-
-        // 拿出這個item
-        const itemRef = doc(
-          db,
-          'brands',
-          randomBrandId,
-          'categories',
-          randomCategoryId,
-          'items',
-          randomItemId
-        );
-        const randomItemDoc = await getDoc(itemRef);
-        randomItemFromDb = await randomItemDoc.data();
-        // 加上brand資訊
-        randomItemFromDb = {
-          ...randomItemFromDb,
-          itemId: randomItemDoc.id,
-          brand: allBrandsInfo[randomBrandId].name,
-          brandId: randomBrandId,
-        };
-        setRandomItem(randomItemFromDb as RandomItem);
-        setTimeout(() => setIsFinding(false), 1500);
-        foundItem = true;
-        break brandLoop;
-      }
-    }
-    setTimeout(() => setIsFinding(false), 1500);
-    !foundItem &&
-      setNoItemMessage('no item ☹ try another brand or lower the rating');
   };
 
   return (
@@ -221,9 +89,10 @@ function Inspiration() {
             >
               <input
                 type='checkbox'
-                name={key}
+                name='brands'
+                value={key}
                 checked={selectedBrands.includes(key)}
-                onChange={handleBrandsChange}
+                onChange={handleFilterChange}
                 className='hidden'
               />
               <span>{allBrandsInfo[key].name}</span>
@@ -259,7 +128,7 @@ function Inspiration() {
                 name='rating'
                 value={num}
                 checked={selectedRating === num}
-                onChange={handleRatingChange}
+                onChange={handleFilterChange}
               />
               <span className='flex items-center gap-1'>
                 <Star
@@ -279,11 +148,18 @@ function Inspiration() {
               isFinding && 'animate-shrinkSpin'
             }`}
             onClick={() => {
-              getRandomItem(selectedBrands, selectedRating);
-              getUserPosition();
+              handleClickRandom(
+                selectedBrands,
+                selectedRating,
+                allBrandsInfo,
+                setRandomItem,
+                setNoItemMessage,
+                setIsFinding
+              );
+              getUserPosition(setCurrentLocation, setLocationErrorMessage);
             }}
           >
-            I&rsquo;m feeling lucky :)
+            I&rsquo;m feeling lucky &#58;&#41;
           </button>
         </div>
       </div>
