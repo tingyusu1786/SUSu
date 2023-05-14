@@ -16,7 +16,6 @@ import { useAppDispatch } from '../../redux/hooks';
 import { closeSearch } from '../../redux/popUpSlice';
 import dbApi from '../../utils/dbApi';
 
-// eslint-disable-next-line no-undef, @typescript-eslint/no-non-null-assertion
 const searchClient = algoliasearch(
   process.env.REACT_APP_ALGOLIA_APP_ID!,
   process.env.REACT_APP_ALGOLIA_SEARCH_KEY!
@@ -122,7 +121,13 @@ const EmptyQueryBoundary: React.FC<FallbackProps> = ({
   return children;
 };
 
-const NoResultsBoundary: React.FC<FallbackProps> = ({ children, fallback }) => {
+const NoResultsBoundary = ({
+  children,
+  fallback,
+}: {
+  children: any;
+  fallback: any;
+}) => {
   const { results } = useInstantSearch();
 
   if (!results.__isArtificial && results.nbHits === 0) {
