@@ -85,7 +85,7 @@ function CreateLog() {
       const categoryInfos = await dbApi.getCategoriesIdAndName(inputs.brandId);
       if (!categoryInfos || categoryInfos.length === 0) {
         return swal.error(
-          'something went wrong when getting items',
+          'Something went wrong when getting items',
           'try again later',
           'ok'
         );
@@ -218,7 +218,7 @@ function CreateLog() {
         swal.success('logged!', '', 'cool');
       }, 500);
     } catch {
-      swal.error('something went wrong', '', 'ok');
+      swal.error('Something went wrong', '', 'ok');
     }
   };
 
@@ -313,7 +313,7 @@ function CreateLog() {
         averageRating: updatedItemAverageRating,
       });
     } catch {
-      swal.error('something went wrong', '', 'ok');
+      swal.error('Something went wrong', '', 'ok');
     }
   };
 

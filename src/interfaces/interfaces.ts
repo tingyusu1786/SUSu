@@ -11,6 +11,16 @@ export interface User {
   notifications?: Notification[];
 }
 
+export type FilteredUserData = {
+  name: string;
+  email: string;
+  photoURL: string;
+  timeCreated: Date;
+  status?: string;
+  followers?: string[];
+  following?: string[];
+};
+
 export interface Notification {
   authorId: string;
   authorName: string;

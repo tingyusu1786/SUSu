@@ -80,7 +80,11 @@ function Setting() {
       swal.success('Profile updated!', '', 'ok');
     } catch {
       swal.hideLoading();
-      swal.error('something went wrong...', 'try again later', 'ok');
+      swal.error(
+        'Something went wrong when updating your profile...',
+        'try again later',
+        'ok'
+      );
     }
   };
 

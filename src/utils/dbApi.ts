@@ -25,20 +25,14 @@ import {
   FieldValue,
 } from 'firebase/firestore';
 
-import { Brand, User, Notification } from '../interfaces/interfaces';
+import {
+  Brand,
+  User,
+  Notification,
+  FilteredUserData,
+} from '../interfaces/interfaces';
 import { db } from '../services/firebase';
 import swal from './swal';
-
-// interface dbApi {}
-type FilteredUserData = {
-  name: string;
-  email: string;
-  photoURL: string;
-  timeCreated: Date;
-  status?: string;
-  followers?: string[];
-  following?: string[];
-};
 
 const dbApi = {
   async getAllBrandsInfo() {
@@ -50,7 +44,11 @@ const dbApi = {
       });
       return allBrandsInfo;
     } catch {
-      swal.error('Something went wrong', 'try again later', 'ok');
+      swal.error(
+        'Something went wrong when getting brands info',
+        'try again later',
+        'ok'
+      );
     }
   },
   async getCategoriesIdAndName(
@@ -112,7 +110,7 @@ const dbApi = {
       const itemPrice = await dbApi.getDocField(itemDocRef, 'price');
       return itemPrice;
     } catch {
-      swal.error('something went wrong', '', 'ok');
+      swal.error('Something went wrong', '', 'ok');
     }
   },
   async getItem(itemId: string) {
@@ -130,7 +128,7 @@ const dbApi = {
       const itemInfo = (await getDoc(itemDocRef)).data();
       return itemInfo;
     } catch {
-      swal.error('something went wrong', '', 'ok');
+      swal.error('Something went wrong', '', 'ok');
     }
   },
   async getUserField(
@@ -151,10 +149,8 @@ const dbApi = {
       const docField = docData[field];
       return docField;
     } catch (error: any) {
-      swal.error(
-        'Something went wrong when getting user name',
-        'try again later',
-        'ok'
+      swal.toast(
+        'Something went wrong when getting user name' as unknown as JSX.Element
       );
     }
   },
