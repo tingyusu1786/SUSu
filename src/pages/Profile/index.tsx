@@ -47,7 +47,7 @@ function Profile() {
     DASHBOARD: <DashboardSection profileUserId={profileUserId} />,
     LOGS: <PostsSection profileUserId={profileUserId} />,
     FOLLOWING: (
-      <div className='flex flex-col flex-nowrap items-center gap-5'>
+      <div className='flex flex-col flex-nowrap items-center gap-4'>
         {profileUser?.following?.map((followingId) => (
           <NameCard cardUserId={followingId} key={followingId} />
         ))}
