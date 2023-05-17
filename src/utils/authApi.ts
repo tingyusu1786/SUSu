@@ -8,6 +8,7 @@ import {
   UserCredential,
   getAdditionalUserInfo,
   OAuthCredential,
+  sendPasswordResetEmail,
 } from 'firebase/auth';
 
 import { auth } from '../services/firebase';
@@ -83,6 +84,9 @@ const authApi = {
   },
   async signOut(): Promise<void> {
     await signOut(auth);
+  },
+  async sendResetPasswordEmail(email: string): Promise<void> {
+    await sendPasswordResetEmail(auth, email);
   },
 };
 
