@@ -1,7 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import 'react-tooltip/dist/react-tooltip.css';
 
 import App from './App';
 import './index.css';

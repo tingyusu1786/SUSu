@@ -13,11 +13,12 @@
   },
   "globals": {
     "React": true,
-    "JSX": true
+    "JSX": true,
+    "process": true
   },
   "plugins": ["react", "@typescript-eslint"],
   "rules": {
-    "no-unused-vars":"error",
+    "no-unused-vars":"warn",
     "camelcase": "warn",
     "consistent-return": "warn",
     "dot-notation": "warn",
@@ -31,7 +32,7 @@
     // "no-shadow": "warn",
     "no-undef": "warn",
     "no-useless-return": "warn",
-    "no-prototype-builtins":"off",
+    // "no-prototype-builtins":"off",
     "no-var": "warn",
     "object-shorthand": "warn",
     "prefer-arrow-callback": "warn",
