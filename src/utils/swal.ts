@@ -101,6 +101,9 @@ const swal = {
   toast(html: JSX.Element) {
     Toast.fire({ html });
   },
+  informToast(title: string) {
+    Toast.fire(title);
+  },
 };
 
 export default swal;

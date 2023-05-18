@@ -57,7 +57,7 @@ function Authentication() {
         photoURL: imgUrl,
         timeCreated: new Date(),
       });
-      swal.success('Signed up successful!', '', 'cool');
+      swal.informToast('Signed up successful!');
       dispatch(
         signInSuccess({
           user: {
@@ -91,7 +91,7 @@ function Authentication() {
       const userId = userCredential.user.uid;
       const userName = await dbApi.getUserField(userId, 'name');
 
-      swal.success(`Welcome back ${userName}!`, '', 'hi');
+      swal.informToast(`Welcome back ${userName}!`);
     } catch (error: any) {
       const errorCode = error.code;
       swal.error(`☹️ ${errorCode}`, 'try again', 'ok');
@@ -130,9 +130,9 @@ function Authentication() {
             photoURL: user.photoURL,
             timeCreated: serverTimestamp(),
           });
-          swal.success(`Hi ${user.displayName}!`, '', 'hi~');
+          swal.informToast(`Hi ${user.displayName}!`);
         } else {
-          swal.success(`Welcome back ${user.displayName} 🫰`, '', 'hi~');
+          swal.informToast(`Welcome back ${user.displayName} 🫰`);
         }
       }
     } catch (error: any) {

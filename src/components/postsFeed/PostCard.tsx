@@ -14,7 +14,8 @@ import {
 import heartFill from '../../assets/heartFill.png';
 import heartLine from '../../assets/heartLine.png';
 import { Post } from '../../interfaces/interfaces';
-import { useAppSelector } from '../../redux/hooks';
+import { useAppDispatch, useAppSelector } from '../../redux/hooks';
+import { showAuth } from '../../redux/popUpSlice';
 import CommentDiv from './CommentDiv';
 import CommentInputSection from './CommentInputSection';
 
@@ -60,6 +61,7 @@ const PostCard: React.FC<PostProps> = ({
   handleCommentSubmit,
   handleClickHashtag,
 }) => {
+  const dispatch = useAppDispatch();
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
   const date = post.timeCreated?.toDate();
   const formattedTime = date?.toLocaleTimeString('en-US', {
@@ -214,7 +216,9 @@ const PostCard: React.FC<PostProps> = ({
             src={heartLine}
             alt='like'
             onClick={() =>
-              currentUserId && handleLike(post, currentUserId, index)
+              currentUserId
+                ? handleLike(post, currentUserId, index)
+                : dispatch(showAuth())
             }
           />
         )}
