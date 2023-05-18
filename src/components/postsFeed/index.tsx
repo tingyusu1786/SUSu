@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { useState, useEffect, ChangeEvent, KeyboardEvent, useRef } from 'react';
 
 import { SmileyWink } from '@phosphor-icons/react';
@@ -50,7 +49,7 @@ const PostsFeed: React.FC<PostsProps> = ({
   profileUserId,
   pageBrandId,
   pageItemId,
-}) => {
+}: PostsProps) => {
   const dispatch = useAppDispatch();
   const currentUser = useAppSelector((state) => state.auth.currentUser);
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
@@ -89,7 +88,7 @@ const PostsFeed: React.FC<PostsProps> = ({
             where('authorId', 'in', currentUser.following),
             or(
               where('audience', '==', 'public'),
-              where('authorId', '==', currentUserId)
+              where('authorId', '==', currentUserId || '')
             )
           ),
           orderBy('timeCreated', 'desc')
@@ -99,7 +98,7 @@ const PostsFeed: React.FC<PostsProps> = ({
           collection(db, 'posts'),
           or(
             where('audience', '==', 'public'),
-            where('authorId', '==', currentUserId)
+            where('authorId', '==', currentUserId || '')
           ),
           orderBy('timeCreated', 'desc')
         );
@@ -128,7 +127,7 @@ const PostsFeed: React.FC<PostsProps> = ({
           where('brandId', '==', pageBrandId),
           or(
             where('audience', '==', 'public'),
-            where('authorId', '==', currentUserId)
+            where('authorId', '==', currentUserId || '') //就是這裡！
           )
         ),
         orderBy('timeCreated', 'desc')
@@ -140,7 +139,7 @@ const PostsFeed: React.FC<PostsProps> = ({
           where('itemId', '==', pageItemId),
           or(
             where('audience', '==', 'public'),
-            where('authorId', '==', currentUserId)
+            where('authorId', '==', currentUserId || '')
           )
         ),
         orderBy('timeCreated', 'desc')
@@ -241,7 +240,7 @@ const PostsFeed: React.FC<PostsProps> = ({
               where('hashtags', 'array-contains', hashtag),
               or(
                 where('audience', '==', 'public'),
-                where('authorId', '==', currentUserId)
+                where('authorId', '==', currentUserId || '')
               )
             ),
             orderBy('timeCreated', 'desc'),
@@ -255,7 +254,7 @@ const PostsFeed: React.FC<PostsProps> = ({
               where('hashtags', 'array-contains', hashtag),
               or(
                 where('audience', '==', 'public'),
-                where('authorId', '==', currentUserId)
+                where('authorId', '==', currentUserId || '')
               )
             ),
             orderBy('timeCreated', 'desc'),
@@ -271,7 +270,7 @@ const PostsFeed: React.FC<PostsProps> = ({
               where('authorId', 'in', currentUser.following),
               or(
                 where('audience', '==', 'public'),
-                where('authorId', '==', currentUserId)
+                where('authorId', '==', currentUserId || '')
               )
             ),
             orderBy('timeCreated', 'desc'),
@@ -283,7 +282,7 @@ const PostsFeed: React.FC<PostsProps> = ({
             collection(db, 'posts'),
             or(
               where('audience', '==', 'public'),
-              where('authorId', '==', currentUserId)
+              where('authorId', '==', currentUserId || '')
             ),
             orderBy('timeCreated', 'desc'),
             startAfter(lastKey),
@@ -299,7 +298,7 @@ const PostsFeed: React.FC<PostsProps> = ({
               where('hashtags', 'array-contains', hashtag),
               or(
                 where('audience', '==', 'public'),
-                where('authorId', '==', currentUserId)
+                where('authorId', '==', currentUserId || '')
               )
             ),
             orderBy('timeCreated', 'desc'),
@@ -312,7 +311,7 @@ const PostsFeed: React.FC<PostsProps> = ({
               where('hashtags', 'array-contains', hashtag),
               or(
                 where('audience', '==', 'public'),
-                where('authorId', '==', currentUserId)
+                where('authorId', '==', currentUserId || '')
               )
             ),
             orderBy('timeCreated', 'desc'),
@@ -327,7 +326,7 @@ const PostsFeed: React.FC<PostsProps> = ({
               where('authorId', 'in', currentUser.following),
               or(
                 where('audience', '==', 'public'),
-                where('authorId', '==', currentUserId)
+                where('authorId', '==', currentUserId || '')
               )
             ),
             orderBy('timeCreated', 'desc'),
@@ -338,7 +337,7 @@ const PostsFeed: React.FC<PostsProps> = ({
             collection(db, 'posts'),
             or(
               where('audience', '==', 'public'),
-              where('authorId', '==', currentUserId)
+              where('authorId', '==', currentUserId || '')
             ),
             orderBy('timeCreated', 'desc'),
             limit(5)
@@ -444,7 +443,7 @@ const PostsFeed: React.FC<PostsProps> = ({
             where('hashtags', 'array-contains', hashtag),
             or(
               where('audience', '==', 'public'),
-              where('authorId', '==', currentUserId)
+              where('authorId', '==', currentUserId || '')
             )
           ),
           orderBy('timeCreated', 'desc'),
@@ -458,7 +457,7 @@ const PostsFeed: React.FC<PostsProps> = ({
             where('brandId', '==', pageBrandId),
             or(
               where('audience', '==', 'public'),
-              where('authorId', '==', currentUserId)
+              where('authorId', '==', currentUserId || '')
             )
           ),
           orderBy('timeCreated', 'desc'),
@@ -473,7 +472,7 @@ const PostsFeed: React.FC<PostsProps> = ({
             where('hashtags', 'array-contains', hashtag),
             or(
               where('audience', '==', 'public'),
-              where('authorId', '==', currentUserId)
+              where('authorId', '==', currentUserId || '')
             )
           ),
           orderBy('timeCreated', 'desc'),
@@ -486,7 +485,7 @@ const PostsFeed: React.FC<PostsProps> = ({
             where('brandId', '==', pageBrandId),
             or(
               where('audience', '==', 'public'),
-              where('authorId', '==', currentUserId)
+              where('authorId', '==', currentUserId || '')
             )
           ),
           orderBy('timeCreated', 'desc'),
@@ -502,7 +501,7 @@ const PostsFeed: React.FC<PostsProps> = ({
             where('hashtags', 'array-contains', hashtag),
             or(
               where('audience', '==', 'public'),
-              where('authorId', '==', currentUserId)
+              where('authorId', '==', currentUserId || '')
             )
           ),
           orderBy('timeCreated', 'desc'),
@@ -516,7 +515,7 @@ const PostsFeed: React.FC<PostsProps> = ({
             where('itemId', '==', pageItemId),
             or(
               where('audience', '==', 'public'),
-              where('authorId', '==', currentUserId)
+              where('authorId', '==', currentUserId || '')
             )
           ),
           orderBy('timeCreated', 'desc'),
@@ -531,7 +530,7 @@ const PostsFeed: React.FC<PostsProps> = ({
             where('hashtags', 'array-contains', hashtag),
             or(
               where('audience', '==', 'public'),
-              where('authorId', '==', currentUserId)
+              where('authorId', '==', currentUserId || '')
             )
           ),
           orderBy('timeCreated', 'desc'),
@@ -544,7 +543,7 @@ const PostsFeed: React.FC<PostsProps> = ({
             where('itemId', '==', pageItemId),
             or(
               where('audience', '==', 'public'),
-              where('authorId', '==', currentUserId)
+              where('authorId', '==', currentUserId || '')
             )
           ),
           orderBy('timeCreated', 'desc'),
