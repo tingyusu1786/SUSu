@@ -189,7 +189,7 @@ const PostsFeed: React.FC<PostsProps> = ({
   // 有新文之後設下一個key
   useEffect(() => {
     if (posts.length === 0) return;
-    let lastTimestamp = posts[posts.length - 1].timeCreated;
+    const lastTimestamp = posts[posts.length - 1].timeCreated;
     setLastKey(lastTimestamp);
   }, [posts]);
 
@@ -642,7 +642,6 @@ const PostsFeed: React.FC<PostsProps> = ({
     if (post.commentInput !== '') {
       await handleUpdatePost(post, userId, index, 'comment');
     }
-    return;
   };
 
   const handleDeleteComment = async (
@@ -673,8 +672,6 @@ const PostsFeed: React.FC<PostsProps> = ({
 
       post.authorId &&
         unnotifyOtherUser(post.postId, post.authorId, 'comment', commentId);
-    } else {
-      return;
     }
   };
 
@@ -704,13 +701,19 @@ const PostsFeed: React.FC<PostsProps> = ({
     const hasLiked = isComment
       ? undefined
       : targetArray?.some((like) => like.authorId === userId);
-    const updatedArray = targetArray
-      ? hasLiked
-        ? targetArray.filter((entry) => entry.authorId !== userId)
-        : [...targetArray, newEntry]
-      : [newEntry];
+    let updatedArray: any[] | undefined;
+    if (targetArray) {
+      if (hasLiked) {
+        updatedArray = targetArray.filter((entry) => entry.authorId !== userId);
+      } else {
+        updatedArray = [...targetArray, newEntry];
+      }
+    } else {
+      updatedArray = [newEntry];
+    }
+
     await updateDoc(postRef, {
-      [type + 's']: updatedArray,
+      [`${type}s`]: updatedArray,
     });
     setPosts((prev) => {
       const newPosts = [...prev];
@@ -762,7 +765,14 @@ const PostsFeed: React.FC<PostsProps> = ({
   const notifyOtherUser = async (
     postId: string,
     postAuthorId: string,
-    content: any,
+    content: {
+      authorId: string;
+      authorName: string;
+      authorPhoto: string;
+      timeCreated: number | Timestamp;
+      content?: string;
+      commentId?: string;
+    },
     type: 'like' | 'comment'
   ) => {
     const userRef = doc(db, 'users', postAuthorId);
@@ -778,7 +788,7 @@ const PostsFeed: React.FC<PostsProps> = ({
     await handleUpdatePost(post, userId, index, 'like');
   };
 
-  const handleDeletePost = async (post: Post, index: number) => {
+  const handleDeletePost = async (post: Post) => {
     const result = await swal.warning(
       'Delete this log?',
       'this cannot be undone!',
@@ -795,13 +805,13 @@ const PostsFeed: React.FC<PostsProps> = ({
       });
       await deleteDoc(postRef);
       swal.success('Log deleted!', '', 'ok');
-    } else {
-      return;
     }
   };
 
   const scrollToHashtag = () => {
-    hashtagRef!.current!.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    hashtagRef &&
+      hashtagRef.current &&
+      hashtagRef.current.scrollIntoView({ block: 'start', behavior: 'smooth' });
   };
 
   const handleClickHashtag = (hashtag: string) => {
