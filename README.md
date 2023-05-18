@@ -1,46 +1,30 @@
-# Getting Started with Create React App
+<img src="https://camo.githubusercontent.com/06a98c4ed987dedc1000a5d1f9c432aad7be5f9414b8333e3c8fbe72ea74a852/68747470733a2f2f666972656261736573746f726167652e676f6f676c65617069732e636f6d2f76302f622f776f72646c652d7375652e61707073706f742e636f6d2f6f2f535553755f6c6f676f2e706e673f616c743d6d6564696126746f6b656e3d38376534626135652d373931372d343833312d623238342d343364623337653030643163" alt="Logo" data-canonical-src="https://firebasestorage.googleapis.com/v0/b/wordle-sue.appspot.com/o/SUSu_logo.png?alt=media&amp;token=87e4ba5e-7917-4831-b284-43db37e00d1c" width="100" height="100">
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) TS template.
+# SUSü
 
-## Available Scripts
+A **social platform** designed for hand-shake drink chains in Taiwan. It's like a combination of Twitter and Wikipedia for hand-shake drink enthusiasts.
 
-In the project directory, you can run:
+Website 👉 https://su-drink.web.app/
 
-### `npm start`
+## Tech Stack
+![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
+![TypeScript](https://img.shields.io/badge/typescript-%23007ACC.svg?style=for-the-badge&logo=typescript&logoColor=white)
+![Redux](https://img.shields.io/badge/redux-%23593d88.svg?style=for-the-badge&logo=redux&logoColor=white)
+![React Router](https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=react-router&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![MUI](https://img.shields.io/badge/MUI-%230081CB.svg?style=for-the-badge&logo=mui&logoColor=white)
+![Firebase](https://img.shields.io/badge/firebase-%23039BE5.svg?style=for-the-badge&logo=firebase)
+![ESLint](https://img.shields.io/badge/ESLint-4B3263?style=for-the-badge&logo=eslint&logoColor=white)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- **Developed independently** from scratch, from wireframe, user flow, and UI design, to data structure design
+- Created **reusable components** such as log feeds to enhance scalability, improve maintainability, and code reusability
+- Implemented **frontend caching** to reduce network requests by storing frequently accessed data
+- Incorporated Firebase's **onSnapshot** for real-time data updates, completed with **SweetAlert2** for pop-up notifications
+- Integrated **Algolia** extension to support fuzzy search, typo handling, and search analytics
+- Employed **Google Maps Embed API** to show suggested stores nearby based on users' current location
+- Achieved infinite scroll by **self-built pagination**
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
 
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Flow Chart
+Basic flow chart of the website:
+![flow chart](https://firebasestorage.googleapis.com/v0/b/wordle-sue.appspot.com/o/flowchart.png?alt=media&token=808687fb-3062-440f-9fdf-2c939d72472c)
