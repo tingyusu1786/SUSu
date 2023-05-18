@@ -14,7 +14,11 @@ import swal from '../../utils/swal';
 
 function Authentication() {
   const dispatch = useAppDispatch();
-  const [input, setInput] = useState({ name: '', email: '', password: '' });
+  const [input, setInput] = useState({
+    name: '',
+    email: 'suesue@gmail.com',
+    password: 'suesue',
+  });
   const [haveAccount, setHaveAccount] = useState(true);
   const [passwordType, setPasswordType] = useState('password');
 
@@ -164,28 +168,6 @@ function Authentication() {
     });
   };
 
-  const handlePasswordRest = async () => {
-    const result = await swal.warning(
-      'Reset password?',
-      'an reset email will be sent to your mailbox',
-      'yes'
-    );
-    if (result.isConfirmed) {
-      try {
-        swal.showLoading();
-        await authApi.sendResetPasswordEmail('tingyusu1786@gmail.com');
-        swal.hideLoading();
-        swal.success(
-          'Reset email sent!',
-          'please check your email and come back again',
-          'ok'
-        );
-      } catch (error: any) {
-        swal.error('Something went wrong', 'try again later', 'ok');
-      }
-    }
-  };
-
   return (
     <div className='fixed top-0 z-50 flex h-screen w-screen items-center justify-center'>
       <form className='animate__faster animate__animated animate__zoomIn z-30  flex w-96 flex-col items-center justify-start gap-3 rounded-md border-[3px] border-solid border-neutral-900 bg-[#F5F3EA] bg-neutral-100 px-4 py-5 shadow-[4px_4px_#171717]'>
@@ -202,7 +184,7 @@ function Authentication() {
         </button>
         <div className='flex w-full items-baseline justify-around gap-3 px-6'>
           <div className='grow border-b border-solid border-neutral-400' />
-          <span className='text-sm '>or</span>
+          <span className='text-sm'>or</span>
           <div className='grow border-b border-solid border-neutral-400' />
         </div>
         {!haveAccount && (
@@ -226,6 +208,7 @@ function Authentication() {
             id='email'
             name='email'
             type='text'
+            placeholder='suesue@gmail.com (public account)'
             className='h-10 w-full rounded-full border-2 border-solid border-neutral-400 p-3 focus:outline-green-400'
             value={input.email}
             onChange={handleInputChange}
@@ -233,13 +216,14 @@ function Authentication() {
             required
           />
         </label>
-        <label className='flex w-full flex-col'>
+        <label className='flex w-full flex-col mb-5'>
           <span className='ml-4'>password</span>
           <div className='relative'>
             <input
               id='password'
               type={passwordType}
               name='password'
+              placeholder='suesue (public account password)'
               className='h-10 w-full rounded-full border-2 border-solid border-neutral-400 p-3 focus:outline-green-400'
               value={input.password}
               onChange={handleInputChange}
@@ -273,17 +257,6 @@ function Authentication() {
             )}
           </div>
         </label>
-        {haveAccount && (
-          <div className='-mt-2 mr-4 self-end text-sm'>
-            <span>Forgot password? </span>
-            <span
-              className='cursor-pointer hover:underline'
-              onClick={handlePasswordRest}
-            >
-              Reset
-            </span>
-          </div>
-        )}
 
         {haveAccount ? (
           <button
