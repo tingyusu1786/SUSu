@@ -2,7 +2,6 @@ import { useState, useEffect, ChangeEvent } from 'react';
 
 import { Eye, EyeClosed } from '@phosphor-icons/react';
 import 'animate.css';
-import { serverTimestamp } from 'firebase/firestore';
 
 import { signInStart, signInSuccess, signInFail } from '../../redux/authSlice';
 import { useAppDispatch } from '../../redux/hooks';
@@ -170,7 +169,7 @@ function Authentication() {
 
   return (
     <div className='fixed top-0 z-50 flex h-screen w-screen items-center justify-center'>
-      <form className='animate__faster animate__animated animate__zoomIn z-30  flex w-96 flex-col items-center justify-start gap-3 rounded-md border-[3px] border-solid border-neutral-900 bg-[#F5F3EA] bg-neutral-100 px-4 py-5 shadow-[4px_4px_#171717]'>
+      <form className='animate__faster animate__animated animate__zoomIn z-30  flex w-96 flex-col items-center justify-start gap-3 rounded-md border-[3px] border-solid border-neutral-900 bg-neutral-100 px-4 py-5 shadow-[4px_4px_#171717]'>
         <div className='text-2xl'>SUSü</div>
 
         <div className='mb-3 text-center text-lg font-bold'>

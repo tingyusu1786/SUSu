@@ -530,7 +530,7 @@ function CreateLog() {
                       return newShown;
                     })
                   }
-                  className={`h-full w-full grow rounded-full border-2 border-solid border-neutral-900 bg-white p-0 px-2 pt-1 text-base text-sm focus:outline focus:outline-green-400 ${
+                  className={`h-full w-full grow rounded-full border-2 border-solid border-neutral-900 bg-white p-0 px-2 pt-1 text-sm focus:outline focus:outline-green-400 ${
                     sizesOfItem.length === 0 && 'cursor-not-allowed opacity-60'
                   }`}
                 >
@@ -579,7 +579,7 @@ function CreateLog() {
                 <div className='mr-1 text-neutral-500'>sugar</div>
                 <div className='relative h-8 w-36'>
                   <button
-                    className={`h-full w-full rounded-full border-2 border-solid border-neutral-900 bg-white p-0 px-2 pt-1 text-base text-sm focus:outline focus:outline-green-400`}
+                    className={`h-full w-full rounded-full border-2 border-solid border-neutral-900 bg-white p-0 px-2 pt-1 text-sm focus:outline focus:outline-green-400`}
                     onClick={() =>
                       setDropdownShown((prev) => {
                         const newShown = { ...prev };
@@ -619,7 +619,7 @@ function CreateLog() {
                 <div className='mr-1 text-neutral-500'>ice</div>
                 <div className='relative h-8 w-36'>
                   <button
-                    className={`h-full w-full rounded-full border-2 border-solid border-neutral-900 bg-white p-0 px-2 pt-1 text-base text-sm focus:outline focus:outline-green-400`}
+                    className={`h-full w-full rounded-full border-2 border-solid border-neutral-900 bg-white p-0 px-2 pt-1  text-sm focus:outline focus:outline-green-400`}
                     onClick={() =>
                       setDropdownShown((prev) => {
                         const newShown = { ...prev };
