@@ -4,7 +4,8 @@
 
 A **social platform** designed for hand-shake drink chains in Taiwan. It's like a combination of Twitter and Wikipedia for hand-shake drink enthusiasts.
 
-Website 👉 https://su-drink.web.app/
+- Website 👉 https://su-drink.web.app/
+- Know the main features in 3 mins 👉 [reurl.cc/eXqjKR](https://drive.google.com/file/d/12b179mucv8mcBwmpLpUb99yF4wIdvH7A/view?usp=share_link)
 
 ## Tech Stack
 ![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)
@@ -27,4 +28,6 @@ Website 👉 https://su-drink.web.app/
 
 ## Flow Chart
 Basic flow chart of the website:
-![flow chart](https://firebasestorage.googleapis.com/v0/b/wordle-sue.appspot.com/o/flowchart.png?alt=media&token=808687fb-3062-440f-9fdf-2c939d72472c)
+<img width="3144" alt="flow_chart" src="https://github.com/tingyusu1786/SUSu/assets/109668258/e2c26615-682b-4794-bff2-fdf3e1b9511f">
+
+
