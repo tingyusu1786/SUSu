@@ -5,6 +5,12 @@
 A **social platform** designed for hand-shake drink chains in Taiwan. It's like a combination of Twitter and Wikipedia for hand-shake drink enthusiasts.
 
 - Website 👉 https://su-drink.web.app/
+  <br/>Public account for testing: (also filled-in in webpage)
+  <br/>
+  ```
+  email: suesue@gmail.com
+  password: suesue
+  ```
 - Know the main features in 3 mins 👉 [reurl.cc/eXqjKR](https://drive.google.com/file/d/12b179mucv8mcBwmpLpUb99yF4wIdvH7A/view?usp=share_link)
 
 ## Tech Stack
