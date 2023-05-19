@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent } from 'react';
+import { useState, useEffect, ChangeEvent } from 'react';
 
 import { createTheme, ThemeProvider } from '@mui/material';
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -58,7 +58,9 @@ function CreateLog() {
   const [autoTags, setAutoTags] = useState<string[]>([]);
   const [categories, setCategories] = useState<string[][]>([]);
   const [itemsOfBrand, setItemsOfBrand] = useState<string[][][]>([]);
-  const [sizesOfItem, setSizesOfItem] = useState<any[][]>([]);
+  const [sizesOfItem, setSizesOfItem] = useState<[string, string | number][]>(
+    []
+  );
   const [inputs, setInputs] = useState(initialInput);
   const [date, setDate] = useState<dayjs.Dayjs>(dayjs());
   const [dropdownShown, setDropdownShown] = useState(initialDropdownShown);
@@ -79,7 +81,6 @@ function CreateLog() {
   ];
   const iceOptions = ['溫/熱', '去冰', '微冰', '少冰', '正常冰'];
 
-  // 選brand之後把該brand的category列出來
   useEffect(() => {
     const loadCategories = async () => {
       const categoryInfos = await dbApi.getCategoriesIdAndName(inputs.brandId);
@@ -90,7 +91,7 @@ function CreateLog() {
           'ok'
         );
       }
-      setCategories(categoryInfos);
+      return setCategories(categoryInfos);
     };
     if (inputs.brandId !== '') {
       loadCategories();
@@ -99,7 +100,6 @@ function CreateLog() {
     }
   }, [inputs.brandId]);
 
-  // 有category之後把item列出來
   useEffect(() => {
     const loadItems = async (categoryId: string) => {
       const itemInfos = await dbApi.getItemsIdAndName(
@@ -115,7 +115,6 @@ function CreateLog() {
     }
   }, [categories]);
 
-  // 選item之後 拿item + 自動產生tag + 把size列出來
   useEffect(() => {
     handleAutoTag(inputs.itemId);
 
@@ -134,14 +133,13 @@ function CreateLog() {
     }
   }, [inputs.itemId]);
 
-  // sizesOfItem抓到之後如果只有一種就直接代入
   useEffect(() => {
     if (sizesOfItem.length === 1) {
       setInputs((prev) => {
         const newInput = {
           ...prev,
           size: sizesOfItem[0][0],
-          price: sizesOfItem[0][1],
+          price: String(sizesOfItem[0][1]),
         };
         return newInput;
       });
@@ -177,7 +175,7 @@ function CreateLog() {
     const brandName = allBrandsInfo[inputs.brandId].name;
     const itemName =
       itemsOfBrand.flat().find(([idValue]) => idValue === itemId)?.[1] || '';
-    setAutoTags([brandName, itemName]);
+    return setAutoTags([brandName, itemName]);
   };
 
   const handlePostSubmit = async () => {
@@ -187,14 +185,12 @@ function CreateLog() {
           (input) => input === ''
         )
       ) {
-        swal.warning(
+        return swal.warning(
           'please fill in all required fields',
           '(brand, item, rating)',
           'ok'
         );
-        return;
       }
-      // todo: invalid date
       swal.showLoading();
 
       const postInputs = Object.assign({}, inputs, {
@@ -212,7 +208,7 @@ function CreateLog() {
       setCategories([]);
       setItemsOfBrand([]);
       setSizesOfItem([]);
-      inputs.rating !== '' && updateRatings(inputs.brandId, inputs.itemId);
+      updateRatings(inputs.brandId, inputs.itemId);
       setTimeout(() => {
         swal.hideLoading();
         swal.success('logged!', '', 'cool');
@@ -242,7 +238,7 @@ function CreateLog() {
       itemId: () => ({ itemId: e.target.value, size: '', price: '' }),
       size: () => {
         const price = sizesOfItem.find((i) => i[0] === e.target.value)?.[1];
-        return { size: e.target.value, price };
+        return { size: e.target.value, price: String(price) };
       },
       price: () => ({
         price:
@@ -259,7 +255,6 @@ function CreateLog() {
 
   const updateRatings = async (brandId: string, itemId: string) => {
     try {
-      // brand
       const brandInfo = allBrandsInfo[brandId];
       const prevBrandAverageRating = brandInfo.averageRating ?? 0;
       const prevBrandNumRatings = brandInfo.numRatings ?? 0;
@@ -277,7 +272,6 @@ function CreateLog() {
         updatedBrandAverageRating
       );
 
-      //item
       const itemIdArray = itemId.split('-');
       const itemRef = doc(
         db,
