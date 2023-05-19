@@ -1,7 +1,7 @@
 <p align="center">
-<img src="https://camo.githubusercontent.com/06a98c4ed987dedc1000a5d1f9c432aad7be5f9414b8333e3c8fbe72ea74a852/68747470733a2f2f666972656261736573746f726167652e676f6f676c65617069732e636f6d2f76302f622f776f72646c652d7375652e61707073706f742e636f6d2f6f2f535553755f6c6f676f2e706e673f616c743d6d6564696126746f6b656e3d38376534626135652d373931372d343833312d623238342d343364623337653030643163" alt="Logo" data-canonical-src="https://firebasestorage.googleapis.com/v0/b/wordle-sue.appspot.com/o/SUSu_logo.png?alt=media&amp;token=87e4ba5e-7917-4831-b284-43db37e00d1c" width="100" height="100">
+<img src="https://user-images.githubusercontent.com/109668258/239483173-78b18076-309c-40db-88f8-d2839e14a5af.png" alt="SUSu_logo" width="100" height="100">
 </p>
-  
+
 # SUSü
 
 A social platform designed for hand-shake drink chains in Taiwan. It's like a combination of Twitter and Wikipedia for hand-shake drink enthusiasts.
@@ -37,4 +37,8 @@ A social platform designed for hand-shake drink chains in Taiwan. It's like a co
 Basic flow chart of the website:
 <img width="3144" alt="flow_chart" src="https://github.com/tingyusu1786/SUSu/assets/109668258/e2c26615-682b-4794-bff2-fdf3e1b9511f">
 
+## Demo
+- #### Log a drink
+
+![create](https://github.com/tingyusu1786/SUSu/assets/109668258/04f4fcad-d467-45e7-a9b7-a2e7fa760fb9)
 
