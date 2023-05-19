@@ -132,7 +132,7 @@ function Authentication() {
             name: user.displayName,
             email: user.email,
             photoURL: user.photoURL,
-            timeCreated: serverTimestamp(),
+            timeCreated: new Date(),
           });
           swal.informToast(`Hi ${user.displayName}!`);
         } else {
