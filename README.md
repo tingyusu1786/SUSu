@@ -37,7 +37,7 @@ A social platform designed for hand-shake drink chains in Taiwan. It's like a co
 
 ## Flow Chart
 Basic flow chart of the website:
-<img width="3144" alt="flow_chart" src="https://github.com/tingyusu1786/SUSu/assets/109668258/e2c26615-682b-4794-bff2-fdf3e1b9511f">
+<img width="3144" alt="flow_chart" src="https://github.com/tingyusu1786/SUSu/assets/109668258/d099f373-4af8-4da9-ad27-93c1d72b16a8">
 
 ## Demo
 - #### Landing slogan built by Typed.js
@@ -61,9 +61,7 @@ Basic flow chart of the website:
 - #### Notification
 ![notification](https://github.com/tingyusu1786/SUSu/assets/109668258/ebd5f79b-7d9c-4275-81fb-d8d58f3c83e4)
 
-
 - #### Personal dashboard
-
 ![dashboard](https://github.com/tingyusu1786/SUSu/assets/109668258/084a58a8-7f3e-423e-86e3-003572f5a2f7)
 
 
