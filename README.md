@@ -38,7 +38,34 @@ Basic flow chart of the website:
 <img width="3144" alt="flow_chart" src="https://github.com/tingyusu1786/SUSu/assets/109668258/e2c26615-682b-4794-bff2-fdf3e1b9511f">
 
 ## Demo
-- #### Log a drink
+- #### Landing slogan built by Typed.js
+![landing](https://github.com/tingyusu1786/SUSu/assets/109668258/f595c5cf-13e3-4d28-b8c3-4d3a79732def)
 
+- #### Log a drink
 ![create](https://github.com/tingyusu1786/SUSu/assets/109668258/04f4fcad-d467-45e7-a9b7-a2e7fa760fb9)
+
+- #### Toggle feed source
+![Toggle feed source](https://github.com/tingyusu1786/SUSu/assets/109668258/0f0d4bcc-e1f2-438a-829a-a6066e7e098e)
+
+- #### Infinite scroll
+![scroll](https://github.com/tingyusu1786/SUSu/assets/109668258/47e5389d-3f1d-46fc-bdbf-d07f86c2d42f)
+
+- #### Like & comment
+![like   comment](https://github.com/tingyusu1786/SUSu/assets/109668258/d1d378df-6a62-4964-85f4-04c5b25dec52)
+
+- #### Notification
+
+- #### Browse all brands & items
+![brand item](https://github.com/tingyusu1786/SUSu/assets/109668258/a9511d9e-0fa2-49f4-8d55-a8f38f3e2211)
+
+- #### Get a drink suggestion
+
+
+
+
+
+
+
+
+
 
