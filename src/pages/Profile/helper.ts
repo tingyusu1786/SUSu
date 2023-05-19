@@ -1,7 +1,17 @@
-/* eslint-disable no-prototype-builtins */
 import { Timestamp } from 'firebase/firestore';
 
 import { Brand, Post } from '../../interfaces/interfaces';
+
+const timestampToDate = (timestamp: Timestamp) => {
+  if (typeof timestamp === 'number') {
+    timestamp = Timestamp.fromMillis(timestamp);
+  }
+  const dateObj = timestamp.toDate();
+  const year = dateObj.getFullYear();
+  const month = `0${dateObj.getMonth() + 1}`.slice(-2);
+  const day = `0${dateObj.getDate()}`.slice(-2);
+  return `${year}-${month}-${day}`;
+};
 
 export const getStatisticsFromPosts = (
   posts: Omit<Post, 'commentsShown'>[],
@@ -63,7 +73,7 @@ export const getStatisticsFromPosts = (
       const dateString = timestampToDate(post.timeCreated);
       const newDate = new Date(dateString);
       const index = drankDatesValues.findIndex(
-        (element: any) => element.date.getTime() === newDate.getTime()
+        (element) => element.date.getTime() === newDate.getTime()
       );
       if (index === -1) {
         drankDatesValues.push({ date: newDate, count: 1 });
@@ -141,15 +151,13 @@ export const getStatisticsFromPosts = (
   oneDayBeforeToday.setHours(0, 0, 0, 0);
 
   if (prevDate.getTime() < oneDayBeforeToday.getTime()) {
-    // The given date is earlier than or equal to one day before today 00:00 AM
     streaks.current = 0;
   }
 
-  // Add missing brands to drankBrandsStatistic
   for (const key in allBrandsInfo) {
     if (
-      allBrandsInfo.hasOwnProperty(key) &&
-      !drankBrandsStatistic.hasOwnProperty(key)
+      Object.prototype.hasOwnProperty.call(allBrandsInfo, key) &&
+      !Object.prototype.hasOwnProperty.call(drankBrandsStatistic, key)
     ) {
       drankBrandsStatistic[key] = {
         brandName: allBrandsInfo[key].name,
@@ -164,15 +172,4 @@ export const getStatisticsFromPosts = (
     priceStatistic,
     streaks,
   };
-};
-
-export const timestampToDate = (timestamp: Timestamp) => {
-  if (typeof timestamp === 'number') {
-    timestamp = Timestamp.fromMillis(timestamp);
-  }
-  const dateObj = timestamp.toDate();
-  const year = dateObj.getFullYear();
-  const month = `0${dateObj.getMonth() + 1}`.slice(-2);
-  const day = `0${dateObj.getDate()}`.slice(-2);
-  return `${year}-${month}-${day}`;
 };
