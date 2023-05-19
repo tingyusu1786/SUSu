@@ -36,11 +36,14 @@ function NotificationsList() {
   }
 
   useEffect(() => {
-    if (!currentUserRef) {
+    if (!currentUserRef || !currentUserId) {
       return;
     }
-
-    fetchNotifications(currentUserRef);
+    const loadNotifications = async () => {
+      const notifications = await dbApi.getNotifications(currentUserId);
+      setNotifications(notifications);
+    };
+    loadNotifications();
 
     const unsubscribe = onSnapshot(
       currentUserRef,
@@ -108,33 +111,6 @@ function NotificationsList() {
       }
     }
     swal.toast(html);
-  };
-
-  const fetchNotifications = async (
-    userRef: DocumentReference<DocumentData> | undefined
-  ) => {
-    if (!userRef) {
-      return;
-    }
-    const currentUserDoc = await dbApi.getDoc(userRef);
-    if (!currentUserDoc.exists()) {
-      swal.error(
-        'Something went wrong when retrieving your notifications...',
-        '',
-        'ok'
-      );
-      return;
-    }
-    const currentUserData = currentUserDoc.data();
-    const currentUserNotifications =
-      currentUserData?.notifications
-        ?.reverse()
-        .filter(
-          (notif: { authorId: string | null }) =>
-            notif.authorId !== currentUserId
-        ) || [];
-
-    setNotifications(currentUserNotifications);
   };
 
   const handleClearNotification = async () => {

@@ -2,24 +2,17 @@
 import {
   collection,
   doc,
-  DocumentSnapshot,
   getDoc,
   getDocs,
   setDoc,
   query,
-  Query,
   orderBy,
-  limit,
-  onSnapshot,
   QuerySnapshot,
   Timestamp,
   updateDoc,
   where,
   and,
   DocumentReference,
-  DocumentData,
-  deleteDoc,
-  startAfter,
   arrayUnion,
   arrayRemove,
   FieldValue,
@@ -107,7 +100,7 @@ const dbApi = {
         'items',
         itemId
       );
-      const itemPrice = await dbApi.getDocField(itemDocRef, 'price');
+      const itemPrice = await this.getDocField(itemDocRef, 'price');
       return itemPrice;
     } catch {
       swal.error('Something went wrong', '', 'ok');
@@ -415,13 +408,29 @@ const dbApi = {
       }
     }
   },
-
-  // todo: 應該要讓page都不用用到doc, db, ...
-  async getDoc(docRef: DocumentReference) {
-    const doc = await getDoc(docRef);
-    return doc;
+  async getNotifications(userId: string) {
+    const userRef = doc(db, 'users', userId);
+    if (!userRef) {
+      return;
+    }
+    const currentUserDoc = await getDoc(userRef);
+    if (!currentUserDoc.exists()) {
+      swal.error(
+        'Something went wrong when retrieving your notifications...',
+        '',
+        'ok'
+      );
+      return;
+    }
+    const currentUserData = currentUserDoc.data();
+    const currentUserNotifications =
+      currentUserData?.notifications
+        ?.reverse()
+        .filter(
+          (notif: { authorId: string | null }) => notif.authorId !== userId
+        ) || [];
+    return currentUserNotifications;
   },
-  // todo: 應該要讓page都不用用到doc, db, ...
   async getDocField(docRef: DocumentReference, field: string) {
     const doc = await getDoc(docRef);
     if (!doc.exists()) {
