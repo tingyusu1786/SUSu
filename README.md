@@ -51,17 +51,13 @@ Basic flow chart of the website:
 ![scroll](https://github.com/tingyusu1786/SUSu/assets/109668258/47e5389d-3f1d-46fc-bdbf-d07f86c2d42f)
 
 - #### Like & comment
-![like   comment](https://github.com/tingyusu1786/SUSu/assets/109668258/d1d378df-6a62-4964-85f4-04c5b25dec52)
-
-- #### Notification
+![like + comment](https://github.com/tingyusu1786/SUSu/assets/109668258/d1d378df-6a62-4964-85f4-04c5b25dec52)
 
 - #### Browse all brands & items
 ![brand item](https://github.com/tingyusu1786/SUSu/assets/109668258/a9511d9e-0fa2-49f4-8d55-a8f38f3e2211)
 
 - #### Get a drink suggestion
-
-
-
+![suggestion](https://github.com/tingyusu1786/SUSu/assets/109668258/13e1ca0d-b1e7-46a7-bc2a-c4174e20bf22)
 
 
 
