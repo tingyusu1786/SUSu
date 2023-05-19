@@ -23,6 +23,8 @@ A social platform designed for hand-shake drink chains in Taiwan. It's like a co
 ![MUI](https://img.shields.io/badge/MUI-%230081CB.svg?style=for-the-badge&logo=mui&logoColor=white)
 ![Firebase](https://img.shields.io/badge/firebase-%23039BE5.svg?style=for-the-badge&logo=firebase)
 ![ESLint](https://img.shields.io/badge/ESLint-4B3263?style=for-the-badge&logo=eslint&logoColor=white)
+![image](https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white)
+
 
 - **Developed independently** from scratch, from wireframe, user flow, and UI design, to data structure design
 - Created **reusable components** such as log feeds to enhance scalability, improve maintainability, and code reusability
@@ -47,11 +49,8 @@ Basic flow chart of the website:
 - #### Toggle feed source
 ![Toggle feed source](https://github.com/tingyusu1786/SUSu/assets/109668258/0f0d4bcc-e1f2-438a-829a-a6066e7e098e)
 
-- #### Infinite scroll
-![scroll](https://github.com/tingyusu1786/SUSu/assets/109668258/47e5389d-3f1d-46fc-bdbf-d07f86c2d42f)
-
-- #### Like & comment
-![like + comment](https://github.com/tingyusu1786/SUSu/assets/109668258/d1d378df-6a62-4964-85f4-04c5b25dec52)
+- #### Filter logs by hashtag
+![hashtag](https://github.com/tingyusu1786/SUSu/assets/109668258/0894a2a7-5fb7-496b-bcc0-3307aea908cd)
 
 - #### Browse all brands & items
 ![brand item](https://github.com/tingyusu1786/SUSu/assets/109668258/a9511d9e-0fa2-49f4-8d55-a8f38f3e2211)
@@ -59,7 +58,13 @@ Basic flow chart of the website:
 - #### Get a drink suggestion
 ![suggestion](https://github.com/tingyusu1786/SUSu/assets/109668258/13e1ca0d-b1e7-46a7-bc2a-c4174e20bf22)
 
+- #### Notification
+![notification](https://github.com/tingyusu1786/SUSu/assets/109668258/ebd5f79b-7d9c-4275-81fb-d8d58f3c83e4)
 
+
+- #### Personal dashboard
+
+![dashboard](https://github.com/tingyusu1786/SUSu/assets/109668258/084a58a8-7f3e-423e-86e3-003572f5a2f7)
 
 
 
