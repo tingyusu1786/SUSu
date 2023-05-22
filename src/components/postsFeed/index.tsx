@@ -64,7 +64,6 @@ const PostsFeed: React.FC<PostsProps> = ({
   const isFetching = useRef(false);
   const hashtagRef = useRef<null | HTMLDivElement>(null);
 
-  // add listener for newly added post
   useEffect(() => {
     if (
       onlySeeFollowing &&
@@ -127,7 +126,7 @@ const PostsFeed: React.FC<PostsProps> = ({
           where('brandId', '==', pageBrandId),
           or(
             where('audience', '==', 'public'),
-            where('authorId', '==', currentUserId || '') //就是這裡！
+            where('authorId', '==', currentUserId || '')
           )
         ),
         orderBy('timeCreated', 'desc')
@@ -186,14 +185,12 @@ const PostsFeed: React.FC<PostsProps> = ({
     fetchFivePosts(lastKey, hashtagFilter);
   }, [hashtagFilter, logId]);
 
-  // 有新文之後設下一個key
   useEffect(() => {
     if (posts.length === 0) return;
     const lastTimestamp = posts[posts.length - 1].timeCreated;
     setLastKey(lastTimestamp);
   }, [posts]);
 
-  // scroll listener
   useEffect(() => {
     if (currentPage === 'log') {
       return;

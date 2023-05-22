@@ -201,7 +201,7 @@ function Inspiration() {
                   Object.entries(randomItem.price).map((p) => (
                     <div
                       key={p[0]}
-                      className='inline-block flex items-center justify-start gap-1'
+                      className='flex items-center justify-start gap-1'
                     >
                       <div className='flex h-6 w-6 items-center justify-center rounded-full border-2 border-solid border-neutral-900 bg-green-400 pt-1 text-sm'>
                         {p[0]}

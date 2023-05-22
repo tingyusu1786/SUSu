@@ -1,25 +1,14 @@
-import React, { ElementType, ForwardRefExoticComponent } from 'react';
-
 import {
   Browsers,
   Shapes,
   RocketLaunch,
   Storefront,
-  IconProps,
-  Icon,
 } from '@phosphor-icons/react';
 
 export type BadgeConfig = {
   type: string;
   goals: number[];
   icon: any;
-  // icon: React.ReactElement;
-  // icon: React.Component;
-  // icon: SVGRectElement;
-  // icon: ElementType;
-  // icon: ForwardRefExoticComponent<IconProps>;
-  // icon: IconProps;
-  // icon: Icon;
   bg: string;
   desc: string[];
 };
