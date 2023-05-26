@@ -43,12 +43,6 @@
     background-color: #f6f6f9;
     background-image: repeating-linear-gradient(45deg, #beefce, #beefce 1px, #f6f6f9 1px, #f6f6f9 12.5px);
   }
-  .textBorder {
-    color: #fff;
-    -webkit-text-fill-color: #f5f5f5; /* Will override color (regardless of order) */
-    -webkit-text-stroke-width: 1px;
-    -webkit-text-stroke-color: #171717;
-  }
 }
 
 @font-face {
@@ -73,7 +67,6 @@
 .react-calendar-heatmap .color-empty {
   fill: #eeeeee;
 }
-
 .react-calendar-heatmap .color-gitlab-0 {
   fill: #ededed;
 }
