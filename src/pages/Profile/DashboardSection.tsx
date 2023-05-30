@@ -79,7 +79,7 @@ const DashboardSection = ({
 
   return (
     <div className='flex w-full flex-col items-center gap-10'>
-      <div className='grid w-full max-w-[900px] grid-cols-2 items-center items-stretch gap-x-5 gap-y-5'>
+      <div className='grid w-full max-w-[900px] grid-cols-2 items-center gap-x-5 gap-y-5'>
         <div className='col-span-2 ml-3 text-xl before:mr-2 before:content-["✦"]'>
           statistics
         </div>
@@ -134,7 +134,7 @@ const DashboardSection = ({
               </button>
             ))}
           </div>
-          <div className='container col-span-2 -mt-[22px] max-w-[900px] rounded-xl rounded-tl-none border-2 border-solid border-neutral-900 bg-neutral-100 px-10 py-5 shadow-[3px_3px_#171717] transition-all transition-all duration-200 duration-200 sm:p-2'>
+          <div className='container col-span-2 -mt-[22px] max-w-[900px] rounded-xl rounded-tl-none border-2 border-solid border-neutral-900 bg-neutral-100 px-10 py-5 shadow-[3px_3px_#171717] transition-all duration-200 sm:p-2'>
             <CalendarHeatmapComponent
               values={heatmapValues || []}
               numMonthBefore={numMonthBefore}
@@ -151,11 +151,17 @@ const DashboardSection = ({
           .reverse()
           .map((expense) => (
             <div
-              className='grid grid-cols-[50px_1fr] items-center rounded-xl border-2 border-solid border-neutral-900 bg-neutral-100 px-5 py-3 shadow-[3px_3px_#171717] transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[3px_6px_#171717] lg:grid-cols-[40px_1fr] md:grid-cols-1 md:justify-items-center'
+              className='grid grid-cols-[50px_1fr] items-center rounded-xl border-2 border-solid border-neutral-900 bg-neutral-100 px-5 py-3 shadow-[3px_3px_#171717] transition-all duration-200 hover:-translate-y-[3px] hover:shadow-[3px_6px_#171717] lg:grid-cols-[40px_1fr] md:grid-cols-1 md:justify-items-center group'
               key={expense[0]}
             >
               <Coins size={32} color='#facc15' className='row-span-2 md:mb-3' />
-              <div className='text-xl before:content-["$"]'>{expense[1]}</div>
+              <div className='text-xl before:content-["$"] transition-all duration-200'>
+                {expense[1] > 1000000
+                  ? `${Math.floor(expense[1] / 1000000)}m`
+                  : expense[1] > 10000
+                  ? `${Math.floor(expense[1] / 10000)}w`
+                  : expense[1]}
+              </div>
               <div className='text-neutral-500'>{expense[0]}</div>
             </div>
           ))}
