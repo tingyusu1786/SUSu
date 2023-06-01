@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 
 import {
@@ -96,91 +96,96 @@ function Header() {
     isSearchShown ? dispatch(closeSearch()) : dispatch(showSearch());
   };
 
-  const renderSmProfileDropdown = () => (
-    <div
-      className='group hidden sm:block'
-      onClick={() => {
-        toggleDropdown('profile');
-      }}
-    >
-      <img
-        src={currentUser.photoURL}
-        alt=''
-        className='box-content h-10 w-10 min-w-[40px] cursor-pointer rounded-full border-2 border-solid border-neutral-900 object-cover transition-all duration-100 hover:border-green-400 '
-      />
+  const renderSmProfileDropdown = useCallback(
+    () => (
       <div
-        className={`absolute left-0 top-[64px] grid w-screen grid-rows-[repeat(3,10vh)_1fr] items-center overflow-hidden whitespace-nowrap text-center transition-[height] duration-500 ${
-          dropdownShown.profile ? 'h-[calc(100vh-64px)] ' : 'h-0 shadow-none'
-        }`}
-      >
-        <NavLink
-          to={`/profile/${userId}`}
-          className={({ isActive }) =>
-            `flex h-full cursor-pointer items-center justify-center  hover:bg-neutral-100 ${
-              isActive ? 'bg-neutral-100' : 'bg-white'
-            }`
-          }
-        >
-          profile
-        </NavLink>
-        <div
-          className='flex h-full cursor-pointer items-center justify-center bg-white hover:bg-neutral-100'
-          onClick={toggleNotificationShown}
-        >
-          notifications
-        </div>
-        <div
-          className={`flex h-full cursor-pointer items-center justify-center bg-white text-neutral-500 shadow-lg hover:bg-neutral-100`}
-          onClick={handleSignOut}
-        >
-          sign out
-        </div>
-        <div className='h-full bg-transparent' onClick={closeDropdown} />
-      </div>
-    </div>
-  );
-
-  const renderSmNavLiDropdown = () => (
-    <div className='hidden sm:block'>
-      <CaretCircleRight
-        size={44}
-        color='#171717'
-        weight='thin'
-        className={`cursor-pointer ${
-          dropdownShown.navLi && 'rotate-90'
-        } transition-all duration-300`}
+        className='group hidden sm:block'
         onClick={() => {
-          toggleDropdown('navLi');
+          toggleDropdown('profile');
         }}
-      />
-      <div
-        className={`absolute left-0 top-[64px] grid w-screen grid-rows-[repeat(4,10vh)_1fr] items-center overflow-hidden whitespace-nowrap  text-center transition-[height] duration-300 ${
-          dropdownShown.navLi ? 'h-[calc(100vh-64px)] ' : 'h-0 shadow-none'
-        }`}
       >
-        {navLi.map((li) => (
+        <img
+          src={currentUser.photoURL}
+          alt=''
+          className='box-content h-10 w-10 min-w-[40px] cursor-pointer rounded-full border-2 border-solid border-neutral-900 object-cover transition-all duration-100 hover:border-green-400 '
+        />
+        <div
+          className={`absolute left-0 top-[64px] grid w-screen grid-rows-[repeat(3,10vh)_1fr] items-center overflow-hidden whitespace-nowrap text-center transition-[height] duration-500 ${
+            dropdownShown.profile ? 'h-[calc(100vh-64px)] ' : 'h-0 shadow-none'
+          }`}
+        >
           <NavLink
-            to={li.to}
+            to={`/profile/${userId}`}
             className={({ isActive }) =>
-              `flex h-full cursor-pointer items-center justify-center bg-white hover:bg-neutral-100 ${
-                isActive && 'bg-neutral-100'
+              `flex h-full cursor-pointer items-center justify-center  hover:bg-neutral-100 ${
+                isActive ? 'bg-neutral-100' : 'bg-white'
               }`
             }
-            data-text={li.name}
-            key={li.name}
           >
-            {li.name}
+            profile
           </NavLink>
-        ))}
-        <div
-          className={`flex h-full cursor-pointer items-center justify-center bg-white shadow-lg hover:bg-neutral-100`}
-          onClick={toggleSearchShown}
-        >
-          SEARCH
+          <div
+            className='flex h-full cursor-pointer items-center justify-center bg-white hover:bg-neutral-100'
+            onClick={toggleNotificationShown}
+          >
+            notifications
+          </div>
+          <div
+            className={`flex h-full cursor-pointer items-center justify-center bg-white text-neutral-500 shadow-lg hover:bg-neutral-100`}
+            onClick={handleSignOut}
+          >
+            sign out
+          </div>
+          <div className='h-full bg-transparent' onClick={closeDropdown} />
         </div>
-        <div className='h-full bg-transparent' onClick={closeDropdown} />
       </div>
-    </div>
+    ),
+    [dropdownShown.profile, isNotificationShown]
+  );
+
+  const renderSmNavLiDropdown = useCallback(
+    () => (
+      <div className='hidden sm:block'>
+        <CaretCircleRight
+          size={44}
+          color='#171717'
+          weight='thin'
+          className={`cursor-pointer ${
+            dropdownShown.navLi && 'rotate-90'
+          } transition-all duration-300`}
+          onClick={() => {
+            toggleDropdown('navLi');
+          }}
+        />
+        <div
+          className={`absolute left-0 top-[64px] grid w-screen grid-rows-[repeat(4,10vh)_1fr] items-center overflow-hidden whitespace-nowrap  text-center transition-[height] duration-300 ${
+            dropdownShown.navLi ? 'h-[calc(100vh-64px)] ' : 'h-0 shadow-none'
+          }`}
+        >
+          {navLi.map((li) => (
+            <NavLink
+              to={li.to}
+              className={({ isActive }) =>
+                `flex h-full cursor-pointer items-center justify-center hover:bg-neutral-100 ${
+                  isActive ? 'bg-neutral-100' : 'bg-white'
+                }`
+              }
+              key={li.name}
+            >
+              {li.name}
+            </NavLink>
+          ))}
+          <div
+            className={`flex h-full cursor-pointer items-center justify-center bg-white shadow-lg hover:bg-neutral-100`}
+            onClick={toggleSearchShown}
+          >
+            SEARCH
+          </div>
+          <div className='h-full bg-transparent' onClick={closeDropdown} />
+        </div>
+      </div>
+    ),
+    [dropdownShown.navLi]
   );
 
   return (
