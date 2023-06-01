@@ -1,3 +1,4 @@
+import { FirebaseError } from 'firebase/app';
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -56,9 +57,12 @@ const authApi = {
     }
     return OAuthCredential;
   },
-  async getErrorOAuthCredential(error: any) {
+  async getErrorOAuthCredential(error: unknown) {
     let errorOAuthCredential;
-    errorOAuthCredential = GoogleAuthProvider.credentialFromError(error);
+    if (error instanceof FirebaseError) {
+      errorOAuthCredential = GoogleAuthProvider.credentialFromError(error);
+      return errorOAuthCredential;
+    }
     return errorOAuthCredential;
   },
   async checkIfNewUser(

@@ -54,7 +54,7 @@ function Header() {
       try {
         await authApi.signOut();
         swal.informToast('Signed out. Come back soon!');
-      } catch (error: any) {
+      } catch (error: unknown) {
         swal.error(
           'Something went wrong when signing out...',
           'try again later',

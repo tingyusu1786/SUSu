@@ -29,6 +29,7 @@ export interface Notification {
   content?: string;
   type: 'like' | 'comment' | 'follow';
   postId?: string;
+  commentId?: string;
   unread: boolean;
 }
 

@@ -25,7 +25,7 @@ import {
 } from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid';
 
-import { Post } from '../../interfaces/interfaces';
+import { Post, Notification } from '../../interfaces/interfaces';
 import { useAppSelector, useAppDispatch } from '../../redux/hooks';
 import { showAuth } from '../../redux/popUpSlice';
 import { db } from '../../services/firebase';
@@ -743,14 +743,14 @@ const PostsFeed: React.FC<PostsProps> = ({
     let notificationToRemove;
     if (type === 'like') {
       notificationToRemove = originNotifications.find(
-        (notification: any) =>
+        (notification: Notification) =>
           notification.postId === postId &&
           notification.authorId === currentUserId &&
           notification.type === 'like'
       );
     } else {
       notificationToRemove = originNotifications.find(
-        (notification: any) => notification.commentId === commentId
+        (notification: Notification) => notification.commentId === commentId
       );
     }
 

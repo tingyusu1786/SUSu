@@ -2,6 +2,7 @@ import { useState, useEffect, ChangeEvent } from 'react';
 
 import { Eye, EyeClosed } from '@phosphor-icons/react';
 import 'animate.css';
+import { FirebaseError } from 'firebase/app';
 
 import { signInStart, signInSuccess, signInFail } from '../../redux/authSlice';
 import { useAppDispatch } from '../../redux/hooks';
@@ -71,11 +72,13 @@ function Authentication() {
           id: user.uid,
         })
       );
-    } catch (error: any) {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      swal.error(`☹️ ${errorCode}`, 'try again', 'ok');
-      dispatch(signInFail(errorMessage));
+    } catch (error) {
+      if (error instanceof FirebaseError) {
+        const errorCode = error.code;
+        swal.error(`☹️ ${errorCode}`, 'try again', 'ok');
+        const errorMessage = error.message;
+        dispatch(signInFail(errorMessage));
+      }
       dispatch(closeAuth());
     }
   };
@@ -95,10 +98,12 @@ function Authentication() {
       const userName = await dbApi.getUserField(userId, 'name');
 
       swal.informToast(`Welcome back ${userName}!`);
-    } catch (error: any) {
-      const errorCode = error.code;
-      swal.error(`☹️ ${errorCode}`, 'try again', 'ok');
-      dispatch(signInFail(errorCode));
+    } catch (error) {
+      if (error instanceof FirebaseError) {
+        const errorCode = error.code;
+        swal.error(`☹️ ${errorCode}`, 'try again', 'ok');
+        dispatch(signInFail(errorCode));
+      }
       dispatch(closeAuth());
     }
   };
@@ -138,14 +143,16 @@ function Authentication() {
           swal.informToast(`Welcome back ${user.displayName} 🫰`);
         }
       }
-    } catch (error: any) {
-      const errorCode = error.code;
-      swal.error(`☹️ ${errorCode}`, 'try again', 'ok');
-      dispatch(signInFail(errorCode));
+    } catch (error) {
+      if (error instanceof FirebaseError) {
+        const errorCode = error.code;
+        swal.error(`☹️ ${errorCode}`, 'try again', 'ok');
+        dispatch(signInFail(errorCode));
+        const errEmail = error?.customData?.email;
+        errEmail &&
+          swal.error(`☹️ error: email used (${errEmail})`, 'try again', 'ok');
+      }
       dispatch(closeAuth());
-
-      const errEmail = error.customData.email;
-      swal.error(`☹️ error: email used (${errEmail})`, 'try again', 'ok');
 
       const errorOAuthCredential = await authApi.getErrorOAuthCredential(error);
       swal.error(

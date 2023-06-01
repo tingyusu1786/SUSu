@@ -141,10 +141,8 @@ const dbApi = {
       const docData = userDoc.data();
       const docField = docData[field];
       return docField;
-    } catch (error: any) {
-      swal.toast(
-        'Something went wrong when getting user name' as unknown as JSX.Element
-      );
+    } catch {
+      swal.informToast('Something went wrong when getting user name');
     }
   },
   async getUser(userId: string): Promise<User | undefined> {
