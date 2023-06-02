@@ -25,7 +25,7 @@ import {
 } from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid';
 
-import { Post, Notification } from '../../interfaces/interfaces';
+import { Post, Notification, Like } from '../../interfaces/interfaces';
 import { useAppSelector, useAppDispatch } from '../../redux/hooks';
 import { showAuth } from '../../redux/popUpSlice';
 import { db } from '../../services/firebase';
@@ -698,7 +698,7 @@ const PostsFeed: React.FC<PostsProps> = ({
     const hasLiked = isComment
       ? undefined
       : targetArray?.some((like) => like.authorId === userId);
-    let updatedArray: any[] | undefined;
+    let updatedArray: Like[] | Comment[] | undefined;
     if (targetArray) {
       if (hasLiked) {
         updatedArray = targetArray.filter((entry) => entry.authorId !== userId);
@@ -718,7 +718,7 @@ const PostsFeed: React.FC<PostsProps> = ({
         newPosts[postIndex].comments = updatedArray;
       }
       if (type === 'like') {
-        newPosts[postIndex].likes = updatedArray;
+        newPosts[postIndex].likes = updatedArray as Like[];
       }
       newPosts[postIndex].commentInput = '';
       return newPosts;
