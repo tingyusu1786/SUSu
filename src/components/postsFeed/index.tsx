@@ -25,7 +25,7 @@ import {
 } from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid';
 
-import { Post, Notification, Like } from '../../interfaces/interfaces';
+import { Post, Notification, Like, Comment } from '../../interfaces/interfaces';
 import { useAppSelector, useAppDispatch } from '../../redux/hooks';
 import { showAuth } from '../../redux/popUpSlice';
 import { db } from '../../services/firebase';
@@ -694,19 +694,29 @@ const PostsFeed: React.FC<PostsProps> = ({
           }
         : {}),
     };
-    const targetArray = isComment ? post.comments : post.likes;
-    const hasLiked = isComment
-      ? undefined
-      : targetArray?.some((like) => like.authorId === userId);
-    let updatedArray: Like[] | Comment[] | undefined;
-    if (targetArray) {
-      if (hasLiked) {
-        updatedArray = targetArray.filter((entry) => entry.authorId !== userId);
-      } else {
+
+    let targetArray: Comment[] | Like[] | undefined;
+    let updatedArray: (Like | Comment)[] | undefined;
+    if (isComment) {
+      targetArray = post.comments;
+      if (targetArray) {
         updatedArray = [...targetArray, newEntry];
+      } else {
+        updatedArray = [newEntry];
       }
     } else {
-      updatedArray = [newEntry];
+      targetArray = post.likes;
+      if (targetArray) {
+        if (targetArray.some((like) => like.authorId === userId)) {
+          updatedArray = targetArray.filter(
+            (entry: Like) => entry.authorId !== userId
+          );
+        } else {
+          updatedArray = [...targetArray, newEntry];
+        }
+      } else {
+        updatedArray = [newEntry];
+      }
     }
 
     await updateDoc(postRef, {
@@ -715,7 +725,7 @@ const PostsFeed: React.FC<PostsProps> = ({
     setPosts((prev) => {
       const newPosts = [...prev];
       if (type === 'comment') {
-        newPosts[postIndex].comments = updatedArray;
+        newPosts[postIndex].comments = updatedArray as Comment[];
       }
       if (type === 'like') {
         newPosts[postIndex].likes = updatedArray as Like[];
@@ -723,6 +733,10 @@ const PostsFeed: React.FC<PostsProps> = ({
       newPosts[postIndex].commentInput = '';
       return newPosts;
     });
+
+    const hasLiked = isComment
+      ? undefined
+      : targetArray?.some((like) => like.authorId === userId);
 
     !hasLiked &&
       notifyOtherUser(post.postId, post.authorId as string, newEntry, type);

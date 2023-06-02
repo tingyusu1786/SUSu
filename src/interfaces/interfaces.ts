@@ -60,7 +60,7 @@ export interface Post {
   brandId?: string;
   brandName?: string;
   commentInput?: string;
-  comments?: any[];
+  comments?: Comment[];
   commentsShown: boolean;
   hashtags?: string[];
   ice?: string;
