@@ -21,7 +21,23 @@ const searchClient = algoliasearch(
   process.env.REACT_APP_ALGOLIA_SEARCH_KEY!
 );
 
-function BrandHit({ hit }: any): JSX.Element {
+interface HitProps {
+  hit: {
+    objectID: string;
+    authorId: string;
+    name: string;
+    headquarter: string;
+    story: string | string[];
+    email: string;
+    status: string;
+    selfComment: string;
+    hashtags: string[];
+    __position: number;
+    __queryID?: string | undefined;
+  };
+}
+
+function BrandHit({ hit }: HitProps): JSX.Element {
   const dispatch = useAppDispatch();
   return (
     <Link
@@ -47,7 +63,7 @@ function BrandHit({ hit }: any): JSX.Element {
   );
 }
 
-function UserHit({ hit }: any): JSX.Element {
+function UserHit({ hit }: HitProps): JSX.Element {
   const dispatch = useAppDispatch();
   return (
     <Link
@@ -70,7 +86,7 @@ function UserHit({ hit }: any): JSX.Element {
   );
 }
 
-function PostHit({ hit }: any): JSX.Element {
+function PostHit({ hit }: HitProps): JSX.Element {
   const dispatch = useAppDispatch();
   const [name, setName] = useState('user');
   dbApi.getUserField(hit.authorId, 'name').then((data) => {
@@ -104,8 +120,8 @@ function PostHit({ hit }: any): JSX.Element {
 }
 
 interface FallbackProps {
-  children: any;
-  fallback: any;
+  children: React.ReactElement | null;
+  fallback: React.ReactElement | null;
 }
 
 const EmptyQueryBoundary: React.FC<FallbackProps> = ({
@@ -121,13 +137,10 @@ const EmptyQueryBoundary: React.FC<FallbackProps> = ({
   return children;
 };
 
-const NoResultsBoundary = ({
+const NoResultsBoundary: React.FC<FallbackProps> = ({
   children,
   fallback,
-}: {
-  children: any;
-  fallback: any;
-}) => {
+}: FallbackProps) => {
   const { results } = useInstantSearch();
 
   if (!results.__isArtificial && results.nbHits === 0) {
@@ -176,14 +189,16 @@ const SearchModal: React.FC = () => {
           </div>
           <div className='mt-4 flex w-full flex-col items-stretch gap-3 overflow-y-scroll border-dashed border-neutral-900'>
             <EmptyQueryBoundary fallback={null}>
-              {indices.map(({ indexName, hitComponent }) => (
-                <Index key={indexName} indexName={indexName}>
-                  <div className='text-xl'>{indexName}</div>
-                  <NoResultsBoundary fallback={<NoResults />}>
-                    <Hits hitComponent={hitComponent} />
-                  </NoResultsBoundary>
-                </Index>
-              ))}
+              <>
+                {indices.map(({ indexName, hitComponent }) => (
+                  <Index key={indexName} indexName={indexName}>
+                    <div className='text-xl'>{indexName}</div>
+                    <NoResultsBoundary fallback={<NoResults />}>
+                      <Hits hitComponent={hitComponent} />
+                    </NoResultsBoundary>
+                  </Index>
+                ))}
+              </>
             </EmptyQueryBoundary>
           </div>
         </div>
