@@ -171,7 +171,7 @@ const SearchModal: React.FC = () => {
   return (
     <InstantSearch searchClient={searchClient} indexName='brands'>
       <div className='fixed top-0 z-50 flex h-screen w-screen items-center justify-center '>
-        <div className='animate__faster animate__zoomIn animate__animated absolute top-[15%] z-30 grid max-h-[70vh] w-3/4 max-w-[700px] grid-rows-[60px_1fr] rounded-md border-4 border-neutral-900 bg-neutral-100 p-5 shadow-lg '>
+        <div className='animate__faster animate__zoomIn animate__animated absolute top-[15%] z-30 grid max-h-[70vh] w-3/4 max-w-[700px] grid-rows-[60px_1fr] rounded-md border-4 border-neutral-900 bg-neutral-100 p-5 shadow-lg sm:w-11/12'>
           <div className='relative'>
             <SearchBox
               autoFocus
