@@ -326,18 +326,18 @@ function CreateLog() {
             }
           }}
         >
-          <div className='flex h-12 flex-nowrap items-center justify-between border-b-[3px] border-solid border-neutral-900 px-5'>
-            <div>
+          <div className='flex h-12 flex-nowrap items-center justify-between border-b-[3px] border-solid border-neutral-900 px-5 sm:flex-col sm:h-auto w-full sm:mt-2'>
+            <div className='sm:w-full flex items-center justify-center'>
               <img
                 src={currentUser.photoURL}
                 alt={currentUser.name || 'user'}
                 className='mr-2 inline-block h-9 w-9 rounded-full border-2 border-solid border-neutral-900 object-cover group-hover:border-green-400'
               />
-              <span className='text-lg group-hover:underline group-hover:decoration-green-400 group-hover:decoration-wavy group-hover:underline-offset-[5px]'>
+              <span className='text-lg group-hover:underline group-hover:decoration-green-400 group-hover:decoration-wavy group-hover:underline-offset-[5px] truncate sm:mt-1'>
                 {currentUser.name}
               </span>
             </div>
-            <div className='flex items-center justify-end gap-x-1'>
+            <div className='flex items-center justify-end gap-x-1 md:w-1/2 sm:w-full sm:justify-center'>
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <ThemeProvider theme={theme}>
                   <div className='mt-px'>
@@ -347,12 +347,16 @@ function CreateLog() {
                       sx={{
                         padding: 0,
                         width: '220px',
-                        marginRight: '-10px',
-                        '& fieldset': { border: 'none' },
+                        marginRight: '-40px',
+                        marginLeft: '-14px',
+                        '& fieldset': {
+                          border: 'none',
+                          fontSize: '10px',
+                        },
                         '& button': {
-                          backgroundColor: '',
                           padding: 0,
                           margin: 0,
+                          display: 'none',
                         },
                         '& svg': { width: '18px', color: '#171717' },
                       }}
@@ -413,9 +417,9 @@ function CreateLog() {
             </div>
           </div>
           <div className='flex flex-col gap-y-2 p-5'>
-            <div className='flex items-center gap-x-2 text-xl'>
+            <div className='flex items-center gap-x-2 text-xl sm:flex-col sm:items-start'>
               <div>I drank</div>
-              <div className='relative w-56'>
+              <div className='relative w-56 mb-2 sm:w-full'>
                 <button
                   onClick={() =>
                     setDropdownShown((prev) => {
@@ -453,8 +457,8 @@ function CreateLog() {
                   ))}
                 </div>
               </div>
-              <div>&rsquo;s</div>
-              <div className='relative w-60'>
+              <span className='sm:hidden'>&rsquo;s</span>
+              <div className='relative w-60 sm:w-full'>
                 <button
                   disabled={itemsOfBrand.length === 0}
                   onClick={() =>
@@ -568,9 +572,9 @@ function CreateLog() {
                 onChange={handleInputChange}
               />
             </div>
-            <div className='flex gap-x-3'>
-              <div className='flex items-center gap-1'>
-                <div className='mr-1 text-neutral-500'>sugar</div>
+            <div className='flex gap-x-3 sm:flex-col'>
+              <div className='flex items-center gap-1 sm:mb-1'>
+                <div className='mr-1 text-neutral-500 sm:w-12'>sugar</div>
                 <div className='relative h-8 w-36'>
                   <button
                     className={`h-full w-full rounded-full border-2 border-solid border-neutral-900 bg-white p-0 px-2 pt-1 text-sm focus:outline focus:outline-green-400`}
@@ -610,7 +614,7 @@ function CreateLog() {
                 </div>
               </div>
               <div className='flex items-center gap-1'>
-                <div className='mr-1 text-neutral-500'>ice</div>
+                <div className='mr-1 text-neutral-500 sm:w-12'>ice</div>
                 <div className='relative h-8 w-36'>
                   <button
                     className={`h-full w-full rounded-full border-2 border-solid border-neutral-900 bg-white p-0 px-2 pt-1  text-sm focus:outline focus:outline-green-400`}
