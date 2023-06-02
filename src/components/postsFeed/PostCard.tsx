@@ -1,4 +1,3 @@
-/* eslint-disable */
 import { ChangeEvent, KeyboardEvent } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -60,7 +59,7 @@ const PostCard: React.FC<PostProps> = ({
   handleCommentInput,
   handleCommentSubmit,
   handleClickHashtag,
-}) => {
+}: PostProps) => {
   const dispatch = useAppDispatch();
   const currentUserId = useAppSelector((state) => state.auth.currentUserId);
   const date = post.timeCreated?.toDate();
@@ -77,21 +76,21 @@ const PostCard: React.FC<PostProps> = ({
       className='relative w-full max-w-3xl rounded-md border-[3px] border-solid border-neutral-900 bg-neutral-100 shadow-[4px_4px_#171717]'
       key={index}
     >
-      <div className='flex h-12 flex-nowrap items-center justify-between border-b-[3px] border-solid border-neutral-900 px-5 sm:h-20 sm:flex-col-reverse sm:items-start sm:justify-end sm:px-3 sm:pt-1'>
+      <div className='flex h-12 flex-nowrap items-center justify-between border-b-[3px] border-solid border-neutral-900 px-5 sm:h-20 sm:flex-col sm:items-start sm:justify-start sm:px-3 sm:pt-1 sm:mt-1'>
         <Link
           to={`/profile/${post.authorId}`}
-          className='group flex items-center xs:pr-1'
+          className='group flex items-center sm:justify-center sm:w-full transition-all duration-300'
         >
           <img
             src={post.authorPhoto}
             alt={post.authorName}
             className='mr-2 inline-block h-9 w-9 rounded-full border-2 border-solid border-neutral-900 object-cover group-hover:border-green-400'
           />
-          <span className='text-lg group-hover:underline group-hover:decoration-green-400 group-hover:decoration-wavy group-hover:underline-offset-[5px] sm:mt-2 xs:truncate xs:text-base xs:group-hover:underline-offset-[2px]'>
+          <span className='text-lg group-hover:underline group-hover:decoration-green-400 group-hover:decoration-wavy group-hover:underline-offset-[5px] sm:mt-2 truncate xs:text-base xs:group-hover:underline-offset-[2px]'>
             {post.authorName}
           </span>
         </Link>
-        <div className=' flex items-center justify-between'>
+        <div className='flex items-center justify-between sm:w-full sm:justify-center shrink-0'>
           <span className='mt-1 after:mx-1 after:content-["•"]'>
             {formattedDateTime}
           </span>
@@ -101,32 +100,23 @@ const PostCard: React.FC<PostProps> = ({
             <UserCircle size={18} color='#171717' weight='bold' />
           )}
         </div>
-        {post.authorId === currentUserId && (
-          <Trash
-            size={20}
-            color='#737373'
-            weight='regular'
-            className='absolute right-2 top-[10px] hidden cursor-pointer sm:block'
-            onClick={() => handleDeletePost(post, index)}
-          />
-        )}
       </div>
 
       <div className='p-5'>
-        <div className='flex items-center gap-3 xs:flex-col xs:items-start xs:gap-0 xs:pb-2'>
+        <div className='flex items-center justify-between gap-3 xs:flex-col xs:items-start xs:gap-0 xs:pb-2'>
           <div className='text-2xl sm:text-xl xs:flex xs:flex-col'>
             <span>I drank </span>
             <Link to={`/drinkipedia/${post.brandId}`}>
-              <span className="xs:after:content-[''s'] inline-block transition-all duration-150 ease-out hover:-translate-y-1">
+              <span className='inline-block hover:bg-gradient-to-l hover:from-sky-500 hover:to-green-500 hover:bg-clip-text hover:text-transparent'>
                 {post.brandName}
               </span>
+              <span>&rsquo;s </span>
             </Link>
-            <span className='xs:hidden'>'s </span>
             <Link
               to={`/drinkipedia/${post.brandId}/${post.itemId}`}
               className='hover:translate-y-1'
             >
-              <span className='inline-block transition-all duration-150 ease-out hover:-translate-y-1'>
+              <span className='inline-block hover:bg-gradient-to-l hover:from-sky-500 hover:to-green-500 hover:bg-clip-text hover:text-transparent'>
                 {post.itemName}
               </span>
             </Link>
@@ -144,23 +134,15 @@ const PostCard: React.FC<PostProps> = ({
               size={16}
               color='#737373'
               weight='regular'
-              className='mb-px ml-auto h-5 w-5 cursor-pointer sm:hidden'
+              className='mb-px ml-auto h-6 w-6 cursor-pointer absolute right-4 bottom-5'
               onClick={() => handleDeletePost(post, index)}
             />
           )}
         </div>
         {post.sugar && (
-          <span className='mr-2 text-neutral-400'>
-            {/*<span className='text-neutral-500'>sugar_ </span>*/}
-            {post.sugar}
-          </span>
+          <span className='mr-2 text-neutral-400'>{post.sugar}</span>
         )}
-        {post.ice && (
-          <span className='mr-2 text-neutral-400'>
-            {/*<span className='text-neutral-500'>ice_ </span>*/}
-            {post.ice}
-          </span>
-        )}
+        {post.ice && <span className='mr-2 text-neutral-400'>{post.ice}</span>}
         {post?.rating && (
           <div className='mb-4 flex'>
             {[1, 2, 3, 4, 5].map((num) => {
@@ -222,7 +204,6 @@ const PostCard: React.FC<PostProps> = ({
             }
           />
         )}
-        {/*todo: signin to like*/}
         <div className='mt-1 text-center'>{post.likes?.length || ''}</div>
 
         <ChatCircleDots
